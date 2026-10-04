@@ -18,11 +18,18 @@ public sealed class MainWindowViewModel : ViewModelBase
     private readonly IVerificarAtualizacoesUseCase _verificarAtualizacoes;
     private readonly IRegistroDeErros _registroDeErros;
     private readonly IWindowNavigator _navegador;
+    private readonly IBaixadorDeAtualizacao _baixador;
+    private readonly IExecutorInstalador _executor;
+    private readonly IUserNotifier _notificador;
     private ThemeMode _temaSelecionado = ThemeManager.CurrentMode;
     private bool _historicoAberto;
 
-    public MainWindowViewModel(IWindowNavigator navegador, HistoricoViewModel historico, IVerificarAtualizacoesUseCase verificarAtualizacoes, IRegistroDeErros registroDeErros)
+    public MainWindowViewModel(IWindowNavigator navegador, HistoricoViewModel historico, IVerificarAtualizacoesUseCase verificarAtualizacoes, IRegistroDeErros registroDeErros,
+        IBaixadorDeAtualizacao baixador, IExecutorInstalador executor, IUserNotifier notificador)
     {
+        _baixador = baixador;
+        _executor = executor;
+        _notificador = notificador;
         Historico = historico;
         _navegador = navegador;
         _verificarAtualizacoes = verificarAtualizacoes;
@@ -178,10 +185,39 @@ public sealed class MainWindowViewModel : ViewModelBase
     {
         AvisoInicioViewModel? criado = null;
         var dispensar = new RelayCommand(_ => Avisos.Remove(criado!));
-        criado = aviso.Tipo == TipoAvisoAtualizacao.NovaVersao && aviso.Endereco is { } endereco
-            ? new(aviso.Mensagem, "Baixar a nova versão", new RelayCommand(_ => Process.Start(new ProcessStartInfo(endereco.AbsoluteUri) { UseShellExecute = true })), dispensar)
-            : new(aviso.Mensagem, "Abrir a tabela do INSS", new RelayCommand(_ => _navegador.AbrirTabela(TipoTabelaTributaria.Inss)), dispensar);
-        return criado;
+        if (aviso.Tipo != TipoAvisoAtualizacao.NovaVersao || aviso.Endereco is not { } pagina)
+            return criado = new(aviso.Mensagem, "Abrir a tabela do INSS", new RelayCommand(_ => _navegador.AbrirTabela(TipoTabelaTributaria.Inss)), dispensar);
+
+        var abrirPagina = new RelayCommand(_ => Process.Start(new ProcessStartInfo(pagina.AbsoluteUri) { UseShellExecute = true }));
+        // Sem o instalador com o hash publicado, não há como conferir o download: o aviso só abre a página do release.
+        if (aviso.Versao is not { PodeAtualizarPeloAplicativo: true } versao)
+            return criado = new(aviso.Mensagem, "Baixar a nova versão", abrirPagina, dispensar);
+        return criado = new(aviso.Mensagem, "Atualizar agora", new AsyncRelayCommand(() => AtualizarAsync(criado!, versao)), dispensar, "Ver novidades", abrirPagina);
+    }
+
+    /// <summary>
+    /// Baixa o instalador, confere o hash e o executa; o aplicativo fecha para os arquivos serem substituídos e é aberto
+    /// de novo no fim da instalação. As tabelas cadastradas ficam preservadas.
+    /// </summary>
+    private async Task AtualizarAsync(AvisoInicioViewModel aviso, VersaoPublicada versao)
+    {
+        if (!_notificador.Confirmar(
+                $"Baixar e instalar a versão {versao.Numero}?\n\nO aplicativo será fechado durante a instalação e aberto de novo no fim. As tabelas cadastradas e o histórico são preservados. Salve os cálculos abertos antes de continuar.",
+                "Atualizar o aplicativo"))
+            return;
+
+        var textoOriginal = aviso.Texto;
+        var progresso = new Progress<int>(percentual => aviso.Texto = $"Baixando a versão {versao.Numero}: {percentual}%...");
+        aviso.Texto = $"Baixando a versão {versao.Numero}...";
+        var download = await _baixador.BaixarAsync(versao, progresso, CancellationToken.None);
+        if (download.Falhou)
+        {
+            aviso.Texto = textoOriginal;
+            _notificador.MostrarFalha(download.Erro, "Não foi possível atualizar o aplicativo.");
+            return;
+        }
+        aviso.Texto = $"Instalando a versão {versao.Numero}...";
+        _executor.InstalarEFechar(download.Valor);
     }
 
     // A versão vem da tag usada na publicação; o SDK acrescenta "+<commit>" à versão informativa, que não interessa ao usuário.

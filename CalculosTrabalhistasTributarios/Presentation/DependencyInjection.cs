@@ -23,6 +23,7 @@ public static class DependencyInjection
         .AddSingleton<ContextoCompartilhado>()
         .AddScoped<IEstabilidadeViewModelFactory, EstabilidadeViewModelFactory>()
         .AddSingleton<IUserNotifier, WpfUserNotifier>()
+        .AddSingleton<IExecutorInstalador, WpfExecutorInstalador>()
         .AddSingleton<IArquivoDialogService, WpfArquivoDialogService>()
         .AddSingleton<IManualUsuarioService, WpfManualUsuarioService>()
         .AddSingleton<INomeDialogService, WpfNomeDialogService>()

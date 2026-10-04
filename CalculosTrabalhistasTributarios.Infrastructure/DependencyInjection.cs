@@ -33,6 +33,7 @@ public static class DependencyInjection
         .AddSingleton<IPlanilhaService, ClosedXmlPlanilhaService>()
         .AddSingleton<IRegistroDeErros, ArquivoRegistroDeErros>()
         .AddSingleton<IConsultaVersaoPublicada, ConsultaVersaoGitHub>()
+        .AddSingleton<IBaixadorDeAtualizacao, BaixadorDeAtualizacaoGitHub>()
         .AddSingleton<IFonteTabela<TabelaIrrfPublicada>, FonteIrrfReceitaFederal>()
         .AddSingleton<IFonteTabela<TabelaIrrfPublicada>, FonteIrrfDebit>()
         .AddSingleton<IFonteTabela<TabelaIrrfPublicada>, FonteIrrfContabeis>()

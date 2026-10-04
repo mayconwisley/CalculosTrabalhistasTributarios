@@ -22,7 +22,8 @@ public sealed class VerificarAtualizacoesUseCase(IConsultaVersaoPublicada versoe
         if (consultarVersao && await versoes.ConsultarAsync(cancellationToken) is { Sucesso: true } consulta && EhMaisNova(consulta.Valor.Numero, versaoAtual))
             avisos.Add(new(TipoAvisoAtualizacao.NovaVersao,
                 $"A versão {consulta.Valor.Numero} está disponível (você usa a {versaoAtual}). As tabelas que você editou são preservadas na atualização.",
-                consulta.Valor.Endereco));
+                consulta.Valor.Endereco,
+                consulta.Valor));
 
         return avisos;
     }

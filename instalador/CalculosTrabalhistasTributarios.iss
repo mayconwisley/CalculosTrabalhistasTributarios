@@ -78,3 +78,5 @@ Name: "{autodesktop}\{#AppName}"; Filename: "{app}\{#AppExe}"; WorkingDir: "{app
 
 [Run]
 Filename: "{app}\{#AppExe}"; Description: "{cm:LaunchProgram,{#AppName}}"; WorkingDir: "{app}"; Flags: nowait postinstall skipifsilent
+; Na atualização pelo próprio aplicativo, o instalador roda em modo silencioso e abre o aplicativo de novo no fim.
+Filename: "{app}\{#AppExe}"; WorkingDir: "{app}"; Flags: nowait; Check: WizardSilent

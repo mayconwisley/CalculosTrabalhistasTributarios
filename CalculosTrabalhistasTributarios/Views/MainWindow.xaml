@@ -73,10 +73,12 @@
 				<DataTemplate>
 					<Border Background="{DynamicResource SelectionBrush}" BorderBrush="{DynamicResource AccentBrush}" BorderThickness="1" CornerRadius="10" Padding="16,10" Margin="0,0,0,14">
 						<Grid>
-							<Grid.ColumnDefinitions><ColumnDefinition /><ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+							<Grid.ColumnDefinitions><ColumnDefinition /><ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
 							<TextBlock Text="{Binding Texto}" TextWrapping="Wrap" VerticalAlignment="Center" />
-							<Button Grid.Column="1" Content="{Binding TextoAcao}" Command="{Binding Acao}" Style="{StaticResource PrimaryButton}" Padding="14,6" Margin="16,0,0,0" VerticalAlignment="Center" />
-							<Button Grid.Column="2" Content="Dispensar" Command="{Binding Dispensar}" Style="{StaticResource LinkButton}" Margin="14,0,0,0" VerticalAlignment="Center" />
+							<Button Grid.Column="1" Content="{Binding TextoLink}" Command="{Binding AbrirLink}" Style="{StaticResource LinkButton}" Margin="16,0,0,0" VerticalAlignment="Center"
+									Visibility="{Binding TemLink, Converter={StaticResource BooleanToVisibilityConverter}}" />
+							<Button Grid.Column="2" Content="{Binding TextoAcao}" Command="{Binding Acao}" Style="{StaticResource PrimaryButton}" Padding="14,6" Margin="16,0,0,0" VerticalAlignment="Center" />
+							<Button Grid.Column="3" Content="Dispensar" Command="{Binding Dispensar}" Style="{StaticResource LinkButton}" Margin="14,0,0,0" VerticalAlignment="Center" />
 						</Grid>
 					</Border>
 				</DataTemplate>
