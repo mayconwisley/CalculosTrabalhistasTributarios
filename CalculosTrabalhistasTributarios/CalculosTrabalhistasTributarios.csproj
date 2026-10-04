@@ -1,0 +1,35 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net9.0-windows</TargetFramework>
+    <OutputType>WinExe</OutputType>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <UseWPF>true</UseWPF>
+    <Nullable>enable</Nullable>
+    <ApplicationIcon>Assets\icon-light.ico</ApplicationIcon>
+    <AssemblyName>CalculosTrabalhistasTributarios</AssemblyName>
+    <AssemblyTitle>Cálculos Trabalhistas e Tributários</AssemblyTitle>
+    <Product>Cálculos Trabalhistas e Tributários</Product>
+    <Description>Simulações trabalhistas e tributárias, pensão alimentícia e relatórios de cálculo.</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Include="calculator.ico" />
+    <Content Include="Assets\icon-light.ico" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="Assets\icon-dark.ico" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\docs\ManualDoUsuario.pdf" Link="Manual\ManualDoUsuario.pdf" CopyToOutputDirectory="PreserveNewest" Condition="Exists('..\docs\ManualDoUsuario.pdf')" />
+    <Resource Include="Assets\logo-light.png" />
+    <Resource Include="Assets\logo-dark.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CalculosTrabalhistasTributarios.Domain\CalculosTrabalhistasTributarios.Domain.csproj" />
+    <ProjectReference Include="..\CalculosTrabalhistasTributarios.Application\CalculosTrabalhistasTributarios.Application.csproj" />
+    <ProjectReference Include="..\CalculosTrabalhistasTributarios.Infrastructure\CalculosTrabalhistasTributarios.Infrastructure.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="BancoDados\calculoIrrf.db">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+</Project>

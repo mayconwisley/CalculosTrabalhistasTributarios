@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net9.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <RootNamespace>CalculosTrabalhistasTributarios.Tests</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CalculosTrabalhistasTributarios\CalculosTrabalhistasTributarios.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- O banco do projeto, na versão inicial: cada execução dos testes parte de uma cópia nova e aplica as sementes. -->
+    <None Include="..\CalculosTrabalhistasTributarios\BancoDados\calculoIrrf.db" Link="BancoDados\base.db" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>

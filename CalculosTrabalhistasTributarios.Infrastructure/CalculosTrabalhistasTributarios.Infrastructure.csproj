@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <RootNamespace>CalculosTrabalhistasTributarios.Infrastructure</RootNamespace>
+    <AssemblyName>CalculosTrabalhistasTributarios.Infrastructure</AssemblyName>
+    <Description>Banco SQLite, relatórios PDF e Excel e consulta às fontes oficiais.</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="ClosedXML" />
+    <PackageReference Include="HtmlAgilityPack" />
+    <PackageReference Include="Microsoft.Data.Sqlite" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+    <PackageReference Include="QuestPDF" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CalculosTrabalhistasTributarios.Application\CalculosTrabalhistasTributarios.Application.csproj" />
+  </ItemGroup>
+</Project>

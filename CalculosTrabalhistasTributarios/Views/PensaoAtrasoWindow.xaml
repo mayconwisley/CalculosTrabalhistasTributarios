@@ -1,0 +1,190 @@
+<Window x:Class="CalculosTrabalhistasTributarios.Views.PensaoAtrasoWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:behaviors="clr-namespace:CalculosTrabalhistasTributarios.Presentation.Behaviors"
+        Title="Pensão em atraso" Height="920" Width="1180" MinHeight="640" MinWidth="960"
+        Background="{DynamicResource ApplicationBackgroundBrush}"
+        Foreground="{DynamicResource TextBrush}" WindowStartupLocation="CenterOwner">
+    <Window.Resources>
+        <!-- Campo editável dentro da grade de parcelas, mais baixo que os do formulário. -->
+        <Style x:Key="CampoDaGrade" TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+            <Setter Property="MinHeight" Value="28" />
+            <Setter Property="Padding" Value="6,2" />
+            <Setter Property="Margin" Value="0,2" />
+            <Setter Property="TextAlignment" Value="Right" />
+        </Style>
+        <Style x:Key="Rotulo" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource MutedTextBrush}" />
+            <Setter Property="Margin" Value="0,0,0,6" />
+        </Style>
+        <Style x:Key="EstadoSemParcelas" TargetType="TextBlock" BasedOn="{StaticResource EstadoVazio}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding TemParcelas}" Value="True"><Setter Property="Visibility" Value="Collapsed" /></DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+    <!-- A janela inteira rola quando falta altura, por exemplo numa tela menor ou com um resultado longo, para o resultado
+         não ficar espremido abaixo do formulário. -->
+    <ScrollViewer x:Name="Pagina" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Focusable="False" behaviors:RolagemDaTela.Ativa="True">
+        <!-- Com pouco conteúdo, a página ocupa a janela e o cartão do resultado estica até o fim dela. -->
+        <Border Padding="28" MinHeight="{Binding ViewportHeight, ElementName=Pagina}" Background="{DynamicResource ApplicationBackgroundBrush}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="16" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="16" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <StackPanel>
+                    <TextBlock Text="Pensão em atraso" FontSize="24" FontWeight="SemiBold" />
+                    <TextBlock Text="Débito alimentar com correção monetária, juros de mora e a separação entre o rito da prisão e o da penhora." Foreground="{DynamicResource MutedTextBrush}" Margin="0,5,0,0" />
+                </StackPanel>
+
+                <Border Grid.Row="2" Style="{StaticResource Card}" Padding="24,24,24,10">
+                    <Grid>
+                        <Grid.ColumnDefinitions><ColumnDefinition /><ColumnDefinition /><ColumnDefinition /><ColumnDefinition /><ColumnDefinition /></Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
+                        <!-- 1ª linha: como as parcelas são geradas; 2ª linha: como o débito é atualizado; 3ª linha: os acréscimos da penhora e as ações. -->
+                        <StackPanel Margin="0,0,12,14" ToolTip="Valor fixo por mês ou percentual do salário mínimo de cada mês, que acompanha os reajustes.">
+                            <TextBlock Text="Valor da pensão" Style="{StaticResource Rotulo}" />
+                            <ComboBox ItemsSource="{Binding BasesValor}" SelectedItem="{Binding BaseSelecionada, Mode=TwoWay}" MinHeight="54" AutomationProperties.Name="Valor da pensão">
+                                <ComboBox.ItemTemplate><DataTemplate><TextBlock Text="{Binding Texto}" /></DataTemplate></ComboBox.ItemTemplate>
+                            </ComboBox>
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" Margin="0,0,12,14" Visibility="{Binding EhValorFixo, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <TextBlock Text="Valor mensal" Style="{StaticResource Rotulo}" />
+                            <TextBox Text="{Binding ValorPensao, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" behaviors:FormatacaoNumerica.Formato="N2" AutomationProperties.Name="Valor mensal" ToolTip="Valor da pensão em cada mês." />
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" Margin="0,0,12,14" Visibility="{Binding EhSalarioMinimo, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <TextBlock Text="Percentual do salário mínimo" Style="{StaticResource Rotulo}" />
+                            <TextBox Text="{Binding Percentual, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" behaviors:FormatacaoNumerica.Formato="N2" AutomationProperties.Name="Percentual do salário mínimo" ToolTip="Cada parcela usa o salário mínimo do seu mês, da tabela Salário mínimo." />
+                        </StackPanel>
+                        <StackPanel Grid.Column="2" Margin="0,0,12,14">
+                            <TextBlock Text="Dia do vencimento" Style="{StaticResource Rotulo}" />
+                            <TextBox Text="{Binding DiaVencimento, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" behaviors:FormatacaoNumerica.ValorVazio="0" AutomationProperties.Name="Dia do vencimento" ToolTip="Dia do mês em que a pensão deve ser paga; nos meses mais curtos, vale o último dia." />
+                        </StackPanel>
+                        <StackPanel Grid.Column="3" Margin="0,0,12,14">
+                            <TextBlock Text="Primeira parcela" Style="{StaticResource Rotulo}" />
+                            <TextBox Text="{Binding PrimeiraParcela, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" AutomationProperties.Name="Primeira parcela" ToolTip="Mês da primeira parcela em atraso (MM/AAAA)." />
+                        </StackPanel>
+                        <StackPanel Grid.Column="4" Margin="0,0,0,14">
+                            <TextBlock Text="Última parcela" Style="{StaticResource Rotulo}" />
+                            <TextBox Text="{Binding UltimaParcela, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" AutomationProperties.Name="Última parcela" ToolTip="Mês da última parcela em atraso (MM/AAAA); ela precisa vencer até a data do cálculo." />
+                        </StackPanel>
+
+                        <StackPanel Grid.Row="1" Margin="0,0,12,14">
+                            <TextBlock Text="Data do cálculo" Style="{StaticResource Rotulo}" />
+                            <TextBox Text="{Binding DataCalculo, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" AutomationProperties.Name="Data do cálculo" ToolTip="Data até a qual o débito é atualizado (dd/mm/aaaa)." />
+                        </StackPanel>
+                        <StackPanel Grid.Row="1" Grid.Column="1" Margin="0,0,12,14">
+                            <TextBlock Text="Data do ajuizamento (opcional)" Style="{StaticResource Rotulo}" />
+                            <TextBox Text="{Binding DataAjuizamento, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" AutomationProperties.Name="Data do ajuizamento" ToolTip="Data em que a execução foi proposta (dd/mm/aaaa). Vazia: o cálculo considera a data do cálculo." />
+                        </StackPanel>
+                        <StackPanel Grid.Row="1" Grid.Column="2" Margin="0,0,12,14" ToolTip="Índice definido na decisão. O Código Civil adota o IPCA quando nenhum índice foi fixado (art. 389).">
+                            <TextBlock Text="Correção monetária" Style="{StaticResource Rotulo}" />
+                            <ComboBox ItemsSource="{Binding OpcoesCorrecao}" SelectedItem="{Binding CorrecaoSelecionada, Mode=TwoWay}" MinHeight="54" AutomationProperties.Name="Correção monetária">
+                                <ComboBox.ItemTemplate><DataTemplate><TextBlock Text="{Binding Texto}" /></DataTemplate></ComboBox.ItemTemplate>
+                            </ComboBox>
+                        </StackPanel>
+                        <StackPanel Grid.Row="1" Grid.Column="3" Grid.ColumnSpan="2" Margin="0,0,0,14" ToolTip="Desde 30/08/2024, os juros legais seguem a taxa legal publicada pelo Banco Central, a Selic menos o IPCA-15 (Lei 14.905/2024 e Resolução CMN 5.171/2024); antes, 1% ao mês.">
+                            <TextBlock Text="Juros de mora" Style="{StaticResource Rotulo}" />
+                            <ComboBox ItemsSource="{Binding OpcoesJuros}" SelectedItem="{Binding JurosSelecionado, Mode=TwoWay}" MinHeight="54" AutomationProperties.Name="Juros de mora">
+                                <ComboBox.ItemTemplate><DataTemplate><TextBlock Text="{Binding Texto}" /></DataTemplate></ComboBox.ItemTemplate>
+                            </ComboBox>
+                        </StackPanel>
+                        <StackPanel Grid.Row="2" Grid.ColumnSpan="2" Margin="0,0,12,14" ToolTip="No rito da penhora, se o débito não for pago em 15 dias da intimação, incidem multa de 10% e honorários de 10% (CPC, art. 523, § 1º). Os honorários são calculados sem a multa, e o rito da prisão não tem esses acréscimos.">
+                            <TextBlock Text="Multa e honorários (rito da penhora)" Style="{StaticResource Rotulo}" />
+                            <ComboBox ItemsSource="{Binding OpcoesAcrescimos}" SelectedItem="{Binding AcrescimosSelecionados, Mode=TwoWay}" MinHeight="54" AutomationProperties.Name="Multa e honorários">
+                                <ComboBox.ItemTemplate><DataTemplate><TextBlock Text="{Binding Texto}" /></DataTemplate></ComboBox.ItemTemplate>
+                            </ComboBox>
+                        </StackPanel>
+                        <StackPanel Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="3" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,0,14">
+                            <Button Content="Gerar parcelas" Margin="0,0,8,0" MinWidth="130" Command="{Binding GerarParcelasCommand}" ToolTip="Monta a lista de parcelas do período, onde você informa os pagamentos parciais." />
+                            <Button Style="{StaticResource PrimaryButton}" Content="Calcular" MinWidth="118" Command="{Binding CalcularCommand}" IsDefault="True" />
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <Border Grid.Row="4" Style="{StaticResource Card}" MinHeight="260">
+                    <Grid>
+                        <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="*" /></Grid.RowDefinitions>
+                        <Grid>
+                            <Grid.ColumnDefinitions><ColumnDefinition /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                            <StackPanel>
+                                <TextBlock Text="Parcelas e resultado" FontSize="16" FontWeight="SemiBold" />
+                                <TextBlock Text="Informe nas colunas Devido e Pago os valores de cada parcela; depois, selecione Calcular." Foreground="{DynamicResource MutedTextBrush}" Margin="0,5,0,0"
+                                           Visibility="{Binding TemParcelas, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                <TextBlock Text="{Binding Historico.Situacao}" Foreground="{DynamicResource MutedTextBrush}" FontSize="12" TextWrapping="Wrap" Margin="0,5,0,0" Visibility="{Binding Historico.TemSituacao, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                <Button Content="Salvar no histórico" Command="{Binding Historico.SalvarCommand}" MinWidth="150" Margin="0,0,8,0" ToolTip="Guarda o formulário com um nome, para reabrir, refazer com outros valores ou duplicar o cálculo pela aba Histórico da tela principal." />
+                                <Button Content="Gerar Excel" Command="{Binding ExportarExcelCommand}" MinWidth="112" Margin="0,0,8,0" ToolTip="Salva o resultado em uma planilha do Excel (.xlsx), com os valores como números para somar e refazer as contas." />
+                                <Button Style="{StaticResource PrimaryButton}" Content="Gerar PDF" Command="{Binding ExportarPdfCommand}" MinWidth="112" />
+                            </StackPanel>
+                        </Grid>
+                        <TextBlock Grid.Row="1" Style="{StaticResource EstadoSemParcelas}" Text="Informe o valor da pensão e o período em atraso e selecione Gerar parcelas para informar os pagamentos parciais, ou Calcular para atualizar o débito direto." />
+                        <StackPanel Grid.Row="1" Margin="0,16,0,0" Visibility="{Binding TemParcelas, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <ItemsControl ItemsSource="{Binding IndicadoresResumo}" Margin="0,0,0,10" Visibility="{Binding TemResultado, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <ItemsControl.ItemsPanel><ItemsPanelTemplate><UniformGrid Rows="1" /></ItemsPanelTemplate></ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate><DataTemplate><Border Margin="0,0,10,10" Padding="14" Background="{DynamicResource ResultBackgroundBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="10"><StackPanel><TextBlock Text="{Binding Rotulo}" Foreground="{DynamicResource MutedTextBrush}" FontSize="12" TextTrimming="CharacterEllipsis" /><TextBlock Text="{Binding Valor}" FontSize="18" FontWeight="SemiBold" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" /><TextBlock Text="{Binding Complemento}" Foreground="{DynamicResource MutedTextBrush}" FontSize="11" Margin="0,4,0,0" TextWrapping="Wrap" /></StackPanel></Border></DataTemplate></ItemsControl.ItemTemplate>
+                            </ItemsControl>
+
+                            <DataGrid ItemsSource="{Binding Parcelas}" AutoGenerateColumns="False" HeadersVisibility="Column" CanUserSortColumns="False" CanUserReorderColumns="False" SelectionMode="Single" Margin="0,0,0,16" AutomationProperties.Name="Parcelas">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Mês" Binding="{Binding Mes}" Width="80" />
+                                    <DataGridTextColumn Header="Vencimento" Binding="{Binding DataVencimento}" Width="100" />
+                                    <DataGridTemplateColumn Header="Devido" Width="115" HeaderStyle="{StaticResource CabecalhoNumerico}">
+                                        <DataGridTemplateColumn.CellTemplate><DataTemplate><TextBox Style="{StaticResource CampoDaGrade}" Text="{Binding Devido, UpdateSourceTrigger=PropertyChanged}" behaviors:FormatacaoNumerica.Formato="N2" AutomationProperties.Name="{Binding Mes, StringFormat='Devido em {0}'}" /></DataTemplate></DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTemplateColumn Header="Pago" Width="115" HeaderStyle="{StaticResource CabecalhoNumerico}">
+                                        <DataGridTemplateColumn.CellTemplate><DataTemplate><TextBox Style="{StaticResource CampoDaGrade}" Text="{Binding Pago, UpdateSourceTrigger=PropertyChanged}" behaviors:FormatacaoNumerica.Formato="N2" AutomationProperties.Name="{Binding Mes, StringFormat='Pago em {0}'}" /></DataTemplate></DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTextColumn Header="Saldo" Binding="{Binding Saldo}" Width="*" HeaderStyle="{StaticResource CabecalhoNumerico}" ElementStyle="{StaticResource CelulaNumerica}" />
+                                    <DataGridTextColumn Header="Fator" Binding="{Binding Fator}" Width="*" HeaderStyle="{StaticResource CabecalhoNumerico}" ElementStyle="{StaticResource CelulaNumerica}" />
+                                    <DataGridTextColumn Header="Corrigido" Binding="{Binding Corrigido}" Width="*" HeaderStyle="{StaticResource CabecalhoNumerico}" ElementStyle="{StaticResource CelulaNumerica}" />
+                                    <DataGridTextColumn Header="Juros %" Binding="{Binding PercentualJuros}" Width="*" HeaderStyle="{StaticResource CabecalhoNumerico}" ElementStyle="{StaticResource CelulaNumerica}" />
+                                    <DataGridTextColumn Header="Juros" Binding="{Binding Juros}" Width="*" HeaderStyle="{StaticResource CabecalhoNumerico}" ElementStyle="{StaticResource CelulaNumerica}" />
+                                    <DataGridTextColumn Header="Total" Binding="{Binding Total}" Width="*" HeaderStyle="{StaticResource CabecalhoNumerico}" ElementStyle="{StaticResource CelulaNumerica}" />
+                                    <DataGridTemplateColumn Header="Rito" Width="80">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock x:Name="Rito" Text="{Binding Rito}" VerticalAlignment="Center" />
+                                                <DataTemplate.Triggers>
+                                                    <DataTrigger Binding="{Binding RitoPrisao}" Value="True">
+                                                        <Setter TargetName="Rito" Property="Foreground" Value="{DynamicResource AccentBrush}" />
+                                                        <Setter TargetName="Rito" Property="FontWeight" Value="SemiBold" />
+                                                    </DataTrigger>
+                                                </DataTemplate.Triggers>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                </DataGrid.Columns>
+                            </DataGrid>
+
+                            <Border Padding="16" Background="{DynamicResource ResultBackgroundBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="10" Margin="0,0,0,12"
+                                    Visibility="{Binding TemResultado, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <StackPanel>
+                                    <TextBlock Text="Critérios" FontSize="15" FontWeight="SemiBold" Margin="0,0,0,8" />
+                                    <ItemsControl ItemsSource="{Binding Criterios}">
+                                        <ItemsControl.ItemTemplate><DataTemplate><Grid Margin="0,0,0,6"><Grid.ColumnDefinitions><ColumnDefinition Width="Auto" /><ColumnDefinition /></Grid.ColumnDefinitions><TextBlock Text="•" Foreground="{DynamicResource AccentBrush}" Margin="0,0,8,0" /><TextBlock Grid.Column="1" Text="{Binding}" TextWrapping="Wrap" /></Grid></DataTemplate></ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </StackPanel>
+                            </Border>
+                            <Border Padding="16" Background="{DynamicResource ResultBackgroundBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="10"
+                                    Visibility="{Binding TemResultado, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <StackPanel>
+                                    <TextBlock Text="Observações" FontSize="15" FontWeight="SemiBold" Margin="0,0,0,8" />
+                                    <ItemsControl ItemsSource="{Binding Observacoes}">
+                                        <ItemsControl.ItemTemplate><DataTemplate><Grid Margin="0,0,0,6"><Grid.ColumnDefinitions><ColumnDefinition Width="Auto" /><ColumnDefinition /></Grid.ColumnDefinitions><TextBlock Text="•" Foreground="{DynamicResource AccentBrush}" Margin="0,0,8,0" /><TextBlock Grid.Column="1" Text="{Binding}" Foreground="{DynamicResource MutedTextBrush}" TextWrapping="Wrap" /></Grid></DataTemplate></ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Border>
+    </ScrollViewer>
+</Window>

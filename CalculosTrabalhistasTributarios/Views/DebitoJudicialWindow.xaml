@@ -1,0 +1,157 @@
+<Window x:Class="CalculosTrabalhistasTributarios.Views.DebitoJudicialWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:behaviors="clr-namespace:CalculosTrabalhistasTributarios.Presentation.Behaviors"
+        Title="Débitos judiciais" Height="900" Width="1220" MinHeight="640" MinWidth="980"
+        Background="{DynamicResource ApplicationBackgroundBrush}"
+        Foreground="{DynamicResource TextBrush}" WindowStartupLocation="CenterOwner">
+    <Window.Resources>
+        <Style x:Key="CampoDaGrade" TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+            <Setter Property="MinHeight" Value="28" />
+            <Setter Property="Padding" Value="6,2" />
+            <Setter Property="Margin" Value="0,2" />
+        </Style>
+        <Style x:Key="Rotulo" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource MutedTextBrush}" />
+            <Setter Property="Margin" Value="0,0,0,6" />
+        </Style>
+    </Window.Resources>
+    <!-- A janela inteira rola quando falta altura, por exemplo numa tela menor ou com um resultado longo, para o resultado
+         não ficar espremido abaixo do formulário. -->
+    <ScrollViewer x:Name="Pagina" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Focusable="False" behaviors:RolagemDaTela.Ativa="True">
+        <!-- Com pouco conteúdo, a página ocupa a janela e o cartão do resultado estica até o fim dela. -->
+        <Border Padding="28" MinHeight="{Binding ViewportHeight, ElementName=Pagina}" Background="{DynamicResource ApplicationBackgroundBrush}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="16" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="16" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <StackPanel>
+                    <TextBlock Text="Débitos judiciais" FontSize="24" FontWeight="SemiBold" />
+                    <TextBlock Text="Atualização de débitos trabalhistas e cíveis com correção monetária e juros pelas fases da ADC 58, do TST, do STJ e da Lei 14.905/2024." Foreground="{DynamicResource MutedTextBrush}" TextWrapping="Wrap" Margin="0,5,0,0" />
+                </StackPanel>
+
+                <Border Grid.Row="2" Style="{StaticResource Card}" Padding="24,24,24,10">
+                    <Grid>
+                        <Grid.ColumnDefinitions><ColumnDefinition /><ColumnDefinition /><ColumnDefinition /><ColumnDefinition /><ColumnDefinition /></Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
+                        <StackPanel Margin="0,0,12,14" ToolTip="Trabalhista: IPCA-E e TR antes do ajuizamento, Selic até 29/08/2024 e IPCA com taxa legal depois. Cível: o índice da decisão, a Selic com os juros até 29/08/2024 e IPCA com taxa legal depois.">
+                            <TextBlock Text="Natureza do débito" Style="{StaticResource Rotulo}" />
+                            <ComboBox ItemsSource="{Binding OpcoesNatureza}" SelectedItem="{Binding NaturezaSelecionada, Mode=TwoWay}" MinHeight="54" AutomationProperties.Name="Natureza do débito">
+                                <ComboBox.ItemTemplate><DataTemplate><TextBlock Text="{Binding Texto}" /></DataTemplate></ComboBox.ItemTemplate>
+                            </ComboBox>
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" Margin="0,0,12,14">
+                            <TextBlock Text="Data do cálculo" Style="{StaticResource Rotulo}" />
+                            <TextBox Text="{Binding DataCalculo, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" AutomationProperties.Name="Data do cálculo" ToolTip="Data até a qual o débito é atualizado (dd/mm/aaaa)." />
+                        </StackPanel>
+                        <!-- Trabalhista: o ajuizamento separa a fase pré-judicial da judicial. -->
+                        <StackPanel Grid.Column="2" Margin="0,0,12,14" Visibility="{Binding EhTrabalhista, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <TextBlock Text="Data do ajuizamento" Style="{StaticResource Rotulo}" />
+                            <TextBox Text="{Binding DataAjuizamento, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" AutomationProperties.Name="Data do ajuizamento" ToolTip="Data em que a ação foi proposta (dd/mm/aaaa). Vazia: todo o período é pré-judicial, com IPCA-E e TR." />
+                        </StackPanel>
+                        <!-- Cível: o início dos juros, o índice anterior à Lei 14.905/2024 e os acréscimos do cumprimento de sentença. -->
+                        <StackPanel Grid.Column="2" Margin="0,0,12,14" Visibility="{Binding EhCivel, Converter={StaticResource BooleanToVisibilityConverter}}" ToolTip="Mora desde o vencimento (Código Civil, art. 397) ou desde a citação (art. 405), conforme a decisão.">
+                            <TextBlock Text="Juros" Style="{StaticResource Rotulo}" />
+                            <ComboBox ItemsSource="{Binding OpcoesInicioJuros}" SelectedItem="{Binding InicioJurosSelecionado, Mode=TwoWay}" MinHeight="54" AutomationProperties.Name="Início dos juros">
+                                <ComboBox.ItemTemplate><DataTemplate><TextBlock Text="{Binding Texto}" /></DataTemplate></ComboBox.ItemTemplate>
+                            </ComboBox>
+                        </StackPanel>
+                        <StackPanel Grid.Column="3" Margin="0,0,12,14" Visibility="{Binding UsaCitacao, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <TextBlock Text="Data da citação" Style="{StaticResource Rotulo}" />
+                            <TextBox Text="{Binding DataCitacao, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" AutomationProperties.Name="Data da citação" ToolTip="Início dos juros (dd/mm/aaaa)." />
+                        </StackPanel>
+                        <StackPanel Grid.Column="4" Margin="0,0,0,14" Visibility="{Binding EhCivel, Converter={StaticResource BooleanToVisibilityConverter}}" ToolTip="Índice da decisão ou da tabela do tribunal para a correção antes dos juros e antes de 30/08/2024; depois, vale o IPCA (Código Civil, art. 389).">
+                            <TextBlock Text="Índice até 29/08/2024" Style="{StaticResource Rotulo}" />
+                            <ComboBox ItemsSource="{Binding OpcoesIndice}" SelectedItem="{Binding IndiceSelecionado, Mode=TwoWay}" MinHeight="54" AutomationProperties.Name="Índice até 29/08/2024">
+                                <ComboBox.ItemTemplate><DataTemplate><TextBlock Text="{Binding Texto}" /></DataTemplate></ComboBox.ItemTemplate>
+                            </ComboBox>
+                        </StackPanel>
+
+                        <StackPanel Grid.Row="1" Grid.ColumnSpan="2" Margin="0,0,12,14" Visibility="{Binding EhCivel, Converter={StaticResource BooleanToVisibilityConverter}}" ToolTip="No cumprimento de sentença, se o débito não for pago em 15 dias úteis da intimação, incidem multa de 10% e honorários de 10% (CPC, art. 523, § 1º); os honorários são calculados sem a multa.">
+                            <TextBlock Text="Multa e honorários (art. 523)" Style="{StaticResource Rotulo}" />
+                            <ComboBox ItemsSource="{Binding OpcoesAcrescimos}" SelectedItem="{Binding AcrescimosSelecionados, Mode=TwoWay}" MinHeight="54" AutomationProperties.Name="Multa e honorários">
+                                <ComboBox.ItemTemplate><DataTemplate><TextBlock Text="{Binding Texto}" /></DataTemplate></ComboBox.ItemTemplate>
+                            </ComboBox>
+                        </StackPanel>
+                        <StackPanel Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="3" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,0,14">
+                            <Button Content="+ Adicionar parcela" Style="{StaticResource LinkButton}" Command="{Binding AdicionarParcelaCommand}" VerticalAlignment="Center" Margin="0,0,16,0" ToolTip="Inclui outra parcela, com o seu vencimento e valor." />
+                            <Button Style="{StaticResource PrimaryButton}" Content="Calcular" MinWidth="118" Command="{Binding CalcularCommand}" IsDefault="True" />
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <Border Grid.Row="4" Style="{StaticResource Card}" MinHeight="260">
+                    <Grid>
+                        <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="*" /></Grid.RowDefinitions>
+                        <Grid>
+                            <Grid.ColumnDefinitions><ColumnDefinition /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock Text="Parcelas e resultado" FontSize="16" FontWeight="SemiBold" />
+                                <TextBlock Text="Informe a descrição, o vencimento e o valor de cada parcela; depois, selecione Calcular." Foreground="{DynamicResource MutedTextBrush}" Margin="0,5,0,0" />
+                                <TextBlock Text="{Binding Historico.Situacao}" Foreground="{DynamicResource MutedTextBrush}" FontSize="12" TextWrapping="Wrap" Margin="0,5,0,0" Visibility="{Binding Historico.TemSituacao, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                <Button Content="Salvar no histórico" Command="{Binding Historico.SalvarCommand}" MinWidth="150" Margin="0,0,8,0" ToolTip="Guarda o débito com um nome, como o número do processo, para reabrir pela aba Histórico da tela principal." />
+                                <Button Content="Gerar Excel" Command="{Binding ExportarExcelCommand}" MinWidth="112" Margin="0,0,8,0" ToolTip="Salva o resultado em uma planilha do Excel (.xlsx), com os valores como números para somar e refazer as contas." />
+                                <Button Style="{StaticResource PrimaryButton}" Content="Gerar PDF" Command="{Binding ExportarPdfCommand}" MinWidth="112" />
+                            </StackPanel>
+                        </Grid>
+                        <StackPanel Grid.Row="1" Margin="0,16,0,0">
+                            <ItemsControl ItemsSource="{Binding Indicadores}" Margin="0,0,0,10" Visibility="{Binding TemResultado, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <ItemsControl.ItemsPanel><ItemsPanelTemplate><UniformGrid Rows="1" /></ItemsPanelTemplate></ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate><DataTemplate><Border Margin="0,0,10,10" Padding="14" Background="{DynamicResource ResultBackgroundBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="10"><StackPanel><TextBlock Text="{Binding Rotulo}" Foreground="{DynamicResource MutedTextBrush}" FontSize="12" TextTrimming="CharacterEllipsis" /><TextBlock Text="{Binding Valor}" FontSize="18" FontWeight="SemiBold" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" /><TextBlock Text="{Binding Complemento}" Foreground="{DynamicResource MutedTextBrush}" FontSize="11" Margin="0,4,0,0" TextWrapping="Wrap" /></StackPanel></Border></DataTemplate></ItemsControl.ItemTemplate>
+                            </ItemsControl>
+
+                            <DataGrid x:Name="Grade" ItemsSource="{Binding Parcelas}" AutoGenerateColumns="False" HeadersVisibility="Column" CanUserSortColumns="False" CanUserReorderColumns="False" CanUserAddRows="False" SelectionMode="Single" Margin="0,0,0,16" AutomationProperties.Name="Parcelas">
+                                <DataGrid.Columns>
+                                    <DataGridTemplateColumn Header="Descrição" Width="2.2*">
+                                        <DataGridTemplateColumn.CellTemplate><DataTemplate><TextBox Style="{StaticResource CampoDaGrade}" Text="{Binding Descricao, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Descrição da parcela" /></DataTemplate></DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTemplateColumn Header="Vencimento" Width="124">
+                                        <DataGridTemplateColumn.CellTemplate><DataTemplate><TextBox Style="{StaticResource CampoDaGrade}" TextAlignment="Center" Text="{Binding Vencimento, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Vencimento da parcela" /></DataTemplate></DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTemplateColumn Header="Valor" Width="116" HeaderStyle="{StaticResource CabecalhoNumerico}">
+                                        <DataGridTemplateColumn.CellTemplate><DataTemplate><TextBox Style="{StaticResource CampoDaGrade}" TextAlignment="Right" Text="{Binding Valor, UpdateSourceTrigger=PropertyChanged}" behaviors:FormatacaoNumerica.Formato="N2" AutomationProperties.Name="Valor da parcela" /></DataTemplate></DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTextColumn Header="Fator" Binding="{Binding Fator}" Width="*" HeaderStyle="{StaticResource CabecalhoNumerico}" ElementStyle="{StaticResource CelulaNumerica}" />
+                                    <DataGridTextColumn Header="Selic" Binding="{Binding Selic}" Width="*" HeaderStyle="{StaticResource CabecalhoNumerico}" ElementStyle="{StaticResource CelulaNumerica}" />
+                                    <DataGridTextColumn Header="Atualizado" Binding="{Binding Atualizado}" Width="*" HeaderStyle="{StaticResource CabecalhoNumerico}" ElementStyle="{StaticResource CelulaNumerica}" />
+                                    <DataGridTextColumn Header="Juros %" Binding="{Binding PercentualJuros}" Width="*" HeaderStyle="{StaticResource CabecalhoNumerico}" ElementStyle="{StaticResource CelulaNumerica}" />
+                                    <DataGridTextColumn Header="Juros" Binding="{Binding Juros}" Width="*" HeaderStyle="{StaticResource CabecalhoNumerico}" ElementStyle="{StaticResource CelulaNumerica}" />
+                                    <DataGridTextColumn Header="Total" Binding="{Binding Total}" Width="*" HeaderStyle="{StaticResource CabecalhoNumerico}" ElementStyle="{StaticResource CelulaNumerica}" />
+                                    <DataGridTemplateColumn Header="" Width="84">
+                                        <DataGridTemplateColumn.CellTemplate><DataTemplate><Button Content="Remover" Style="{StaticResource LinkButton}" HorizontalAlignment="Center" VerticalAlignment="Center" Command="{Binding DataContext.RemoverParcelaCommand, ElementName=Grade}" CommandParameter="{Binding}" AutomationProperties.Name="Remover parcela" /></DataTemplate></DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                </DataGrid.Columns>
+                            </DataGrid>
+
+                            <Border Padding="16" Background="{DynamicResource ResultBackgroundBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="10" Margin="0,0,0,12"
+                                    Visibility="{Binding TemResultado, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <StackPanel>
+                                    <TextBlock Text="Critérios" FontSize="15" FontWeight="SemiBold" Margin="0,0,0,8" />
+                                    <ItemsControl ItemsSource="{Binding Criterios}">
+                                        <ItemsControl.ItemTemplate><DataTemplate><Grid Margin="0,0,0,6"><Grid.ColumnDefinitions><ColumnDefinition Width="Auto" /><ColumnDefinition /></Grid.ColumnDefinitions><TextBlock Text="•" Foreground="{DynamicResource AccentBrush}" Margin="0,0,8,0" /><TextBlock Grid.Column="1" Text="{Binding}" TextWrapping="Wrap" /></Grid></DataTemplate></ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </StackPanel>
+                            </Border>
+                            <Border Padding="16" Background="{DynamicResource ResultBackgroundBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="10"
+                                    Visibility="{Binding TemObservacoes, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <StackPanel>
+                                    <TextBlock Text="Observações" FontSize="15" FontWeight="SemiBold" Margin="0,0,0,8" />
+                                    <ItemsControl ItemsSource="{Binding Observacoes}">
+                                        <ItemsControl.ItemTemplate><DataTemplate><Grid Margin="0,0,0,6"><Grid.ColumnDefinitions><ColumnDefinition Width="Auto" /><ColumnDefinition /></Grid.ColumnDefinitions><TextBlock Text="•" Foreground="{DynamicResource AccentBrush}" Margin="0,0,8,0" /><TextBlock Grid.Column="1" Text="{Binding}" Foreground="{DynamicResource MutedTextBrush}" TextWrapping="Wrap" /></Grid></DataTemplate></ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Border>
+    </ScrollViewer>
+</Window>
