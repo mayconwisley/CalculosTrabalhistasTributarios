@@ -5,17 +5,17 @@
     <NoWarn>$(NoWarn);NU1507</NoWarn>
   </PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="ClosedXML" Version="0.105.0" />
+    <PackageVersion Include="ClosedXML" Version="0.105.1" />
     <PackageVersion Include="EntityFramework" Version="6.5.1" />
-    <PackageVersion Include="HtmlAgilityPack" Version="1.11.74" />
+    <PackageVersion Include="HtmlAgilityPack" Version="1.13.0" />
     <PackageVersion Include="Markdig" Version="0.41.3" />
     <PackageVersion Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageVersion Include="Microsoft.Data.Sqlite" Version="9.0.2" />
     <PackageVersion Include="Microsoft.Data.Sqlite.Core" Version="9.0.2" />
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="9.0.2" />
-    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.2" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.20" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
-    <PackageVersion Include="QuestPDF" Version="2025.12.1" />
+    <PackageVersion Include="QuestPDF" Version="2025.12.4" />
     <PackageVersion Include="SQLite" Version="3.13.0" />
     <PackageVersion Include="System.Data.SQLite.EF6" Version="1.0.119.0" />
     <PackageVersion Include="xunit" Version="2.9.3" />
