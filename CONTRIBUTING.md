@@ -53,7 +53,7 @@ Os testes de arquitetura (`ArquiteturaTests`) falham se uma dependência apontar
 - **Result Pattern:** regras e casos de uso devolvem `Result` ou `Result<T>`. Dado inválido, tabela não cadastrada e fonte fora do ar viram um `Erro`, com a mensagem para o usuário, e não exceção. Exceções ficam para falhas inesperadas, como erro de banco ou de arquivo, e para erros de programação.
 - **Nomes em português**, como no restante do código: o domínio é a legislação brasileira, e os termos dela (competência, provento, alíquota, verba) ficam mais claros sem tradução.
 - **Comentários explicam o porquê** e citam a norma quando a regra vem dela, por exemplo `// Lei 9.430/1996, art. 67`.
-- **Estilo:** siga o `.editorconfig` (4 espaços, CRLF, namespaces de arquivo). A compilação deve terminar sem avisos.
+- **Estilo:** siga o `.editorconfig` (4 espaços, namespaces de arquivo, `using` em ordem alfabética). A compilação deve terminar sem avisos.
 
 ### Cálculos e tabelas
 

@@ -1,0 +1,10 @@
+<Project>
+  <!-- Autoria e licença gravadas nas propriedades de todos os executáveis e bibliotecas da solução. -->
+  <PropertyGroup>
+    <Authors>Maycon Wisley</Authors>
+    <Company>Maycon Wisley</Company>
+    <Copyright>Copyright (c) 2026 Maycon Wisley. Licença MIT.</Copyright>
+    <RepositoryUrl>https://github.com/mayconwisley/CalculosTrabalhistasTributarios</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+  </PropertyGroup>
+</Project>

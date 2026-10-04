@@ -1,0 +1,27 @@
+root = true
+
+[*]
+indent_style = space
+indent_size = 4
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.{csproj,props,targets,json,yml,yaml}]
+indent_size = 2
+
+[*.md]
+trim_trailing_whitespace = false
+
+# O Windows PowerShell 5.1, que roda o hook de publicação, só lê acentos em scripts com BOM.
+[*.ps1]
+charset = utf-8-bom
+
+[*.cs]
+csharp_style_namespace_declarations = file_scoped:suggestion
+csharp_style_var_for_built_in_types = true:suggestion
+csharp_style_var_when_type_is_apparent = true:suggestion
+csharp_style_var_elsewhere = true:suggestion
+csharp_new_line_before_open_brace = all
+dotnet_sort_system_directives_first = false
+dotnet_separate_import_directive_groups = false
+dotnet_diagnostic.IDE0005.severity = suggestion

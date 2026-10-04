@@ -8,6 +8,12 @@ updates:
     groups:
       nuget:
         update-types: [minor, patch]
+    # Os pacotes da Microsoft acompanham a versão do .NET: a versão principal só muda junto com o TargetFramework.
+    ignore:
+      - dependency-name: "Microsoft.Extensions.*"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "Microsoft.Data.Sqlite"
+        update-types: ["version-update:semver-major"]
 
   - package-ecosystem: github-actions
     directory: /

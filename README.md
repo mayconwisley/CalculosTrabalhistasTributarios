@@ -12,6 +12,9 @@
 </p>
 
 <p align="center">
+  <a href="https://github.com/mayconwisley/CalculosTrabalhistasTributarios/actions/workflows/ci.yml"><img src="https://github.com/mayconwisley/CalculosTrabalhistasTributarios/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
+  <a href="https://github.com/mayconwisley/CalculosTrabalhistasTributarios/releases/latest"><img src="https://img.shields.io/github/v/release/mayconwisley/CalculosTrabalhistasTributarios?label=vers%C3%A3o" alt="Versão mais recente" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/licen%C3%A7a-MIT-green" alt="Licença MIT" /></a>
   <img src="https://img.shields.io/badge/.NET-9.0-512BD4?logo=dotnet&logoColor=white" alt=".NET 9" />
   <img src="https://img.shields.io/badge/C%23-13-239120?logo=csharp&logoColor=white" alt="C# 13" />
   <img src="https://img.shields.io/badge/WPF-Windows-0078D4?logo=windows&logoColor=white" alt="WPF para Windows" />
@@ -214,7 +217,7 @@ Cada execução parte de uma cópia nova do banco do projeto, inicializada como 
 dotnet test .\CalculosTrabalhistasTributarios.Tests
 ```
 
-O `gerar-instalador.ps1` roda os testes antes de publicar: se algum falhar, a versão não é gerada.
+O `gerar-instalador.ps1` roda os testes antes de publicar: se algum falhar, a versão não é gerada. No GitHub, o [CI](.github/workflows/ci.yml) compila a solução e roda os testes em cada push no `master` e em cada pull request.
 
 ## Gerar o instalador
 
@@ -233,7 +236,7 @@ O instalador é gerado localmente com o Inno Setup. O script publica o aplicativ
 
 ## Publicar uma nova versão
 
-A publicação acontece ao enviar uma tag no formato `vX.Y.Z`. Todo o processo roda na sua máquina; o GitHub recebe apenas a tag e o instalador pronto.
+Esta seção é para o mantenedor. A publicação acontece ao enviar uma tag no formato `vX.Y.Z`. Todo o processo roda na sua máquina; o GitHub recebe apenas a tag e o instalador pronto.
 
 Ative os hooks do repositório uma única vez por clone:
 
@@ -317,9 +320,22 @@ O aplicativo seleciona automaticamente a logo apropriada ao tema ativo. Os arqui
 | --- | --- |
 | [Logo PNG](CalculosTrabalhistasTributarios/Assets/logo-light.png) · [Ícone ICO](CalculosTrabalhistasTributarios/Assets/icon-light.ico) | [Logo PNG](CalculosTrabalhistasTributarios/Assets/logo-dark.png) · [Ícone ICO](CalculosTrabalhistasTributarios/Assets/icon-dark.ico) |
 
+## Contribuindo
+
+Contribuições são bem-vindas: correções de cálculo com a base legal, testes, fontes de tabelas que mudaram de formato e melhorias no manual. Antes de começar, leia o [guia de contribuição](CONTRIBUTING.md) e o [Código de Conduta](CODE_OF_CONDUCT.md).
+
+- Encontrou um valor errado? Abra uma issue no modelo [Erro de cálculo](https://github.com/mayconwisley/CalculosTrabalhistasTributarios/issues/new?template=erro-de-calculo.yml), com a competência, os valores e o resultado esperado.
+- Falhas de segurança seguem a [Política de Segurança](SECURITY.md), sem detalhes em issues públicas.
+
 ## Limitações e responsabilidade
 
 - A aplicação não substitui sistemas de folha de pagamento, contadores ou orientação jurídica.
 - A exatidão da simulação depende da competência e dos parâmetros tributários mantidos no banco local.
 - No cálculo de estabilidade, cabe ao usuário informar corretamente as datas, a média remuneratória, os dias-base e os complementos aplicáveis ao vínculo.
 - Atualizações online dependem da disponibilidade e da estrutura das páginas das fontes oficiais e alternativas.
+
+## Licença
+
+Distribuído sob a [licença MIT](LICENSE): você pode usar, modificar e redistribuir o código, inclusive em projetos comerciais, mantendo o aviso de copyright.
+
+O aplicativo usa componentes de terceiros, cada um com a sua licença, listados em [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md). O QuestPDF, que gera os PDFs, é gratuito para projetos de código aberto e para empresas com faturamento anual abaixo de US$ 1 milhão; acima disso, quem desenvolver uma versão própria precisa de uma [licença comercial do QuestPDF](https://www.questpdf.com/license/).
