@@ -51,8 +51,8 @@
 			<StackPanel Orientation="Horizontal">
 				<Image Source="{DynamicResource BrandLogoImage}" Width="52" Height="52" Stretch="Uniform" Margin="0,0,14,0" />
 				<StackPanel VerticalAlignment="Center">
-					<TextBlock Text="Central de cálculos" FontSize="28" FontWeight="SemiBold" />
-					<TextBlock Text="Escolha uma calculadora ou consulte as tabelas usadas nos cálculos." Foreground="{DynamicResource MutedTextBrush}" Margin="0,5,0,0" />
+					<TextBlock Text="Central de simulações de cálculos" FontSize="28" FontWeight="SemiBold" />
+					<TextBlock Text="Escolha uma calculadora para simular ou consulte as tabelas usadas nos cálculos." Foreground="{DynamicResource MutedTextBrush}" Margin="0,5,0,0" />
 				</StackPanel>
 			</StackPanel>
 			<TextBlock Grid.Column="1" Text="Imposto • Brasil" Foreground="{DynamicResource AccentBrush}" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,20,0" />
