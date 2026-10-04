@@ -1,7 +1,7 @@
-using System.Globalization;
 using CalculosTrabalhistasTributarios.Application.DTOs;
 using CalculosTrabalhistasTributarios.Application.UseCases;
 using CalculosTrabalhistasTributarios.Domain.Tributacao;
+using System.Globalization;
 using Xunit;
 
 namespace CalculosTrabalhistasTributarios.Tests;

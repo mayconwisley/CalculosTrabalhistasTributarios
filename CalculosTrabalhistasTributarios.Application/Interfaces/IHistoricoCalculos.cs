@@ -1,5 +1,5 @@
-using CalculosTrabalhistasTributarios.Domain.Comum;
 using CalculosTrabalhistasTributarios.Application.DTOs;
+using CalculosTrabalhistasTributarios.Domain.Comum;
 
 namespace CalculosTrabalhistasTributarios.Application.Interfaces;
 

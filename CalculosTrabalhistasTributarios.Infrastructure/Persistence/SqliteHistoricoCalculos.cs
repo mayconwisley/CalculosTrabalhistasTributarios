@@ -1,8 +1,8 @@
 using CalculosTrabalhistasTributarios.Application.DTOs;
 using CalculosTrabalhistasTributarios.Application.Interfaces;
+using CalculosTrabalhistasTributarios.Domain.Comum;
 using Microsoft.Data.Sqlite;
 using System.Globalization;
-using CalculosTrabalhistasTributarios.Domain.Comum;
 
 namespace CalculosTrabalhistasTributarios.Infrastructure.Persistence;
 

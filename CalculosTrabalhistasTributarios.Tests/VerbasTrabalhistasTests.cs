@@ -1,11 +1,11 @@
 using CalculosTrabalhistasTributarios.Application.DTOs;
 using CalculosTrabalhistasTributarios.Application.UseCases;
+using CalculosTrabalhistasTributarios.Domain.Comum;
 using CalculosTrabalhistasTributarios.Domain.Pensao;
 using CalculosTrabalhistasTributarios.Domain.Trabalhista;
 using CalculosTrabalhistasTributarios.Domain.Tributacao;
 using CalculosTrabalhistasTributarios.Tests.Referencia;
 using Xunit;
-using CalculosTrabalhistasTributarios.Domain.Comum;
 
 namespace CalculosTrabalhistasTributarios.Tests;
 

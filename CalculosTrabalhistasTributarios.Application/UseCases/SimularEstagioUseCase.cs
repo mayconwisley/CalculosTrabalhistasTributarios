@@ -3,8 +3,8 @@ using CalculosTrabalhistasTributarios.Application.DTOs;
 using CalculosTrabalhistasTributarios.Application.Extensoes;
 using CalculosTrabalhistasTributarios.Application.Interfaces;
 using CalculosTrabalhistasTributarios.Domain.Comum;
-using CalculosTrabalhistasTributarios.Domain.Tributacao;
 using CalculosTrabalhistasTributarios.Domain.Trabalhista;
+using CalculosTrabalhistasTributarios.Domain.Tributacao;
 
 namespace CalculosTrabalhistasTributarios.Application.UseCases;
 

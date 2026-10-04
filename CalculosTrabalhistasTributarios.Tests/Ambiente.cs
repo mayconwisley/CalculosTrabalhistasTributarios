@@ -1,8 +1,8 @@
-using System.IO;
 using CalculosTrabalhistasTributarios.Application.Interfaces;
 using CalculosTrabalhistasTributarios.Infrastructure;
 using CalculosTrabalhistasTributarios.Infrastructure.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
+using System.IO;
 
 namespace CalculosTrabalhistasTributarios.Tests;
 
