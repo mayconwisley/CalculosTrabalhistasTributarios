@@ -1,0 +1,26 @@
+name: Sugestão
+description: Uma calculadora, verba, tabela ou melhoria nova.
+title: "[Sugestão] "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: necessidade
+    attributes:
+      label: Qual a necessidade
+      description: O que você quer calcular ou fazer, e por que o aplicativo ainda não atende.
+    validations:
+      required: true
+  - type: textarea
+    id: proposta
+    attributes:
+      label: Como poderia funcionar
+      description: Os campos, o resultado esperado e um exemplo com valores, se possível.
+    validations:
+      required: false
+  - type: textarea
+    id: fundamento
+    attributes:
+      label: Base legal ou fonte
+      description: A norma que define a regra ou a página que publica a tabela.
+    validations:
+      required: false

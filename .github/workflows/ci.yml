@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Compilar e testar
+    # A interface é WPF e os testes usam net9.0-windows.
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
+
+      - name: Restaurar
+        run: dotnet restore CalculosTrabalhistasTributarios.sln
+
+      - name: Compilar
+        run: dotnet build CalculosTrabalhistasTributarios.sln -c Release --no-restore
+
+      - name: Testar
+        run: dotnet test CalculosTrabalhistasTributarios.Tests -c Release --no-build --logger "trx;LogFileName=resultados.trx" --results-directory TestResults
+
+      - name: Guardar o resultado dos testes
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: resultados-dos-testes
+          path: TestResults

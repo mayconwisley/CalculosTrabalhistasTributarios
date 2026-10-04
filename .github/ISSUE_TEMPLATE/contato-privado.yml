@@ -1,0 +1,17 @@
+name: Pedido de contato privado
+description: Para relatar uma falha de segurança ou uma violação do Código de Conduta sem expor os detalhes.
+title: "Pedido de contato privado"
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Não descreva o problema aqui:** esta issue é pública. O mantenedor vai responder com um canal privado para receber o relato.
+  - type: dropdown
+    id: assunto
+    attributes:
+      label: Assunto
+      options:
+        - Falha de segurança
+        - Código de Conduta
+    validations:
+      required: true

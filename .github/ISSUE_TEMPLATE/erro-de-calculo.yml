@@ -1,0 +1,86 @@
+name: Erro de cálculo
+description: Um valor diferente do previsto na legislação ou num exemplo oficial.
+title: "[Cálculo] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Obrigado por ajudar a conferir os cálculos! Use **valores de exemplo**: não informe nomes, CPFs, salários reais de terceiros ou números de processo.
+  - type: dropdown
+    id: calculadora
+    attributes:
+      label: Calculadora
+      options:
+        - Simulação tributária (IRRF, INSS e FGTS)
+        - Holerite do mês
+        - Jornada pelo ponto
+        - Salário bruto pelo líquido
+        - Horas extras e adicionais
+        - Insalubridade e periculosidade
+        - Salário-família
+        - Custo do funcionário
+        - 13º salário
+        - Férias
+        - Rescisão
+        - Seguro-desemprego
+        - PLR (participação nos lucros)
+        - Pró-labore e autônomo
+        - CLT x PJ
+        - IRPF anual
+        - Dividendos
+        - Pensão alimentícia
+        - Revisão de pensão
+        - Pensão em atraso
+        - Débitos judiciais
+        - Estabilidade
+        - Outra
+    validations:
+      required: true
+  - type: input
+    id: versao
+    attributes:
+      label: Versão do aplicativo
+      description: Aparece no rodapé da tela principal.
+      placeholder: "1.6.0"
+    validations:
+      required: true
+  - type: input
+    id: competencia
+    attributes:
+      label: Competência ou data do cálculo
+      placeholder: "10/2026"
+    validations:
+      required: true
+  - type: textarea
+    id: entrada
+    attributes:
+      label: Valores informados
+      description: Os campos preenchidos na calculadora.
+      placeholder: |
+        Salário: R$ 3.500,00
+        Dependentes: 1
+        Faltas: 2
+    validations:
+      required: true
+  - type: textarea
+    id: obtido
+    attributes:
+      label: Resultado do aplicativo
+      description: O valor que parece errado. Se puder, anexe o PDF ou a planilha com a memória de cálculo.
+    validations:
+      required: true
+  - type: textarea
+    id: esperado
+    attributes:
+      label: Resultado esperado
+      description: O valor correto e como você chegou a ele.
+    validations:
+      required: true
+  - type: textarea
+    id: fundamento
+    attributes:
+      label: Base legal ou exemplo oficial
+      description: Lei e artigo, instrução normativa, solução de consulta, exemplo da Receita Federal ou do INSS, com o link quando houver.
+    validations:
+      required: false
