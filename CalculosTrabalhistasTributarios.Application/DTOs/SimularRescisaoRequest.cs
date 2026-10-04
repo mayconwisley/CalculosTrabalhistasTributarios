@@ -13,6 +13,10 @@ namespace CalculosTrabalhistasTributarios.Application.DTOs;
 /// <param name="MesDataBase">Mês da data-base da categoria (1 a 12), para a indenização adicional da Lei 7.238/1984; nulo quando não informado.</param>
 /// <param name="OutrosProventos">Horas extras, adicionais e comissões do mês do desligamento, com INSS, IRRF e FGTS.</param>
 /// <param name="FaltasNoMes">Faltas injustificadas no mês do desligamento, descontadas do saldo de salário.</param>
+/// <param name="Vinculo">Empregado, doméstico (indenização compensatória de 3,2%) ou jovem aprendiz (FGTS de 2%).</param>
+/// <param name="SemanasComFalta">Semanas do mês do desligamento com falta injustificada, que perdem o DSR.</param>
+/// <param name="OutrosDescontos">Benefícios, vales e adiantamentos descontados, limitados a uma remuneração (CLT, art. 477, § 5º).</param>
+/// <param name="VerbasIndenizatorias">Verbas da convenção ou do acordo sem INSS, IRRF e FGTS.</param>
 public sealed record SimularRescisaoRequest(
     DateOnly Admissao,
     DateOnly Desligamento,
@@ -30,4 +34,8 @@ public sealed record SimularRescisaoRequest(
     DateOnly? FimPrevistoContrato = null,
     int? MesDataBase = null,
     decimal OutrosProventos = 0m,
-    int FaltasNoMes = 0);
+    int FaltasNoMes = 0,
+    TipoVinculo Vinculo = TipoVinculo.Empregado,
+    int SemanasComFalta = 0,
+    decimal OutrosDescontos = 0m,
+    decimal VerbasIndenizatorias = 0m);

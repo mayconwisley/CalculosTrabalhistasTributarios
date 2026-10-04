@@ -1,5 +1,7 @@
 using CalculosTrabalhistasTributarios.Application.DTOs;
 using CalculosTrabalhistasTributarios.Application.Interfaces;
+using CalculosTrabalhistasTributarios.Infrastructure.Atualizacao;
+using CalculosTrabalhistasTributarios.Infrastructure.Diagnostico;
 using CalculosTrabalhistasTributarios.Infrastructure.Interfaces;
 using CalculosTrabalhistasTributarios.Infrastructure.Persistence;
 using CalculosTrabalhistasTributarios.Infrastructure.Reporting;
@@ -29,6 +31,8 @@ public static class DependencyInjection
         .AddSingleton<IHistoricoCalculos, SqliteHistoricoCalculos>()
         .AddSingleton<IRelatorioPdfService, QuestPdfRelatorioPdfService>()
         .AddSingleton<IPlanilhaService, ClosedXmlPlanilhaService>()
+        .AddSingleton<IRegistroDeErros, ArquivoRegistroDeErros>()
+        .AddSingleton<IConsultaVersaoPublicada, ConsultaVersaoGitHub>()
         .AddSingleton<IFonteTabela<TabelaIrrfPublicada>, FonteIrrfReceitaFederal>()
         .AddSingleton<IFonteTabela<TabelaIrrfPublicada>, FonteIrrfDebit>()
         .AddSingleton<IFonteTabela<TabelaIrrfPublicada>, FonteIrrfContabeis>()

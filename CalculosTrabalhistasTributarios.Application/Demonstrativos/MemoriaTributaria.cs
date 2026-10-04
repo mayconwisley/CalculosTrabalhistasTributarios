@@ -34,19 +34,20 @@ internal static class MemoriaTributaria
     {
         var formulas = new List<FormulaDto>
         {
-            new("Base com deduções legais", FormulaBaseIrrf.Normal(irrf.Rendimentos, rotuloRendimentos, irrf.Inss, irrf.Dependentes, irrf.DeducaoPorDependente, irrf.Normal.BaseCalculo, Formato.Moeda, irrf.Pensao, irrf.PrevidenciaComplementar)),
+            new("Base com deduções legais", FormulaBaseIrrf.Normal(irrf.Rendimentos, rotuloRendimentos, irrf.Inss, irrf.Dependentes, irrf.DeducaoPorDependente, irrf.Normal.BaseCalculo, Formato.Moeda, irrf.Pensao, irrf.PrevidenciaComplementar, irrf.LivroCaixa)),
             new("Imposto com deduções legais", Imposto(irrf.Normal))
         };
         if (irrf.DescontoSimplificado is not null)
         {
             var simplificada = FormulaBaseIrrf.Simplificada(irrf.Rendimentos, rotuloRendimentos, irrf.DescontoSimplificado, irrf.Simplificada.BaseCalculo, Formato.Moeda);
-            var naoDeduzidas = (irrf.Pensao > 0m, irrf.PrevidenciaComplementar > 0m) switch
-            {
-                (true, true) => "; a pensão e a previdência complementar não são deduzidas nesta modalidade",
-                (true, false) => "; a pensão não é deduzida nesta modalidade",
-                (false, true) => "; a previdência complementar não é deduzida nesta modalidade",
-                _ => ""
-            };
+            var deducoes = new List<string>();
+            if (irrf.Pensao > 0m) deducoes.Add("a pensão");
+            if (irrf.PrevidenciaComplementar > 0m) deducoes.Add("a previdência complementar");
+            if (irrf.LivroCaixa > 0m) deducoes.Add("o livro-caixa");
+            // Concordância: "deduzida(s)" quando só há pensão e previdência, "deduzido(s)" quando entra o livro-caixa.
+            var masculino = irrf.LivroCaixa > 0m;
+            var verbo = deducoes.Count == 1 ? (masculino ? "é deduzido" : "é deduzida") : (masculino ? "são deduzidos" : "são deduzidas");
+            var naoDeduzidas = deducoes.Count == 0 ? "" : $"; {Formato.Lista(deducoes)} não {verbo} nesta modalidade";
             formulas.Add(new("Base com desconto simplificado", simplificada + naoDeduzidas));
             formulas.Add(new("Imposto com desconto simplificado", Imposto(irrf.Simplificada)));
         }

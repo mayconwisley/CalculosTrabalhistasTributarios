@@ -75,13 +75,23 @@ Todas usam a mesma janela, com resumo, demonstrativo no formato de holerite, val
 | 13º salário | 1ª e 2ª parcelas, com médias, avos e INSS e IRRF de tributação exclusiva. |
 | Férias | Férias com 1/3, dias de direito conforme as faltas, venda de 1/3 (abono, isento) e adiantamento do 13º. |
 | PLR | IRRF pela tabela anual exclusiva da Lei 10.101/2000, recalculado sobre o total do ano, com a dedução da pensão alimentícia e sem INSS e FGTS. |
-| Rescisão | Verbas por motivo de desligamento, inclusive a rescisão antecipada do contrato a prazo (arts. 479 e 480), aviso prévio proporcional com projeção, férias vencidas (em dobro) e proporcionais, indenização adicional da data-base, multa por atraso (art. 477), FGTS, multa, saque e o seguro-desemprego estimado. |
-| Seguro-desemprego | Valor da parcela pela média dos últimos salários e quantidade de parcelas pelos meses trabalhados e pela solicitação (Lei 7.998/1990). |
-| Custo do funcionário | Encargos por regime tributário (Lucro Real ou Presumido e Simples Nacional), provisões de 13º e férias e benefícios. |
+| Rescisão | Verbas por motivo de desligamento, inclusive a rescisão antecipada do contrato a prazo (arts. 479 e 480), aviso prévio proporcional com projeção, férias vencidas (em dobro) e proporcionais, indenização adicional da data-base, multa por atraso (art. 477), DSR perdido, verbas indenizatórias e outros descontos (limitados pelo art. 477, § 5º), FGTS, multa, saque e o seguro-desemprego estimado; para o doméstico, a indenização compensatória de 3,2% no lugar da multa, e para o aprendiz, FGTS de 2%. |
+| Seguro-desemprego | Valor da parcela pela média dos últimos salários e quantidade de parcelas pelos meses trabalhados e pela solicitação (Lei 7.998/1990); para o doméstico, um salário mínimo em até 3 parcelas (LC 150/2015). |
+| Custo do funcionário | Encargos por regime tributário (Lucro Real ou Presumido, Simples Nacional e empregador doméstico), FGTS de 2% do aprendiz, provisões de 13º e férias e benefícios. |
+| Empregado doméstico (DAE) | Salário líquido do doméstico e o DAE do mês: 8% patronal, 0,8% de GILRAT, 8% de FGTS, 3,2% de indenização compensatória, INSS e IRRF do empregado (LC 150/2015). |
+| Estágio | Bolsa líquida com o IRRF, sem INSS e FGTS, e o recesso remunerado proporcional (Lei 11.788/2008). |
+| Trabalho intermitente | Pagamento de cada convocação: horas, DSR, férias proporcionais com 1/3, 13º proporcional e FGTS (CLT, art. 452-A). |
+| Afastamentos e licenças | Doença e acidente de trabalho (15 dias da empresa e o auxílio estimado do INSS), licença-maternidade (120 ou 180 dias) e paternidade (LC 229/2026), com FGTS e estabilidade. |
+| Saque-aniversário do FGTS | Valor do saque pela tabela da Lei 8.036/1990 e o efeito da opção numa dispensa. |
+| Abono salarial (PIS/Pasep) | Direito e valor do abono, com o limite de renda da EC 135/2024. |
 | Pró-labore e autônomo | INSS de 11% até o teto, IRRF, ISS do autônomo e o custo para a empresa. |
 | CLT x PJ | O ano do mesmo profissional como CLT e como PJ no Simples Nacional (anexos III e V, com o fator R): total para o profissional, custo para a empresa e o valor de PJ que iguala o CLT. |
 | IRPF anual | Declaração do ano-calendário 2026 em diante, com a tabela anual, a redução do art. 11-A, os modelos completo e simplificado e a tributação mínima das altas rendas com o redutor (Lei 15.270/2025). |
 | Dividendos | Retenção de 10% sobre lucros e dividendos acima de R$ 50 mil no mês da mesma empresa, ou sobre qualquer valor para residentes no exterior. |
+| Carnê-leão | IR mensal de honorários, aluguéis e outros rendimentos recebidos de pessoas físicas e do exterior, com livro-caixa, desconto simplificado e a redução mensal. |
+| Ganho de capital | IR na venda de imóveis e outros bens: isenções de pequeno valor, do único imóvel e do reinvestimento, redução dos imóveis até 1988, fatores FR1 e FR2 e alíquotas de 15% a 22,5%. |
+| Tributo em atraso | Multa de 0,33% ao dia (até 20%) e juros pela Selic mais 1% de DARF, DAS, DAE ou GPS pago depois do vencimento (Lei 9.430/1996, art. 61). |
+| Correção de valores | Valor atualizado por IPCA, INPC, IPCA-E, Selic, TR ou taxa legal, com juros simples e multa opcionais. |
 
 As regras da CLT ficam em `CalculosTrabalhistasTributarios.Domain/Trabalhista` (com a rescisão em `Trabalhista/Rescisao`), e a apuração de INSS e IRRF comum a todas as calculadoras, em `CalculosTrabalhistasTributarios.Domain/Tributacao/TabelasDaCompetencia`.
 
@@ -109,12 +119,14 @@ As regras da CLT ficam em `CalculosTrabalhistasTributarios.Domain/Trabalhista` (
 - Mantém localmente faixas de INSS e IRRF, dedução por dependente, desconto simplificado, desconto mínimo, redução mensal, tabela anual da PLR, salário-família, salário mínimo e seguro-desemprego, com o histórico desde 2017, e os índices mensais INPC, IPCA, IPCA-E, Selic e TR desde 2015 e a taxa legal desde 08/2024.
 - Permite incluir, editar e remover registros por competência.
 - Inicializa dados históricos de forma idempotente, sem sobrescrever manutenções locais.
-- Atualiza pela internet as tabelas de INSS, IRRF, PLR, salário-família e salário mínimo, pela fonte oficial ou, quando ela ainda não publicou a tabela do ano, por duas fontes alternativas que concordem entre si; em caso de falha, preserva os dados locais.
+- Atualiza pela internet todas as tabelas, inclusive o seguro-desemprego e o desconto mínimo, pela fonte oficial ou, quando ela ainda não publicou a tabela do ano, por duas fontes alternativas que concordem entre si; em caso de falha, preserva os dados locais.
 - Atualiza os índices pela API do IBGE (INPC, IPCA e IPCA-15, usado como IPCA-E) e do Banco Central (taxa legal, Selic e TR, séries 29543, 4390 e 7811); se a fonte oficial não responder, uma fonte alternativa, como o Ipeadata, só preenche os meses que faltam.
 
 ### Experiência de uso
 
 - Tela inicial em cartões, com as calculadoras agrupadas por assunto e as tabelas em uma aba própria; cada cálculo abre na sua janela.
+- Avisos ao abrir: versão nova publicada no GitHub (a consulta pode ser desligada) e tabelas do ano ainda não cadastradas; na primeira abertura, o lembrete de que os resultados são simulações.
+- Erros inesperados não fecham o aplicativo em silêncio: a mensagem aparece, e os detalhes vão para um arquivo de log mensal em `%LOCALAPPDATA%\CalculoIRRF\logs`, para o suporte.
 - Cada calculadora abre preenchida com a competência, o salário e os dependentes do último cálculo.
 - Histórico de cálculos: cada cálculo pode ser salvo com um nome e depois aberto, duplicado, renomeado ou excluído na aba Histórico, com busca por nome ou calculadora.
 - Exportação para o Excel em todas as calculadoras, com os valores como números e a memória de cálculo em outra aba.

@@ -30,5 +30,16 @@ public static class DependencyInjection
         .AddScoped<ISimularDemonstrativoUseCase<SimularCltPjRequest>, SimularCltPjUseCase>()
         .AddScoped<ISimularDemonstrativoUseCase<SimularHoleriteRequest>, SimularHoleriteUseCase>()
         .AddScoped<ISimularDemonstrativoUseCase<SimularIrpfAnualRequest>, SimularIrpfAnualUseCase>()
-        .AddScoped<ISimularDemonstrativoUseCase<SimularDividendosRequest>, SimularDividendosUseCase>();
+        .AddScoped<ISimularDemonstrativoUseCase<SimularDividendosRequest>, SimularDividendosUseCase>()
+        .AddScoped<ISimularDemonstrativoUseCase<SimularTributoAtrasoRequest>, SimularTributoAtrasoUseCase>()
+        .AddScoped<ISimularDemonstrativoUseCase<SimularCorrecaoValorRequest>, SimularCorrecaoValorUseCase>()
+        .AddScoped<ISimularDemonstrativoUseCase<SimularDomesticoRequest>, SimularDomesticoUseCase>()
+        .AddScoped<ISimularDemonstrativoUseCase<SimularAfastamentoRequest>, SimularAfastamentoUseCase>()
+        .AddScoped<ISimularDemonstrativoUseCase<SimularSaqueAniversarioRequest>, SimularSaqueAniversarioUseCase>()
+        .AddScoped<ISimularDemonstrativoUseCase<SimularAbonoSalarialRequest>, SimularAbonoSalarialUseCase>()
+        .AddScoped<ISimularDemonstrativoUseCase<SimularCarneLeaoRequest>, SimularCarneLeaoUseCase>()
+        .AddScoped<ISimularDemonstrativoUseCase<SimularGanhoCapitalRequest>, SimularGanhoCapitalUseCase>()
+        .AddScoped<ISimularDemonstrativoUseCase<SimularEstagioRequest>, SimularEstagioUseCase>()
+        .AddScoped<ISimularDemonstrativoUseCase<SimularIntermitenteRequest>, SimularIntermitenteUseCase>()
+        .AddScoped<IVerificarAtualizacoesUseCase, VerificarAtualizacoesUseCase>();
 }

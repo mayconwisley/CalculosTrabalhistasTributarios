@@ -89,14 +89,18 @@ public sealed class TabelasDaCompetencia
     /// Contribuição do trabalhador à previdência complementar ou ao Fapi, deduzida por inteiro na base mensal, só na
     /// modalidade de deduções legais (IN RFB 1.500/2014, art. 52, IV e V); o limite de 12% é aplicado na declaração anual.
     /// </param>
-    public ApuracaoIrrf CalcularIrrf(decimal rendimentos, decimal inss, int dependentes, decimal pensao = 0m, bool tributacaoExclusiva = false, decimal previdenciaComplementar = 0m)
+    /// <param name="livroCaixa">
+    /// Despesas escrituradas no livro-caixa do autônomo, deduzidas no carnê-leão só na modalidade de deduções legais
+    /// (IN RFB 1.500/2014); o desconto simplificado substitui essa dedução.
+    /// </param>
+    public ApuracaoIrrf CalcularIrrf(decimal rendimentos, decimal inss, int dependentes, decimal pensao = 0m, bool tributacaoExclusiva = false, decimal previdenciaComplementar = 0m, decimal livroCaixa = 0m)
     {
-        var baseNormal = Math.Max(0m, rendimentos - inss - dependentes * DeducaoPorDependente - pensao - previdenciaComplementar);
+        var baseNormal = Math.Max(0m, rendimentos - inss - dependentes * DeducaoPorDependente - pensao - previdenciaComplementar - livroCaixa);
         var normal = CalcularModalidade("Normal", rendimentos, baseNormal);
         var simplificada = DescontoSimplificado is { } desconto
             ? CalcularModalidade("Simplificado", rendimentos, Math.Max(0m, rendimentos - desconto))
             : ModalidadeIrrf.Indisponivel("Simplificado");
-        return new ApuracaoIrrf(rendimentos, inss, dependentes, DeducaoPorDependente, DescontoSimplificado, normal, simplificada, pensao, tributacaoExclusiva ? 0m : DescontoMinimo, previdenciaComplementar);
+        return new ApuracaoIrrf(rendimentos, inss, dependentes, DeducaoPorDependente, DescontoSimplificado, normal, simplificada, pensao, tributacaoExclusiva ? 0m : DescontoMinimo, previdenciaComplementar, livroCaixa);
     }
 
     /// <summary>

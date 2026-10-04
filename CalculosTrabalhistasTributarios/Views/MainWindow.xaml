@@ -37,7 +37,7 @@
 	<Grid Margin="28" Background="{DynamicResource ApplicationBackgroundBrush}">
 		<Grid.RowDefinitions>
 			<RowDefinition Height="Auto" />
-			<RowDefinition Height="20" />
+			<RowDefinition Height="Auto" />
 			<RowDefinition Height="*" />
 			<RowDefinition Height="Auto" />
 		</Grid.RowDefinitions>
@@ -66,6 +66,22 @@
 				<Button Content="Manual do usuário" Command="ApplicationCommands.Help" ToolTip="Abrir o manual do usuário (F1)" MinHeight="38" Padding="14,7" Margin="12,0,0,0" />
 			</StackPanel>
 		</Grid>
+
+		<!-- Avisos da abertura: versão nova e tabelas do ano não cadastradas. Sem avisos, fica só o espaçamento. -->
+		<ItemsControl Grid.Row="1" ItemsSource="{Binding Avisos}" Margin="0,20,0,0" Focusable="False">
+			<ItemsControl.ItemTemplate>
+				<DataTemplate>
+					<Border Background="{DynamicResource SelectionBrush}" BorderBrush="{DynamicResource AccentBrush}" BorderThickness="1" CornerRadius="10" Padding="16,10" Margin="0,0,0,14">
+						<Grid>
+							<Grid.ColumnDefinitions><ColumnDefinition /><ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+							<TextBlock Text="{Binding Texto}" TextWrapping="Wrap" VerticalAlignment="Center" />
+							<Button Grid.Column="1" Content="{Binding TextoAcao}" Command="{Binding Acao}" Style="{StaticResource PrimaryButton}" Padding="14,6" Margin="16,0,0,0" VerticalAlignment="Center" />
+							<Button Grid.Column="2" Content="Dispensar" Command="{Binding Dispensar}" Style="{StaticResource LinkButton}" Margin="14,0,0,0" VerticalAlignment="Center" />
+						</Grid>
+					</Border>
+				</DataTemplate>
+			</ItemsControl.ItemTemplate>
+		</ItemsControl>
 
 		<Border Grid.Row="2" Style="{StaticResource Card}" Padding="24,20,12,14">
 			<Grid>
@@ -149,6 +165,9 @@
 			</Grid>
 		</Border>
 
+		<CheckBox Grid.Row="3" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,18,0,0" IsChecked="{Binding VerificarNovasVersoes}"
+				Content="Avisar sobre novas versões" Foreground="{DynamicResource MutedTextBrush}"
+				ToolTip="Ao abrir, consulta no GitHub se há uma versão mais nova. Nenhum dado dos cálculos é enviado." />
 		<TextBlock Grid.Row="3" Foreground="{DynamicResource MutedTextBrush}" Margin="2,18,0,0">
 			<Run Text="{Binding Versao, Mode=OneTime, StringFormat='Cálculos Trabalhistas e Tributários {0}'}" />
 			<Run Text=" • Dados processados localmente - Desenvolvido por: Maycon Wisley" />

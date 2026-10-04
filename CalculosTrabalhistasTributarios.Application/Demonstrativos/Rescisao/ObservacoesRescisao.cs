@@ -19,8 +19,12 @@ internal static class ObservacoesRescisao
                     ? $"Pagamento em {Formato.Data(dataInformada)}, depois do prazo de 10 dias, que ia até {Formato.Data(i.PrazoPagamento)}: é devida a multa de um salário (CLT, art. 477, § 8º). Ela foi tratada como indenização, sem INSS, IRRF nem FGTS, como entende a maior parte dos tribunais."
                     : $"Pagamento em {Formato.Data(dataInformada)}, dentro do prazo de 10 dias após o fim do contrato (CLT, art. 477, § 6º)."
                 : "O pagamento deve ser feito em até 10 dias após o fim do contrato (CLT, art. 477, § 6º); depois disso, é devida a multa de um salário (§ 8º).",
-            "Não inclui descontos de benefícios, o DSR perdido nas semanas com falta nem verbas previstas em convenção coletiva."
+            "Verbas e descontos específicos da convenção coletiva entram nos campos de outros proventos, verbas indenizatórias e outros descontos; confira a incidência de cada um na convenção da categoria."
         };
+        if (c.Domestico)
+            observacoes.Add("Empregado doméstico (LC 150/2015): no lugar da multa de 40% do FGTS, o empregador deposita 3,2% todo mês. Na dispensa sem justa causa, o empregado saca esse valor; no acordo, a metade, e a outra metade volta ao empregador, como a metade da indenização do art. 484-A da CLT; na justa causa, no pedido de demissão e no fim do contrato a prazo, tudo volta ao empregador. O FGTS do mês e os 3,2% vão no DAE rescisório.");
+        if (c.Vinculo == TipoVinculo.Aprendiz)
+            observacoes.Add("Jovem aprendiz: o FGTS é de 2% (Lei 8.036/1990, art. 15, § 7º). No fim do contrato, no desempenho insuficiente, na falta disciplinar grave, na ausência à escola e a pedido do aprendiz, não há as indenizações dos arts. 479 e 480 (CLT, art. 433, § 2º); a dispensa antecipada fora dessas hipóteses segue o art. 479.");
         var projecao = v.Aviso.Projecao;
         if (i.DataBase is { } dataBase)
             observacoes.Add(i.Adicional > 0m
@@ -28,7 +32,9 @@ internal static class ObservacoesRescisao
                 : projecao >= dataBase
                     ? $"O contrato projetado pelo aviso passa da data-base de {Formato.Data(dataBase)}: não há indenização adicional, mas as verbas devem ser pagas com o salário reajustado (Súmula 314 do TST)."
                     : $"O contrato, projetado até {Formato.Data(projecao)}, termina antes dos 30 dias que antecedem a data-base de {Formato.Data(dataBase)}: não há indenização adicional.");
-        if (seguro is not null)
+        if (seguro is { Domestico: true })
+            observacoes.Add("O seguro-desemprego do doméstico vale um salário mínimo, em até 3 parcelas, para quem trabalhou 15 meses nos últimos 24 (LC 150/2015, arts. 26 e 28); a estimativa considera só este contrato.");
+        else if (seguro is not null)
             observacoes.Add(seguro.Parcelas > 0
                 ? "O seguro-desemprego foi estimado para a 1ª solicitação, só com os meses deste contrato e com a remuneração atual como média dos últimos salários; para outra situação, use a calculadora Seguro-desemprego. Ele é pago pelo governo, não pela empresa."
                 : "Com menos de 12 meses neste contrato, não há seguro-desemprego na 1ª solicitação, a não ser que haja outros empregos nos últimos 18 meses; confira na calculadora Seguro-desemprego.");

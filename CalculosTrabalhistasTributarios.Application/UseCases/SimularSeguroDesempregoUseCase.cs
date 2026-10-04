@@ -22,7 +22,7 @@ public sealed class SimularSeguroDesempregoUseCase(ITributacaoConsulta tributaca
         if (r.Salarios.Any(salario => salario < 0m) || r.MesesTrabalhados < 0)
             return Erro.Validacao("Os salários e os meses trabalhados não podem ser negativos.");
         var salarios = r.Salarios.Where(salario => salario > 0m).ToArray();
-        if (salarios.Length == 0)
+        if (salarios.Length == 0 && !r.Domestico)
             return Erro.Validacao("Informe pelo menos o salário do último mês antes da dispensa.");
 
         var competencia = new DateOnly(r.Dispensa.Year, r.Dispensa.Month, 1);
@@ -34,6 +34,8 @@ public sealed class SimularSeguroDesempregoUseCase(ITributacaoConsulta tributaca
         if (consultaSalarioMinimo.Falhou)
             return consultaSalarioMinimo.Erro;
         var salarioMinimo = consultaSalarioMinimo.Valor;
+        if (r.Domestico)
+            return Domestico(r, salarioMinimo);
         if (tabelas.FaixasSeguroDesemprego.Count == 0)
             return Erro.NaoEncontrado($"Não há tabela do seguro-desemprego cadastrada para {Formato.Competencia(competencia)}. Cadastre as faixas na tabela Seguro-desemprego.");
 
@@ -85,6 +87,43 @@ public sealed class SimularSeguroDesempregoUseCase(ITributacaoConsulta tributaca
             [],
             [],
             [new GrupoMemoriaDto("Seguro-desemprego", quantidade > 0 ? $"Total: {Formato.Moeda(total)}" : "Sem direito", formulas)],
+            observacoes,
+            RotuloResultado: "Total do benefício");
+    }
+
+    /// <summary>O doméstico recebe um salário mínimo por parcela, sem a média dos salários (LC 150/2015, arts. 26 a 28).</summary>
+    private static DemonstrativoDto Domestico(SimularSeguroDesempregoRequest r, decimal salarioMinimo)
+    {
+        var meses = Math.Min(r.MesesTrabalhados, 24);
+        var quantidade = RegrasSeguroDesemprego.ParcelasDomestico(meses);
+        var total = salarioMinimo * quantidade;
+        var formulas = new List<FormulaDto>
+        {
+            new("Valor da parcela", $"Um salário mínimo: {Formato.Moeda(salarioMinimo)} (LC 150/2015, art. 26)"),
+            new("Quantidade de parcelas", quantidade > 0
+                ? $"{meses} meses trabalhados como doméstico nos últimos 24: até 3 parcelas"
+                : $"São exigidos {RegrasSeguroDesemprego.MesesMinimosDomestico} meses de trabalho nos últimos 24; com {meses}, não há direito (art. 28)")
+        };
+        if (quantidade > 0)
+            formulas.Add(new("Total do benefício", $"{quantidade} x {Formato.Moeda(salarioMinimo)} = {Formato.Moeda(total)}"));
+        var observacoes = new List<string>
+        {
+            "O empregado doméstico dispensado sem justa causa tem direito a até 3 parcelas de um salário mínimo, se trabalhou como doméstico pelo menos 15 meses nos últimos 24 (LC 150/2015, arts. 26 e 28). Não cabe no pedido de demissão nem na justa causa.",
+            "Peça de 7 a 90 dias depois da dispensa, pela Carteira de Trabalho Digital ou pelo gov.br (LC 150/2015, art. 29).",
+            "O seguro-desemprego é pago pelo governo, com recursos do FAT, e não pelo empregador; não tem desconto de INSS nem de IRRF."
+        };
+        return new DemonstrativoDto(
+            "Seguro-desemprego do doméstico",
+            $"Dispensa em {Formato.Data(r.Dispensa)}",
+            [
+                new("Valor da parcela", Formato.Moeda(salarioMinimo), "Um salário mínimo"),
+                new("Parcelas", quantidade > 0 ? quantidade.ToString(Formato.Cultura) : "Sem direito", $"{meses} meses nos últimos 24"),
+                new("Total do benefício", Formato.Moeda(total), quantidade > 0 ? $"{quantidade} x {Formato.Moeda(salarioMinimo)}" : "Carência não cumprida")
+            ],
+            quantidade > 0 ? [new("Seguro-desemprego", $"{quantidade} parcelas", total)] : [],
+            [],
+            [],
+            [new GrupoMemoriaDto("Seguro-desemprego do doméstico", quantidade > 0 ? $"Total: {Formato.Moeda(total)}" : "Sem direito", formulas)],
             observacoes,
             RotuloResultado: "Total do benefício");
     }

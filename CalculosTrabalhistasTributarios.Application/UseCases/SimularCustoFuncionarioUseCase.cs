@@ -14,7 +14,12 @@ namespace CalculosTrabalhistasTributarios.Application.UseCases;
 public sealed class SimularCustoFuncionarioUseCase : ISimularDemonstrativoUseCase<SimularCustoFuncionarioRequest>
 {
     private const decimal AliquotaPatronal = 20m;
-    private const decimal AliquotaFgts = 8m;
+    private const decimal AliquotaFgtsPadrao = 8m;
+    private const decimal AliquotaFgtsAprendiz = 2m;
+    // Empregador doméstico (LC 150/2015, art. 34): contribuição patronal, GILRAT e indenização compensatória.
+    private const decimal PatronalDomestico = 8m;
+    private const decimal GilratDomestico = 0.8m;
+    private const decimal CompensatoriaDomestico = 3.2m;
     private const decimal HorasMensais = 220m;
 
     // O cálculo não consulta o banco: a tarefa só cumpre o contrato assíncrono da interface.
@@ -24,31 +29,36 @@ public sealed class SimularCustoFuncionarioUseCase : ISimularDemonstrativoUseCas
     {
         if (r.Salario < 0m || r.Beneficios < 0m || r.Terceiros < 0m)
             return Erro.Validacao("O salário, os benefícios e as contribuições a terceiros não podem ser negativos.");
-        if (r.Rat is < 1m or > 3m)
+        var domestico = r.Regime == RegimeTributario.EmpregadorDomestico;
+        var aliquotaFgts = r.Aprendiz ? AliquotaFgtsAprendiz : AliquotaFgtsPadrao;
+        if (!domestico && r.Rat is < 1m or > 3m)
             return Erro.Validacao("O RAT deve estar entre 1% e 3%, conforme o grau de risco da atividade.");
-        if (r.Fap is < 0.5m or > 2m)
+        if (!domestico && r.Fap is < 0.5m or > 2m)
             return Erro.Validacao("O FAP deve estar entre 0,5 e 2.");
 
         var pagaPatronal = r.Regime != RegimeTributario.SimplesNacional;
         var pagaTerceiros = r.Regime == RegimeTributario.LucroRealOuPresumido;
-        var aliquotaPatronal = pagaPatronal ? AliquotaPatronal : 0m;
-        var aliquotaRat = pagaPatronal ? r.Rat * r.Fap : 0m;
+        var aliquotaPatronal = domestico ? PatronalDomestico : pagaPatronal ? AliquotaPatronal : 0m;
+        var aliquotaRat = domestico ? GilratDomestico : pagaPatronal ? r.Rat * r.Fap : 0m;
         var aliquotaTerceiros = pagaTerceiros ? r.Terceiros : 0m;
-        var aliquotaEncargos = aliquotaPatronal + aliquotaRat + aliquotaTerceiros + AliquotaFgts;
+        var aliquotaCompensatoria = domestico ? CompensatoriaDomestico : 0m;
+        var aliquotaEncargos = aliquotaPatronal + aliquotaRat + aliquotaTerceiros + aliquotaFgts + aliquotaCompensatoria;
 
         var patronal = Percentual(r.Salario, aliquotaPatronal);
         var rat = Percentual(r.Salario, aliquotaRat);
         var terceiros = Percentual(r.Salario, aliquotaTerceiros);
-        var fgts = Percentual(r.Salario, AliquotaFgts);
+        var fgts = Percentual(r.Salario, aliquotaFgts);
+        var compensatoria = Percentual(r.Salario, aliquotaCompensatoria);
         var provisao13 = r.IncluirProvisoes ? CalculadoraTributacao.Arredondar(r.Salario / 12m) : 0m;
         var provisaoFerias = r.IncluirProvisoes ? CalculadoraTributacao.Arredondar(r.Salario * 4m / 36m) : 0m;
         var encargosProvisoes = Percentual(provisao13 + provisaoFerias, aliquotaEncargos);
 
         var itens = new List<VerbaDto> { new("Salário", "", r.Salario) };
         if (patronal > 0m) itens.Add(new("INSS patronal", Formato.PercentualCurto(aliquotaPatronal), patronal));
-        if (rat > 0m) itens.Add(new("RAT ajustado pelo FAP", Formato.Percentual(aliquotaRat), rat));
+        if (rat > 0m) itens.Add(new(domestico ? "GILRAT (seguro de acidente do trabalho)" : "RAT ajustado pelo FAP", Formato.Percentual(aliquotaRat), rat));
         if (terceiros > 0m) itens.Add(new("Contribuições a terceiros (Sistema S e outras)", Formato.PercentualCurto(aliquotaTerceiros), terceiros));
-        itens.Add(new("FGTS", Formato.PercentualCurto(AliquotaFgts), fgts));
+        itens.Add(new(r.Aprendiz ? "FGTS do jovem aprendiz" : "FGTS", Formato.PercentualCurto(aliquotaFgts), fgts));
+        if (compensatoria > 0m) itens.Add(new("Indenização compensatória (no lugar da multa do FGTS)", Formato.Percentual(aliquotaCompensatoria), compensatoria));
         if (r.IncluirProvisoes)
         {
             itens.Add(new("Provisão de 13º salário", "1/12", provisao13));
@@ -60,15 +70,15 @@ public sealed class SimularCustoFuncionarioUseCase : ISimularDemonstrativoUseCas
         var custo = itens.Sum(item => item.Valor);
         // No mês das férias, o salário e os encargos dele saem da provisão: somar 12 meses de salário e a provisão inteira
         // contaria esse mês duas vezes. O ano tem 12 salários, o 13º e o 1/3 de férias, com os encargos.
-        var salarioComEncargos = r.Salario + patronal + rat + terceiros + fgts;
+        var salarioComEncargos = r.Salario + patronal + rat + terceiros + fgts + compensatoria;
         var custoAnual = r.IncluirProvisoes ? custo * 12m - salarioComEncargos : custo * 12m;
         var acrescimo = r.Salario == 0m ? 0m : (custo - r.Salario) / r.Salario * 100m;
 
         var formulas = new List<FormulaDto>
         {
             new("Regime", NomeRegime(r.Regime)),
-            new("Alíquota de encargos sobre a folha", $"{string.Join(" + ", TermosAliquota(r, aliquotaPatronal, aliquotaRat, aliquotaTerceiros))} = {Formato.Percentual(aliquotaEncargos)}"),
-            new("Encargos mensais", $"Soma das parcelas calculadas sobre {Formato.Moeda(r.Salario)}: {string.Join(" + ", new[] { patronal, rat, terceiros, fgts }.Where(valor => valor > 0m).Select(Formato.Moeda))} = {Formato.Moeda(patronal + rat + terceiros + fgts)}")
+            new("Alíquota de encargos sobre a folha", $"{string.Join(" + ", TermosAliquota(r, aliquotaPatronal, aliquotaRat, aliquotaTerceiros, aliquotaCompensatoria))} = {Formato.Percentual(aliquotaEncargos)}"),
+            new("Encargos mensais", $"Soma das parcelas calculadas sobre {Formato.Moeda(r.Salario)}: {string.Join(" + ", new[] { patronal, rat, terceiros, fgts, compensatoria }.Where(valor => valor > 0m).Select(Formato.Moeda))} = {Formato.Moeda(patronal + rat + terceiros + fgts + compensatoria)}")
         };
         if (r.IncluirProvisoes)
         {
@@ -94,7 +104,12 @@ public sealed class SimularCustoFuncionarioUseCase : ISimularDemonstrativoUseCas
             [],
             [],
             [new GrupoMemoriaDto("Custo do funcionário", $"Custo mensal: {Formato.Moeda(custo)}", formulas)],
-            [
+            domestico
+            ? [
+                "O empregador doméstico recolhe num só DAE, até o dia 7 do mês seguinte, 8% de contribuição patronal, 0,8% de GILRAT, 8% de FGTS e 3,2% de indenização compensatória, além do INSS e do IRRF descontados do empregado (LC 150/2015, arts. 34 e 35). Para a guia do mês, use a calculadora Empregado doméstico (DAE).",
+                "As provisões distribuem mês a mês o 13º e as férias com 1/3, pagos uma vez por ano. A indenização compensatória substitui a multa de 40% do FGTS na dispensa."
+            ]
+            : [
                 "No Simples Nacional, anexos I a III e V, a contribuição patronal já está incluída no DAS; no anexo IV, a empresa recolhe à parte os 20% e o RAT, mas não as contribuições a terceiros.",
                 "As provisões distribuem mês a mês o 13º e as férias com 1/3, pagos uma vez por ano. Não inclui a provisão da multa do FGTS em caso de dispensa.",
                 "Confira o RAT e o FAP da empresa no eSocial ou com a contabilidade; as contribuições a terceiros podem variar conforme a atividade."
@@ -110,18 +125,27 @@ public sealed class SimularCustoFuncionarioUseCase : ISimularDemonstrativoUseCas
     {
         RegimeTributario.LucroRealOuPresumido => "Lucro Real ou Presumido",
         RegimeTributario.SimplesNacional => "Simples Nacional (anexos I, II, III e V)",
+        RegimeTributario.EmpregadorDomestico => "Empregador doméstico",
         _ => "Simples Nacional (anexo IV)"
     };
 
     // Só entram as contribuições que o regime paga: no Simples (anexos I a III e V), só o FGTS.
-    private static IEnumerable<string> TermosAliquota(SimularCustoFuncionarioRequest r, decimal patronal, decimal rat, decimal terceiros)
+    private static IEnumerable<string> TermosAliquota(SimularCustoFuncionarioRequest r, decimal patronal, decimal rat, decimal terceiros, decimal compensatoria)
     {
+        if (r.Regime == RegimeTributario.EmpregadorDomestico)
+        {
+            yield return $"{Formato.PercentualCurto(patronal)} (patronal)";
+            yield return $"{Formato.Percentual(rat)} (GILRAT)";
+            yield return $"{Formato.PercentualCurto(AliquotaFgtsPadrao)} (FGTS)";
+            yield return $"{Formato.Percentual(compensatoria)} (indenização compensatória)";
+            yield break;
+        }
         if (patronal > 0m)
             yield return $"{Formato.PercentualCurto(patronal)} (patronal)";
         if (rat > 0m)
             yield return $"{Formato.Percentual(rat)} (RAT {Formato.PercentualCurto(r.Rat)} x FAP {r.Fap.ToString("0.0000", Formato.Cultura)})";
         if (terceiros > 0m)
             yield return $"{Formato.PercentualCurto(terceiros)} (terceiros)";
-        yield return $"{Formato.PercentualCurto(AliquotaFgts)} (FGTS)";
+        yield return $"{Formato.PercentualCurto(r.Aprendiz ? AliquotaFgtsAprendiz : AliquotaFgtsPadrao)} (FGTS)";
     }
 }

@@ -10,7 +10,8 @@ public sealed record ApuracaoIrrf(
     ModalidadeIrrf Simplificada,
     decimal Pensao = 0m,
     decimal LimiteDispensa = 0m,
-    decimal PrevidenciaComplementar = 0m)
+    decimal PrevidenciaComplementar = 0m,
+    decimal LivroCaixa = 0m)
 {
     // A fonte pagadora aplica o desconto simplificado quando ele resulta em imposto menor que o das deduções legais.
     public bool SimplificadaAplicada => DescontoSimplificado is not null && Simplificada.Imposto < Normal.Imposto;

@@ -21,7 +21,10 @@ internal static class DemonstrativoRescisao
             [
                 new("Líquido da rescisão", Formato.Moeda(liquido), "Pago em até 10 dias"),
                 new("Aviso prévio", Aviso(c.Motivo, v.Aviso), v.Aviso.Cumprimento == CumprimentoAvisoPrevio.Indenizado ? $"Indenizado: {Formato.Moeda(v.Aviso.Indenizado)}" : "Sem valor a pagar"),
-                new("Multa do FGTS", fgts.PercentualMulta > 0m ? Formato.Moeda(fgts.Multa) : "Não se aplica", fgts.PercentualMulta > 0m ? $"{Formato.PercentualCurto(fgts.PercentualMulta)} sobre o saldo do FGTS" : "Só na dispensa sem justa causa e no acordo"),
+                fgts.Compensatoria is { } compensatoria
+                    ? new("Indenização compensatória", compensatoria.AoEmpregado > 0m ? Formato.Moeda(compensatoria.AoEmpregado) : "Volta ao empregador",
+                        compensatoria.AoEmpregado > 0m ? $"{Formato.PercentualCurto(compensatoria.PercentualAoEmpregado)} dos 3,2% depositados" : "Os 3,2% não são do empregado neste motivo")
+                    : new("Multa do FGTS", fgts.PercentualMulta > 0m ? Formato.Moeda(fgts.Multa) : "Não se aplica", fgts.PercentualMulta > 0m ? $"{Formato.PercentualCurto(fgts.PercentualMulta)} sobre o saldo do FGTS" : "Só na dispensa sem justa causa e no acordo"),
                 new("FGTS para saque", fgts.PercentualSaque > 0m ? Formato.Moeda(fgts.Saque) : "Sem saque", fgts.PercentualSaque > 0m ? (fgts.SaldoEstimado ? "Com saldo estimado" : "Com o saldo informado") : "O FGTS fica na conta")
             ],
             proventos,
@@ -41,6 +44,7 @@ internal static class DemonstrativoRescisao
         if (i.Artigo479 > 0m) proventos.Add(new("Indenização da rescisão antecipada (art. 479)", $"{Formato.Dias(i.DiasRestantes)} ÷ 2", i.Artigo479));
         if (i.Adicional > 0m) proventos.Add(new("Indenização adicional (Lei 7.238/1984)", "1 salário", i.Adicional));
         if (i.MultaAtraso > 0m) proventos.Add(new("Multa por atraso no pagamento (art. 477, § 8º)", "1 salário", i.MultaAtraso));
+        if (c.VerbasIndenizatorias > 0m) proventos.Add(new("Verbas indenizatórias da convenção ou do acordo", "Sem tributos", c.VerbasIndenizatorias));
         if (d.Proporcional > 0m) proventos.Add(new("13º salário proporcional", Formato.Avos(d.Avos), d.Proporcional));
         if (d.SobreAviso > 0m) proventos.Add(new("13º sobre o aviso prévio indenizado", Formato.Avos(d.AvosAviso), d.SobreAviso));
         if (f.Vencidas > 0m) proventos.Add(new("Férias vencidas", "1 período", f.Vencidas));
@@ -57,6 +61,8 @@ internal static class DemonstrativoRescisao
         var c = v.Contrato;
         var rotuloMes = VerbasDoMes(c);
         var descontos = new List<VerbaDto>();
+        if (v.Saldo.DsrPerdido > 0m)
+            descontos.Add(new("DSR perdido por faltas", v.Saldo.SemanasComFalta == 1 ? "1 semana" : $"{v.Saldo.SemanasComFalta} semanas", v.Saldo.DsrPerdido));
         if (v.Saldo.VerbasDoMes > 0m)
         {
             descontos.Add(new($"INSS sobre o {rotuloMes}", "", t.InssSaldo.Valor));
@@ -73,15 +79,24 @@ internal static class DemonstrativoRescisao
             descontos.Add(new("Pensão alimentícia sobre o 13º", DemonstrativoPensao.Referencia(regra13), pensao13.Pensao));
         if (v.Aviso.Desconto > 0m) descontos.Add(new("Aviso prévio não cumprido", "30 dias", v.Aviso.Desconto));
         if (c.AdiantamentoDecimoTerceiro > 0m) descontos.Add(new("Adiantamento do 13º já pago", "", c.AdiantamentoDecimoTerceiro));
+        if (c.OutrosDescontos > 0m) descontos.Add(new("Outros descontos (benefícios, vales e adiantamentos)", "", c.OutrosDescontos));
         return descontos;
     }
 
     private static List<VerbaDto> Informativos(VerbasRescisorias v, EstimativaSeguroRescisao? seguro)
     {
         var f = v.Fgts;
-        var informativos = new List<VerbaDto> { new("Depósito do FGTS do mês da rescisão", "8%", f.Deposito) };
+        var informativos = new List<VerbaDto> { new("Depósito do FGTS do mês da rescisão", Formato.PercentualCurto(f.PercentualDeposito), f.Deposito) };
         if (f.UsaSaldo) informativos.Add(new(f.SaldoEstimado ? "Saldo do FGTS (estimado)" : "Saldo do FGTS (informado)", "", f.Saldo));
         if (f.Multa > 0m) informativos.Add(new("Multa rescisória do FGTS", Formato.PercentualCurto(f.PercentualMulta), f.Multa));
+        if (f.Compensatoria is { } compensatoria)
+        {
+            informativos.Add(new("Indenização compensatória do mês (DAE rescisório)", "3,2%", compensatoria.Deposito));
+            informativos.Add(new("Saldo da indenização compensatória (estimado)", "40% do saldo do FGTS", compensatoria.Saldo));
+            informativos.Add(compensatoria.AoEmpregado > 0m
+                ? new("Indenização compensatória para o empregado", Formato.PercentualCurto(compensatoria.PercentualAoEmpregado), compensatoria.AoEmpregado)
+                : new("Indenização compensatória que volta ao empregador", "100%", compensatoria.AoEmpregador));
+        }
         if (f.PercentualSaque > 0m) informativos.Add(new("FGTS disponível para saque", v.Contrato.Motivo == MotivoRescisao.Acordo ? "80% do saldo e da multa" : Formato.PercentualCurto(f.PercentualSaque) + (f.Multa > 0m ? " + multa" : ""), f.Saque));
         if (v.Indenizacoes.Limite480 > 0m) informativos.Add(new("Indenização máxima ao empregador (art. 480)", $"{Formato.Dias(v.Indenizacoes.DiasRestantes)} ÷ 2", v.Indenizacoes.Limite480));
         if (seguro is { Parcelas: > 0 })

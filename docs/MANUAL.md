@@ -1,6 +1,6 @@
 # Manual do Usuário — Cálculos Trabalhistas e Tributários
 
-Guia completo para utilizar **Cálculos Trabalhistas e Tributários**: simulação de IRRF, INSS e FGTS, salário líquido, holerite do mês, jornada pelas marcações de ponto, férias, 13º salário, horas extras, insalubridade e periculosidade, salário-família, PLR, rescisão, seguro-desemprego, custo do funcionário, comparação CLT x PJ, pró-labore, IRPF anual, dividendos, pensão alimentícia, débitos judiciais, indenização de estabilidade, histórico de cálculos, planilhas do Excel e manutenção das tabelas tributárias.
+Guia completo para utilizar **Cálculos Trabalhistas e Tributários**: simulação de IRRF, INSS e FGTS, salário líquido, holerite do mês, jornada pelas marcações de ponto, férias, 13º salário, horas extras, insalubridade e periculosidade, salário-família, PLR, rescisão, seguro-desemprego, custo do funcionário, comparação CLT x PJ, pró-labore, IRPF anual, dividendos, pensão alimentícia, débitos judiciais, indenização de estabilidade, empregado doméstico, estágio, trabalho intermitente, afastamentos e licenças, saque-aniversário do FGTS, abono salarial, carnê-leão, ganho de capital, tributos em atraso, correção de valores, histórico de cálculos, planilhas do Excel e manutenção das tabelas tributárias.
 
 > **Atenção:** os resultados têm caráter de **simulação**. Confira sempre os valores com a legislação vigente e com os dados reais do vínculo antes de utilizá-los em folha de pagamento, rescisões ou decisões legais.
 
@@ -26,15 +26,18 @@ Guia completo para utilizar **Cálculos Trabalhistas e Tributários**: simulaç�
 O aplicativo Cálculos Trabalhistas e Tributários reúne, em um único lugar para Windows, os cálculos trabalhistas e tributários mais comuns do dia a dia:
 
 - **Simulação tributária:** IRRF pelas modalidades normal e simplificada, INSS por faixas, salário líquido e FGTS de 8% e de 2% (Jovem Aprendiz), com indicação da modalidade de IRRF mais vantajosa.
-- **Calculadoras trabalhistas:** holerite do mês, jornada pelas marcações de ponto, salário bruto a partir do líquido, horas extras com adicional noturno e DSR, insalubridade e periculosidade, salário-família, 13º salário, férias com abono, PLR, rescisão por motivo de desligamento, seguro-desemprego, custo do funcionário para a empresa, comparação entre CLT e PJ e pró-labore ou pagamento a autônomo (RPA).
-- **Imposto de renda anual:** a declaração do ano com a redução anual da Lei 15.270/2025, a comparação entre os modelos completo e simplificado e a tributação mínima das altas rendas; e a retenção de 10% sobre dividendos acima de R$ 50 mil no mês.
+- **Calculadoras trabalhistas:** holerite do mês, jornada pelas marcações de ponto, salário bruto a partir do líquido, horas extras com adicional noturno e DSR, insalubridade e periculosidade, salário-família, 13º salário, férias com abono, PLR, rescisão por motivo de desligamento, seguro-desemprego, custo do funcionário para a empresa, comparação entre CLT e PJ, pró-labore ou pagamento a autônomo (RPA), empregado doméstico com o DAE, estágio e trabalho intermitente.
+- **FGTS, afastamentos e benefícios:** afastamento por doença ou acidente e licenças-maternidade e paternidade, saque-aniversário do FGTS e abono salarial do PIS/Pasep.
+- **Imposto de renda anual:** a declaração do ano com a redução anual da Lei 15.270/2025, a comparação entre os modelos completo e simplificado e a tributação mínima das altas rendas; a retenção de 10% sobre dividendos acima de R$ 50 mil no mês; o carnê-leão de honorários e aluguéis; o ganho de capital na venda de imóveis e outros bens; e a multa e os juros de tributos pagos em atraso.
 - **Pensão alimentícia:** pensão de um ou mais beneficiários sobre os rendimentos líquidos, os brutos, o salário mínimo ou em valor fixo, com o IRRF nas duas modalidades; revisão, que compara a pensão atual com a proposta; e pensão em atraso, com correção monetária, juros, a separação entre o rito da prisão e o da penhora e a multa e os honorários do cumprimento de sentença. O 13º salário, as férias, a rescisão e a PLR também descontam a pensão.
-- **Débitos judiciais:** atualização de débitos trabalhistas e cíveis com a correção e os juros de cada fase definida pelo STF, pelo TST, pelo STJ e pela Lei 14.905/2024.
+- **Débitos judiciais:** atualização de débitos trabalhistas e cíveis com a correção e os juros de cada fase definida pelo STF, pelo TST, pelo STJ e pela Lei 14.905/2024, e a correção de qualquer valor por um índice, com juros e multa opcionais.
 - **Estabilidade:** indenização do período de estabilidade restante, com 13º salário, férias, adicional de 1/3, FGTS e multa de 40%.
 - **Tabelas e parâmetros:** consulta e manutenção das faixas de INSS e IRRF, dos valores usados nos cálculos e dos índices INPC, IPCA, IPCA-E, taxa legal, Selic e TR, com atualização pela internet a partir das fontes oficiais e de fontes alternativas.
 - **Histórico e planilhas:** cada cálculo pode ser salvo com um nome, como o do empregado ou o número do processo, para reabrir, refazer ou duplicar depois, e todos os resultados podem ir para uma planilha do Excel, além do PDF.
 
-Todos os cálculos são feitos **no seu computador**. Os dados digitados não são enviados para nenhum servidor; a internet só é usada quando você pede a atualização das tabelas.
+Todos os cálculos são feitos **no seu computador**. Os dados digitados não são enviados para nenhum servidor; a internet só é usada quando você pede a atualização das tabelas e, ao abrir o aplicativo, para verificar se há uma versão nova, o que pode ser desligado (seção [11](#11-tema-e-configurações)).
+
+Na primeira abertura, o aplicativo lembra que os resultados são simulações: antes de usá-los num pagamento, numa rescisão ou num processo, confira a competência, as tabelas e a convenção coletiva da categoria.
 
 ## 2. Antes de começar
 
@@ -76,13 +79,17 @@ Para remover, use **Configurações do Windows > Aplicativos > Aplicativos insta
 | --- | --- | --- |
 | 1 | Cabeçalho | Identifica a Central de cálculos. Ao lado ficam o seletor de **Tema** e o botão do manual. |
 | 2 | Manual do usuário | Abre este manual. Também pode ser aberto com a tecla **F1** em qualquer janela. |
-| 3 | Calculadoras | Aba com as calculadoras, em quatro grupos: **Impostos e salário**, **Pensão e débitos judiciais**, **Remuneração e custos** e **Férias, 13º e desligamento**. |
+| 3 | Calculadoras | Aba com as calculadoras, em cinco grupos: **Impostos e salário**, **Pensão e débitos judiciais**, **Remuneração e custos**, **Férias, 13º e desligamento** e **FGTS, afastamentos e benefícios**. |
 | 4 | Tabelas | Aba com as tabelas de INSS, IRRF, PLR, salário-família, salário mínimo, seguro-desemprego, os parâmetros usados nos cálculos e os índices INPC, IPCA, IPCA-E, taxa legal, Selic e TR. Veja a seção [Tabelas e parâmetros](#9-tabelas-e-parâmetros). |
 | 5 | Grupo | Título do grupo, que reúne as calculadoras de um mesmo assunto. |
 | 6 | Cartão | Abre a calculadora em uma janela própria. Clique no cartão ou selecione-o com **Tab** e pressione **Enter**. |
 | 7 | Histórico | Aba com os cálculos salvos, para abrir, duplicar, renomear ou excluir. Veja a seção [Histórico de cálculos](#103-histórico-de-cálculos). |
 
 A tela principal só reúne os atalhos: cada cálculo, inclusive a simulação tributária, é feito na sua própria janela. Ao fechar a janela, você volta para a tela principal.
+
+**Avisos ao abrir:** logo abaixo do cabeçalho, uma faixa avisa quando há uma versão nova publicada, com o botão **Baixar a nova versão**, e quando as tabelas do ano ainda não foram cadastradas (a do INSS mais recente é de um ano anterior), com o botão **Abrir a tabela do INSS**. **Dispensar** esconde o aviso até a próxima abertura.
+
+![Aviso de versão nova na tela principal](imagens/73-aviso-nova-versao.png)
 
 **Rolagem nas calculadoras:** cada calculadora mostra o formulário no alto e o resultado logo abaixo. Quando o resultado não cabe na janela, a tela inteira rola, pela roda do mouse ou pela barra à direita, e o resultado aparece no seu tamanho, sem ficar espremido abaixo do formulário. Listas com barra própria, como a de beneficiários da pensão, rolam primeiro e, ao chegar ao fim, passam a rolagem para a tela.
 
@@ -365,7 +372,7 @@ O botão **Gerar PDF** cria um demonstrativo com as verbas, os dados considerado
 
 ## 8. Calculadoras trabalhistas
 
-Além da simulação tributária, da pensão, dos débitos judiciais, da estabilidade e da jornada pelo ponto, a aba **Calculadoras** tem quinze calculadoras para o dia a dia do departamento pessoal e do imposto de renda. Todas usam a mesma janela:
+Além da simulação tributária, da pensão, dos débitos judiciais, da estabilidade e da jornada pelo ponto, a aba **Calculadoras** tem vinte e cinco calculadoras para o dia a dia do departamento pessoal e do imposto de renda. Todas usam a mesma janela:
 
 - **Formulário:** os campos do cálculo. Passe o mouse sobre um campo para ver uma dica do que informar. Ao abrir uma calculadora, a competência, o salário e os dependentes do último cálculo já vêm preenchidos. Alguns campos só aparecem quando a opção escolhida em outro campo exige.
 - **Calcular:** faz o cálculo. A tecla **Enter** também calcula.
@@ -465,17 +472,21 @@ Em raros casos, o arredondamento em centavos impede chegar exatamente ao valor. 
 
 | Campo | O que informar |
 | --- | --- |
+| Vínculo | **Empregado (CLT)**, **Empregado doméstico** ou **Jovem aprendiz**. O doméstico tem a indenização compensatória de 3,2% no lugar da multa de 40% do FGTS; o aprendiz tem FGTS de 2%. |
 | Data de admissão e Data de desligamento | Início do contrato e último dia trabalhado. Com aviso trabalhado, o último dia do aviso. |
 | Motivo | Dispensa sem justa causa, pedido de demissão, acordo (CLT, art. 484-A), dispensa por justa causa, fim de contrato a prazo ou a rescisão antecipada do contrato a prazo ou de experiência, **pela empresa** (art. 479) ou **pelo empregado** (art. 480). |
 | Aviso prévio | Aparece nos motivos que têm aviso: **Indenizado**, **Trabalhado ou dispensado** ou, no pedido de demissão, **Não cumprido (descontar)**. |
 | Fim previsto do contrato | Aparece nas rescisões antecipadas: o último dia previsto do contrato a prazo ou de experiência. |
 | Salário e Médias de variáveis | Último salário e a média de variáveis, que entra no aviso, no 13º e nas férias. |
 | Outros proventos do mês | Horas extras, adicionais e comissões do mês do desligamento. Somam-se ao saldo de salário nas bases do INSS, do IRRF, da pensão e do FGTS. |
+| Verbas indenizatórias | Verbas da convenção ou do acordo sem INSS, IRRF e FGTS, como a multa normativa. |
 | Faltas no mês | Faltas injustificadas no mês do desligamento, descontadas dos dias do saldo de salário. |
+| Semanas com falta no mês | Semanas do mês do desligamento com falta injustificada: cada uma perde o DSR, um dia de salário (Lei 605/1949, art. 6º). |
 | Férias vencidas | Períodos completos cujas férias não foram tiradas (até 2). Com 2 períodos, o mais antigo já passou do prazo de concessão e é pago em dobro (CLT, art. 137). |
 | Faltas no período atual | Faltas injustificadas no período aquisitivo em curso, que reduzem as férias proporcionais. |
-| Saldo do FGTS | Aparece quando há multa ou saque. Informe o saldo do extrato; com 0,00, o aplicativo estima o saldo pelo salário atual. |
+| Saldo do FGTS | Aparece quando há multa ou saque, e sempre no doméstico. Informe o saldo do extrato; com 0,00, o aplicativo estima o saldo pelo salário atual. |
 | 13º já adiantado | 1ª parcela do 13º paga no ano, que é descontada. |
+| Outros descontos | Vale-transporte, plano de saúde, vales e adiantamentos. No total, a compensação na rescisão é limitada a uma remuneração mensal (CLT, art. 477, § 5º). |
 | Data do pagamento | Deixe em branco se as verbas forem pagas no prazo, no mês do desligamento. O IRRF usa a tabela do mês do pagamento (regime de caixa) e o INSS, a da competência do desligamento, o que faz diferença quando a tabela do IRRF muda na virada do mês, como em 01/2026. Pagamento depois de 10 dias do fim do contrato gera a multa do art. 477, § 8º. |
 | Data-base da categoria | Aparece na dispensa sem justa causa: o mês do reajuste da categoria, para a indenização adicional da Lei 7.238/1984. |
 
@@ -509,12 +520,17 @@ Nas **rescisões antecipadas** do contrato a prazo ou de experiência não há a
 - **Indenização adicional (Lei 7.238/1984, art. 9º):** na dispensa sem justa causa, se o contrato, projetado pelo aviso, terminar nos 30 dias que antecedem a data-base, o empregado recebe um salário a mais (Súmulas 182 e 242 do TST). Se a projeção passar da data-base, não há indenização, mas as verbas devem ser pagas com o salário reajustado (Súmula 314); o aplicativo avisa nas observações.
 - **Multa por atraso (art. 477, § 8º):** com a data do pagamento depois de 10 dias do fim do contrato, entra um salário de multa. Ela é tratada como indenização, sem INSS, IRRF nem FGTS, como entende a maior parte dos tribunais.
 - **Seguro-desemprego:** na dispensa sem justa causa e na rescisão antecipada pela empresa, **Valores informativos** traz uma estimativa para a 1ª solicitação, com os meses deste contrato e a remuneração atual como média. Para outras situações, use a calculadora [Seguro-desemprego](#812-seguro-desemprego).
+- **Empregado doméstico:** no lugar da multa de 40%, a indenização compensatória de 3,2%, estimada em 40% do saldo do FGTS (3,2% é 40% de 8%) mais os 3,2% do mês. Na dispensa sem justa causa, ela vai para o empregado; no acordo, a metade; nos demais motivos, volta ao empregador. O seguro-desemprego do doméstico é de um salário mínimo, em até 3 parcelas.
+- **Jovem aprendiz:** FGTS de 2%. No fim do contrato e nas hipóteses do art. 433 da CLT, não há as indenizações dos arts. 479 e 480.
+- **DSR perdido e outros descontos:** o DSR perdido reduz a base do INSS, do IRRF e do FGTS do mês; os outros descontos saem só do líquido.
+
+![Rescisão de empregado doméstico](imagens/70-rescisao-domestico.png)
 
 A memória de cálculo detalha o contrato, o aviso, a projeção, cada verba e o FGTS:
 
 ![Memória de cálculo da rescisão](imagens/22-rescisao-memoria.png)
 
-> **Atenção:** a rescisão deve ser paga em até 10 dias após o fim do contrato (CLT, art. 477, § 6º). O cálculo não inclui descontos de benefícios, o DSR perdido nas semanas com falta nem verbas previstas em convenção coletiva.
+> **Atenção:** a rescisão deve ser paga em até 10 dias após o fim do contrato (CLT, art. 477, § 6º). Verbas e descontos específicos da convenção coletiva entram nos campos de outros proventos, verbas indenizatórias e outros descontos: confira na convenção a incidência de cada um.
 
 ### 8.6 Custo do funcionário
 
@@ -531,6 +547,11 @@ Informe o **salário**, o **regime da empresa**, o **RAT** e o **FAP**, as **con
 
 - **Provisões:** 13º = salário ÷ 12; férias + 1/3 = salário ÷ 12 × 4/3. Os encargos também incidem sobre elas.
 - O resultado mostra o custo mensal, o custo anual, o acréscimo sobre o salário e o custo por hora, numa jornada de 220 horas.
+- **Empregador doméstico:** escolha esse regime para os encargos do DAE: 8% de contribuição patronal, 0,8% de GILRAT, 8% de FGTS e 3,2% de indenização compensatória, 20% ao todo.
+
+![Custo do empregado doméstico](imagens/72-custo-domestico.png)
+
+- **Jovem aprendiz:** marque **Sim** para o FGTS de 2% em vez de 8%.
 - **Custo anual:** 12 salários, o 13º e o 1/3 de férias, com os encargos e os benefícios. Ele é o custo mensal × 12 menos o salário e os encargos do mês de férias, que já estão na provisão de férias. Até a versão 1.3.0, esse mês era contado duas vezes, e o custo anual saía cerca de um salário maior.
 
 ### 8.7 Pró-labore e autônomo
@@ -638,6 +659,10 @@ A memória de cálculo mostra a média, a fórmula da faixa e a regra das parcel
 ![Memória de cálculo do seguro-desemprego](imagens/42-seguro-desemprego-memoria.png)
 
 Não têm direito o pedido de demissão, a justa causa, o acordo (CLT, art. 484-A, § 4º) e o fim normal do contrato a prazo. O benefício é pago pelo governo, não pela empresa, não tem desconto de INSS nem de IRRF e deve ser pedido de 7 a 120 dias depois da dispensa.
+
+**Empregado doméstico:** escolha o vínculo **Empregado doméstico**. A parcela é de um salário mínimo, em até 3 parcelas, para quem trabalhou como doméstico pelo menos 15 meses nos últimos 24 (LC 150/2015, arts. 26 e 28), e deve ser pedida de 7 a 90 dias depois da dispensa. Os salários e a solicitação não entram no cálculo e ficam ocultos.
+
+![Seguro-desemprego do doméstico](imagens/71-seguro-domestico.png)
 
 ### 8.13 CLT x PJ
 
@@ -761,6 +786,175 @@ Abra pelo cartão **Dividendos**, no grupo **Impostos e salário**. Ele calcula 
 - **Residente no exterior:** 10% sobre qualquer valor (Lei 9.249/1995, art. 10, § 4º).
 - A retenção é antecipação: na declaração, ela é compensada na tributação mínima e, para quem recebe até R$ 600 mil no ano, volta como restituição.
 - Os juros sobre capital próprio seguem regra própria, com IRRF de 17,5% desde 01/2026 (LC 224/2025).
+
+### 8.18 Tributo em atraso
+
+Abra pelo cartão **Tributo em atraso**, no grupo **Impostos e salário**. Ele calcula a multa e os juros de uma guia federal paga depois do vencimento.
+
+![Tributo em atraso](imagens/60-tributo-em-atraso.png)
+
+| Campo | O que informar |
+| --- | --- |
+| Guia | **DARF**, **DAS** do Simples Nacional, **DAE** do empregador doméstico ou **GPS** do INSS: todas seguem a mesma regra. |
+| Valor principal | Valor da guia no vencimento, sem acréscimos. |
+| Vencimento | Data de vencimento, já prorrogada para o dia útil seguinte quando cai em fim de semana ou feriado. |
+| Pagamento | Data em que a guia será paga. |
+
+- **Multa de mora:** 0,33% por dia de atraso, do dia seguinte ao vencimento até o pagamento, limitada a 20% (Lei 9.430/1996, art. 61).
+- **Juros:** a Selic de cada mês, do mês seguinte ao vencimento até o anterior ao pagamento, somada, mais 1% no mês do pagamento. Pago no próprio mês do vencimento, não há juros; no mês seguinte, só o 1%.
+- A Selic vem da tabela **Selic**: se faltar o mês anterior ao pagamento, atualize a tabela pela internet.
+- Não vale para o FGTS em atraso nem para tributos estaduais e municipais, que têm regras próprias.
+
+### 8.19 Correção de valores
+
+Abra pelo cartão **Correção de valores**, no grupo **Pensão e débitos judiciais**. Ele atualiza um valor por um índice mensal, como a Calculadora do Cidadão do Banco Central, com juros e multa opcionais.
+
+![Correção de valores](imagens/61-correcao-de-valores.png)
+
+| Campo | O que informar |
+| --- | --- |
+| Valor | Valor na data em que era devido. |
+| Mês em que era devido e Mês da atualização | A correção usa as variações do primeiro mês até o mês anterior ao da atualização. |
+| Índice | **IPCA**, **INPC**, **IPCA-E**, **Selic**, **TR** ou **taxa legal**, das tabelas de índices. Sem índice no contrato ou na decisão, o IPCA é o índice legal desde a Lei 14.905/2024. |
+| Juros ao mês (%) | Juros simples por mês cheio, sobre o valor corrigido, como 1% ao mês de um contrato; 0 para só corrigir. |
+| Multa (%) | Multa sobre o valor corrigido, como os 2% de uma conta em atraso; 0 quando não há. |
+
+Para débitos de processos, use [Débitos judiciais](#6-pensão-alimentícia-e-débitos-judiciais), que segue as fases definidas pelo STF e pela Lei 14.905/2024; para tributos federais, use [Tributo em atraso](#818-tributo-em-atraso).
+
+### 8.20 Empregado doméstico (DAE)
+
+Abra pelo cartão **Empregado doméstico (DAE)**, no grupo **Remuneração e custos**. Ele calcula o salário líquido do doméstico e o DAE do mês, a guia única do eSocial (LC 150/2015, arts. 34 e 35).
+
+![Empregado doméstico (DAE)](imagens/62-domestico-dae.png)
+
+Informe a **competência**, o **salário**, as **horas extras e adicionais** do mês, as **faltas**, os **dependentes** e o **custo do vale-transporte**, que é descontado até 6% do salário.
+
+| Parcela do DAE | Alíquota | Quem paga |
+| --- | --- | --- |
+| Contribuição patronal | 8% | Empregador |
+| GILRAT (seguro de acidente do trabalho) | 0,8% | Empregador |
+| FGTS | 8% | Empregador |
+| Indenização compensatória | 3,2% | Empregador |
+| INSS do empregado | Tabela progressiva | Descontado do empregado |
+| IRRF do empregado | Tabela mensal | Descontado do empregado |
+
+- O DAE vence no dia 7 do mês seguinte; se não for dia útil, pague no dia útil anterior.
+- A **indenização compensatória** substitui a multa de 40% do FGTS: na dispensa sem justa causa ela vai para o empregado; na justa causa, no pedido de demissão e no fim do contrato a prazo, volta ao empregador.
+- No 13º e nas férias, use as calculadoras próprias; na saída, a [Rescisão](#85-rescisão) com o vínculo **Empregado doméstico**.
+
+### 8.21 Estágio
+
+Abra pelo cartão **Estágio**, no grupo **Remuneração e custos**. Ele calcula o líquido da bolsa e o recesso remunerado (Lei 11.788/2008).
+
+![Estágio](imagens/63-estagio.png)
+
+- O estágio não é emprego: não há INSS, FGTS, 13º nem férias. A bolsa tem IRRF pela tabela mensal.
+- O **recesso** é de 30 dias por ano de estágio, proporcional nos períodos menores (a fração de 15 dias conta como mês), remunerado com a bolsa. Informe os dias já usufruídos para ver o saldo.
+- O estágio não pode passar de 2 anos na mesma empresa, exceto para a pessoa com deficiência; o aplicativo avisa quando passa.
+- O auxílio-transporte fica fora da base do IRRF, como ressarcimento de despesa.
+
+### 8.22 Trabalho intermitente
+
+Abra pelo cartão **Trabalho intermitente**, no grupo **Remuneração e custos**. Ele calcula o pagamento ao fim de cada período de convocação (CLT, art. 452-A, § 6º).
+
+![Trabalho intermitente](imagens/64-intermitente.png)
+
+| Verba | Como é calculada |
+| --- | --- |
+| Remuneração | Valor da hora × horas trabalhadas. O valor da hora não pode ser menor que o do salário mínimo. |
+| DSR | Remuneração ÷ dias trabalhados × domingos e feriados do período. |
+| Férias proporcionais + 1/3 | (Remuneração + DSR) ÷ 12, mais 1/3. |
+| 13º proporcional | (Remuneração + DSR) ÷ 12. |
+| FGTS | 8% da remuneração, do DSR e do 13º, depositados pelo empregador. |
+
+O INSS e o IRRF dependem de como cada verba é lançada na folha e não são calculados: some os valores do mês na Simulação tributária ou confira com a contabilidade.
+
+### 8.23 Carnê-leão
+
+Abra pelo cartão **Carnê-leão**, no grupo **Impostos e salário**. Ele calcula o IR mensal sobre rendimentos recebidos de pessoas físicas e do exterior.
+
+![Carnê-leão](imagens/65-carne-leao.png)
+
+| Campo | O que informar |
+| --- | --- |
+| Competência | Mês do recebimento: o carnê-leão segue o regime de caixa. |
+| Rendimentos de pessoas físicas | Honorários, consultas, aulas e outros rendimentos de trabalho recebidos de pessoas físicas ou do exterior. |
+| Aluguéis recebidos e Despesas do aluguel | Aluguéis recebidos de pessoas físicas; IPTU, condomínio e taxa de administração pagos pelo locador são abatidos. |
+| Livro-caixa | Despesas do consultório ou escritório de quem trabalha por conta própria, até o valor dos rendimentos de trabalho. |
+| INSS pago no mês, Dependentes e Pensão alimentícia paga | As demais deduções legais. |
+
+- O imposto usa a tabela mensal, compara as deduções legais com o desconto simplificado e aplica a redução mensal da Lei 15.270/2025, como no IRRF dos salários.
+- Pague em DARF, código 0190, até o último dia útil do mês seguinte, pelo Carnê-Leão Web, no e-CAC. Um imposto de menos de R$ 10,00 não é pago: soma-se ao do mês seguinte.
+- O que é pago por empresa tem IRRF retido por ela e fica de fora.
+
+### 8.24 Ganho de capital
+
+Abra pelo cartão **Ganho de capital**, no grupo **Impostos e salário**. Ele calcula o IR na venda de um imóvel ou de outro bem pela pessoa física.
+
+![Ganho de capital](imagens/66-ganho-de-capital.png)
+
+| Regra | Como funciona |
+| --- | --- |
+| Ganho | Valor da venda, menos as despesas da venda (como a corretagem) e o custo de aquisição declarado. |
+| Pequeno valor | Vendas de bens da mesma natureza de até R$ 35.000,00 no mês são isentas (Lei 9.250/1995, art. 22). |
+| Único imóvel | Isento até R$ 440.000,00, se for o único imóvel e não houve outra venda de imóvel em 5 anos (art. 23). |
+| Imóvel comprado até 1988 | Redução de 5% por ano antes de 1989; comprado até 1969, isento (Lei 7.713/1988, art. 18). |
+| Fatores FR1 e FR2 | Reduzem o ganho dos imóveis pelo tempo de posse, de 01/1996 a 11/2005 e de 12/2005 até a venda (Lei 11.196/2005, art. 40). |
+| Reinvestimento | A parte da venda de imóvel residencial aplicada em outro imóvel residencial em 180 dias fica isenta (art. 39). |
+| Alíquotas | 15% até R$ 5 milhões de ganho, 17,5% até R$ 10 milhões, 20% até R$ 30 milhões e 22,5% acima. |
+
+O imposto é pago em DARF, código 4600, até o último dia útil do mês seguinte ao da venda. Confira o resultado no programa GCAP da Receita Federal, que gera o demonstrativo para a declaração. Ações vendidas em bolsa têm regras próprias e não entram aqui.
+
+### 8.25 Afastamentos e licenças
+
+Abra pelo cartão **Afastamentos e licenças**, no grupo **FGTS, afastamentos e benefícios**. Ele mostra quem paga cada parte do afastamento, quanto e até quando.
+
+![Afastamentos e licenças](imagens/67-afastamento.png)
+
+| Tipo | Regra |
+| --- | --- |
+| Doença | A empresa paga os 15 primeiros dias; o INSS, a partir do 16º, com o auxílio estimado em 91% da média dos salários, entre o salário mínimo e o teto. O FGTS para no 16º dia. |
+| Acidente de trabalho | Como na doença, mas o FGTS continua durante todo o afastamento e, depois do auxílio do INSS, há 12 meses de estabilidade a partir do retorno. |
+| Licença-maternidade | 120 dias de salário-maternidade, igual à remuneração, pago pela empresa e compensado nas contribuições; a Empresa Cidadã prorroga por 60 dias. Estabilidade até 5 meses após o parto. |
+| Licença-paternidade | 5 dias até 2026, 10 em 2027, 15 em 2028 e 20 a partir de 2029 (LC 229/2026); a Empresa Cidadã acrescenta 15 dias. Garantia de emprego até um mês depois da licença. |
+
+O auxílio do INSS é uma estimativa: o valor exato sai da média de todos os salários de contribuição. Afastamento por doença de mais de 6 meses no período aquisitivo tira o direito às férias desse período (CLT, art. 133).
+
+### 8.26 Saque-aniversário do FGTS
+
+Abra pelo cartão **Saque-aniversário do FGTS**, no grupo **FGTS, afastamentos e benefícios**. Informe o **saldo do FGTS**, somando todas as contas, e o **mês de aniversário**.
+
+![Saque-aniversário do FGTS](imagens/68-saque-aniversario.png)
+
+| Saldo | Alíquota | Parcela adicional |
+| --- | --- | --- |
+| Até R$ 500,00 | 50% | — |
+| De R$ 500,01 a R$ 1.000,00 | 40% | R$ 50,00 |
+| De R$ 1.000,01 a R$ 5.000,00 | 30% | R$ 150,00 |
+| De R$ 5.000,01 a R$ 10.000,00 | 20% | R$ 650,00 |
+| De R$ 10.000,01 a R$ 15.000,00 | 15% | R$ 1.150,00 |
+| De R$ 15.000,01 a R$ 20.000,00 | 10% | R$ 1.900,00 |
+| Acima de R$ 20.000,00 | 5% | R$ 2.900,00 |
+
+O saque fica disponível do 1º dia útil do mês do aniversário até o fim do segundo mês seguinte. Quem está no saque-aniversário e é dispensado sem justa causa recebe a multa de 40%, mas não saca o saldo; a volta ao saque-rescisão só vale a partir do 25º mês depois do pedido.
+
+### 8.27 Abono salarial (PIS/Pasep)
+
+Abra pelo cartão **Abono salarial (PIS/Pasep)**, no grupo **FGTS, afastamentos e benefícios**. Ele verifica o direito ao abono e calcula o valor.
+
+![Abono salarial](imagens/69-abono-salarial.png)
+
+| Campo | O que informar |
+| --- | --- |
+| Ano-base | Ano trabalhado; o abono é pago dois anos depois (o de 2024, em 2026). |
+| Meses trabalhados | Meses com carteira assinada no ano-base; a fração de 15 dias conta como mês. |
+| Remuneração média mensal | Média das remunerações no ano-base. |
+| Cadastrado há 5 anos | Inscrito no PIS/Pasep há pelo menos 5 anos. |
+| Limite de renda | Deixe 0,00 para usar o limite publicado; para um calendário que o aplicativo ainda não tem, informe o divulgado pelo Ministério do Trabalho. |
+
+- **Valor:** o salário mínimo do ano do pagamento ÷ 12 × meses trabalhados.
+- **Limite de renda:** até o calendário de 2025, dois salários mínimos (R$ 2.640,00); a partir do de 2026, o valor passou a ser corrigido só pelo INPC, até chegar a um salário mínimo e meio (EC 135/2024). No calendário de 2026, R$ 2.766,00.
+- Também é preciso ter trabalhado pelo menos 30 dias no ano-base e ter os dados informados pelo empregador no eSocial.
 
 ## 9. Tabelas e parâmetros
 
@@ -926,6 +1120,8 @@ No canto superior direito da tela principal, escolha o **Tema**:
 
 A escolha é salva automaticamente e restaurada na próxima abertura. As configurações ficam no arquivo `%LOCALAPPDATA%\CalculoIRRF\settings.json`.
 
+**Avisar sobre novas versões:** no rodapé da tela principal. Marcada, a abertura consulta no GitHub se há uma versão mais nova, sem enviar nenhum dado dos cálculos; desmarcada, o aplicativo não acessa a internet ao abrir. O aviso das tabelas do ano não usa a internet e continua aparecendo.
+
 Por padrão, o aplicativo desenha a interface sem usar a placa de vídeo, o que reduz bastante o consumo de memória. Se preferir a aceleração por GPU, feche o aplicativo e altere no arquivo de configurações o valor `"HardwareAcceleration": false` para `true`.
 
 ## 12. Mensagens e solução de problemas
@@ -934,6 +1130,10 @@ Por padrão, o aplicativo desenha a interface sem usar a placa de vídeo, o que 
 
 | Mensagem ou situação | O que fazer |
 | --- | --- |
+| "Ocorreu um erro inesperado..." ou "Não foi possível abrir o aplicativo." | O aplicativo registra os detalhes no arquivo indicado na mensagem, em `%LOCALAPPDATA%\CalculoIRRF\logs`, um por mês. Ao relatar o problema, anexe esse arquivo, que traz a mensagem técnica do erro. |
+| "Falta o valor de Selic de MM/AAAA na tabela de índices." | No tributo em atraso e na correção de valores, atualize a tabela do índice pela internet ou cadastre o mês. |
+| "O limite de renda do calendário de AAAA não está no aplicativo." | No abono salarial, informe o limite do calendário divulgado pelo Ministério do Trabalho. |
+| "Os outros descontos não podem passar de uma remuneração mensal..." | Na rescisão, a compensação de descontos é limitada a uma remuneração (CLT, art. 477, § 5º). |
 | "Informe uma competência válida (MM/AAAA), valores monetários válidos e dependentes maior ou igual a zero." | Confira o formato da competência, use vírgula nos centavos e informe dependentes como número inteiro. |
 | "Informe média, dias-base, datas (dd/MM/aaaa) e complementos em formatos válidos." | Confira as datas da estabilidade e os valores digitados. |
 | "O fim da estabilidade deve ser posterior à data de demissão." | Corrija a data final, que precisa ser depois da demissão. |
@@ -975,7 +1175,10 @@ Por padrão, o aplicativo desenha a interface sem usar a placa de vídeo, o que 
 Ela passou a abrir em uma janela própria, pelo cartão **Simulação tributária** da aba **Calculadoras**, como as demais calculadoras. A pensão alimentícia também deixou de depender dela: tem os próprios campos de rendimentos, que já vêm preenchidos com os dados da última simulação.
 
 **Os meus dados são enviados para a internet?**
-Não. Os cálculos e as tabelas ficam no seu computador. A internet só é usada quando você clica em **Atualizar pela internet**, que apenas lê as páginas das fontes, ou em links para páginas oficiais.
+Não. Os cálculos e as tabelas ficam no seu computador. A internet só é usada quando você clica em **Atualizar pela internet**, que apenas lê as páginas das fontes, em links para páginas oficiais e, ao abrir, para consultar no GitHub se há versão nova, o que pode ser desligado no rodapé da tela principal.
+
+**Uso as calculadoras para quem trabalha em jornada parcial?**
+Sim. Informe o salário da jornada parcial: o INSS, o IRRF, o FGTS e as verbas são calculados sobre ele. Desde 2017, as férias do tempo parcial seguem a mesma tabela de dias do tempo integral (CLT, art. 58-A, § 7º).
 
 **Por que a soma das faixas do IRRF difere em centavos do total?**
 No detalhamento por faixas, o imposto de cada faixa é arredondado separadamente. O total do quadro e o IRRF final são calculados pela fórmula da tabela progressiva (base × alíquota − parcela a deduzir). Por isso pode haver diferença de alguns centavos entre a soma das linhas e o total.

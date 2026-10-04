@@ -23,7 +23,7 @@ internal static class MemoriaRescisao
         memoria.Add(Ferias(c, v.Ferias));
         memoria.Add(Fgts(c, v));
         if (seguro is not null)
-            memoria.Add(Seguro(c.Remuneracao, seguro));
+            memoria.Add(seguro.Domestico ? SeguroDomestico(seguro) : Seguro(c.Remuneracao, seguro));
         if (v.Saldo.VerbasDoMes > 0m)
         {
             memoria.Add(MemoriaTributaria.Inss($"INSS sobre o {rotuloMes}", t.InssSaldo, rotuloMes));
@@ -86,8 +86,10 @@ internal static class MemoriaRescisao
                 : $"{Formato.Dias(saldo.Dias)} até {Formato.Data(c.Desligamento)}, no mês comercial de 30 dias"),
             new("Saldo de salário", $"{Formato.Moeda(c.Salario)} ÷ 30 x {Formato.Dias(saldo.Dias)} = {Formato.Moeda(saldo.Valor)}")
         };
-        if (c.OutrosProventos > 0m)
-            formulas.Add(new("Verbas do mês", $"{Formato.Moeda(saldo.Valor)} (saldo) + {Formato.Moeda(c.OutrosProventos)} (outros proventos) = {Formato.Moeda(saldo.VerbasDoMes)}, base do INSS, do IRRF e do FGTS do mês"));
+        if (saldo.DsrPerdido > 0m)
+            formulas.Add(new("DSR perdido", $"{Formato.Moeda(c.Salario)} ÷ 30 x {saldo.SemanasComFalta} semana(s) com falta = {Formato.Moeda(saldo.DsrPerdido)}, um dia de salário por semana (Lei 605/1949, art. 6º)"));
+        if (c.OutrosProventos > 0m || saldo.DsrPerdido > 0m)
+            formulas.Add(new("Verbas do mês", $"{Formato.Moeda(saldo.Valor)} (saldo){(saldo.DsrPerdido > 0m ? $" - {Formato.Moeda(saldo.DsrPerdido)} (DSR perdido)" : "")}{(c.OutrosProventos > 0m ? $" + {Formato.Moeda(c.OutrosProventos)} (outros proventos)" : "")} = {Formato.Moeda(saldo.VerbasDoMes)}, base do INSS, do IRRF e do FGTS do mês"));
         return new GrupoMemoriaDto("Saldo de salário", $"Saldo: {Formato.Moeda(saldo.Valor)}", formulas);
     }
 
@@ -144,19 +146,39 @@ internal static class MemoriaRescisao
         var formulas = new List<FormulaDto>
         {
             new("Depósito do mês", adiantamento > 0m
-                ? $"({Formato.Moeda(v.Saldo.VerbasDoMes)} (verbas do mês) + {Formato.Moeda(v.Aviso.Indenizado)} (aviso) + {Formato.Moeda(v.DecimoTerceiro.Total)} (13º) - {Formato.Moeda(adiantamento)} (1ª parcela do 13º, que já teve FGTS)) x 8% = {Formato.Moeda(f.Deposito)}"
-                : $"({Formato.Moeda(v.Saldo.VerbasDoMes)} (verbas do mês) + {Formato.Moeda(v.Aviso.Indenizado)} (aviso) + {Formato.Moeda(v.DecimoTerceiro.Total)} (13º)) x 8% = {Formato.Moeda(f.Deposito)}")
+                ? $"({Formato.Moeda(v.Saldo.VerbasDoMes)} (verbas do mês) + {Formato.Moeda(v.Aviso.Indenizado)} (aviso) + {Formato.Moeda(v.DecimoTerceiro.Total)} (13º) - {Formato.Moeda(adiantamento)} (1ª parcela do 13º, que já teve FGTS)) x {Formato.PercentualCurto(f.PercentualDeposito)} = {Formato.Moeda(f.Deposito)}"
+                : $"({Formato.Moeda(v.Saldo.VerbasDoMes)} (verbas do mês) + {Formato.Moeda(v.Aviso.Indenizado)} (aviso) + {Formato.Moeda(v.DecimoTerceiro.Total)} (13º)) x {Formato.PercentualCurto(f.PercentualDeposito)} = {Formato.Moeda(f.Deposito)}")
         };
         if (f.UsaSaldo)
             formulas.Add(new("Saldo do FGTS", f.SaldoEstimado
-                ? $"Estimado: ({Formato.Moeda(c.Remuneracao)} x ({f.MesesDepositados} meses antes do desligamento + {f.MesesAnosAnteriores}/12 de 13º dos anos anteriores){(adiantamento > 0m ? $" + {Formato.Moeda(adiantamento)} (1ª parcela do 13º)" : "")}) x 8% = {Formato.Moeda(f.Saldo)}"
+                ? $"Estimado: ({Formato.Moeda(c.Remuneracao)} x ({f.MesesDepositados} meses antes do desligamento + {f.MesesAnosAnteriores}/12 de 13º dos anos anteriores){(adiantamento > 0m ? $" + {Formato.Moeda(adiantamento)} (1ª parcela do 13º)" : "")}) x {Formato.PercentualCurto(f.PercentualDeposito)} = {Formato.Moeda(f.Saldo)}"
                 : $"Informado: {Formato.Moeda(f.Saldo)}"));
         if (f.PercentualMulta > 0m)
             formulas.Add(new("Multa rescisória", $"({Formato.Moeda(f.Saldo)} + {Formato.Moeda(f.Deposito)}) x {Formato.PercentualCurto(f.PercentualMulta)} = {Formato.Moeda(f.Multa)}"));
+        if (f.Compensatoria is { } compensatoria)
+        {
+            formulas.Add(new("Indenização compensatória do mês", $"Mesma base do depósito do mês x 3,2% = {Formato.Moeda(compensatoria.Deposito)}"));
+            formulas.Add(new("Saldo da indenização compensatória", $"{Formato.Moeda(f.Saldo)} x 40% = {Formato.Moeda(compensatoria.Saldo)}, estimado: 3,2% é 40% dos 8% do FGTS; confira o valor no extrato"));
+            formulas.Add(new("Destino da indenização", compensatoria.AoEmpregado > 0m
+                ? $"({Formato.Moeda(compensatoria.Saldo)} + {Formato.Moeda(compensatoria.Deposito)}) x {Formato.PercentualCurto(compensatoria.PercentualAoEmpregado)} = {Formato.Moeda(compensatoria.AoEmpregado)} para o empregado (LC 150/2015, art. 22)"
+                : $"{Formato.Moeda(compensatoria.AoEmpregador)} voltam ao empregador neste motivo (LC 150/2015, art. 22, § 1º)"));
+        }
         formulas.Add(new("Saque", f.PercentualSaque > 0m
             ? $"({Formato.Moeda(f.Saldo)} + {Formato.Moeda(f.Deposito)}{(f.Multa > 0m ? $" + {Formato.Moeda(f.Multa)} (multa)" : "")}) x {Formato.PercentualCurto(f.PercentualSaque)} = {Formato.Moeda(f.Saque)}"
             : "Neste motivo de desligamento, o FGTS não pode ser sacado."));
         return new GrupoMemoriaDto("FGTS", f.PercentualSaque > 0m ? $"Saque: {Formato.Moeda(f.Saque)}" : $"Depósito: {Formato.Moeda(f.Deposito)}", formulas);
+    }
+
+    private static GrupoMemoriaDto SeguroDomestico(EstimativaSeguroRescisao estimativa)
+    {
+        var formulas = new List<FormulaDto>
+        {
+            new("Valor da parcela", $"Um salário mínimo: {Formato.Moeda(estimativa.Parcela.Valor)} (LC 150/2015, art. 26)"),
+            new("Parcelas", estimativa.Parcelas > 0
+                ? $"{estimativa.Meses} meses neste contrato nos últimos 24: até 3 parcelas"
+                : $"{estimativa.Meses} meses neste contrato: o doméstico precisa de {RegrasSeguroDesemprego.MesesMinimosDomestico} meses de trabalho nos últimos 24 (art. 28)")
+        };
+        return new GrupoMemoriaDto("Seguro-desemprego do doméstico (estimado)", estimativa.Parcelas > 0 ? $"{estimativa.Parcelas} x {Formato.Moeda(estimativa.Parcela.Valor)}" : "Sem direito", formulas);
     }
 
     private static GrupoMemoriaDto Seguro(decimal remuneracao, EstimativaSeguroRescisao estimativa)

@@ -13,6 +13,8 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
         DataContext = viewModel;
+        // Depois de exibida: a consulta da versão no GitHub não atrasa a abertura.
+        ContentRendered += async (_, _) => await viewModel.CarregarAvisosAsync();
     }
 
     private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)

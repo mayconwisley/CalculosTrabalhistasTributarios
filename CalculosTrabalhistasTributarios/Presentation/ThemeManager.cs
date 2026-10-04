@@ -1,7 +1,5 @@
 using Microsoft.Win32;
-using System.IO;
 using System.Runtime.Versioning;
-using System.Text.Json;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
@@ -10,19 +8,16 @@ namespace CalculosTrabalhistasTributarios.Presentation;
 [SupportedOSPlatform("windows")]
 public static class ThemeManager
 {
-    private static readonly string SettingsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "CalculoIRRF", "settings.json");
     // O logo é exibido com 52 px; decodificar com 156 px cobre até 300% de escala sem carregar o PNG original inteiro.
     private const int LogoDecodePixelWidth = 156;
-    private static ThemeSettings _settings = new();
     private static bool? _appliedDarkTheme;
 
     public static ThemeMode CurrentMode { get; private set; } = ThemeMode.Automatico;
-    public static bool UseHardwareAcceleration => _settings.HardwareAcceleration;
+    public static bool UseHardwareAcceleration => ConfiguracoesUsuario.Atuais.HardwareAcceleration;
 
     public static void Initialize()
     {
-        _settings = LoadSettings();
-        CurrentMode = Enum.TryParse<ThemeMode>(_settings.Theme, true, out var mode) ? mode : ThemeMode.Automatico;
+        CurrentMode = Enum.TryParse<ThemeMode>(ConfiguracoesUsuario.Atuais.Theme, true, out var mode) ? mode : ThemeMode.Automatico;
         SystemEvents.UserPreferenceChanged += OnUserPreferenceChanged;
         Apply(CurrentMode, false);
     }
@@ -32,7 +27,7 @@ public static class ThemeManager
     public static void Apply(ThemeMode mode, bool persist = true)
     {
         CurrentMode = mode;
-        if (persist) SaveMode(mode);
+        if (persist) ConfiguracoesUsuario.Alterar(configuracoes => configuracoes.Theme = mode.ToString());
 
         var isDarkTheme = mode == ThemeMode.Escuro || mode == ThemeMode.Automatico && IsWindowsUsingDarkTheme();
         if (_appliedDarkTheme == isDarkTheme) return;
@@ -79,26 +74,7 @@ public static class ThemeManager
         return Registry.GetValue(Key, "AppsUseLightTheme", 1) is int lightTheme && lightTheme == 0;
     }
 
-    private static ThemeSettings LoadSettings()
-    {
-        try
-        {
-            if (!File.Exists(SettingsPath)) return new ThemeSettings();
-            return JsonSerializer.Deserialize<ThemeSettings>(File.ReadAllText(SettingsPath)) ?? new ThemeSettings();
-        }
-        catch { return new ThemeSettings(); }
-    }
 
-    private static void SaveMode(ThemeMode mode)
-    {
-        _settings.Theme = mode.ToString();
-        try
-        {
-            Directory.CreateDirectory(Path.GetDirectoryName(SettingsPath)!);
-            File.WriteAllText(SettingsPath, JsonSerializer.Serialize(_settings));
-        }
-        catch { }
-    }
 
     private static readonly (string Key, string Color)[] Light =
     [
@@ -113,10 +89,4 @@ public static class ThemeManager
     // Depois das paletas: os campos estáticos são inicializados na ordem em que aparecem.
     private static readonly Lazy<(string Key, object Value)[]> LightResources = new(() => CreateResources(Light, "logo-light.png"));
     private static readonly Lazy<(string Key, object Value)[]> DarkResources = new(() => CreateResources(Dark, "logo-dark.png"));
-
-    private sealed class ThemeSettings
-    {
-        public string Theme { get; set; } = ThemeMode.Automatico.ToString();
-        public bool HardwareAcceleration { get; set; }
-    }
 }

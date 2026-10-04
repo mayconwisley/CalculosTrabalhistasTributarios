@@ -14,8 +14,8 @@ public static class CalculadoraRescisao
         if (Validar(c) is { Falhou: true } invalido)
             return invalido.Erro;
         var diasNoMes = DiasNoMesDoDesligamento(c.Admissao, c.Desligamento);
-        if (c.FaltasNoMes > diasNoMes)
-            return Erro.Validacao($"As faltas no mês não podem passar dos {diasNoMes} dias trabalhados no mês do desligamento.");
+        if (c.FaltasNoMes + c.SemanasComFalta > diasNoMes)
+            return Erro.Validacao($"As faltas no mês e os DSR perdidos não podem passar dos {diasNoMes} dias trabalhados no mês do desligamento.");
 
         var saldo = Saldo(c, diasNoMes);
         var aviso = Aviso(c);
@@ -35,8 +35,14 @@ public static class CalculadoraRescisao
     {
         if (c.Desligamento < c.Admissao)
             return Erro.Validacao("A data de desligamento deve ser igual ou posterior à data de admissão.");
-        if (c.Salario < 0m || c.Medias < 0m || c.SaldoFgts < 0m || c.AdiantamentoDecimoTerceiro < 0m || c.FaltasPeriodoAtual < 0 || c.OutrosProventos < 0m || c.FaltasNoMes < 0)
+        if (c.Salario < 0m || c.Medias < 0m || c.SaldoFgts < 0m || c.AdiantamentoDecimoTerceiro < 0m || c.FaltasPeriodoAtual < 0 || c.OutrosProventos < 0m || c.FaltasNoMes < 0
+            || c.SemanasComFalta < 0 || c.OutrosDescontos < 0m || c.VerbasIndenizatorias < 0m)
             return Erro.Validacao("Os valores, as faltas e a quantidade de dependentes não podem ser negativos.");
+        if (c.SemanasComFalta > 5)
+            return Erro.Validacao("Um mês tem no máximo 5 semanas com falta.");
+        // A compensação de descontos na rescisão é limitada a uma remuneração mensal (CLT, art. 477, § 5º).
+        if (c.OutrosDescontos > c.Remuneracao)
+            return Erro.Validacao($"Os outros descontos não podem passar de uma remuneração mensal (R$ {c.Remuneracao.ToString("N2", System.Globalization.CultureInfo.GetCultureInfo("pt-BR"))}): na rescisão, a compensação é limitada a esse valor (CLT, art. 477, § 5º).");
         if (c.Antecipada && (c.FimPrevistoContrato is not { } fim || fim <= c.Desligamento))
             return Erro.Validacao("Na rescisão antecipada, informe o fim previsto do contrato a prazo, posterior ao desligamento.");
         if (c.MesDataBase is < 1 or > 12)
@@ -66,7 +72,8 @@ public static class CalculadoraRescisao
     {
         var dias = diasNoMes - c.FaltasNoMes;
         var valor = Arredondar(c.Salario * dias / 30m);
-        return new SaldoDeSalario(diasNoMes, dias, valor, valor + c.OutrosProventos);
+        var dsrPerdido = Arredondar(c.Salario / 30m * c.SemanasComFalta);
+        return new SaldoDeSalario(diasNoMes, dias, valor, valor - dsrPerdido + c.OutrosProventos, c.SemanasComFalta, dsrPerdido);
     }
 
     // No acordo, o aviso indenizado é pago pela metade (CLT, art. 484-A, I, a).
@@ -158,9 +165,11 @@ public static class CalculadoraRescisao
     {
         // A 1ª parcela do 13º já teve o FGTS depositado no mês em que foi paga: aqui entra só a diferença, e o
         // adiantamento maior que o 13º devido reduz a base do mês.
-        var deposito = Arredondar(Math.Max(0m, saldo.VerbasDoMes + aviso.Indenizado + decimoTerceiro.Total - c.AdiantamentoDecimoTerceiro) * .08m);
+        var baseDoMes = Math.Max(0m, saldo.VerbasDoMes + aviso.Indenizado + decimoTerceiro.Total - c.AdiantamentoDecimoTerceiro);
+        var deposito = Arredondar(baseDoMes * c.PercentualFgts / 100m);
         // A rescisão antecipada pelo empregador equipara-se à dispensa sem justa causa (Decreto 99.684/1990, art. 14).
-        var percentualMulta = c.Motivo switch { MotivoRescisao.DispensaSemJustaCausa or MotivoRescisao.RescisaoAntecipadaPeloEmpregador => 40m, MotivoRescisao.Acordo => 20m, _ => 0m };
+        // O doméstico não tem a multa: no lugar dela, a indenização compensatória, depositada mês a mês.
+        var percentualMulta = c.Domestico ? 0m : c.Motivo switch { MotivoRescisao.DispensaSemJustaCausa or MotivoRescisao.RescisaoAntecipadaPeloEmpregador => 40m, MotivoRescisao.Acordo => 20m, _ => 0m };
         var percentualSaque = c.Motivo switch
         {
             MotivoRescisao.DispensaSemJustaCausa or MotivoRescisao.TerminoDeContratoPorPrazo or MotivoRescisao.RescisaoAntecipadaPeloEmpregador => 100m,
@@ -172,13 +181,31 @@ public static class CalculadoraRescisao
         var mesesDepositados = RegrasTrabalhistas.AvosFerias(c.Admissao, c.CompetenciaDesligamento.AddDays(-1));
         var mesesAnosAnteriores = RegrasTrabalhistas.AvosFerias(c.Admissao, new DateOnly(c.Desligamento.Year, 1, 1).AddDays(-1));
         var saldoEstimado = c.SaldoFgts == 0m;
-        var saldoFgts = saldoEstimado ? Arredondar((c.Remuneracao * (mesesDepositados + mesesAnosAnteriores / 12m) + c.AdiantamentoDecimoTerceiro) * .08m) : c.SaldoFgts;
+        var saldoFgts = saldoEstimado ? Arredondar((c.Remuneracao * (mesesDepositados + mesesAnosAnteriores / 12m) + c.AdiantamentoDecimoTerceiro) * c.PercentualFgts / 100m) : c.SaldoFgts;
         var multa = Arredondar((saldoFgts + deposito) * percentualMulta / 100m);
         // O percentual de saque vale sobre todo o saldo, inclusive a multa depositada: no acordo, 80% de tudo (Manual de
         // Movimentação da Conta Vinculada do FGTS da Caixa, versão 28, código 07).
         var saque = Arredondar((saldoFgts + deposito + multa) * percentualSaque / 100m);
-        return new FgtsRescisao(deposito, percentualMulta, percentualSaque, percentualMulta > 0m || percentualSaque > 0m,
-            mesesDepositados, mesesAnosAnteriores, saldoEstimado, saldoFgts, multa, saque);
+        return new FgtsRescisao(deposito, percentualMulta, percentualSaque, percentualMulta > 0m || percentualSaque > 0m || c.Domestico,
+            mesesDepositados, mesesAnosAnteriores, saldoEstimado, saldoFgts, multa, saque, c.PercentualFgts, c.Domestico ? Compensatoria(c, baseDoMes, saldoFgts) : null);
+    }
+
+    /// <summary>
+    /// 3,2% do doméstico: o depósito do mês sobre a mesma base do FGTS e o saldo estimado em 40% do saldo do FGTS. Na
+    /// dispensa sem justa causa e na rescisão antecipada pelo empregador, vai para o empregado; no acordo, a metade, como a
+    /// metade da indenização do art. 484-A da CLT; nos demais motivos, volta ao empregador (LC 150/2015, art. 22, § 1º).
+    /// </summary>
+    private static CompensatoriaDomestico Compensatoria(ContratoRescindido c, decimal baseDoMes, decimal saldoFgts)
+    {
+        var deposito = Arredondar(baseDoMes * .032m);
+        var saldo = Arredondar(saldoFgts * .4m);
+        var percentual = c.Motivo switch
+        {
+            MotivoRescisao.DispensaSemJustaCausa or MotivoRescisao.RescisaoAntecipadaPeloEmpregador => 100m,
+            MotivoRescisao.Acordo => 50m,
+            _ => 0m
+        };
+        return new CompensatoriaDomestico(deposito, saldo, percentual, Arredondar((saldo + deposito) * percentual / 100m));
     }
 
     private static decimal Arredondar(decimal valor) => CalculadoraTributacao.Arredondar(valor);

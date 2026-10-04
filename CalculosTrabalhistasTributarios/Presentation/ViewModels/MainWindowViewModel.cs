@@ -1,8 +1,11 @@
 using CalculosTrabalhistasTributarios.Application.DTOs;
+using CalculosTrabalhistasTributarios.Application.Interfaces;
 using CalculosTrabalhistasTributarios.Presentation.Interfaces;
 using CalculosTrabalhistasTributarios.Presentation.Mvvm;
 using CalculosTrabalhistasTributarios.Presentation.ViewModels.Calculadoras;
 using CalculosTrabalhistasTributarios.Presentation.ViewModels.Historico;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.Versioning;
 
@@ -12,12 +15,18 @@ namespace CalculosTrabalhistasTributarios.Presentation.ViewModels;
 [SupportedOSPlatform("windows")]
 public sealed class MainWindowViewModel : ViewModelBase
 {
+    private readonly IVerificarAtualizacoesUseCase _verificarAtualizacoes;
+    private readonly IRegistroDeErros _registroDeErros;
+    private readonly IWindowNavigator _navegador;
     private ThemeMode _temaSelecionado = ThemeManager.CurrentMode;
     private bool _historicoAberto;
 
-    public MainWindowViewModel(IWindowNavigator navegador, HistoricoViewModel historico)
+    public MainWindowViewModel(IWindowNavigator navegador, HistoricoViewModel historico, IVerificarAtualizacoesUseCase verificarAtualizacoes, IRegistroDeErros registroDeErros)
     {
         Historico = historico;
+        _navegador = navegador;
+        _verificarAtualizacoes = verificarAtualizacoes;
+        _registroDeErros = registroDeErros;
         AtalhoViewModel Calculadora(string titulo, string descricao, TipoCalculadora tipo) => Atalho(titulo, descricao, () => navegador.AbrirCalculadora(tipo));
         AtalhoViewModel Tabela(string titulo, string descricao, TipoTabelaTributaria tipo) => Atalho(titulo, descricao, () => navegador.AbrirTabela(tipo));
 
@@ -31,14 +40,18 @@ public sealed class MainWindowViewModel : ViewModelBase
                 Calculadora("Pró-labore e autônomo", "Líquido do pró-labore ou do RPA e o custo para a empresa.", TipoCalculadora.ProLaboreAutonomo),
                 Calculadora("CLT x PJ", "O que sobra para o profissional e o custo para a empresa nos dois regimes.", TipoCalculadora.CltPj),
                 Calculadora("IRPF anual", "Declaração completa ou simplificada, redução anual e tributação mínima.", TipoCalculadora.IrpfAnual),
-                Calculadora("Dividendos", "Retenção de 10% acima de R$ 50 mil no mês, desde 2026.", TipoCalculadora.Dividendos)
+                Calculadora("Carnê-leão", "IR mensal de honorários e aluguéis recebidos de pessoas físicas.", TipoCalculadora.CarneLeao),
+                Calculadora("Ganho de capital", "IR na venda de imóvel ou outro bem, com isenções e fatores de redução.", TipoCalculadora.GanhoCapital),
+                Calculadora("Dividendos", "Retenção de 10% acima de R$ 50 mil no mês, desde 2026.", TipoCalculadora.Dividendos),
+                Calculadora("Tributo em atraso", "Multa e juros pela Selic de DARF, DAS, DAE ou GPS pago depois do vencimento.", TipoCalculadora.TributoAtraso)
             ]),
             new("Pensão e débitos judiciais",
             [
                 Atalho("Pensão alimentícia", "Um ou mais beneficiários, com a pensão deduzida da base do IRRF.", navegador.AbrirPensao),
                 Calculadora("Revisão de pensão", "A pensão atual e a proposta lado a lado, com o efeito em quem paga.", TipoCalculadora.RevisaoPensao),
                 Atalho("Pensão em atraso", "Débito corrigido, com juros e a separação entre prisão e penhora.", navegador.AbrirPensaoAtraso),
-                Atalho("Débitos judiciais", "Atualização trabalhista e cível pelas fases do STF, do TST e da Lei 14.905/2024.", navegador.AbrirDebitoJudicial)
+                Atalho("Débitos judiciais", "Atualização trabalhista e cível pelas fases do STF, do TST e da Lei 14.905/2024.", navegador.AbrirDebitoJudicial),
+                Calculadora("Correção de valores", "Valor atualizado pelo IPCA, INPC, Selic ou outro índice, com juros e multa.", TipoCalculadora.CorrecaoValor)
             ]),
             new("Remuneração e custos",
             [
@@ -47,7 +60,10 @@ public sealed class MainWindowViewModel : ViewModelBase
                 Calculadora("Horas extras e adicionais", "Horas extras, adicional noturno e reflexo no DSR.", TipoCalculadora.HorasExtras),
                 Calculadora("Insalubridade e periculosidade", "Adicionais pelo grau de insalubridade ou pela periculosidade.", TipoCalculadora.Adicionais),
                 Calculadora("Salário-família", "Direito e valor das cotas pela remuneração e pelos filhos.", TipoCalculadora.SalarioFamilia),
-                Calculadora("Custo do funcionário", "Encargos, provisões e benefícios pagos pela empresa.", TipoCalculadora.CustoFuncionario)
+                Calculadora("Custo do funcionário", "Encargos, provisões e benefícios pagos pela empresa.", TipoCalculadora.CustoFuncionario),
+                Calculadora("Empregado doméstico (DAE)", "Salário líquido do doméstico e o DAE do mês, com os encargos do empregador.", TipoCalculadora.Domestico),
+                Calculadora("Estágio", "Bolsa líquida do estagiário, com o IRRF, e o recesso proporcional.", TipoCalculadora.Estagio),
+                Calculadora("Trabalho intermitente", "Pagamento de cada convocação: horas, DSR, férias, 13º e FGTS.", TipoCalculadora.Intermitente)
             ]),
             new("Férias, 13º e desligamento",
             [
@@ -56,6 +72,12 @@ public sealed class MainWindowViewModel : ViewModelBase
                 Calculadora("Rescisão", "Verbas pelo motivo do desligamento, com aviso prévio e multa do FGTS.", TipoCalculadora.Rescisao),
                 Calculadora("Seguro-desemprego", "Parcelas e valor do benefício pela média dos últimos salários.", TipoCalculadora.SeguroDesemprego),
                 Atalho("Estabilidade", "Indenização do período restante de estabilidade.", navegador.AbrirEstabilidade)
+            ]),
+            new("FGTS, afastamentos e benefícios",
+            [
+                Calculadora("Afastamentos e licenças", "Doença, acidente de trabalho e licenças: quem paga, quanto e até quando.", TipoCalculadora.Afastamento),
+                Calculadora("Saque-aniversário do FGTS", "O valor que pode ser sacado no aniversário e o efeito numa dispensa.", TipoCalculadora.SaqueAniversario),
+                Calculadora("Abono salarial (PIS/Pasep)", "Direito e valor do abono pelos meses trabalhados no ano-base.", TipoCalculadora.AbonoSalarial)
             ])
         ];
 
@@ -93,6 +115,21 @@ public sealed class MainWindowViewModel : ViewModelBase
     }
 
     public IReadOnlyList<GrupoAtalhosViewModel> Calculadoras { get; }
+
+    /// <summary>Versão nova publicada e tabelas do ano ainda não cadastradas, verificadas ao abrir.</summary>
+    public ObservableCollection<AvisoInicioViewModel> Avisos { get; } = [];
+
+    /// <summary>Desligada, a abertura não acessa a internet; a verificação das tabelas, local, continua.</summary>
+    public bool VerificarNovasVersoes
+    {
+        get => ConfiguracoesUsuario.Atuais.VerificarNovasVersoes;
+        set
+        {
+            if (value == VerificarNovasVersoes) return;
+            ConfiguracoesUsuario.Alterar(configuracoes => configuracoes.VerificarNovasVersoes = value);
+            OnPropertyChanged();
+        }
+    }
     public IReadOnlyList<GrupoAtalhosViewModel> Tabelas { get; }
     public HistoricoViewModel Historico { get; }
 
@@ -120,6 +157,32 @@ public sealed class MainWindowViewModel : ViewModelBase
     }
 
     private static AtalhoViewModel Atalho(string titulo, string descricao, Action abrir) => new(titulo, descricao, new RelayCommand(_ => abrir()));
+
+    /// <summary>Chamado pela janela ao abrir. Um aviso que não pôde ser verificado simplesmente não aparece.</summary>
+    public async Task CarregarAvisosAsync()
+    {
+        try
+        {
+            var avisos = await _verificarAtualizacoes.ExecutarAsync(Versao, VerificarNovasVersoes, DateOnly.FromDateTime(DateTime.Today), CancellationToken.None);
+            Avisos.Clear();
+            foreach (var aviso in avisos)
+                Avisos.Add(Criar(aviso));
+        }
+        catch (Exception exception)
+        {
+            _registroDeErros.Registrar(exception, "Verificação de atualizações ao abrir");
+        }
+    }
+
+    private AvisoInicioViewModel Criar(AvisoAtualizacaoDto aviso)
+    {
+        AvisoInicioViewModel? criado = null;
+        var dispensar = new RelayCommand(_ => Avisos.Remove(criado!));
+        criado = aviso.Tipo == TipoAvisoAtualizacao.NovaVersao && aviso.Endereco is { } endereco
+            ? new(aviso.Mensagem, "Baixar a nova versão", new RelayCommand(_ => Process.Start(new ProcessStartInfo(endereco.AbsoluteUri) { UseShellExecute = true })), dispensar)
+            : new(aviso.Mensagem, "Abrir a tabela do INSS", new RelayCommand(_ => _navegador.AbrirTabela(TipoTabelaTributaria.Inss)), dispensar);
+        return criado;
+    }
 
     // A versão vem da tag usada na publicação; o SDK acrescenta "+<commit>" à versão informativa, que não interessa ao usuário.
     private static string ObterVersao()

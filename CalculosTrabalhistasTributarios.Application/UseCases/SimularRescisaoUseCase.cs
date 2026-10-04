@@ -53,16 +53,24 @@ public sealed class SimularRescisaoUseCase(ITributacaoConsulta tributacaoConsult
 
     private static ContratoRescindido Contrato(SimularRescisaoRequest r) => new(
         r.Admissao, r.Desligamento, r.Motivo, r.Aviso, r.Salario, r.Medias, r.PeriodosFeriasVencidas, r.FaltasPeriodoAtual, r.SaldoFgts,
-        r.AdiantamentoDecimoTerceiro, r.DataPagamento, r.FimPrevistoContrato, r.MesDataBase, r.OutrosProventos, r.FaltasNoMes);
+        r.AdiantamentoDecimoTerceiro, r.DataPagamento, r.FimPrevistoContrato, r.MesDataBase, r.OutrosProventos, r.FaltasNoMes,
+        r.Vinculo, r.SemanasComFalta, r.OutrosDescontos, r.VerbasIndenizatorias);
 
     /// <summary>Estimativa na 1ª solicitação, com os meses deste contrato e a remuneração atual como média; nula sem direito ou sem tabela.</summary>
     private static Result<EstimativaSeguroRescisao?> EstimarSeguro(VerbasRescisorias verbas, TabelasDaCompetencia tabelas)
     {
         var c = verbas.Contrato;
         var temSeguro = c.Motivo is MotivoRescisao.DispensaSemJustaCausa or MotivoRescisao.RescisaoAntecipadaPeloEmpregador
-            && tabelas.FaixasSeguroDesemprego.Count > 0 && tabelas.SalarioMinimo is not null && c.Remuneracao > 0m;
+            && (c.Domestico || tabelas.FaixasSeguroDesemprego.Count > 0) && tabelas.SalarioMinimo is not null && c.Remuneracao > 0m;
         if (!temSeguro)
             return Result.Ok<EstimativaSeguroRescisao?>(null);
+        // O doméstico recebe um salário mínimo, em até 3 parcelas, com 15 meses de trabalho nos últimos 24 (LC 150/2015, arts. 26 e 28).
+        if (c.Domestico)
+        {
+            var mesesDomestico = Math.Min(24, RegrasTrabalhistas.AvosFerias(c.Admissao, c.Desligamento));
+            return Result.Ok<EstimativaSeguroRescisao?>(new EstimativaSeguroRescisao(mesesDomestico, RegrasSeguroDesemprego.ParcelasDomestico(mesesDomestico),
+                RegrasSeguroDesemprego.ParcelaDomestico(tabelas.SalarioMinimo!.Value), Domestico: true));
+        }
         var meses = Math.Min(36, RegrasTrabalhistas.AvosFerias(c.Admissao, c.Desligamento));
         var parcela = RegrasSeguroDesemprego.ValorDaParcela(c.Remuneracao, tabelas.FaixasSeguroDesemprego, tabelas.SalarioMinimo!.Value);
         return parcela.Falhou

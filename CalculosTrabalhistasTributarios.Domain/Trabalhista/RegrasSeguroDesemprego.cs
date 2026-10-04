@@ -6,6 +6,15 @@ namespace CalculosTrabalhistasTributarios.Domain.Trabalhista;
 /// <summary>Regras do seguro-desemprego do trabalhador dispensado sem justa causa (Lei 7.998/1990, com a redação da Lei 13.134/2015).</summary>
 public static class RegrasSeguroDesemprego
 {
+    /// <summary>O doméstico precisa de 15 meses de trabalho nos 24 anteriores à dispensa (LC 150/2015, art. 28).</summary>
+    public const int MesesMinimosDomestico = 15;
+
+    /// <summary>Doméstico: até 3 parcelas, com a carência cumprida (LC 150/2015, art. 26).</summary>
+    public static int ParcelasDomestico(int mesesNosUltimos24) => mesesNosUltimos24 >= MesesMinimosDomestico ? 3 : 0;
+
+    /// <summary>Doméstico: cada parcela vale um salário mínimo, sem a tabela de faixas (LC 150/2015, art. 26).</summary>
+    public static ParcelaSeguroDesemprego ParcelaDomestico(decimal salarioMinimo) => new(0, 0m, 0m, 0m, salarioMinimo, salarioMinimo);
+
     /// <summary>
     /// Meses com salário exigidos antes da dispensa: 12 nos últimos 18 meses na 1ª solicitação, 9 nos últimos 12 na 2ª e cada
     /// um dos 6 últimos nas seguintes (art. 3º, I).

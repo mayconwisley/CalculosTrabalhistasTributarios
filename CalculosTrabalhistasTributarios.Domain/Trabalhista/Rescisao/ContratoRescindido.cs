@@ -9,6 +9,9 @@ namespace CalculosTrabalhistasTributarios.Domain.Trabalhista.Rescisao;
 /// <param name="MesDataBase">Mês da data-base da categoria, para a indenização adicional da Lei 7.238/1984.</param>
 /// <param name="OutrosProventos">Horas extras, adicionais e comissões do mês do desligamento.</param>
 /// <param name="FaltasNoMes">Faltas no mês do desligamento, descontadas do saldo de salário.</param>
+/// <param name="SemanasComFalta">Semanas do mês do desligamento com falta injustificada, que perdem o DSR.</param>
+/// <param name="OutrosDescontos">Benefícios, vales e adiantamentos descontados na rescisão, sem efeito nos tributos.</param>
+/// <param name="VerbasIndenizatorias">Verbas da convenção ou do acordo sem INSS, IRRF e FGTS, como a multa normativa.</param>
 public sealed record ContratoRescindido(
     DateOnly Admissao,
     DateOnly Desligamento,
@@ -24,8 +27,17 @@ public sealed record ContratoRescindido(
     DateOnly? FimPrevistoContrato,
     int? MesDataBase,
     decimal OutrosProventos,
-    int FaltasNoMes)
+    int FaltasNoMes,
+    TipoVinculo Vinculo = TipoVinculo.Empregado,
+    int SemanasComFalta = 0,
+    decimal OutrosDescontos = 0m,
+    decimal VerbasIndenizatorias = 0m)
 {
+    /// <summary>Depósito mensal do FGTS: 2% do jovem aprendiz e 8% dos demais.</summary>
+    public decimal PercentualFgts => Vinculo == TipoVinculo.Aprendiz ? 2m : 8m;
+
+    public bool Domestico => Vinculo == TipoVinculo.Domestico;
+
     /// <summary>Salário e médias de variáveis, a base das verbas proporcionais e indenizadas.</summary>
     public decimal Remuneracao => Salario + Medias;
 

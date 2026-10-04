@@ -50,5 +50,15 @@ public static class DependencyInjection
         .AddKeyedTransient<ICalculadora, CalculadoraCltPj>(TipoCalculadora.CltPj)
         .AddKeyedTransient<ICalculadora, CalculadoraHolerite>(TipoCalculadora.Holerite)
         .AddKeyedTransient<ICalculadora, CalculadoraIrpfAnual>(TipoCalculadora.IrpfAnual)
-        .AddKeyedTransient<ICalculadora, CalculadoraDividendos>(TipoCalculadora.Dividendos);
+        .AddKeyedTransient<ICalculadora, CalculadoraDividendos>(TipoCalculadora.Dividendos)
+        .AddKeyedTransient<ICalculadora, CalculadoraTributoAtraso>(TipoCalculadora.TributoAtraso)
+        .AddKeyedTransient<ICalculadora, CalculadoraCorrecaoValor>(TipoCalculadora.CorrecaoValor)
+        .AddKeyedTransient<ICalculadora, CalculadoraDomestico>(TipoCalculadora.Domestico)
+        .AddKeyedTransient<ICalculadora, CalculadoraAfastamento>(TipoCalculadora.Afastamento)
+        .AddKeyedTransient<ICalculadora, CalculadoraSaqueAniversario>(TipoCalculadora.SaqueAniversario)
+        .AddKeyedTransient<ICalculadora, CalculadoraAbonoSalarial>(TipoCalculadora.AbonoSalarial)
+        .AddKeyedTransient<ICalculadora, CalculadoraCarneLeao>(TipoCalculadora.CarneLeao)
+        .AddKeyedTransient<ICalculadora, CalculadoraGanhoCapital>(TipoCalculadora.GanhoCapital)
+        .AddKeyedTransient<ICalculadora, CalculadoraEstagio>(TipoCalculadora.Estagio)
+        .AddKeyedTransient<ICalculadora, CalculadoraIntermitente>(TipoCalculadora.Intermitente);
 }
