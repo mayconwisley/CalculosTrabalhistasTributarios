@@ -1,8 +1,8 @@
-using CalculosTrabalhistasTributarios.Application.DTOs;
 using CalculosTrabalhistasTributarios.Application.Demonstrativos;
+using CalculosTrabalhistasTributarios.Application.DTOs;
 using CalculosTrabalhistasTributarios.Application.Interfaces;
-using CalculosTrabalhistasTributarios.Domain.Pensao;
 using CalculosTrabalhistasTributarios.Domain.Comum;
+using CalculosTrabalhistasTributarios.Domain.Pensao;
 
 namespace CalculosTrabalhistasTributarios.Application.UseCases;
 

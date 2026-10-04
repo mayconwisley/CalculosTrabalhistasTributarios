@@ -1,9 +1,9 @@
 using CalculosTrabalhistasTributarios.Application.DTOs;
 using CalculosTrabalhistasTributarios.Application.UseCases;
-using System.Globalization;
-using CalculosTrabalhistasTributarios.Domain.Judicial;
-using Xunit;
 using CalculosTrabalhistasTributarios.Domain.Comum;
+using CalculosTrabalhistasTributarios.Domain.Judicial;
+using System.Globalization;
+using Xunit;
 
 namespace CalculosTrabalhistasTributarios.Tests;
 

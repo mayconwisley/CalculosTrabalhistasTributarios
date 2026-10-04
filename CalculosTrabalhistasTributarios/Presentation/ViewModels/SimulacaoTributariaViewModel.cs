@@ -1,11 +1,11 @@
-using CalculosTrabalhistasTributarios.Application.DTOs;
 using CalculosTrabalhistasTributarios.Application.Demonstrativos;
+using CalculosTrabalhistasTributarios.Application.DTOs;
 using CalculosTrabalhistasTributarios.Application.Interfaces;
 using CalculosTrabalhistasTributarios.Presentation.Interfaces;
 using CalculosTrabalhistasTributarios.Presentation.Mvvm;
 using CalculosTrabalhistasTributarios.Presentation.Services;
-using CalculosTrabalhistasTributarios.Presentation.ViewModels.Historico;
 using CalculosTrabalhistasTributarios.Presentation.ViewModels.Calculadoras;
+using CalculosTrabalhistasTributarios.Presentation.ViewModels.Historico;
 using System.Globalization;
 using System.Windows.Input;
 

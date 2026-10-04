@@ -1,7 +1,7 @@
 using CalculosTrabalhistasTributarios.Application.DTOs;
-using CalculosTrabalhistasTributarios.Domain.Tributacao;
 using CalculosTrabalhistasTributarios.Domain.Trabalhista;
 using CalculosTrabalhistasTributarios.Domain.Trabalhista.Rescisao;
+using CalculosTrabalhistasTributarios.Domain.Tributacao;
 using static CalculosTrabalhistasTributarios.Application.Demonstrativos.Rescisao.TextosRescisao;
 
 namespace CalculosTrabalhistasTributarios.Application.Demonstrativos.Rescisao;

@@ -1,9 +1,9 @@
 using CalculosTrabalhistasTributarios.Application.DTOs;
+using CalculosTrabalhistasTributarios.Domain.Comum;
 using CalculosTrabalhistasTributarios.Presentation.Interfaces;
 using CalculosTrabalhistasTributarios.Presentation.ViewModels.Calculadoras;
 using CalculosTrabalhistasTributarios.Views;
 using System.Windows;
-using CalculosTrabalhistasTributarios.Domain.Comum;
 
 namespace CalculosTrabalhistasTributarios.Presentation.Services;
 

@@ -1,7 +1,7 @@
 using CalculosTrabalhistasTributarios.Application.DTOs;
 using CalculosTrabalhistasTributarios.Application.Interfaces;
-using CalculosTrabalhistasTributarios.Domain.Trabalhista;
 using CalculosTrabalhistasTributarios.Domain.Comum;
+using CalculosTrabalhistasTributarios.Domain.Trabalhista;
 
 namespace CalculosTrabalhistasTributarios.Application.UseCases;
 

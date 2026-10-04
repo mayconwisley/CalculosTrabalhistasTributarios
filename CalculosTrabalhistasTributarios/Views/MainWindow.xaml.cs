@@ -1,8 +1,8 @@
+using CalculosTrabalhistasTributarios.Presentation.ViewModels;
 using System.Diagnostics;
 using System.Runtime.Versioning;
 using System.Windows;
 using System.Windows.Navigation;
-using CalculosTrabalhistasTributarios.Presentation.ViewModels;
 
 namespace CalculosTrabalhistasTributarios.Views;
 
