@@ -57,15 +57,25 @@ internal static class ComponentesPdf
             cabecalho.Item().Text(subtitulo).FontSize(9).FontColor(CinzaTexto);
             cabecalho.Item().PaddingTop(8).LineHorizontal(1).LineColor(AzulPrimario);
         });
-        pagina.Footer().PaddingTop(12).Row(rodape =>
+        pagina.Footer().PaddingTop(12).Column(rodape =>
         {
-            rodape.RelativeItem().Text("Cálculos Trabalhistas e Tributários - dados processados localmente").FontSize(8).FontColor(CinzaTexto);
-            rodape.AutoItem().Text(texto =>
+            rodape.Spacing(8);
+            rodape.Item().Background(AzulClaro).Border(1).BorderColor(CinzaBorda).Padding(8).Column(aviso =>
             {
-                texto.Span("Página ").FontSize(8).FontColor(CinzaTexto);
-                texto.CurrentPageNumber().FontSize(8).FontColor(CinzaTexto);
-                texto.Span(" de ").FontSize(8).FontColor(CinzaTexto);
-                texto.TotalPages().FontSize(8).FontColor(CinzaTexto);
+                aviso.Spacing(3);
+                aviso.Item().Text("CÁLCULO SIMULADO - VALORES ESTIMADOS").SemiBold().FontColor(AzulPrimario);
+                aviso.Item().Text("Este documento apresenta uma simulação. Procure um profissional especializado para apurar e validar os valores aplicáveis ao seu caso antes de utilizá-los.");
+            });
+            rodape.Item().Row(informacoes =>
+            {
+                informacoes.RelativeItem().Text("Cálculos Trabalhistas e Tributários - dados processados localmente").FontSize(8).FontColor(CinzaTexto);
+                informacoes.AutoItem().Text(texto =>
+                {
+                    texto.Span("Página ").FontSize(8).FontColor(CinzaTexto);
+                    texto.CurrentPageNumber().FontSize(8).FontColor(CinzaTexto);
+                    texto.Span(" de ").FontSize(8).FontColor(CinzaTexto);
+                    texto.TotalPages().FontSize(8).FontColor(CinzaTexto);
+                });
             });
         });
     }

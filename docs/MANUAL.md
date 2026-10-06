@@ -1166,6 +1166,8 @@ Todas as calculadoras possuem o botão **Gerar PDF**, que fica disponível depoi
 
 O relatório sempre reflete o **último cálculo** feito na tela.
 
+Todas as páginas dos relatórios em PDF exibem o aviso **CÁLCULO SIMULADO - VALORES ESTIMADOS**. Procure um profissional especializado para apurar e validar os valores aplicáveis ao seu caso antes de utilizá-los.
+
 ### 10.2 Planilhas do Excel
 
 O botão **Gerar Excel**, ao lado do **Gerar PDF**, salva o mesmo conteúdo em uma planilha (.xlsx), com o nome sugerido do PDF. Os valores, os percentuais, os fatores e as datas vão como números, com o formato brasileiro, para você somar, filtrar e refazer as contas; a memória de cálculo fica em uma aba própria. A jornada pelo ponto tem só a planilha, com os dias e os totais do mês.

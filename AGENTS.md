@@ -136,6 +136,7 @@ Cada regra financeira deve ser reproduzível a partir das entradas, da competên
 - Quando a soma de componentes arredondados puder diferir do total calculado com maior precisão, explique a diferença. Não esconda ajustes artificiais em uma verba.
 - Na ausência de uma entrada necessária para estimar um valor, use indicação como “Não calculada”. Não apresente `R$ 0,00` como se o cálculo tivesse sido realizado.
 - PDF e Excel devem preservar os mesmos critérios e totais da tela. No Excel, dinheiro deve ser célula numérica com formatação, não texto com `R$`.
+- Todo PDF de calculadora deve preservar o aviso de cálculo simulado e valores estimados, com orientação para procurar um profissional especializado para apurar e validar os valores. O aviso fica no rodapé compartilhado de `ComponentesPdf`, em todas as páginas; novos relatórios devem usar essa configuração.
 - Ao mudar um DTO ou o formato de um resultado, revise seus consumidores: ViewModel, PDF, planilha e testes.
 
 ## 7. Interface WPF e experiência do usuário
