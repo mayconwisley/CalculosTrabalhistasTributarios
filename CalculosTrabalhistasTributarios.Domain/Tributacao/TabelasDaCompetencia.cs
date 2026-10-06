@@ -67,6 +67,10 @@ public sealed class TabelasDaCompetencia
         return new ApuracaoInss(baseInss, baseConsiderada, CalculadoraTributacao.Arredondar(detalhes.Sum(item => item.Imposto)), detalhes);
     }
 
+    /// <summary>Faixas de um novo vínculo de empregado, após as faixas já ocupadas por vínculos anteriores dessa categoria.</summary>
+    internal IReadOnlyList<ResultadoFaixaTributaria> CalcularFaixasInssEntre(decimal baseAnterior, decimal baseFinal) =>
+        CalculadoraInss.CalcularDetalhesIntervalo(baseAnterior, baseFinal, _faixasInss);
+
     /// <summary>INSS de 11% do contribuinte individual (sócio ou autônomo) retido pela empresa, com a base limitada ao teto.</summary>
     public ApuracaoInss CalcularInssContribuinteIndividual(decimal remuneracao)
     {

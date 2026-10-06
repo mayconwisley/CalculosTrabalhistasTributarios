@@ -26,7 +26,7 @@ Guia completo para utilizar **Cálculos Trabalhistas e Tributários**: simulaç�
 O aplicativo Cálculos Trabalhistas e Tributários reúne, em um único lugar para Windows, os cálculos trabalhistas e tributários mais comuns do dia a dia:
 
 - **Simulação tributária:** IRRF pelas modalidades normal e simplificada, INSS por faixas, salário líquido e FGTS de 8% e de 2% (Jovem Aprendiz), com indicação da modalidade de IRRF mais vantajosa.
-- **Calculadoras trabalhistas:** holerite do mês, comissões e DSR, jornada pelas marcações de ponto, salário bruto a partir do líquido, horas extras com adicional noturno e DSR, insalubridade e periculosidade, salário-família, 13º salário, férias com abono, PLR, rescisão por motivo de desligamento, seguro-desemprego, custo do funcionário para a empresa, comparação entre CLT e PJ, pró-labore ou pagamento a autônomo (RPA), empregado doméstico com o DAE, estágio e trabalho intermitente.
+- **Calculadoras trabalhistas:** holerite do mês, comissões e DSR, INSS em múltiplos vínculos, jornada pelas marcações de ponto, salário bruto a partir do líquido, horas extras com adicional noturno e DSR, insalubridade e periculosidade, salário-família, 13º salário, férias com abono, PLR, rescisão por motivo de desligamento, seguro-desemprego, custo do funcionário para a empresa, comparação entre CLT e PJ, pró-labore ou pagamento a autônomo (RPA), empregado doméstico com o DAE, estágio e trabalho intermitente.
 - **FGTS, afastamentos e benefícios:** afastamento por doença ou acidente e licenças-maternidade e paternidade, saque-aniversário do FGTS e abono salarial do PIS/Pasep.
 - **Imposto de renda anual:** a declaração do ano com a redução anual da Lei 15.270/2025, a comparação entre os modelos completo e simplificado e a tributação mínima das altas rendas; a retenção de 10% sobre dividendos acima de R$ 50 mil no mês; o carnê-leão de honorários e aluguéis; o ganho de capital na venda de imóveis e outros bens; e a multa e os juros de tributos pagos em atraso.
 - **Pensão alimentícia:** pensão de um ou mais beneficiários sobre os rendimentos líquidos, os brutos, o salário mínimo ou em valor fixo, com o IRRF nas duas modalidades; revisão, que compara a pensão atual com a proposta; e pensão em atraso, com correção monetária, juros, a separação entre o rito da prisão e o da penhora e a multa e os honorários do cumprimento de sentença. O 13º salário, as férias, a rescisão e a PLR também descontam a pensão.
@@ -979,6 +979,23 @@ Abra pelo cartão **Comissões e DSR**, no grupo **Remuneração e custos**. A c
 - **Impacto líquido:** diferença entre o líquido deste cenário e o de um cenário sem comissões, mantendo a garantia mínima. Por isso, uma comissão pequena pode substituir parte do complemento sem aumentar o líquido.
 - **Uso no holerite:** informe as comissões sem DSR no campo **Comissões do mês** do holerite, que faz a mesma apuração. Se quiser lançar o total pronto em **Proventos tributáveis**, deixe o campo próprio de comissões zerado. O DSR das horas extras permanece separado.
 - **Limite do cenário:** o líquido desta calculadora considera salário fixo, comissões, DSR e complemento, sem outros adicionais, descontos ou benefícios. Use **Holerite do mês** para a folha completa. O FGTS é informativo e não reduz o líquido.
+
+### 8.29 INSS em múltiplos vínculos
+
+Abra pelo cartão **INSS em múltiplos vínculos**, no grupo **Impostos e salário**. Informe uma competência a partir de 03/2020. A tela já apresenta dois vínculos, que é a quantidade mínima para este cálculo:
+
+1. Em cada vínculo, selecione a **Categoria** e digite a **Remuneração (R$)** da competência. A **Fonte** é opcional; pode ser o nome da empresa ou do tomador e aparece no demonstrativo.
+2. Use **+ Adicionar vínculo** para incluir outros empregos ou serviços. A ordem na tela é a ordem de desconto. Use as setas **↑** e **↓** para reorganizar; o botão **×** remove um vínculo adicional.
+3. Selecione **Calcular** para ver a contribuição por vínculo, as faixas usadas e a parcela do teto disponível em cada etapa.
+
+As categorias disponíveis são **Empregado**, **Doméstico**, **Avulso**, **Individual (11%)** para contribuinte individual com retenção pela empresa e **Individual EBAS (20%)** quando o tomador for entidade beneficente nessa condição. É possível adicionar quantos vínculos forem necessários. O aplicativo não precisa do CNPJ ou CPF para simular.
+
+- **Teto compartilhado:** a remuneração de todos os vínculos ocupa o mesmo limite máximo mensal do salário de contribuição. Quando um vínculo cruza o teto, apenas a parte residual sofre desconto; os seguintes não geram novo desconto.
+- **Faixas progressivas:** empregado, doméstico e avulso compartilham as faixas na ordem informada. Cada faixa de cada vínculo é truncada em centavos. O contribuinte individual ocupa o teto, mas não avança a faixa progressiva dos empregados.
+- **Resultado:** a memória mostra a base já ocupada, a base tributada, cada faixa e o desconto por vínculo. O total **Após INSS** é anterior ao IRRF e aos demais descontos da folha. Para conferir o holerite de cada fonte pagadora, compare apenas o desconto do vínculo correspondente, não a soma de todos.
+- **Outras apurações:** 13º salário tem INSS separado. Rendimentos de RPPS não entram neste teto do RGPS. Recolhimento por conta própria em GPS usa a base residual e não está incluído nesta calculadora.
+
+Regras e exemplos numéricos: [Manual de Orientação do eSocial, seção “Múltiplos Vínculos”](https://www.gov.br/esocial/pt-br/documentacao-tecnica/manuais/mos-s-1-3-consolidada-ate-a-no-s-1-3-08-2026-com-marcacoes.pdf).
 
 ## 9. Tabelas e parâmetros
 

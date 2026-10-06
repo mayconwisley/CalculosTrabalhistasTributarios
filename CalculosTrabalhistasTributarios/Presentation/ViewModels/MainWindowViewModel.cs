@@ -42,6 +42,7 @@ public sealed class MainWindowViewModel : ViewModelBase
             new("Impostos e salário",
             [
                 Atalho("Simulação tributária", "IRRF nas duas modalidades, INSS por faixas, salário líquido e FGTS.", navegador.AbrirSimulacaoTributaria),
+                Calculadora("INSS em múltiplos vínculos", "Distribuição do desconto entre empregos e serviços, respeitando o teto mensal.", TipoCalculadora.InssMultiplosVinculos),
                 Calculadora("Salário bruto pelo líquido", "O salário bruto necessário para chegar a um líquido desejado.", TipoCalculadora.SalarioPeloLiquido),
                 Calculadora("PLR (participação nos lucros)", "IRRF pela tabela anual exclusiva, sem INSS e sem FGTS.", TipoCalculadora.Plr),
                 Calculadora("Pró-labore e autônomo", "Líquido do pró-labore ou do RPA e o custo para a empresa.", TipoCalculadora.ProLaboreAutonomo),

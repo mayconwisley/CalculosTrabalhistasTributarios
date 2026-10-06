@@ -24,6 +24,55 @@
                 </ComboBox>
             </StackPanel>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type calculadoras:CampoVinculosInssViewModel}">
+            <StackPanel Width="650" Margin="0,0,14,14" Visibility="{Binding Visivel, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <StackPanel Width="170" HorizontalAlignment="Left" Margin="0,0,0,18" ToolTip="{Binding Competencia.Dica}">
+                    <TextBlock Text="{Binding Competencia.Rotulo}" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,6" />
+                    <TextBox Text="{Binding Competencia.Valor, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" AutomationProperties.Name="Competência" />
+                </StackPanel>
+                <Grid Margin="0,0,0,6">
+                    <Grid.ColumnDefinitions><ColumnDefinition /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                    <TextBlock Text="{Binding Rotulo}" FontWeight="SemiBold" />
+                    <TextBlock Grid.Column="1" Text="{Binding Linhas.Count, StringFormat={}{0} vínculos}" Foreground="{DynamicResource AccentBrush}" FontWeight="SemiBold" />
+                </Grid>
+                <TextBlock Text="{Binding Dica}" Foreground="{DynamicResource MutedTextBrush}" FontSize="12" TextWrapping="Wrap" Margin="0,0,0,14" />
+                <Grid Margin="8,0,8,6">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="30" /><ColumnDefinition Width="160" /><ColumnDefinition Width="115" /><ColumnDefinition Width="185" /><ColumnDefinition Width="120" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Nº" Foreground="{DynamicResource MutedTextBrush}" FontSize="11" />
+                    <TextBlock Grid.Column="1" Text="Categoria" Foreground="{DynamicResource MutedTextBrush}" FontSize="11" />
+                    <TextBlock Grid.Column="2" Text="Remuneração (R$)" Foreground="{DynamicResource MutedTextBrush}" FontSize="11" />
+                    <TextBlock Grid.Column="3" Text="Fonte (opcional)" Foreground="{DynamicResource MutedTextBrush}" FontSize="11" />
+                    <TextBlock Grid.Column="4" Text="Ações" Foreground="{DynamicResource MutedTextBrush}" FontSize="11" TextAlignment="Center" />
+                </Grid>
+                <ItemsControl ItemsSource="{Binding Linhas}" Focusable="False">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Background="{DynamicResource ResultBackgroundBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="8" Margin="0,0,0,8">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="30" /><ColumnDefinition Width="160" /><ColumnDefinition Width="115" /><ColumnDefinition Width="185" /><ColumnDefinition Width="120" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="{Binding Numero, StringFormat={}{0}º}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="{DynamicResource AccentBrush}" />
+                                    <ComboBox Grid.Column="1" ItemsSource="{Binding Opcoes}" SelectedItem="{Binding Categoria, Mode=TwoWay}" Margin="0,0,8,0" MinHeight="42" AutomationProperties.Name="Categoria do vínculo">
+                                        <ComboBox.ItemTemplate><DataTemplate><TextBlock Text="{Binding Texto}" TextWrapping="Wrap" /></DataTemplate></ComboBox.ItemTemplate>
+                                    </ComboBox>
+                                    <TextBox Grid.Column="2" Text="{Binding Remuneracao, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" behaviors:FormatacaoNumerica.Formato="N2" Margin="0,0,8,0" VerticalContentAlignment="Center" AutomationProperties.Name="Remuneração do vínculo" />
+                                    <TextBox Grid.Column="3" Text="{Binding Identificacao, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,8,0" VerticalContentAlignment="Center" AutomationProperties.Name="Fonte pagadora opcional" />
+                                    <StackPanel Grid.Column="4" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                        <Button Content="↑" Width="32" Height="32" Padding="0" Margin="0,0,4,0" IsEnabled="{Binding PodeSubir}" Command="{Binding DataContext.SubirCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" CommandParameter="{Binding}" ToolTip="Mover este vínculo para cima" AutomationProperties.Name="Mover vínculo para cima" />
+                                        <Button Content="↓" Width="32" Height="32" Padding="0" Margin="0,0,4,0" IsEnabled="{Binding PodeDescer}" Command="{Binding DataContext.DescerCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" CommandParameter="{Binding}" ToolTip="Mover este vínculo para baixo" AutomationProperties.Name="Mover vínculo para baixo" />
+                                        <Button Content="×" Width="32" Height="32" Padding="0" IsEnabled="{Binding PodeRemover}" Command="{Binding DataContext.RemoverCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" CommandParameter="{Binding}" ToolTip="Remover este vínculo" AutomationProperties.Name="Remover vínculo" />
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <Button Content="+ Adicionar vínculo" Command="{Binding AdicionarCommand}" HorizontalAlignment="Left" Padding="12,6" Margin="0,2,0,0" AutomationProperties.Name="Adicionar vínculo" />
+            </StackPanel>
+        </DataTemplate>
         <Style x:Key="Valor" TargetType="TextBlock">
             <Setter Property="HorizontalAlignment" Value="Right" />
             <Setter Property="VerticalAlignment" Value="Center" />
@@ -58,7 +107,16 @@
                     </Grid>
                 </Border>
 
-                <Border Grid.Row="4" Style="{StaticResource Card}" MinHeight="260">
+                <Border Grid.Row="4" MinHeight="210">
+                    <Border.Style>
+                        <Style TargetType="Border" BasedOn="{StaticResource Card}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding TemResultado}" Value="False">
+                                    <Setter Property="VerticalAlignment" Value="Top" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
                     <Grid>
                         <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="*" /></Grid.RowDefinitions>
                         <Grid>

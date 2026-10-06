@@ -25,4 +25,28 @@ public static class CalculadoraInss
 
         return [new ResultadoFaixaTributaria(faixa.Numero, baseCalculo, faixa.Aliquota, contribuicao)];
     }
+
+    /// <summary>Calcula apenas a fatia entre duas bases acumuladas, truncando cada faixa como no eSocial.</summary>
+    internal static IReadOnlyList<ResultadoFaixaTributaria> CalcularDetalhesIntervalo(
+        decimal baseAnterior, decimal baseFinal, IReadOnlyList<FaixaTributaria> faixas)
+    {
+        if (baseAnterior < 0m || baseFinal < baseAnterior)
+            throw new ArgumentOutOfRangeException(nameof(baseFinal));
+        if (baseFinal == baseAnterior)
+            return [];
+
+        var resultado = new List<ResultadoFaixaTributaria>();
+        var limiteAnterior = 0m;
+        foreach (var faixa in faixas.OrderBy(item => item.Numero))
+        {
+            var baseDaFaixa = Math.Min(baseFinal, faixa.Limite) - Math.Max(baseAnterior, limiteAnterior);
+            if (baseDaFaixa > 0m)
+                resultado.Add(new ResultadoFaixaTributaria(faixa.Numero, baseDaFaixa, faixa.Aliquota,
+                    CalculadoraTributacao.Truncar(baseDaFaixa * faixa.AliquotaDecimal)));
+            if (baseFinal <= faixa.Limite)
+                break;
+            limiteAnterior = faixa.Limite;
+        }
+        return resultado;
+    }
 }

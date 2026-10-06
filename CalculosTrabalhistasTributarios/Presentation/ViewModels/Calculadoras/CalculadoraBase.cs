@@ -36,7 +36,7 @@ public abstract class CalculadoraBase : ICalculadora
 
     public abstract Task<Result<DemonstrativoDto>> CalcularAsync(CancellationToken cancellationToken);
 
-    public Dictionary<string, string> ExportarCampos() => Campos.ToDictionary(campo => campo.Rotulo, campo => campo switch
+    public virtual Dictionary<string, string> ExportarCampos() => Campos.ToDictionary(campo => campo.Rotulo, campo => campo switch
     {
         CampoTextoViewModel texto => texto.Valor,
         CampoOpcaoViewModel opcao => opcao.Selecionada.Texto,
@@ -46,7 +46,7 @@ public abstract class CalculadoraBase : ICalculadora
     /// <summary>Rótulo antigo de cada campo renomeado, com o rótulo atual: o histórico guarda os valores pelo rótulo.</summary>
     protected virtual IReadOnlyDictionary<string, string> RotulosAnteriores { get; } = new Dictionary<string, string>();
 
-    public void ImportarCampos(IReadOnlyDictionary<string, string> valores)
+    public virtual void ImportarCampos(IReadOnlyDictionary<string, string> valores)
     {
         if (RotulosAnteriores.Count > 0)
         {
