@@ -69,7 +69,9 @@ public sealed class CampoReajusteRetroativoViewModel : CampoViewModel
             return false;
         }
         Meses.Clear();
-        for (var competencia = inicio; competencia <= fim; competencia = competencia.AddMonths(1))
+        for (var indice = 0; indice < quantidade; indice++)
+        {
+            var competencia = inicio.AddMonths(indice);
             Meses.Add(new(TipoParcelaReajuste.Salario)
             {
                 Competencia = competencia.ToString("MM/yyyy", Cultura),
@@ -77,6 +79,7 @@ public sealed class CampoReajusteRetroativoViewModel : CampoViewModel
                 BaseDevida = devido.ToString("N2", Cultura),
                 Quantidade = "1"
             });
+        }
         Mensagem = $"{quantidade} competência(s) gerada(s). Revise os meses com antecipação, promoção, afastamento ou férias.";
         return true;
     }

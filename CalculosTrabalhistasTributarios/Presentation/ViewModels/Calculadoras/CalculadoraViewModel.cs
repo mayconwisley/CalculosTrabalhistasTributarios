@@ -62,6 +62,7 @@ public sealed class CalculadoraViewModel : ViewModelBase, ICalculoSalvavel
     public string Descricao => _calculadora.Descricao;
     public string InstrucaoInicial => _calculadora.InstrucaoInicial;
     public IReadOnlyList<CampoViewModel> Campos { get; }
+    public bool UsaFormularioLarguraTotal => Campos.Count == 1 && Campos[0] is CampoBancoHorasViewModel;
     public ICommand CalcularCommand { get; }
     public ICommand ExportarPdfCommand { get; }
     public ICommand ExportarExcelCommand { get; }

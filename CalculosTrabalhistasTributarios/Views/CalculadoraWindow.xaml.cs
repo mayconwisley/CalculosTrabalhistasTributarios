@@ -9,8 +9,11 @@ public partial class CalculadoraWindow : Window
     {
         InitializeComponent();
         DataContext = viewModel;
-        if (viewModel?.Campos.Any(campo => campo is CampoReajusteRetroativoViewModel) == true)
+        if (viewModel?.Campos.Any(campo => campo is CampoReajusteRetroativoViewModel or CampoVinculosInssViewModel) == true)
+        {
             Width = 940;
+            MinWidth = 920;
+        }
         if (viewModel?.Campos.Any(campo => campo is CampoMediaVerbasVariaveisViewModel or CampoBancoHorasViewModel) == true)
             MinWidth = 1100;
     }

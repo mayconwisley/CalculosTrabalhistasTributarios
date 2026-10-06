@@ -76,6 +76,19 @@ public class ReajusteRetroativoTests
     }
 
     [Fact]
+    public void Ultima_competencia_do_calendario_nao_causa_estouro_ao_gerar_meses()
+    {
+        var campo = new CampoReajusteRetroativoViewModel
+        {
+            Inicio = "12/9999", Fim = "12/9999", SalarioAnterior = "1.000,00", Percentual = "5"
+        };
+
+        Assert.True(campo.Gerar());
+        Assert.Single(campo.Meses);
+        Assert.Equal("12/9999", campo.Meses[0].Competencia);
+    }
+
+    [Fact]
     public async Task Demonstrativo_distingue_total_bruto_do_fgts_do_empregador()
     {
         var useCase = new SimularReajusteRetroativoUseCase();

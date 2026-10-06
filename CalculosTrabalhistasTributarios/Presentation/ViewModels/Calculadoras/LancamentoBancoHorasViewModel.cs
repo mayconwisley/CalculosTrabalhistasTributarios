@@ -7,8 +7,8 @@ public sealed class LancamentoBancoHorasViewModel : ViewModelBase
 {
     public static IReadOnlyList<OpcaoCampo> Tipos { get; } =
     [
-        new("Horas trabalhadas", TipoLancamentoBancoHoras.Credito),
-        new("Folga ou redução", TipoLancamentoBancoHoras.Compensacao)
+        new("Crédito (hora extra)", TipoLancamentoBancoHoras.Credito),
+        new("Compensação (folga)", TipoLancamentoBancoHoras.Compensacao)
     ];
 
     private string _data = DateTime.Today.ToString("dd/MM/yyyy");

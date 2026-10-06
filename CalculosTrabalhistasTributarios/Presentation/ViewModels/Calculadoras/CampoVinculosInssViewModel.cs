@@ -13,11 +13,11 @@ public sealed class CampoVinculosInssViewModel : CampoViewModel
     private static readonly CultureInfo Cultura = CultureInfo.GetCultureInfo("pt-BR");
 
     public CampoVinculosInssViewModel() : base("Vínculos em ordem de desconto",
-        "A ordem define qual vínculo usa cada faixa e a parte disponível do teto. Acrescente empregado, doméstico, avulso ou contribuinte individual do RGPS da mesma competência.")
+        "A ordem define qual vínculo usa cada faixa e a parte disponível do teto. Na mesma fonte pagadora, coloque empregado antes de contribuinte individual. Use apenas vínculos do RGPS da mesma competência.")
     {
         Competencia.Visivel = false;
         Linhas = [new(), new()];
-        AdicionarCommand = new RelayCommand(_ => Adicionar());
+        AdicionarCommand = new RelayCommand(_ => Adicionar(), _ => Linhas.Count < 50);
         RemoverCommand = new RelayCommand(linha => Remover(linha as VinculoInssLinhaViewModel));
         SubirCommand = new RelayCommand(linha => Mover(linha as VinculoInssLinhaViewModel, -1));
         DescerCommand = new RelayCommand(linha => Mover(linha as VinculoInssLinhaViewModel, 1));
@@ -34,14 +34,19 @@ public sealed class CampoVinculosInssViewModel : CampoViewModel
 
     public Result<IReadOnlyList<VinculoInss>> Ler()
     {
+        if (Linhas.Count > 50)
+            return Erro.Validacao("O cálculo aceita no máximo 50 vínculos.");
         var vinculos = new List<VinculoInss>(Linhas.Count);
         foreach (var linha in Linhas)
         {
             if (linha.Categoria?.Valor is not TipoVinculoInss tipo || !Enum.IsDefined(tipo))
                 return Erro.Validacao($"No {linha.Numero}º vínculo, selecione uma categoria válida.");
-            if (!LeituraNumerica.TentarLer(linha.Remuneracao, out var remuneracao) || remuneracao <= 0m || decimal.Round(remuneracao, 2) != remuneracao)
+            if (!LeituraNumerica.TentarLer(linha.Remuneracao, out var remuneracao) || remuneracao <= 0m
+                || remuneracao > 1_000_000_000m || decimal.Round(remuneracao, 2) != remuneracao)
                 return Erro.Validacao($"No {linha.Numero}º vínculo, informe uma remuneração maior que zero em reais e centavos.");
             var identificacao = linha.Identificacao?.Trim() ?? string.Empty;
+            if (identificacao.Length > 120)
+                return Erro.Validacao($"No {linha.Numero}º vínculo, limite a fonte pagadora a 120 caracteres.");
             vinculos.Add(new VinculoInss(identificacao.Length > 0 ? identificacao : $"Vínculo {linha.Numero}",
                 tipo, remuneracao));
         }
@@ -56,7 +61,7 @@ public sealed class CampoVinculosInssViewModel : CampoViewModel
         try
         {
             var linhas = JsonSerializer.Deserialize<LinhaSalva[]>(valor);
-            if (linhas is null || linhas.Length < 2 || linhas.Any(linha => linha is null || !Enum.IsDefined(linha.Tipo)
+            if (linhas is null || linhas.Length is < 2 or > 50 || linhas.Any(linha => linha is null || !Enum.IsDefined(linha.Tipo)
                 || linha.Identificacao is null || linha.Remuneracao is null))
                 return false;
             Linhas.Clear();
@@ -91,6 +96,8 @@ public sealed class CampoVinculosInssViewModel : CampoViewModel
 
     private void Adicionar()
     {
+        if (Linhas.Count >= 50)
+            return;
         Linhas.Add(new VinculoInssLinhaViewModel());
         AtualizarPosicoes();
     }
@@ -125,6 +132,7 @@ public sealed class CampoVinculosInssViewModel : CampoViewModel
             linha.PodeDescer = indice < Linhas.Count - 1;
             linha.PodeRemover = Linhas.Count > 2;
         }
+        ((RelayCommand)AdicionarCommand).RaiseCanExecuteChanged();
     }
 
     private sealed record LinhaSalva(string Identificacao, TipoVinculoInss Tipo, string Remuneracao);

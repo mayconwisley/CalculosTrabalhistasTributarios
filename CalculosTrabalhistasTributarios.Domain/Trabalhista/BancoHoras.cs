@@ -27,8 +27,8 @@ public static class CalculadoraBancoHoras
         if (!Enum.IsDefined(regime) || !Enum.IsDefined(situacao) || inicio > fim)
             return Erro.Validacao("Confira o regime e o período de apuração do banco de horas.");
         if (regime == RegimeBancoHoras.MesmoMes && (inicio.Year != fim.Year || inicio.Month != fim.Month)
-            || regime == RegimeBancoHoras.AcordoIndividualEscrito && fim > inicio.AddMonths(6)
-            || regime == RegimeBancoHoras.AcordoColetivo && fim > inicio.AddYears(1))
+            || regime == RegimeBancoHoras.AcordoIndividualEscrito && fim > PrazoMaximo(inicio, 6)
+            || regime == RegimeBancoHoras.AcordoColetivo && fim > PrazoMaximo(inicio, 12))
             return Erro.Validacao("O período excede o prazo do regime escolhido: mesmo mês, seis meses ou um ano.");
         if (salario < 0m || situacao != SituacaoBancoHoras.Acompanhamento && salario == 0m
             || salario > 1_000_000_000m || decimal.Round(salario, 2) != salario
@@ -66,4 +66,7 @@ public static class CalculadoraBancoHoras
             2, MidpointRounding.AwayFromZero);
         return new ApuracaoBancoHoras(movimentos, creditos, compensacoes, saldo, valorHora, quitacao, situacao);
     }
+
+    private static DateOnly PrazoMaximo(DateOnly inicio, int meses) =>
+        inicio > DateOnly.MaxValue.AddMonths(-meses) ? DateOnly.MaxValue : inicio.AddMonths(meses);
 }

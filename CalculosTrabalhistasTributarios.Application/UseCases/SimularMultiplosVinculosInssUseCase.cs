@@ -11,8 +11,8 @@ public sealed class SimularMultiplosVinculosInssUseCase(ITributacaoConsulta cons
 {
     public async Task<Result<DemonstrativoDto>> ExecutarAsync(SimularMultiplosVinculosInssRequest request, CancellationToken cancellationToken)
     {
-        if (request.Vinculos is null || request.Vinculos.Count < 2)
-            return Erro.Validacao("Informe pelo menos dois vínculos da mesma competência, na ordem de desconto.");
+        if (request.Vinculos is null || request.Vinculos.Count is < 2 or > 50)
+            return Erro.Validacao("Informe de 2 a 50 vínculos da mesma competência, na ordem de desconto.");
         if (request.Competencia < new DateOnly(2020, 3, 1))
             return Erro.Validacao("A apuração de múltiplos vínculos está disponível a partir de 03/2020.");
 
@@ -30,6 +30,7 @@ public sealed class SimularMultiplosVinculosInssUseCase(ITributacaoConsulta cons
         var observacoes = new List<string>
         {
             "Os vínculos devem estar na ordem combinada para o desconto. Cada fonte pagadora recebe as remunerações dos vínculos anteriores na informação de múltiplos vínculos do eSocial.",
+            "Se a mesma fonte pagadora informar empregado e contribuinte individual no mesmo evento, o eSocial calcula primeiro a contribuição da categoria empregado. Mantenha essa ordem nas linhas da simulação.",
             "Empregado, doméstico e avulso usam as faixas progressivas em conjunto. A remuneração como contribuinte individual ocupa o teto mensal, mas não altera a faixa progressiva dos vínculos de empregado.",
             "O contribuinte individual com retenção pela empresa usa 11% da base disponível. A opção EBAS usa 20% somente quando o tomador é entidade beneficente de assistência social nessa condição.",
             "Este demonstrativo calcula somente o INSS mensal do segurado. O IRRF é apurado por cada fonte pagadora, e o 13º tem apuração previdenciária separada. Recolhimento por conta própria em GPS exige cálculo próprio sobre a base residual.",

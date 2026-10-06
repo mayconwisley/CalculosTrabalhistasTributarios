@@ -71,6 +71,9 @@ public class MultiplosVinculosInssTests
         Assert.True(CalculadoraMultiplosVinculosInss.Calcular(Tabela2020, [dois[0], dois[1] with { Remuneracao = -1m }]).Falhou);
         Assert.True(CalculadoraMultiplosVinculosInss.Calcular(Tabela2020, [dois[0], dois[1] with { Remuneracao = 1.001m }]).Falhou);
         Assert.True(CalculadoraMultiplosVinculosInss.Calcular(Tabela2020, [dois[0], dois[1] with { Tipo = (TipoVinculoInss)99 }]).Falhou);
+        Assert.True(CalculadoraMultiplosVinculosInss.Calcular(Tabela2020, Enumerable.Repeat(dois[0], 51).ToArray()).Falhou);
+        Assert.True(CalculadoraMultiplosVinculosInss.Calcular(Tabela2020, [dois[0], dois[1] with { Remuneracao = 1_000_000_000.01m }]).Falhou);
+        Assert.True(CalculadoraMultiplosVinculosInss.Calcular(Tabela2020, [dois[0], dois[1] with { Identificacao = new string('A', 121) }]).Falhou);
         var tabelaAntiga = new TabelasDaCompetencia(new DateOnly(2020, 2, 1), new PerfilTributario(
             [new(1, 6101.06m, 11m)], [new(1, 10000m, 0m)], 0m, 0m, 0m, []));
         Assert.True(CalculadoraMultiplosVinculosInss.Calcular(tabelaAntiga, dois).Falhou);
@@ -117,6 +120,19 @@ public class MultiplosVinculosInssTests
         Assert.Equal(2, restaurado.Linhas.Count);
         restaurado.Linhas[0].Remuneracao = "0,00";
         Assert.True(restaurado.Ler().Falhou);
+    }
+
+    [Fact]
+    public void Botao_de_adicionar_desabilita_no_limite_e_reabilita_apos_remocao()
+    {
+        var campo = new CampoVinculosInssViewModel();
+        while (campo.AdicionarCommand.CanExecute(null))
+            campo.AdicionarCommand.Execute(null);
+
+        Assert.Equal(50, campo.Linhas.Count);
+        Assert.False(campo.AdicionarCommand.CanExecute(null));
+        campo.RemoverCommand.Execute(campo.Linhas[^1]);
+        Assert.True(campo.AdicionarCommand.CanExecute(null));
     }
 
     [Fact]

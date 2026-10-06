@@ -16,6 +16,8 @@ public sealed class SimularBancoHorasUseCase : ISimularDemonstrativoUseCase<Simu
         if (resultado.Falhou)
             return Task.FromResult<Result<DemonstrativoDto>>(resultado.Erro);
         var banco = resultado.Valor;
+        var salarioInformado = request.Salario > 0m;
+        var quitacaoApresentada = salarioInformado ? Formato.Moeda(banco.ValorQuitacao) : "Não calculada";
         var movimentos = banco.Movimentos.Select(item => new GrupoMemoriaDto(
             $"{item.Lancamento.Data:dd/MM/yyyy} — {(item.Lancamento.Tipo == TipoLancamentoBancoHoras.Credito ? "Crédito" : "Compensação")}",
             $"Saldo: {Horas(item.SaldoAposLancamento)}",
@@ -29,7 +31,8 @@ public sealed class SimularBancoHorasUseCase : ISimularDemonstrativoUseCase<Simu
             "O cálculo controla um único ciclo de compensação. O prazo máximo é o mesmo mês no ajuste individual tácito ou escrito, seis meses no acordo individual escrito e um ano em acordo ou convenção coletiva (CLT, art. 59).",
             "Os créditos lançados no mesmo dia são limitados a duas horas extras. Confira também a jornada total de até dez horas no dia, os descansos, a norma coletiva e as exceções aplicáveis; a grade registra apenas as horas destinadas ao banco.",
             "Saldo negativo representa horas a compensar, sem desconto salarial automático. Qualquer abatimento depende das regras do vínculo e do instrumento aplicável.",
-            "A estimativa de quitação do saldo positivo usa a remuneração informada, o divisor e o adicional de horas extras. Não inclui DSR, reflexos, tributos ou outros adicionais. Na rescisão, confira a remuneração vigente nessa data (CLT, art. 59, § 3º)."
+            "A estimativa de quitação do saldo positivo usa a remuneração informada, o divisor e o adicional de horas extras. Não inclui DSR, reflexos, tributos ou outros adicionais. Na rescisão, confira a remuneração vigente nessa data (CLT, art. 59, § 3º).",
+            "A quitação aplica um único percentual de adicional a todo o saldo positivo. Créditos sujeitos a adicionais diferentes exigem apuração individualizada fora deste cenário."
         };
         if (request.Situacao == SituacaoBancoHoras.Acompanhamento)
             observacoes.Add("Modo acompanhamento: o valor de quitação é apenas uma referência e não entra no total a pagar.");
@@ -44,15 +47,20 @@ public sealed class SimularBancoHorasUseCase : ISimularDemonstrativoUseCase<Simu
                 new("Saldo", Horas(banco.SaldoMinutos), banco.SaldoMinutos >= 0 ? "A favor do trabalhador" : "Horas a compensar"),
                 new("Créditos", Horas(banco.MinutosCreditados), "Horas extras lançadas no banco"),
                 new("Compensações", Horas(banco.MinutosCompensados), "Folgas ou reduções lançadas"),
-                new("Quitação estimada", Formato.Moeda(banco.ValorQuitacao), request.Situacao == SituacaoBancoHoras.Acompanhamento ? "Referência, ainda não devida" : "Saldo positivo no fechamento")
+                new("Quitação estimada", quitacaoApresentada, !salarioInformado ? "Informe o salário para estimar" :
+                    request.Situacao == SituacaoBancoHoras.Acompanhamento ? "Referência, ainda não devida" : "Saldo positivo no fechamento")
             ],
             banco.ValorAPagar > 0m ? [new VerbaDto("Horas positivas não compensadas", $"{Horas(banco.SaldoCredor)} com adicional de {request.Adicional:N2}%", banco.ValorAPagar)] : [],
             [], [],
             [new("Conciliação e valor da hora", $"Saldo final: {Horas(banco.SaldoMinutos)}",
                 [
                     new("Créditos - compensações", $"{Horas(banco.MinutosCreditados)} - {Horas(banco.MinutosCompensados)} = {Horas(banco.SaldoMinutos)}"),
-                    new("Hora normal", $"{Formato.Moeda(request.Salario)} ÷ {request.Divisor.ToString("N2", Formato.Cultura)} = {banco.ValorHora.ToString("C4", Formato.Cultura)}"),
-                    new("Quitação estimada", $"{banco.SaldoCredor} minutos × {Formato.Moeda(request.Salario)} × (1 + {Formato.Percentual(request.Adicional)}) ÷ ({request.Divisor.ToString("N2", Formato.Cultura)} × 60) = {Formato.Moeda(banco.ValorQuitacao)}")
+                    new("Hora normal", salarioInformado
+                        ? $"{Formato.Moeda(request.Salario)} ÷ {request.Divisor.ToString("N2", Formato.Cultura)} = {banco.ValorHora.ToString("C4", Formato.Cultura)}"
+                        : "Não calculada: salário não informado"),
+                    new("Quitação estimada", salarioInformado
+                        ? $"{banco.SaldoCredor} minutos × {Formato.Moeda(request.Salario)} × (1 + {Formato.Percentual(request.Adicional)}) ÷ ({request.Divisor.ToString("N2", Formato.Cultura)} × 60) = {Formato.Moeda(banco.ValorQuitacao)}"
+                        : "Não calculada: salário não informado")
                 ]), .. movimentos],
             observacoes,
             RotuloProventos: "Quitação do saldo", RotuloResultado: "Total a pagar neste cenário");

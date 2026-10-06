@@ -63,6 +63,9 @@ public class BancoHorasTests
             SituacaoBancoHoras.Acompanhamento, 2200m, 220m, 50m, [credito, credito with { Minutos = 61 }]).Falhou);
         Assert.True(CalculadoraBancoHoras.Calcular(Inicio, Fim, RegimeBancoHoras.MesmoMes,
             SituacaoBancoHoras.Acompanhamento, 2200m, 220m, 40m, [credito]).Falhou);
+        Assert.True(CalculadoraBancoHoras.Calcular(new DateOnly(9999, 12, 1), DateOnly.MaxValue,
+            RegimeBancoHoras.AcordoColetivo, SituacaoBancoHoras.Acompanhamento, 2200m, 220m, 50m,
+            [new(new DateOnly(9999, 12, 1), TipoLancamentoBancoHoras.Credito, 60, "")]).Sucesso().SaldoCredor > 0);
     }
 
     [Fact]
@@ -100,5 +103,17 @@ public class BancoHorasTests
         }, CancellationToken.None)).Sucesso();
         Assert.Equal(0m, negativo.Resultado);
         Assert.Empty(negativo.Descontos);
+    }
+
+    [Fact]
+    public async Task Acompanhamento_sem_salario_informa_que_quitacao_nao_foi_calculada()
+    {
+        var resultado = (await new SimularBancoHorasUseCase().ExecutarAsync(new SimularBancoHorasRequest(
+            Inicio, Fim, RegimeBancoHoras.MesmoMes, SituacaoBancoHoras.Acompanhamento, 0m, 220m, 50m,
+            [new(Inicio, TipoLancamentoBancoHoras.Credito, 60, "")]), CancellationToken.None)).Sucesso();
+
+        Assert.Equal("Não calculada", resultado.Destaques.Single(item => item.Rotulo == "Quitação estimada").Valor);
+        Assert.Contains(resultado.Memoria[0].Formulas, item => item.Titulo == "Quitação estimada"
+            && item.Formula.Contains("Não calculada"));
     }
 }
