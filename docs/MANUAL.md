@@ -926,7 +926,13 @@ O auxílio do INSS é uma estimativa: o valor exato sai da média de todos os sa
 
 ### 8.26 Saque-aniversário do FGTS
 
-Abra pelo cartão **Saque-aniversário do FGTS**, no grupo **FGTS, afastamentos e benefícios**. Informe o **saldo do FGTS**, somando todas as contas, e o **mês de aniversário**.
+Abra pelo cartão **Saque-aniversário do FGTS**, no grupo **FGTS, afastamentos e benefícios**. Informe o **saldo do FGTS antes do saque simulado**, somando todas as contas, incluindo a garantia bloqueada e excluindo a multa rescisória, e o **mês de aniversário**. Não desconte novamente valores de saques que já foram debitados do saldo.
+
+Em **Parcela ao banco (R$)**, informe quanto **deste saque anual** será repassado ao banco por antecipações anteriores, conforme contrato ou extrato. O campo é opcional: deixe zero se esse saque não estiver comprometido. Não informe o total líquido recebido nos empréstimos, o saldo bloqueado como garantia, parcelas de outros anos ou contratos quitados. Esses valores não permitem determinar sozinhos a parcela cedida deste ano; consulte o contrato ou a instituição financeira.
+
+A tabela calcula o **saque bruto** sobre o saldo informado. A parcela cedida aparece como desconto e o resultado é o **disponível estimado**. Exemplo: saldo de R$ 8.000,00 gera saque bruto de R$ 2.250,00; com R$ 1.800,00 cedidos ao banco, restam R$ 450,00 para o trabalhador. Se todo o saque estiver comprometido, o disponível será zero. O saldo após o saque é R$ 5.750,00 em ambos os casos, pois inclui a saída ao banco, e pode continuar bloqueado como garantia de anos futuros.
+
+Informe valores com até duas casas decimais; a parcela ao banco não pode superar o saque bruto. Contratos anteriores a novembro de 2025 podem ter parcelas superiores a R$ 500,00. A calculadora não simula novas contratações, outros bloqueios nem liberações excepcionais; confirme a disponibilidade no aplicativo FGTS. Consulte a [orientação oficial sobre saque-aniversário e antecipações](https://www.fgts.gov.br/Paginas/trabalhador/saque/saque-aniversario.aspx).
 
 ![Saque-aniversário do FGTS](imagens/68-saque-aniversario.png)
 
@@ -940,7 +946,7 @@ Abra pelo cartão **Saque-aniversário do FGTS**, no grupo **FGTS, afastamentos 
 | De R$ 15.000,01 a R$ 20.000,00 | 10% | R$ 1.900,00 |
 | Acima de R$ 20.000,00 | 5% | R$ 2.900,00 |
 
-O saque fica disponível do 1º dia útil do mês do aniversário até o fim do segundo mês seguinte. Quem está no saque-aniversário e é dispensado sem justa causa recebe a multa de 40%, mas não saca o saldo; a volta ao saque-rescisão só vale a partir do 25º mês depois do pedido.
+O saque fica disponível do 1º dia útil do mês do aniversário até o fim do segundo mês seguinte. Na regra geral, quem está no saque-aniversário e é dispensado sem justa causa recebe a multa de 40%, mas não saca o saldo por rescisão; o retorno ao saque-rescisão exige ausência de antecipação contratada e só vale a partir do 25º mês depois do pedido.
 
 ### 8.27 Abono salarial (PIS/Pasep)
 

@@ -29,6 +29,18 @@ public class PlanilhaTests
     private static IXLRow Linha(IXLWorksheet aba, string rotulo) => aba.RowsUsed().First(linha => linha.Cell(1).GetString() == rotulo);
 
     [Fact]
+    public async Task Saque_aniversario_exporta_bruto_repasse_e_disponivel_numericos()
+    {
+        var demonstrativo = await new SimularSaqueAniversarioUseCase()
+            .ExecutarAsync(new(8000m, 11, 1800m), default).Sucesso();
+        using var pasta = await GerarAsync(caminho => new ClosedXmlPlanilhaService().GerarDemonstrativoAsync(demonstrativo, caminho, default));
+        var aba = pasta.Worksheet(1);
+        Assert.Equal(2250d, Linha(aba, "Saque-aniversário").Cell(3).GetDouble());
+        Assert.Equal(1800d, Linha(aba, "Antecipação de empréstimos anteriores").Cell(4).GetDouble());
+        Assert.Equal(450d, aba.RowsUsed().Last(linha => linha.Cell(1).GetString() == "Disponível estimado").Cell(3).GetDouble());
+    }
+
+    [Fact]
     public async Task Demonstrativo_tem_os_valores_como_numeros_e_a_memoria_em_outra_aba()
     {
         var demonstrativo = await new SimularHoleriteUseCase(await Ambiente.ConsultaAsync()).ExecutarAsync(new SimularHoleriteRequest(

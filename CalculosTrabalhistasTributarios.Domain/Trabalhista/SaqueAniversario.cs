@@ -21,13 +21,20 @@ public static class SaqueAniversario
         (decimal.MaxValue, 5m, 2_900m)
     ];
 
-    public static Result<ParcelaSaqueAniversario> Calcular(decimal saldo)
+    public static Result<ParcelaSaqueAniversario> Calcular(decimal saldo, decimal parcelaComprometida = 0m)
     {
-        if (saldo <= 0m)
-            return Erro.Validacao("Informe o saldo do FGTS, somando todas as contas.");
+        if (saldo <= 0m || saldo > 1_000_000_000_000m || decimal.Round(saldo, 2) != saldo)
+            return Erro.Validacao("Informe o saldo do FGTS maior que zero e até R$ 1 trilhão, com no máximo duas casas decimais.");
+        if (parcelaComprometida < 0m || decimal.Round(parcelaComprometida, 2) != parcelaComprometida)
+            return Erro.Validacao("Informe a parcela comprometida com empréstimos como valor não negativo, com no máximo duas casas decimais.");
         var indice = Array.FindIndex(Faixas, faixa => saldo <= faixa.Limite);
         var (_, aliquota, adicional) = Faixas[indice];
         var valor = CalculadoraTributacao.Arredondar(saldo * aliquota / 100m + adicional);
-        return new ParcelaSaqueAniversario(indice + 1, indice == 0 ? 0m : Faixas[indice - 1].Limite, aliquota, adicional, valor);
+        if (parcelaComprometida > valor)
+            return Erro.Validacao("A parcela comprometida com empréstimos não pode superar o saque anual calculado. Confira o saldo e o valor cedido ao banco para o saque simulado; não informe o total dos empréstimos nem o saldo bloqueado.");
+        // Cessão do direito anual: o repasse ao banco reduz o recebimento, não a base da tabela.
+        // FGTS: https://www.fgts.gov.br/Paginas/trabalhador/saque/saque-aniversario.aspx
+        // Contratos anteriores a 01/11/2025 não se submetem ao novo limite de R$ 500 por parcela.
+        return new ParcelaSaqueAniversario(indice + 1, indice == 0 ? 0m : Faixas[indice - 1].Limite, aliquota, adicional, valor, parcelaComprometida);
     }
 }
