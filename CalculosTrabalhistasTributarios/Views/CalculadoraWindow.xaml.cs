@@ -11,5 +11,7 @@ public partial class CalculadoraWindow : Window
         DataContext = viewModel;
         if (viewModel?.Campos.Any(campo => campo is CampoReajusteRetroativoViewModel) == true)
             Width = 940;
+        if (viewModel?.Campos.Any(campo => campo is CampoMediaVerbasVariaveisViewModel or CampoBancoHorasViewModel) == true)
+            MinWidth = 1100;
     }
 }

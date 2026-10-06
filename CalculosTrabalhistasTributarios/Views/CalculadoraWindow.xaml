@@ -135,6 +135,90 @@
                 </StackPanel>
             </StackPanel>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type calculadoras:CampoMediaVerbasVariaveisViewModel}">
+            <StackPanel Width="830" Margin="0,0,14,14" Visibility="{Binding Visivel, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <TextBlock Text="Período da média" FontWeight="SemiBold" Margin="0,0,0,7" />
+                <WrapPanel Margin="0,0,0,8">
+                    <StackPanel Width="150" Margin="0,0,9,8"><TextBlock Text="Início (MM/AAAA)" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" /><TextBox Text="{Binding Inicio, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Início da média" /></StackPanel>
+                    <StackPanel Width="150" Margin="0,0,9,8"><TextBlock Text="Fim (MM/AAAA)" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" /><TextBox Text="{Binding Fim, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Fim da média" /></StackPanel>
+                    <StackPanel Width="150" Margin="0,0,9,8"><TextBlock Text="Divisor (meses)" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" /><TextBox Text="{Binding Divisor, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" behaviors:FormatacaoNumerica.ValorVazio="0" AutomationProperties.Name="Divisor da média" /></StackPanel>
+                    <Button Content="Gerar meses" Command="{Binding GerarCommand}" VerticalAlignment="Bottom" Margin="0,0,0,8" AutomationProperties.Name="Gerar meses da média" />
+                </WrapPanel>
+                <TextBlock Text="Gerar novamente substitui os valores da grade. Meses zerados continuam no divisor informado." FontSize="11" Foreground="{DynamicResource MutedTextBrush}" TextWrapping="Wrap" Margin="0,0,0,5" />
+                <TextBlock Text="{Binding Mensagem}" Foreground="{DynamicResource AccentBrush}" TextWrapping="Wrap" Margin="0,0,0,9" />
+                <TextBlock Text="Valores recebidos por competência (R$)" FontWeight="SemiBold" Margin="0,0,0,5" />
+                <TextBlock Text="Separe o DSR somente quando ele não estiver incluído em outra coluna. Use Outras apenas para verbas de natureza salarial." FontSize="12" Foreground="{DynamicResource MutedTextBrush}" TextWrapping="Wrap" Margin="0,0,0,10" />
+                <Grid Margin="8,0,8,5">
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="120" /><ColumnDefinition Width="134" /><ColumnDefinition Width="134" /><ColumnDefinition Width="134" /><ColumnDefinition Width="134" /><ColumnDefinition Width="134" /></Grid.ColumnDefinitions>
+                    <TextBlock Text="Mês" FontSize="11" Foreground="{DynamicResource MutedTextBrush}" />
+                    <TextBlock Grid.Column="1" Text="Comissões" FontSize="11" Foreground="{DynamicResource MutedTextBrush}" />
+                    <TextBlock Grid.Column="2" Text="DSR" FontSize="11" Foreground="{DynamicResource MutedTextBrush}" />
+                    <TextBlock Grid.Column="3" Text="Horas extras" FontSize="11" Foreground="{DynamicResource MutedTextBrush}" />
+                    <TextBlock Grid.Column="4" Text="Adicionais" FontSize="11" Foreground="{DynamicResource MutedTextBrush}" />
+                    <TextBlock Grid.Column="5" Text="Outras" FontSize="11" Foreground="{DynamicResource MutedTextBrush}" />
+                </Grid>
+                <ScrollViewer MaxHeight="335" VerticalScrollBarVisibility="Auto">
+                    <ItemsControl ItemsSource="{Binding Meses}" Focusable="False">
+                        <ItemsControl.ItemTemplate><DataTemplate>
+                            <Border Background="{DynamicResource ResultBackgroundBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="8" Margin="0,0,0,6">
+                                <Grid>
+                                    <Grid.ColumnDefinitions><ColumnDefinition Width="120" /><ColumnDefinition Width="134" /><ColumnDefinition Width="134" /><ColumnDefinition Width="134" /><ColumnDefinition Width="134" /><ColumnDefinition Width="134" /></Grid.ColumnDefinitions>
+                                    <TextBox Text="{Binding Competencia, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,7,0" AutomationProperties.Name="Competência das verbas variáveis" />
+                                    <TextBox Grid.Column="1" Text="{Binding Comissoes, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" Margin="0,0,7,0" behaviors:FormatacaoNumerica.Formato="N2" AutomationProperties.Name="Comissões do mês" />
+                                    <TextBox Grid.Column="2" Text="{Binding Dsr, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" Margin="0,0,7,0" behaviors:FormatacaoNumerica.Formato="N2" AutomationProperties.Name="DSR do mês" />
+                                    <TextBox Grid.Column="3" Text="{Binding HorasExtras, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" Margin="0,0,7,0" behaviors:FormatacaoNumerica.Formato="N2" AutomationProperties.Name="Horas extras do mês" />
+                                    <TextBox Grid.Column="4" Text="{Binding Adicionais, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" Margin="0,0,7,0" behaviors:FormatacaoNumerica.Formato="N2" AutomationProperties.Name="Adicionais do mês" />
+                                    <TextBox Grid.Column="5" Text="{Binding Outras, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" behaviors:FormatacaoNumerica.Formato="N2" AutomationProperties.Name="Outras variáveis do mês" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate></ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </StackPanel>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type calculadoras:CampoBancoHorasViewModel}">
+            <StackPanel Width="750" Margin="0,0,14,14" Visibility="{Binding Visivel, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <TextBlock Text="Ciclo de compensação" FontWeight="SemiBold" Margin="0,0,0,7" />
+                <WrapPanel Margin="0,0,0,8">
+                    <StackPanel Width="155" Margin="0,0,9,8"><TextBlock Text="Início (dd/mm/aaaa)" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" /><TextBox Text="{Binding Inicio, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Início do ciclo" /></StackPanel>
+                    <StackPanel Width="155" Margin="0,0,9,8"><TextBlock Text="Fim (dd/mm/aaaa)" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" /><TextBox Text="{Binding Fim, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Fim do ciclo" /></StackPanel>
+                    <StackPanel Width="360" Margin="0,0,9,8"><TextBlock Text="Regime" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" /><ComboBox ItemsSource="{Binding OpcoesRegime}" SelectedItem="{Binding Regime, Mode=TwoWay}" MinHeight="42" AutomationProperties.Name="Regime do banco de horas"><ComboBox.ItemTemplate><DataTemplate><TextBlock Text="{Binding Texto}" /></DataTemplate></ComboBox.ItemTemplate></ComboBox></StackPanel>
+                </WrapPanel>
+                <WrapPanel Margin="0,0,0,10">
+                    <StackPanel Width="170" Margin="0,0,9,8"><TextBlock Text="Situação" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" /><ComboBox ItemsSource="{Binding OpcoesSituacao}" SelectedItem="{Binding Situacao, Mode=TwoWay}" MinHeight="42" AutomationProperties.Name="Situação do banco de horas"><ComboBox.ItemTemplate><DataTemplate><TextBlock Text="{Binding Texto}" /></DataTemplate></ComboBox.ItemTemplate></ComboBox></StackPanel>
+                    <StackPanel Width="145" Margin="0,0,9,8"><TextBlock Text="Salário atual (R$)" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" /><TextBox Text="{Binding Salario, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" behaviors:FormatacaoNumerica.Formato="N2" ToolTip="Opcional no acompanhamento; obrigatório para calcular a quitação no fechamento ou na rescisão." AutomationProperties.Name="Salário para quitação" /></StackPanel>
+                    <StackPanel Width="115" Margin="0,0,9,8"><TextBlock Text="Divisor de horas" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" /><TextBox Text="{Binding Divisor, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" behaviors:FormatacaoNumerica.ValorVazio="0" AutomationProperties.Name="Divisor de horas" /></StackPanel>
+                    <StackPanel Width="140" Margin="0,0,9,8"><TextBlock Text="Adicional (%)" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" /><TextBox Text="{Binding Adicional, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" behaviors:FormatacaoNumerica.ValorVazio="0,00" AutomationProperties.Name="Adicional de horas extras" /></StackPanel>
+                </WrapPanel>
+                <TextBlock Text="Lançamentos do ciclo" FontWeight="SemiBold" Margin="0,0,0,5" />
+                <TextBlock Text="Crédito: horas extras destinadas ao banco. Compensação: folga ou redução de jornada. Informe cada movimento em horas:minutos." FontSize="12" Foreground="{DynamicResource MutedTextBrush}" TextWrapping="Wrap" Margin="0,0,0,10" />
+                <Grid Margin="8,0,8,5">
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="130" /><ColumnDefinition Width="185" /><ColumnDefinition Width="100" /><ColumnDefinition Width="235" /><ColumnDefinition Width="65" /></Grid.ColumnDefinitions>
+                    <TextBlock Text="Data" FontSize="11" Foreground="{DynamicResource MutedTextBrush}" />
+                    <TextBlock Grid.Column="1" Text="Tipo" FontSize="11" Foreground="{DynamicResource MutedTextBrush}" />
+                    <TextBlock Grid.Column="2" Text="Horas" FontSize="11" Foreground="{DynamicResource MutedTextBrush}" />
+                    <TextBlock Grid.Column="3" Text="Descrição (opcional)" FontSize="11" Foreground="{DynamicResource MutedTextBrush}" />
+                </Grid>
+                <ScrollViewer MaxHeight="270" VerticalScrollBarVisibility="Auto" Margin="0,0,0,8">
+                    <ItemsControl ItemsSource="{Binding Lancamentos}" Focusable="False">
+                        <ItemsControl.ItemTemplate><DataTemplate>
+                            <Border Background="{DynamicResource ResultBackgroundBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="8" Margin="0,0,0,6">
+                                <Grid>
+                                    <Grid.ColumnDefinitions><ColumnDefinition Width="130" /><ColumnDefinition Width="185" /><ColumnDefinition Width="100" /><ColumnDefinition Width="235" /><ColumnDefinition Width="65" /></Grid.ColumnDefinitions>
+                                    <TextBox Text="{Binding Data, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,7,0" AutomationProperties.Name="Data do lançamento" />
+                                    <ComboBox Grid.Column="1" ItemsSource="{Binding Opcoes}" SelectedItem="{Binding Tipo, Mode=TwoWay}" Margin="0,0,7,0" MinHeight="42" AutomationProperties.Name="Tipo de lançamento"><ComboBox.ItemTemplate><DataTemplate><TextBlock Text="{Binding Texto}" /></DataTemplate></ComboBox.ItemTemplate></ComboBox>
+                                    <TextBox Grid.Column="2" Text="{Binding Horas, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" Margin="0,0,7,0" behaviors:FormatacaoNumerica.ValorVazio="0:00" AutomationProperties.Name="Horas do lançamento" />
+                                    <TextBox Grid.Column="3" Text="{Binding Descricao, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,7,0" AutomationProperties.Name="Descrição do lançamento" />
+                                    <Button Grid.Column="4" Content="×" Padding="0" MinHeight="34" Command="{Binding DataContext.RemoverCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" CommandParameter="{Binding}" ToolTip="Remover lançamento" AutomationProperties.Name="Remover lançamento" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate></ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+                <Button Content="+ Adicionar lançamento" Command="{Binding AdicionarCommand}" HorizontalAlignment="Left" Padding="10,6" AutomationProperties.Name="Adicionar lançamento ao banco" />
+                <TextBlock Text="{Binding Mensagem}" Foreground="{DynamicResource AccentBrush}" TextWrapping="Wrap" Margin="0,8,0,0" />
+            </StackPanel>
+        </DataTemplate>
         <Style x:Key="Valor" TargetType="TextBlock">
             <Setter Property="HorizontalAlignment" Value="Right" />
             <Setter Property="VerticalAlignment" Value="Center" />

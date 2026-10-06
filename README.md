@@ -69,6 +69,8 @@ Todas usam a mesma janela, com resumo, demonstrativo no formato de holerite, val
 | Holerite do mês | Salário, insalubridade ou periculosidade, horas extras, comissões com DSR automático, adicional noturno, faltas com o DSR perdido, atrasos, INSS, IRRF, pensão, vale-transporte (até 6%) e salário-família em um só demonstrativo. |
 | Comissões e DSR | Comissões, repousos remunerados e complemento da garantia mínima, com INSS, IRRF, FGTS e impacto líquido; aceita valor que já inclua DSR e contagem de dias informada para períodos especiais. |
 | Diferenças de reajuste retroativo | Comparação mensal do salário pago com o devido após reajuste, com antecipações e promoções editáveis, lançamentos de 13º e férias gozadas e FGTS estimado. |
+| Média de verbas variáveis | Grade mensal de comissões, DSR, horas extras, adicionais e outras verbas salariais, com divisor informado e memória por competência. |
+| Banco de horas | Lançamentos de crédito e compensação por data, saldo em minutos, limites do regime e estimativa de quitação no fechamento ou na rescisão. |
 | INSS em múltiplos vínculos | Desconto do segurado por vínculo, na ordem informada, com teto mensal compartilhado; considera empregos, trabalho doméstico, avulso e prestação de serviço como contribuinte individual. |
 | Jornada pelo ponto | Apuração das marcações de entrada e saída do mês: horas extras, noturnas (com a prorrogação da Súmula 60), faltas, atrasos e intervalos suprimidos (arts. 66 e 71), levadas à calculadora de horas extras ou ao holerite. |
 | Salário bruto a partir do líquido | O salário bruto que, descontados INSS e IRRF, resulta no líquido desejado. |

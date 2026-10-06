@@ -21,6 +21,8 @@ public static class DependencyInjection
         .AddScoped<ISimularDemonstrativoUseCase<SimularHorasExtrasRequest>, SimularHorasExtrasUseCase>()
         .AddScoped<ISimularDemonstrativoUseCase<SimularComissoesRequest>, SimularComissoesUseCase>()
         .AddScoped<ISimularDemonstrativoUseCase<SimularReajusteRetroativoRequest>, SimularReajusteRetroativoUseCase>()
+        .AddScoped<ISimularDemonstrativoUseCase<SimularMediaVerbasVariaveisRequest>, SimularMediaVerbasVariaveisUseCase>()
+        .AddScoped<ISimularDemonstrativoUseCase<SimularBancoHorasRequest>, SimularBancoHorasUseCase>()
         .AddScoped<ISimularDemonstrativoUseCase<SimularMultiplosVinculosInssRequest>, SimularMultiplosVinculosInssUseCase>()
         .AddScoped<ISimularDemonstrativoUseCase<SimularRescisaoRequest>, SimularRescisaoUseCase>()
         .AddScoped<ISimularDemonstrativoUseCase<SimularCustoFuncionarioRequest>, SimularCustoFuncionarioUseCase>()

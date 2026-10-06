@@ -66,6 +66,8 @@ public sealed class MainWindowViewModel : ViewModelBase
                 Calculadora("Holerite do mês", "Salário, horas, adicionais, faltas, vale-transporte, pensão e salário-família.", TipoCalculadora.Holerite),
                 Calculadora("Comissões e DSR", "Repouso sobre comissões e impacto no INSS, IRRF, FGTS e líquido.", TipoCalculadora.Comissoes),
                 Calculadora("Diferenças de reajuste retroativo", "Salários pagos e devidos por competência, com 13º, férias e FGTS.", TipoCalculadora.ReajusteRetroativo),
+                Calculadora("Média de verbas variáveis", "Comissões, DSR, horas extras e adicionais por mês para férias, 13º e rescisão.", TipoCalculadora.MediaVerbasVariaveis),
+                Calculadora("Banco de horas", "Créditos, folgas, saldo e quitação estimada no fechamento ou na rescisão.", TipoCalculadora.BancoHoras),
                 Atalho("Jornada pelo ponto", "Horas extras, noturnas, faltas e intervalos pelas marcações do mês.", navegador.AbrirJornada),
                 Calculadora("Horas extras e adicionais", "Horas extras, adicional noturno e reflexo no DSR.", TipoCalculadora.HorasExtras),
                 Calculadora("Insalubridade e periculosidade", "Adicionais pelo grau de insalubridade ou pela periculosidade.", TipoCalculadora.Adicionais),
