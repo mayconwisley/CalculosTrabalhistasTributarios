@@ -9,5 +9,7 @@ public partial class CalculadoraWindow : Window
     {
         InitializeComponent();
         DataContext = viewModel;
+        if (viewModel?.Campos.Any(campo => campo is CampoReajusteRetroativoViewModel) == true)
+            Width = 940;
     }
 }

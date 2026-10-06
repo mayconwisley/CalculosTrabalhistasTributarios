@@ -73,6 +73,68 @@
                 <Button Content="+ Adicionar vínculo" Command="{Binding AdicionarCommand}" HorizontalAlignment="Left" Padding="12,6" Margin="0,2,0,0" AutomationProperties.Name="Adicionar vínculo" />
             </StackPanel>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type calculadoras:CampoReajusteRetroativoViewModel}">
+            <StackPanel Width="650" Margin="0,0,14,14" Visibility="{Binding Visivel, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <TextBlock Text="1. Gere as competências" FontWeight="SemiBold" Margin="0,0,0,8" />
+                <WrapPanel Margin="0,0,0,10">
+                    <StackPanel Width="145" Margin="0,0,8,8"><TextBlock Text="Início (MM/AAAA)" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" /><TextBox Text="{Binding Inicio, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Início do reajuste" /></StackPanel>
+                    <StackPanel Width="145" Margin="0,0,8,8"><TextBlock Text="Fim (MM/AAAA)" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" /><TextBox Text="{Binding Fim, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Fim do reajuste" /></StackPanel>
+                    <StackPanel Width="145" Margin="0,0,8,8"><TextBlock Text="Salário anterior (R$)" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" /><TextBox Text="{Binding SalarioAnterior, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" behaviors:FormatacaoNumerica.Formato="N2" AutomationProperties.Name="Salário anterior" /></StackPanel>
+                    <StackPanel Width="145" Margin="0,0,8,8"><TextBlock Text="Reajuste (%)" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" /><TextBox Text="{Binding Percentual, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" behaviors:FormatacaoNumerica.ValorVazio="0,00" AutomationProperties.Name="Percentual de reajuste" /></StackPanel>
+                </WrapPanel>
+                <Button Content="Gerar meses" Command="{Binding GerarCommand}" HorizontalAlignment="Left" Margin="0,0,0,8" AutomationProperties.Name="Gerar competências mensais" />
+                <TextBlock Text="Gerar novamente substitui os meses editados." FontSize="11" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,4" />
+                <TextBlock Text="{Binding Mensagem}" Foreground="{DynamicResource AccentBrush}" TextWrapping="Wrap" Margin="0,0,0,12" />
+
+                <TextBlock Text="2. Revise o que foi pago em cada mês" FontWeight="SemiBold" Margin="0,0,0,5" />
+                <TextBlock Text="Edite os valores nos meses com antecipação, promoção, afastamento ou férias. O valor devido já inclui o reajuste informado." FontSize="12" Foreground="{DynamicResource MutedTextBrush}" TextWrapping="Wrap" Margin="0,0,0,10" />
+                <Grid Margin="8,0,8,5">
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="145" /><ColumnDefinition Width="195" /><ColumnDefinition Width="195" /></Grid.ColumnDefinitions>
+                    <TextBlock Text="Competência" Foreground="{DynamicResource MutedTextBrush}" FontSize="11" />
+                    <TextBlock Grid.Column="1" Text="Salário pago (R$)" Foreground="{DynamicResource MutedTextBrush}" FontSize="11" />
+                    <TextBlock Grid.Column="2" Text="Salário devido (R$)" Foreground="{DynamicResource MutedTextBrush}" FontSize="11" />
+                </Grid>
+                <ScrollViewer MaxHeight="245" VerticalScrollBarVisibility="Auto" Margin="0,0,0,12">
+                    <ItemsControl ItemsSource="{Binding Meses}" Focusable="False">
+                        <ItemsControl.ItemTemplate><DataTemplate>
+                            <Border Background="{DynamicResource ResultBackgroundBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="8" Margin="0,0,0,6">
+                                <Grid>
+                                    <Grid.ColumnDefinitions><ColumnDefinition Width="145" /><ColumnDefinition Width="195" /><ColumnDefinition Width="195" /></Grid.ColumnDefinitions>
+                                    <TextBox Text="{Binding Competencia, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,8,0" AutomationProperties.Name="Competência da diferença salarial" />
+                                    <TextBox Grid.Column="1" Text="{Binding BasePaga, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" Margin="0,0,8,0" behaviors:FormatacaoNumerica.Formato="N2" AutomationProperties.Name="Salário pago" />
+                                    <TextBox Grid.Column="2" Text="{Binding BaseDevida, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" behaviors:FormatacaoNumerica.Formato="N2" AutomationProperties.Name="Salário devido" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate></ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+
+                <TextBlock Text="3. Acrescente 13º ou férias já pagos, se houver" FontWeight="SemiBold" Margin="0,0,0,5" />
+                <TextBlock Text="Informe a base salarial paga e a correta. Os avos do 13º ou dias de férias e o terço são calculados aqui." FontSize="12" Foreground="{DynamicResource MutedTextBrush}" TextWrapping="Wrap" Margin="0,0,0,9" />
+                <ItemsControl ItemsSource="{Binding Reflexos}" Focusable="False">
+                    <ItemsControl.ItemTemplate><DataTemplate>
+                        <Border Background="{DynamicResource ResultBackgroundBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="9" Margin="0,0,0,8">
+                            <StackPanel>
+                                <Grid Margin="0,0,0,7"><Grid.ColumnDefinitions><ColumnDefinition /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                                    <TextBlock Text="{Binding TipoTexto}" FontWeight="SemiBold" VerticalAlignment="Center" />
+                                    <Button Grid.Column="1" Content="Remover" Command="{Binding DataContext.RemoverReflexoCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" CommandParameter="{Binding}" Padding="8,4" MinHeight="28" AutomationProperties.Name="Remover lançamento" />
+                                </Grid>
+                                <WrapPanel>
+                                    <StackPanel Width="122" Margin="0,0,7,0"><TextBlock Text="Competência" FontSize="11" Foreground="{DynamicResource MutedTextBrush}" /><TextBox Text="{Binding Competencia, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Competência do reflexo" /></StackPanel>
+                                    <StackPanel Width="162" Margin="0,0,7,0"><TextBlock Text="Base paga (R$)" FontSize="11" Foreground="{DynamicResource MutedTextBrush}" /><TextBox Text="{Binding BasePaga, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" behaviors:FormatacaoNumerica.Formato="N2" AutomationProperties.Name="Base salarial paga" /></StackPanel>
+                                    <StackPanel Width="162" Margin="0,0,7,0"><TextBlock Text="Base correta (R$)" FontSize="11" Foreground="{DynamicResource MutedTextBrush}" /><TextBox Text="{Binding BaseDevida, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" behaviors:FormatacaoNumerica.Formato="N2" AutomationProperties.Name="Base salarial correta" /></StackPanel>
+                                    <StackPanel Width="70"><TextBlock Text="{Binding Unidade}" FontSize="11" Foreground="{DynamicResource MutedTextBrush}" /><TextBox Text="{Binding Quantidade, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" behaviors:FormatacaoNumerica.ValorVazio="0" AutomationProperties.Name="Avos ou dias" /></StackPanel>
+                                </WrapPanel>
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate></ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <StackPanel Orientation="Horizontal">
+                    <Button Content="+ 13º salário" Command="{Binding AdicionarDecimoTerceiroCommand}" Padding="10,6" Margin="0,0,8,0" AutomationProperties.Name="Adicionar décimo terceiro" />
+                    <Button Content="+ Férias gozadas" Command="{Binding AdicionarFeriasCommand}" Padding="10,6" AutomationProperties.Name="Adicionar férias gozadas" />
+                </StackPanel>
+            </StackPanel>
+        </DataTemplate>
         <Style x:Key="Valor" TargetType="TextBlock">
             <Setter Property="HorizontalAlignment" Value="Right" />
             <Setter Property="VerticalAlignment" Value="Center" />

@@ -26,7 +26,7 @@ Guia completo para utilizar **Cálculos Trabalhistas e Tributários**: simulaç�
 O aplicativo Cálculos Trabalhistas e Tributários reúne, em um único lugar para Windows, os cálculos trabalhistas e tributários mais comuns do dia a dia:
 
 - **Simulação tributária:** IRRF pelas modalidades normal e simplificada, INSS por faixas, salário líquido e FGTS de 8% e de 2% (Jovem Aprendiz), com indicação da modalidade de IRRF mais vantajosa.
-- **Calculadoras trabalhistas:** holerite do mês, comissões e DSR, INSS em múltiplos vínculos, jornada pelas marcações de ponto, salário bruto a partir do líquido, horas extras com adicional noturno e DSR, insalubridade e periculosidade, salário-família, 13º salário, férias com abono, PLR, rescisão por motivo de desligamento, seguro-desemprego, custo do funcionário para a empresa, comparação entre CLT e PJ, pró-labore ou pagamento a autônomo (RPA), empregado doméstico com o DAE, estágio e trabalho intermitente.
+- **Calculadoras trabalhistas:** holerite do mês, comissões e DSR, diferenças de reajuste retroativo, INSS em múltiplos vínculos, jornada pelas marcações de ponto, salário bruto a partir do líquido, horas extras com adicional noturno e DSR, insalubridade e periculosidade, salário-família, 13º salário, férias com abono, PLR, rescisão por motivo de desligamento, seguro-desemprego, custo do funcionário para a empresa, comparação entre CLT e PJ, pró-labore ou pagamento a autônomo (RPA), empregado doméstico com o DAE, estágio e trabalho intermitente.
 - **FGTS, afastamentos e benefícios:** afastamento por doença ou acidente e licenças-maternidade e paternidade, saque-aniversário do FGTS e abono salarial do PIS/Pasep.
 - **Imposto de renda anual:** a declaração do ano com a redução anual da Lei 15.270/2025, a comparação entre os modelos completo e simplificado e a tributação mínima das altas rendas; a retenção de 10% sobre dividendos acima de R$ 50 mil no mês; o carnê-leão de honorários e aluguéis; o ganho de capital na venda de imóveis e outros bens; e a multa e os juros de tributos pagos em atraso.
 - **Pensão alimentícia:** pensão de um ou mais beneficiários sobre os rendimentos líquidos, os brutos, o salário mínimo ou em valor fixo, com o IRRF nas duas modalidades; revisão, que compara a pensão atual com a proposta; e pensão em atraso, com correção monetária, juros, a separação entre o rito da prisão e o da penhora e a multa e os honorários do cumprimento de sentença. O 13º salário, as férias, a rescisão e a PLR também descontam a pensão.
@@ -996,6 +996,21 @@ As categorias disponíveis são **Empregado**, **Doméstico**, **Avulso**, **Ind
 - **Outras apurações:** 13º salário tem INSS separado. Rendimentos de RPPS não entram neste teto do RGPS. Recolhimento por conta própria em GPS usa a base residual e não está incluído nesta calculadora.
 
 Regras e exemplos numéricos: [Manual de Orientação do eSocial, seção “Múltiplos Vínculos”](https://www.gov.br/esocial/pt-br/documentacao-tecnica/manuais/mos-s-1-3-consolidada-ate-a-no-s-1-3-08-2026-com-marcacoes.pdf).
+
+### 8.30 Diferenças de reajuste retroativo
+
+Abra pelo cartão **Diferenças de reajuste retroativo**, em **Remuneração e custos**.
+
+1. Informe o **início** e o **fim** do período, o **salário anterior** e o **percentual de reajuste**. Clique em **Gerar meses**. O aplicativo preenche até 120 competências com o salário anterior e o salário reajustado.
+2. Revise a grade. Em cada competência, **Salário pago** é o valor efetivamente pago e **Salário devido** é o valor correto após o reajuste. Edite as linhas com antecipação, promoção, admissão, afastamento ou salário proporcional. O botão **Gerar meses** substitui as linhas já editadas.
+3. Se houver 13º ou férias gozadas **já pagos** com base inferior, adicione um lançamento próprio. Informe o mês, a base salarial paga, a base correta e os **avos** do 13º ou **dias** de férias. A calculadora aplica a proporção e, nas férias, o terço constitucional. O limite é de 10 lançamentos extras.
+4. Clique em **Calcular**. O resultado separa salários, 13º e férias, mostra a diferença de cada lançamento e estima o FGTS à alíquota de 8%. O FGTS é depósito do empregador e não reduz o total bruto devido.
+
+**Atenção ao mês das férias:** informe na linha mensal apenas o salário efetivamente pago ou devido fora da parcela de férias; registre as férias gozadas no lançamento específico para evitar contagem em duplicidade. Férias indenizadas não usam este lançamento.
+
+O demonstrativo é **bruto**: não calcula INSS, IRRF, juros, atualização monetária nem diferenças de rescisão. A tributação das parcelas retroativas depende da data e da forma do pagamento; confira a folha e o eSocial antes de efetuar o recolhimento. Para diferenças previstas em acordo ou convenção, confira também os períodos de referência no S-1200/InfoPerAnt e a alteração contratual S-2206.
+
+Fundamentos: [Manual de Orientação do eSocial](https://www.gov.br/esocial/pt-br/documentacao-tecnica/manuais/mos-s-1-3-consolidada-ate-a-no-s-1-3-07-2026-com-marcacoes.pdf), [Lei 4.090/1962 (13º)](https://www.planalto.gov.br/ccivil_03/leis/l4090.htm), [CLT, art. 142 (férias)](https://www.planalto.gov.br/ccivil_03/decreto-lei/del5452compilado.htm) e [Lei 8.036/1990, art. 15 (FGTS)](https://www.planalto.gov.br/ccivil_03/leis/l8036compilada.htm).
 
 ## 9. Tabelas e parâmetros
 

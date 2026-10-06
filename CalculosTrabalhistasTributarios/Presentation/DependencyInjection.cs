@@ -41,6 +41,7 @@ public static class DependencyInjection
         .AddKeyedTransient<ICalculadora, CalculadoraFerias>(TipoCalculadora.Ferias)
         .AddKeyedTransient<ICalculadora, CalculadoraHorasExtras>(TipoCalculadora.HorasExtras)
         .AddKeyedTransient<ICalculadora, CalculadoraComissoes>(TipoCalculadora.Comissoes)
+        .AddKeyedTransient<ICalculadora, CalculadoraReajusteRetroativo>(TipoCalculadora.ReajusteRetroativo)
         .AddKeyedTransient<ICalculadora, CalculadoraInssMultiplosVinculos>(TipoCalculadora.InssMultiplosVinculos)
         .AddKeyedTransient<ICalculadora, CalculadoraRescisao>(TipoCalculadora.Rescisao)
         .AddKeyedTransient<ICalculadora, CalculadoraCustoFuncionario>(TipoCalculadora.CustoFuncionario)
