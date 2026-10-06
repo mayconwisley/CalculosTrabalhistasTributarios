@@ -94,6 +94,7 @@ Todas usam a mesma janela, com resumo, demonstrativo no formato de holerite, val
 | IRPF anual | Declaração do ano-calendário 2026 em diante, com a tabela anual, a redução do art. 11-A, os modelos completo e simplificado e a tributação mínima das altas rendas com o redutor (Lei 15.270/2025). |
 | Dividendos | Retenção de 10% sobre lucros e dividendos acima de R$ 50 mil no mês da mesma empresa, ou sobre qualquer valor para residentes no exterior. |
 | Carnê-leão | IR mensal de honorários, aluguéis e outros rendimentos recebidos de pessoas físicas e do exterior, com livro-caixa, desconto simplificado e a redução mensal. |
+| Trabalho no exterior | Para residente fiscal no Brasil: salário ou serviços como pessoa física, país selecionável, atualização online do dólar fiscal e referência PTAX, conversão bancária, taxas, juros, imposto exterior e carnê-leão. |
 | Ganho de capital | IR na venda de imóveis e outros bens: isenções de pequeno valor, do único imóvel e do reinvestimento, redução dos imóveis até 1988, fatores FR1 e FR2 e alíquotas de 15% a 22,5%. |
 | Tributo em atraso | Multa de 0,33% ao dia (até 20%) e juros pela Selic mais 1% de DARF, DAS, DAE ou GPS pago depois do vencimento (Lei 9.430/1996, art. 61). |
 | Correção de valores | Valor atualizado por IPCA, INPC, IPCA-E, Selic, TR ou taxa legal, com juros simples e multa opcionais. |

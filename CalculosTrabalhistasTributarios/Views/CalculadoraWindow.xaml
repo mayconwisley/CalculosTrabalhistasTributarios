@@ -26,6 +26,13 @@
                 </ComboBox>
             </StackPanel>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type calculadoras:CampoAtualizacaoCotacoesViewModel}">
+            <StackPanel Width="354" Margin="0,0,14,14" ToolTip="{Binding Dica}">
+                <TextBlock Text="{Binding Rotulo}" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,6" />
+                <Button Content="Atualizar cotações online" Command="{Binding Comando}" HorizontalAlignment="Left" AutomationProperties.Name="Atualizar cotações online" />
+                <TextBlock Text="{Binding Estado}" Foreground="{DynamicResource MutedTextBrush}" TextWrapping="Wrap" Margin="0,7,0,0" />
+            </StackPanel>
+        </DataTemplate>
         <DataTemplate DataType="{x:Type calculadoras:CampoVinculosInssViewModel}">
             <StackPanel Width="650" Margin="0,0,14,14" Visibility="{Binding Visivel, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <StackPanel Width="170" HorizontalAlignment="Left" Margin="0,0,0,18" ToolTip="{Binding Competencia.Dica}">

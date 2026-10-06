@@ -231,6 +231,9 @@ public sealed class ManualDocument
             case ThematicBreakBlock:
                 container.PaddingVertical(6).LineHorizontal(0.75f).LineColor(Borda);
                 break;
+            case HtmlBlock html when html.Lines.ToString().Trim() == "<!-- pdf:quebra-pagina -->":
+                container.PageBreak();
+                break;
             case CodeBlock codigo:
                 container.Background(FundoNota).Padding(8).Text(codigo.Lines.ToString()).FontFamily(FonteCodigo).FontSize(9);
                 break;

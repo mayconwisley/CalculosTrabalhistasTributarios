@@ -885,11 +885,37 @@ Abra pelo cartão **Carnê-leão**, no grupo **Impostos e salário**. Ele calcul
 | Rendimentos de pessoas físicas | Honorários, consultas, aulas e outros rendimentos de trabalho recebidos de pessoas físicas ou do exterior. |
 | Aluguéis recebidos e Despesas do aluguel | Aluguéis recebidos de pessoas físicas; IPTU, condomínio e taxa de administração pagos pelo locador são abatidos. |
 | Livro-caixa | Despesas do consultório ou escritório de quem trabalha por conta própria, até o valor dos rendimentos de trabalho. |
-| INSS pago no mês, Dependentes e Pensão alimentícia paga | As demais deduções legais. |
+| Outras deduções legais | INSS pago no mês, dependentes e pensão alimentícia paga. |
 
 - O imposto usa a tabela mensal, compara as deduções legais com o desconto simplificado e aplica a redução mensal da Lei 15.270/2025, como no IRRF dos salários.
 - Pague em DARF, código 0190, até o último dia útil do mês seguinte, pelo Carnê-Leão Web, no e-CAC. Um imposto de menos de R$ 10,00 não é pago: soma-se ao do mês seguinte.
-- O que é pago por empresa tem IRRF retido por ela e fica de fora.
+- Rendimentos pagos por empresa brasileira e sujeitos a IRRF no Brasil ficam fora do carnê-leão. Rendimentos de fonte situada no exterior, inclusive salário de empregador estrangeiro, entram na apuração mensal do residente no Brasil; para converter a moeda e conferir o imposto pago lá, use a calculadora abaixo.
+
+#### 8.23.1 Trabalho no exterior — residente no Brasil
+
+Abra **Trabalho no exterior** em **Impostos e salário** para simular um recebimento mensal de trabalho de fonte estrangeira como **pessoa física residente fiscal no Brasil**. Escolha **Emprego assalariado** ou **Serviço como pessoa física**. O segundo permite livro-caixa comprovado; o primeiro não. A calculadora não cobre faturamento por empresa brasileira, não residentes, décimo terceiro ou situações especiais de servidores brasileiros no exterior.
+
+![Trabalho no exterior](imagens/69-trabalho-exterior.png)
+
+<!-- pdf:quebra-pagina -->
+
+| Campo | Como preencher |
+| --- | --- |
+| Recebimento, país e moeda | Data do crédito e país da fonte pagadora. Selecione o país na lista; ela sugere a moeda, que pode ser corrigida conforme o contrato. Use **Outro país** e informe o nome quando necessário. O carnê-leão usa o mês do recebimento mesmo se o dinheiro ficar no exterior. |
+| Remuneração e juros recebidos | Valores brutos na moeda original. Juros de mora por atraso de salário são mostrados como isentos no Brasil; juros de serviços integram a base tributável. |
+| IR exterior retido | Imposto de renda efetivamente descontado **desse recebimento** e atribuível à remuneração tributável também no Brasil, na moeda original. Separe eventual imposto sobre juros de salário isentos no Brasil; previdência estrangeira não entra aqui. |
+| USD por unidade | Valor em dólares de **uma unidade da moeda de origem**, na data do recebimento. Para USD, use 1. Em outra moeda, o botão fornece uma **referência PTAX de fechamento** quando publicada para a data. Confira e corrija pela cotação da autoridade monetária do país de origem, exigida pela Receita. Em dia sem boletim, preencha manualmente. |
+| Dólar compra fiscal | Cotação de compra em reais por USD, do **último dia útil da primeira quinzena do mês anterior ao recebimento**. O botão **Atualizar cotações online** busca o mês do recebimento na [tabela de conversão da Receita](https://www.gov.br/receitafederal/pt-br/assuntos/meu-imposto-de-renda/tabelas/conversao). Se o mês ainda não estiver publicado ou a rede falhar, preencha manualmente. |
+| Câmbio efetivo | Reais por unidade da moeda pagos pela instituição; já inclui eventual spread. Não informe o valor total creditado neste campo. |
+| Taxa bancária, juros bancários | Custos efetivamente cobrados na moeda estrangeira ou em reais, conforme o rótulo. Juros de financiamento ou de atraso cobrados pela instituição são distintos dos juros **recebidos** da fonte pagadora. Não duplique uma taxa já incorporada ao câmbio efetivo. |
+| Compensar IR exterior | Selecione **Elegibilidade confirmada** somente quando houver tratado ou reciprocidade aplicável e o imposto não for recuperável no exterior. O crédito fica limitado ao IR brasileiro da renda estrangeira do mês. |
+| Previdência Brasil, dependentes, pensão e livro-caixa | Deduções brasileiras efetivamente permitidas e pagas no mês. Livro-caixa aparece apenas para serviços como pessoa física; despesas estrangeiras exigem conversão e documentação próprias antes de informar o valor em reais. |
+
+O resultado separa **conversão fiscal** (base do IR e do crédito estrangeiro) de **conversão efetiva** (valor recebido no banco). Taxas, juros bancários e spread afetam o dinheiro disponível, mas não são automaticamente deduções do carnê-leão. O imposto brasileiro usa a tabela mensal da competência e compara deduções legais com desconto simplificado. Quando devido, o DARF 0190 vence no último dia útil do mês seguinte; valores inferiores a R$ 10,00 são acumulados. O resumo mostra o crédito bancário antes do imposto brasileiro e o disponível estimado depois dele.
+
+Exemplo com valores ilustrativos, sem outras deduções: salário de USD 10.000, juros de mora recebidos de USD 50, imposto exterior de USD 2.000, cotação fiscal de R$ 5,00/USD e câmbio efetivo de R$ 4,80/USD. Com taxas de USD 10 e R$ 20 e juros bancários de USD 5, o banco credita **R$ 38.548,00**. Para outubro de 2026, o IR brasileiro sobre o salário é **R$ 12.674,29** antes do crédito. Se a compensação de **R$ 10.000,00** for legalmente cabível, restam **R$ 2.674,29** de carnê-leão e **R$ 35.873,71** disponíveis após os tributos.
+
+Use um recebimento por simulação. Imposto exterior pago em outra data, outros rendimentos do mês, previdência estrangeira, imposto devido no outro país e aplicação concreta de tratados exigem apuração própria. A atualização consulta apenas o dólar fiscal da Receita e, quando disponível, uma referência de [câmbio PTAX do Banco Central](https://dadosabertos.bcb.gov.br/dataset/dolar-americano-usd-todos-os-boletins-diarios) para a moeda selecionada. **Câmbio efetivo, taxas, juros e IR estrangeiro retido não podem ser apurados de uma cotação pública:** informe os valores da operação e dos comprovantes. Consulte as orientações da [Receita sobre rendimentos do exterior](https://www.gov.br/receitafederal/pt-br/assuntos/meu-imposto-de-renda/pagamento/carne-leao/rendimentos) e [deduções do carnê-leão](https://www.gov.br/receitafederal/pt-br/assuntos/meu-imposto-de-renda/pagamento/carne-leao/deducoes).
 
 ### 8.24 Ganho de capital
 

@@ -50,7 +50,7 @@ public sealed class SimularCarneLeaoUseCase(ITributacaoConsulta tributacaoConsul
         var observacoes = new List<string>
         {
             $"Pague em DARF, código 0190, até {Formato.Data(vencimento)}, último dia útil do mês seguinte, pelo Carnê-Leão Web, no e-CAC. O imposto pago é compensado na declaração anual.",
-            "Entram no carnê-leão os rendimentos de trabalho sem vínculo recebidos de pessoas físicas (como consultas e aulas particulares), os aluguéis e a pensão alimentícia recebidos de pessoas físicas e os rendimentos do exterior. O que é pago por empresa tem IRRF retido por ela e fica de fora.",
+            "Entram no carnê-leão os rendimentos de trabalho sem vínculo recebidos de pessoas físicas, os aluguéis de pessoas físicas e os rendimentos de fonte situada no exterior, inclusive salários de empregador estrangeiro. Rendimentos pagos por empresa brasileira e sujeitos a IRRF no Brasil ficam fora deste cálculo.",
             "As deduções legais (INSS, dependentes, pensão e livro-caixa) e o desconto simplificado mensal são comparados, e vale o que resulta em imposto menor; a redução mensal da Lei 15.270/2025 é aplicada depois."
         };
         if (acumula)

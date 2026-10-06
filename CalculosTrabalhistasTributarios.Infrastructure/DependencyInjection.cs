@@ -23,6 +23,7 @@ public static class DependencyInjection
     public static IServiceCollection AddInfrastructure(this IServiceCollection services) => services
         .AddSingleton(new BancoTributario($"Data Source={CaminhoBanco}"))
         .AddSingleton<Func<HttpClient>>(static () => CriarHttpClient())
+        .AddSingleton<IConsultaCotacoesTrabalhoExterior, ConsultaCotacoesTrabalhoExterior>()
         .AddSingleton<SqliteTributacaoConsulta>()
         .AddSingleton<ITributacaoConsulta>(provider => provider.GetRequiredService<SqliteTributacaoConsulta>())
         .AddSingleton<ICacheTabelasTributarias>(provider => provider.GetRequiredService<SqliteTributacaoConsulta>())

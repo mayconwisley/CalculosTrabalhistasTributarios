@@ -29,6 +29,21 @@ public class PlanilhaTests
     private static IXLRow Linha(IXLWorksheet aba, string rotulo) => aba.RowsUsed().First(linha => linha.Cell(1).GetString() == rotulo);
 
     [Fact]
+    public async Task Trabalho_exterior_exporta_valores_numericos_e_mesma_apuracao()
+    {
+        var pedido = new SimularTrabalhoExteriorRequest(new DateOnly(2026, 10, 15), "Estados Unidos", "USD",
+            new EntradaTrabalhoExterior(VinculoTrabalhoExterior.EmpregoAssalariado, 10_000m, 50m, 2_000m,
+                10m, 5m, 20m, 1m, 5m, 4.8m), true, 0m, 0, 0m, 0m);
+        var demonstrativo = await new SimularTrabalhoExteriorUseCase(await Ambiente.ConsultaAsync()).ExecutarAsync(pedido, default).Sucesso();
+        using var pasta = await GerarAsync(caminho => new ClosedXmlPlanilhaService().GerarDemonstrativoAsync(demonstrativo, caminho, default));
+        var aba = pasta.Worksheet(1);
+        Assert.Equal(48_000d, Linha(aba, "Remuneração convertida").Cell(3).GetDouble());
+        Assert.Equal(24d, Linha(aba, "Juros cobrados pela instituição").Cell(4).GetDouble());
+        Assert.Equal(35_873.71d, aba.RowsUsed().Last(linha => linha.Cell(1).GetString() == "Após câmbio e tributos").Cell(3).GetDouble(), 2);
+        Assert.Equal("Memória de cálculo", pasta.Worksheet(2).Name);
+    }
+
+    [Fact]
     public async Task Saque_aniversario_exporta_bruto_repasse_e_disponivel_numericos()
     {
         var demonstrativo = await new SimularSaqueAniversarioUseCase()
