@@ -63,6 +63,7 @@ public sealed class MainWindowViewModel : ViewModelBase
             new("Remuneração e custos",
             [
                 Calculadora("Holerite do mês", "Salário, horas, adicionais, faltas, vale-transporte, pensão e salário-família.", TipoCalculadora.Holerite),
+                Calculadora("Comissões e DSR", "Repouso sobre comissões e impacto no INSS, IRRF, FGTS e líquido.", TipoCalculadora.Comissoes),
                 Atalho("Jornada pelo ponto", "Horas extras, noturnas, faltas e intervalos pelas marcações do mês.", navegador.AbrirJornada),
                 Calculadora("Horas extras e adicionais", "Horas extras, adicional noturno e reflexo no DSR.", TipoCalculadora.HorasExtras),
                 Calculadora("Insalubridade e periculosidade", "Adicionais pelo grau de insalubridade ou pela periculosidade.", TipoCalculadora.Adicionais),
@@ -122,6 +123,7 @@ public sealed class MainWindowViewModel : ViewModelBase
     }
 
     public IReadOnlyList<GrupoAtalhosViewModel> Calculadoras { get; }
+    public int QuantidadeCalculadoras => Calculadoras.Sum(grupo => grupo.Atalhos.Count);
 
     /// <summary>Versão nova publicada e tabelas do ano ainda não cadastradas, verificadas ao abrir.</summary>
     public ObservableCollection<AvisoInicioViewModel> Avisos { get; } = [];

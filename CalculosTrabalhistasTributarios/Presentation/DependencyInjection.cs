@@ -40,6 +40,7 @@ public static class DependencyInjection
         .AddKeyedTransient<ICalculadora, CalculadoraDecimoTerceiro>(TipoCalculadora.DecimoTerceiro)
         .AddKeyedTransient<ICalculadora, CalculadoraFerias>(TipoCalculadora.Ferias)
         .AddKeyedTransient<ICalculadora, CalculadoraHorasExtras>(TipoCalculadora.HorasExtras)
+        .AddKeyedTransient<ICalculadora, CalculadoraComissoes>(TipoCalculadora.Comissoes)
         .AddKeyedTransient<ICalculadora, CalculadoraRescisao>(TipoCalculadora.Rescisao)
         .AddKeyedTransient<ICalculadora, CalculadoraCustoFuncionario>(TipoCalculadora.CustoFuncionario)
         .AddKeyedTransient<ICalculadora, CalculadoraProLabore>(TipoCalculadora.ProLaboreAutonomo)

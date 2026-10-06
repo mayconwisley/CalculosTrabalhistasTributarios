@@ -26,7 +26,7 @@ Guia completo para utilizar **Cálculos Trabalhistas e Tributários**: simulaç�
 O aplicativo Cálculos Trabalhistas e Tributários reúne, em um único lugar para Windows, os cálculos trabalhistas e tributários mais comuns do dia a dia:
 
 - **Simulação tributária:** IRRF pelas modalidades normal e simplificada, INSS por faixas, salário líquido e FGTS de 8% e de 2% (Jovem Aprendiz), com indicação da modalidade de IRRF mais vantajosa.
-- **Calculadoras trabalhistas:** holerite do mês, jornada pelas marcações de ponto, salário bruto a partir do líquido, horas extras com adicional noturno e DSR, insalubridade e periculosidade, salário-família, 13º salário, férias com abono, PLR, rescisão por motivo de desligamento, seguro-desemprego, custo do funcionário para a empresa, comparação entre CLT e PJ, pró-labore ou pagamento a autônomo (RPA), empregado doméstico com o DAE, estágio e trabalho intermitente.
+- **Calculadoras trabalhistas:** holerite do mês, comissões e DSR, jornada pelas marcações de ponto, salário bruto a partir do líquido, horas extras com adicional noturno e DSR, insalubridade e periculosidade, salário-família, 13º salário, férias com abono, PLR, rescisão por motivo de desligamento, seguro-desemprego, custo do funcionário para a empresa, comparação entre CLT e PJ, pró-labore ou pagamento a autônomo (RPA), empregado doméstico com o DAE, estágio e trabalho intermitente.
 - **FGTS, afastamentos e benefícios:** afastamento por doença ou acidente e licenças-maternidade e paternidade, saque-aniversário do FGTS e abono salarial do PIS/Pasep.
 - **Imposto de renda anual:** a declaração do ano com a redução anual da Lei 15.270/2025, a comparação entre os modelos completo e simplificado e a tributação mínima das altas rendas; a retenção de 10% sobre dividendos acima de R$ 50 mil no mês; o carnê-leão de honorários e aluguéis; o ganho de capital na venda de imóveis e outros bens; e a multa e os juros de tributos pagos em atraso.
 - **Pensão alimentícia:** pensão de um ou mais beneficiários sobre os rendimentos líquidos, os brutos, o salário mínimo ou em valor fixo, com o IRRF nas duas modalidades; revisão, que compara a pensão atual com a proposta; e pensão em atraso, com correção monetária, juros, a separação entre o rito da prisão e o da penhora e a multa e os honorários do cumprimento de sentença. O 13º salário, as férias, a rescisão e a PLR também descontam a pensão.
@@ -372,7 +372,7 @@ O botão **Gerar PDF** cria um demonstrativo com as verbas, os dados considerado
 
 ## 8. Calculadoras trabalhistas
 
-Além da simulação tributária, da pensão, dos débitos judiciais, da estabilidade e da jornada pelo ponto, a aba **Calculadoras** tem vinte e cinco calculadoras para o dia a dia do departamento pessoal e do imposto de renda. Todas usam a mesma janela:
+Além da simulação tributária, da pensão, dos débitos judiciais, da estabilidade e da jornada pelo ponto, a aba **Calculadoras** reúne cálculos para o dia a dia do departamento pessoal e do imposto de renda. As calculadoras deste capítulo usam a mesma janela:
 
 - **Formulário:** os campos do cálculo. Passe o mouse sobre um campo para ver uma dica do que informar. Ao abrir uma calculadora, a competência, o salário e os dependentes do último cálculo já vêm preenchidos. Alguns campos só aparecem quando a opção escolhida em outro campo exige.
 - **Calcular:** faz o cálculo. A tecla **Enter** também calcula.
@@ -697,12 +697,15 @@ Abra pelo cartão **Holerite do mês**, no grupo **Remuneração e custos**. Ele
 
 | Campo | O que informar |
 | --- | --- |
-| Salário | Salário-base mensal, sem adicionais. |
+| Salário | Salário-base mensal, sem adicionais. Deixe 0,00 para comissionista puro e informe as comissões no campo próprio. |
 | Insalubridade e Periculosidade (30%) | O grau da insalubridade, sobre o salário mínimo, e a periculosidade, sobre o salário. Os dois não se acumulam: vale o maior (CLT, art. 193, § 2º). |
 | Horas extras, trabalho noturno e feriados | Como na calculadora de horas extras (seção 8.2), inclusive as horas extras noturnas e o trabalho rural. |
 | Faltas (dias) e Descansos perdidos | Faltas injustificadas e os domingos e feriados perdidos por elas: um por semana com falta, mais o feriado dessa semana (Lei 605/1949, art. 6º). Somados, não passam de 30 dias. |
 | Atrasos (horas) | Atrasos e saídas antecipadas, descontados pelo valor da hora. |
-| Proventos tributáveis | Comissões, gratificações e outros proventos com INSS, IRRF e FGTS, já com o reflexo no DSR. |
+| Comissões do mês e Comissões já incluem DSR? | Informe as comissões sem DSR para calculá-lo automaticamente. Se o total já inclui DSR, marque **Sim**: o aplicativo separa as parcelas sem somar um segundo repouso. |
+| Informar dias das comissões? | Para escala ou período parcial, informe os dias úteis e os repousos previstos. Os descansos perdidos são descontados da quantidade de repousos remunerados. |
+| Garantia mínima das comissões | Deixe 0,00 para o salário mínimo nacional em mês completo. Informe um piso maior da categoria ou a garantia proporcional aplicável ao período quando os dias forem informados. |
+| Proventos tributáveis | Outros proventos com INSS, IRRF e FGTS. Comissões informadas aqui já devem incluir DSR e não podem ser repetidas no campo próprio. |
 | Prêmios (só IRRF) | Prêmios por desempenho superior ao esperado (CLT, art. 457, §§ 2º e 4º). Têm IRRF e entram na base da pensão, mas não têm INSS nem FGTS. Valores pagos todo mês ou sem ligação com o desempenho podem ser considerados salário: nesse caso, informe-os nos proventos tributáveis. |
 | Proventos não tributáveis | Ajuda de custo, diárias de viagem, reembolsos de despesas e outros valores sem INSS, IRRF e FGTS. Só somam no líquido: ficam fora da pensão e do limite do salário-família. |
 | Dependentes (IRRF) | Os dependentes declarados para o IRRF: cada um é deduzido da base na modalidade de deduções legais. O desconto simplificado substitui essa dedução quando resulta em imposto menor. |
@@ -712,9 +715,10 @@ Abra pelo cartão **Holerite do mês**, no grupo **Remuneração e custos**. Ele
 | Custo do vale-transporte | Custo das passagens do mês. O desconto é de até 6% do salário-base, sem os adicionais; a empresa paga o restante (Lei 7.418/1985, art. 4º). |
 | Adiantamento (vale) e Descontos sem incidência | Valores que saem do líquido sem reduzir o INSS, o IRRF nem o FGTS, como o vale, o consignado e o plano de saúde. |
 
-- **Remuneração do mês:** salário, adicional, proventos tributáveis, horas extras, adicional noturno e DSR, menos as faltas, os descansos perdidos e os atrasos. É a base do INSS e do FGTS e define o salário-família.
+- **Remuneração do mês:** salário, adicional, comissões, DSR das comissões, eventual complemento da garantia mínima, demais proventos tributáveis, horas extras, adicional noturno e DSR das horas, menos as faltas, os descansos perdidos e os atrasos. É a base do INSS e do FGTS e define o salário-família.
 - **Rendimentos do IRRF:** a remuneração do mês mais os prêmios. Deles saem o INSS, os dependentes, a pensão e a previdência complementar (deduções legais) ou o desconto simplificado, o que resultar em imposto menor. A base do IRRF aplicada aparece nos informativos.
 - **Faltas e descansos perdidos:** salário-dia (salário e adicional ÷ 30) × dias.
+- **Comissões e horas extras:** o DSR sobre comissões é separado do DSR das horas extras. Para comissionista misto, os campos de horas calculam a parcela fixa; o adicional de horas extras sobre as comissões depende das horas efetivamente trabalhadas (Súmula 340 do TST). Informe o valor já apurado em **Proventos tributáveis**, com o DSR correspondente. Para comissionista puro, não use os campos de horas extras ou noturnas nesta tela.
 - **Salário-família:** pela remuneração do mês, uma cota por filho, sem INSS, IRRF nem FGTS. Nos meses de admissão e desligamento, use a calculadora de salário-família, que faz a cota proporcional.
 - O 13º e as férias pagos no mês têm cálculo próprio, nas calculadoras de 13º e de férias.
 
@@ -955,6 +959,26 @@ Abra pelo cartão **Abono salarial (PIS/Pasep)**, no grupo **FGTS, afastamentos 
 - **Valor:** o salário mínimo do ano do pagamento ÷ 12 × meses trabalhados.
 - **Limite de renda:** até o calendário de 2025, dois salários mínimos (R$ 2.640,00); a partir do de 2026, o valor passou a ser corrigido só pelo INPC, até chegar a um salário mínimo e meio (EC 135/2024). No calendário de 2026, R$ 2.766,00.
 - Também é preciso ter trabalhado pelo menos 30 dias no ano-base e ter os dados informados pelo empregador no eSocial.
+
+### 8.28 Comissões e DSR
+
+Abra pelo cartão **Comissões e DSR**, no grupo **Remuneração e custos**. A calculadora separa comissões e repouso remunerado, mostra a remuneração do mês com INSS e IRRF, o depósito de FGTS e o impacto líquido das comissões.
+
+| Campo | O que informar |
+| --- | --- |
+| Salário fixo | Parcela fixa mensal; deixe 0,00 para comissionista puro. |
+| Valor das comissões | Comissões do mês **sem DSR**. Se o valor já contém o repouso, marque **Valor já inclui DSR?** para dividir as parcelas sem duplicar o pagamento. |
+| Feriados em dias úteis | Na contagem automática, informe os feriados que não caem no domingo. O sábado é contado como útil. |
+| Informar dias do período? | Para admissão, desligamento, afastamento, escala ou regra coletiva diferente, informe os dias úteis e os repousos previstos do período. A soma não pode superar os dias da competência. |
+| Repousos perdidos | Repousos ou feriados sem remuneração por falta injustificada; são retirados dos repousos previstos antes de calcular o DSR. |
+| Garantia mínima do período | Deixe 0,00 para usar o salário mínimo nacional no mês completo. Informe o piso da categoria quando maior. Com dias informados, preencha a garantia aplicável ao período. |
+| Dependentes (IRRF) | Dependentes usados na modalidade de deduções legais do IRRF. |
+
+- **DSR:** comissões sem DSR ÷ dias úteis × repousos remunerados. A calculadora arredonda o DSR aos centavos. Se o total informado já contém DSR, ela separa o total proporcionalmente aos dias, preservando o valor pago.
+- **Garantia mínima:** quando salário fixo + comissões + DSR fica abaixo da garantia informada ou do salário mínimo, a diferença aparece como complemento salarial, com INSS, IRRF e FGTS. A garantia de quem recebe remuneração variável está prevista no art. 7º, VII, da Constituição e na Lei 8.716/1993.
+- **Impacto líquido:** diferença entre o líquido deste cenário e o de um cenário sem comissões, mantendo a garantia mínima. Por isso, uma comissão pequena pode substituir parte do complemento sem aumentar o líquido.
+- **Uso no holerite:** informe as comissões sem DSR no campo **Comissões do mês** do holerite, que faz a mesma apuração. Se quiser lançar o total pronto em **Proventos tributáveis**, deixe o campo próprio de comissões zerado. O DSR das horas extras permanece separado.
+- **Limite do cenário:** o líquido desta calculadora considera salário fixo, comissões, DSR e complemento, sem outros adicionais, descontos ou benefícios. Use **Holerite do mês** para a folha completa. O FGTS é informativo e não reduz o líquido.
 
 ## 9. Tabelas e parâmetros
 

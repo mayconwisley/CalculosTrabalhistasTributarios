@@ -23,15 +23,19 @@ public sealed class SimularHoleriteUseCase(ITributacaoConsulta tributacaoConsult
 
     public async Task<Result<DemonstrativoDto>> ExecutarAsync(SimularHoleriteRequest r, CancellationToken cancellationToken)
     {
-        if (r.Salario <= 0m)
-            return Erro.Validacao("Informe o salário do mês.");
-        if (r.OutrosProventos < 0m || r.Premios < 0m || r.ProventosNaoTributaveis < 0m || r.HorasAtraso < 0m || r.Faltas < 0 || r.DescansosPerdidos < 0 || r.Dependentes < 0 || r.Filhos < 0
+        if (r.Salario < 0m)
+            return Erro.Validacao("O salário não pode ser negativo.");
+        if (r.Salario == 0m && r.Comissoes == 0m)
+            return Erro.Validacao("Informe o salário ou as comissões do mês.");
+        if (r.OutrosProventos < 0m || r.Comissoes < 0m || r.PisoGarantidoComissoes < 0m || r.Premios < 0m || r.ProventosNaoTributaveis < 0m || r.HorasAtraso < 0m || r.Faltas < 0 || r.DescansosPerdidos < 0 || r.Dependentes < 0 || r.Filhos < 0
             || r.CustoValeTransporte < 0m || r.Adiantamento < 0m || r.OutrosDescontos < 0m || r.PrevidenciaComplementar < 0m)
             return Erro.Validacao("Os valores, as horas, as faltas e as quantidades não podem ser negativos.");
         // Os dois são descontados pelo salário-dia: juntos não passam dos 30 dias do mês comercial.
         if (r.Faltas + r.DescansosPerdidos > 30)
             return Erro.Validacao("As faltas e os descansos perdidos, somados, não podem passar de 30 dias no mês.");
         var informadas = new HorasInformadas(r.HorasFaixa1, r.PercentualFaixa1, r.HorasFaixa2, r.PercentualFaixa2, r.HorasNoturnas, r.PercentualNoturno, r.HorasExtrasNoturnas, r.Feriados, r.Rural);
+        if (r.Salario == 0m && r.Comissoes > 0m && (r.HorasFaixa1 > 0m || r.HorasFaixa2 > 0m || r.HorasNoturnas > 0m || r.HorasExtrasNoturnas > 0m))
+            return Erro.Validacao("As horas extras e noturnas do comissionista puro exigem cálculo sobre a remuneração variável e as horas efetivamente trabalhadas; este holerite não dispõe desses dados. Informe as verbas já apuradas em Proventos tributáveis, com o DSR correspondente.");
         if (CalculadoraHoras.Validar(informadas, r.Divisor) is { Falhou: true } horasInvalidas)
             return horasInvalidas.Erro;
 
@@ -64,13 +68,35 @@ public sealed class SimularHoleriteUseCase(ITributacaoConsulta tributacaoConsult
         if (calculoHoras.Falhou)
             return calculoHoras.Erro;
         var horas = calculoHoras.Valor;
-        if (r.DescansosPerdidos > horas.DiasDescanso)
-            return Erro.Validacao($"Os descansos perdidos ({r.DescansosPerdidos}) passam dos {horas.DiasDescanso} domingos e feriados do mês.");
+        var repousosDoPeriodo = r.Comissoes > 0m && r.DiasDescansoComissoes is { } repousosInformados
+            ? Math.Max(horas.DiasDescanso, repousosInformados) : horas.DiasDescanso;
+        if (r.DescansosPerdidos > repousosDoPeriodo)
+            return Erro.Validacao($"Os descansos perdidos ({r.DescansosPerdidos}) passam dos {repousosDoPeriodo} repousos do período.");
+        ComissoesApuradas? comissoes = null;
+        if (r.Comissoes > 0m)
+        {
+            var apuracao = CalculadoraComissoes.Calcular(new ComissoesInformadas(r.Competencia, r.Comissoes,
+                r.ComissoesIncluemDsr, r.Feriados, r.DescansosPerdidos, r.DiasUteisComissoes, r.DiasDescansoComissoes));
+            if (apuracao.Falhou)
+                return apuracao.Erro;
+            comissoes = apuracao.Valor;
+        }
         var faltas = CalculadoraTributacao.Arredondar(baseHora * r.Faltas / 30m);
         var descansos = CalculadoraTributacao.Arredondar(baseHora * r.DescansosPerdidos / 30m);
         var atrasos = CalculadoraTributacao.Arredondar(baseHora * r.HorasAtraso / r.Divisor);
 
-        var tributaveis = baseHora + r.OutrosProventos + horas.Variaveis + horas.Dsr;
+        var tributaveisSemComplemento = baseHora + r.OutrosProventos + (comissoes?.Total ?? 0m) + horas.Variaveis + horas.Dsr;
+        var complementoComissoes = 0m;
+        var pisoComissoes = 0m;
+        if (comissoes is not null)
+        {
+            var garantia = GarantiaComissionista.ObterPiso(tabelas, r.PisoGarantidoComissoes, comissoes.DiasInformados);
+            if (garantia.Falhou)
+                return garantia.Erro;
+            pisoComissoes = garantia.Valor;
+            complementoComissoes = CalculadoraComissoes.ComplementoGarantiaMinima(tributaveisSemComplemento, pisoComissoes);
+        }
+        var tributaveis = tributaveisSemComplemento + complementoComissoes;
         var remuneracao = tributaveis - faltas - descansos - atrasos;
         if (remuneracao < 0m)
             return Erro.Validacao($"As faltas e os atrasos ({Formato.Moeda(faltas + descansos + atrasos)}) passam da remuneração do mês ({Formato.Moeda(tributaveis)}).");
@@ -109,9 +135,16 @@ public sealed class SimularHoleriteUseCase(ITributacaoConsulta tributacaoConsult
         var fgts = CalculadoraTributacao.Arredondar(remuneracao * .08m);
 
         var nomeAdicional = aplicaPericulosidade ? "Adicional de periculosidade" : $"Adicional de insalubridade ({NomeGrau(r.Insalubridade)})";
-        var proventos = new List<VerbaDto> { new("Salário", Formato.Dias(30), r.Salario) };
+        var proventos = new List<VerbaDto>();
+        if (r.Salario > 0m) proventos.Add(new("Salário", Formato.Dias(30), r.Salario));
         if (adicional > 0m) proventos.Add(new(nomeAdicional, Formato.PercentualCurto(aplicaPericulosidade ? PercentualPericulosidade : (int)r.Insalubridade), adicional));
-        if (r.OutrosProventos > 0m) proventos.Add(new("Proventos tributáveis (comissões, gratificações)", "", r.OutrosProventos));
+        if (comissoes is not null)
+        {
+            proventos.Add(new("Comissões", "", comissoes.Comissoes));
+            proventos.Add(new("DSR sobre comissões", $"{comissoes.DescansosPagos} descansos", comissoes.Dsr));
+        }
+        if (complementoComissoes > 0m) proventos.Add(new("Complemento da garantia mínima", "", complementoComissoes));
+        if (r.OutrosProventos > 0m) proventos.Add(new("Outros proventos tributáveis", "", r.OutrosProventos));
         proventos.AddRange(DemonstrativoHoras.Proventos(horas));
         if (r.Premios > 0m) proventos.Add(new("Prêmios", "", r.Premios));
         if (r.ProventosNaoTributaveis > 0m) proventos.Add(new("Proventos não tributáveis (ajuda de custo, diárias, reembolsos)", "", r.ProventosNaoTributaveis));
@@ -139,6 +172,14 @@ public sealed class SimularHoleriteUseCase(ITributacaoConsulta tributacaoConsult
         if (r.Premios > 0m)
             formulasRemuneracao.Add(new("Rendimentos do IRRF", $"{Formato.Moeda(remuneracao)} (remuneração) + {Formato.Moeda(r.Premios)} (prêmios, sem INSS e FGTS) = {Formato.Moeda(rendimentos)}"));
         var memoria = new List<GrupoMemoriaDto> { new("Remuneração do mês", $"Remuneração: {Formato.Moeda(remuneracao)}", formulasRemuneracao) };
+        if (comissoes is not null)
+        {
+            var formulasComissoes = new List<FormulaDto>(DemonstrativoComissoes.Formulas(comissoes))
+            {
+                new("Garantia mínima", $"Máximo entre {Formato.Moeda(0m)} e {Formato.Moeda(pisoComissoes)} (piso) - {Formato.Moeda(tributaveisSemComplemento)} (remuneração antes do complemento) = {Formato.Moeda(complementoComissoes)}")
+            };
+            memoria.Add(new("Comissões e DSR", $"Total: {Formato.Moeda(comissoes.Total)}", formulasComissoes));
+        }
         memoria.Add(MemoriaTributaria.Inss("INSS", inss, "remuneração do mês"));
         memoria.Add(MemoriaTributaria.Irrf("IRRF", irrf, rotuloRendimentos));
         if (r.Pensao is { } regraMemoria && pensao is not null)
@@ -171,8 +212,14 @@ public sealed class SimularHoleriteUseCase(ITributacaoConsulta tributacaoConsult
 
         if (r.Faltas > 0 || r.DescansosPerdidos > 0)
             observacoes.Add("As faltas e os descansos perdidos são descontados pelo salário-dia (salário e adicional ÷ 30). A falta injustificada faz perder o descanso remunerado da semana (Lei 605/1949, art. 6º): informe um descanso perdido por semana com falta, e também o feriado dessa semana.");
+        if (comissoes is not null)
+            observacoes.Add("As comissões e seu DSR entram no INSS, no IRRF e no FGTS. O DSR das comissões foi calculado separadamente do DSR das horas extras; não repita as comissões em Proventos tributáveis. A garantia mínima considera a remuneração antes dos descontos por faltas e atrasos.");
+        if (comissoes is not null && (r.HorasFaixa1 > 0m || r.HorasFaixa2 > 0m || r.HorasExtrasNoturnas > 0m))
+            observacoes.Add("Com remuneração mista, as horas extras calculadas aqui usam somente a parcela fixa e os adicionais salariais informados. O adicional de horas extras sobre as comissões segue regra própria (Súmula 340 do TST) e depende das horas efetivamente trabalhadas; informe o valor já apurado em Proventos tributáveis, com seu DSR, sem repetir as comissões.");
+        if (complementoComissoes > 0m)
+            observacoes.Add($"A remuneração variável ficou abaixo da garantia de {Formato.Moeda(pisoComissoes)}; o complemento de {Formato.Moeda(complementoComissoes)} integra INSS, IRRF e FGTS.");
         if (r.OutrosProventos > 0m)
-            observacoes.Add("Os proventos tributáveis entram no INSS, no IRRF e no FGTS; informe as comissões já com o reflexo no DSR.");
+            observacoes.Add("Os outros proventos tributáveis entram no INSS, no IRRF e no FGTS. Comissões informadas nesse campo já devem incluir o DSR e não podem ser repetidas no campo Comissões do mês.");
         if (r.Premios > 0m)
             observacoes.Add("Os prêmios por desempenho superior ao esperado não entram no INSS nem no FGTS (CLT, art. 457, §§ 2º e 4º), mas têm IRRF e entram na base da pensão. Valores pagos todo mês ou sem ligação com o desempenho podem ser considerados salário: nesse caso, informe-os nos proventos tributáveis.");
         if (r.ProventosNaoTributaveis > 0m)

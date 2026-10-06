@@ -4,7 +4,8 @@ using CalculosTrabalhistasTributarios.Domain.Trabalhista;
 namespace CalculosTrabalhistasTributarios.Application.DTOs;
 
 /// <summary>Holerite do mês: salário, adicionais, horas, faltas, descontos e benefícios em um só demonstrativo.</summary>
-/// <param name="OutrosProventos">Comissões, gratificações e outros proventos com INSS, IRRF e FGTS, já com o DSR quando houver.</param>
+/// <param name="OutrosProventos">Outros proventos com INSS, IRRF e FGTS; comissões informadas aqui já devem incluir o DSR.</param>
+/// <param name="Comissoes">Comissões apuradas no mês, separadas dos outros proventos para calcular o DSR automaticamente.</param>
 /// <param name="Faltas">Dias de falta injustificada, descontados pelo salário-dia.</param>
 /// <param name="DescansosPerdidos">Domingos e feriados perdidos pelas faltas: o da semana com falta injustificada (Lei 605/1949, art. 6º).</param>
 /// <param name="HorasAtraso">Atrasos e saídas antecipadas, descontados pelo valor da hora.</param>
@@ -43,4 +44,9 @@ public sealed record SimularHoleriteRequest(
     decimal HorasExtrasNoturnas = 0m,
     decimal Premios = 0m,
     decimal ProventosNaoTributaveis = 0m,
-    decimal PrevidenciaComplementar = 0m);
+    decimal PrevidenciaComplementar = 0m,
+    decimal Comissoes = 0m,
+    bool ComissoesIncluemDsr = false,
+    int? DiasUteisComissoes = null,
+    int? DiasDescansoComissoes = null,
+    decimal PisoGarantidoComissoes = 0m);

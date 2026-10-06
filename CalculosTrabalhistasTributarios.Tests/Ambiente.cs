@@ -23,7 +23,10 @@ internal static class Ambiente
     private static async Task<IServiceProvider> CriarAsync()
     {
         var pasta = Path.Combine(AppContext.BaseDirectory, "BancoDados");
-        File.Copy(Path.Combine(pasta, "base.db"), Path.Combine(pasta, "calculoIrrf.db"), overwrite: true);
+        var caminhoBanco = Path.Combine(pasta, "calculoIrrf.db");
+        File.Delete($"{caminhoBanco}-wal");
+        File.Delete($"{caminhoBanco}-shm");
+        File.Copy(Path.Combine(pasta, "base.db"), caminhoBanco, overwrite: true);
         var escopo = new ServiceCollection().AddInfrastructure().BuildServiceProvider().CreateScope();
         await escopo.ServiceProvider.GetRequiredService<IInicializadorBancoTributario>().InicializarAsync(CancellationToken.None);
         return escopo.ServiceProvider;

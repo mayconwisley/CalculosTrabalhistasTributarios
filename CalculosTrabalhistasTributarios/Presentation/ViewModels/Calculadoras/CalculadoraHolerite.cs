@@ -13,10 +13,12 @@ public sealed class CalculadoraHolerite : CalculadoraBase
     {
         _simulador = simulador;
         _trabalho = CamposNoturnos.Trabalho(_percentualNoturno);
+        _diasComissoesManuais.AoAlterar = AtualizarCamposComissoes;
+        AtualizarCamposComissoes();
     }
 
     private readonly CampoTextoViewModel _competencia = Competencia(dica: "Mês do holerite, que define os domingos para o DSR e as tabelas de INSS, IRRF e salário-família (MM/AAAA).");
-    private readonly CampoTextoViewModel _salario = Moeda("Salário", "Salário-base mensal, sem adicionais.");
+    private readonly CampoTextoViewModel _salario = Moeda("Salário", "Salário-base mensal, sem adicionais. Deixe 0,00 para comissionista puro e informe as comissões no campo próprio.");
     private readonly CampoOpcaoViewModel _insalubridade = new("Insalubridade",
         [
             new("Não há", GrauInsalubridade.Nenhum),
@@ -25,7 +27,13 @@ public sealed class CalculadoraHolerite : CalculadoraBase
             new("Grau máximo (40%)", GrauInsalubridade.Maximo)
         ], "Percentual sobre o salário mínimo, conforme o laudo (NR-15). Não se acumula com a periculosidade.");
     private readonly CampoOpcaoViewModel _periculosidade = CampoOpcaoViewModel.SimNao("Periculosidade (30%)", false, "30% do salário (CLT, art. 193). Com insalubridade, vale o adicional maior.");
-    private readonly CampoTextoViewModel _outrosProventos = Moeda("Proventos tributáveis", "Comissões, gratificações e outros proventos com INSS, IRRF e FGTS, já com o reflexo no DSR.");
+    private readonly CampoTextoViewModel _outrosProventos = Moeda("Proventos tributáveis", "Outros proventos com INSS, IRRF e FGTS. Se incluir comissões aqui, informe-as já com DSR e não as repita no campo próprio.");
+    private readonly CampoTextoViewModel _comissoes = Moeda("Comissões do mês", "Comissões sem DSR; o repouso será calculado automaticamente, salvo se marcar que o valor já inclui DSR.");
+    private readonly CampoOpcaoViewModel _comissoesIncluemDsr = CampoOpcaoViewModel.SimNao("Comissões já incluem DSR?", false, "Marque Sim se o valor das comissões informado já inclui o repouso remunerado.");
+    private readonly CampoOpcaoViewModel _diasComissoesManuais = CampoOpcaoViewModel.SimNao("Informar dias das comissões?", false, "Use para escala ou período parcial. A contagem só altera o DSR das comissões, não o das horas extras.");
+    private readonly CampoTextoViewModel _diasUteisComissoes = Inteiro("Dias úteis das comissões", 0, "Dias úteis do período de comissões; informe também os repousos previstos.");
+    private readonly CampoTextoViewModel _diasDescansoComissoes = Inteiro("Repousos das comissões", 0, "Repousos e feriados previstos no período; os repousos perdidos são descontados pelo campo Descansos perdidos.");
+    private readonly CampoTextoViewModel _pisoComissoes = Moeda("Garantia mínima das comissões", "Deixe 0,00 para o salário mínimo nacional no mês completo. Para dias informados, preencha a garantia do período; use o piso da categoria quando maior.");
     private readonly CampoTextoViewModel _premios = Moeda("Prêmios (só IRRF)", "Prêmios por desempenho superior ao esperado (CLT, art. 457, § 4º): têm IRRF, mas não têm INSS nem FGTS.");
     private readonly CampoTextoViewModel _proventosNaoTributaveis = Moeda("Proventos não tributáveis", "Ajuda de custo, diárias de viagem, reembolsos e outros valores sem INSS, IRRF e FGTS: só somam no líquido.");
     private readonly CampoTextoViewModel _divisor = new("Divisor de horas", TipoCampo.Numero, "220", "220 para 44 horas semanais; 200 para 40; 180 para 36; 150 para 30.");
@@ -51,10 +59,11 @@ public sealed class CalculadoraHolerite : CalculadoraBase
 
     public override string Titulo => "Holerite do mês";
     public override string Descricao => "Monte o holerite com salário, adicionais, horas extras, faltas, vale-transporte, pensão e salário-família.";
-    public override string InstrucaoInicial => "Informe o salário e os eventos do mês e selecione Calcular.";
+    public override string InstrucaoInicial => "Informe o salário ou as comissões e os eventos do mês e selecione Calcular.";
     public override IReadOnlyList<CampoViewModel> Campos =>
         [_competencia, _salario, _insalubridade, _periculosidade, _divisor, _horas1, _percentual1, _horas2, _percentual2, _trabalho, _horasNoturnas, _percentualNoturno,
-         _horasExtrasNoturnas, _feriados, _faltas, _descansos, _atrasos, _outrosProventos, _premios, _proventosNaoTributaveis, _dependentes, .. _pensao.Campos, _previdencia, _filhos,
+         _horasExtrasNoturnas, _feriados, _faltas, _descansos, _atrasos, _comissoes, _comissoesIncluemDsr, _diasComissoesManuais,
+         _diasUteisComissoes, _diasDescansoComissoes, _pisoComissoes, _outrosProventos, _premios, _proventosNaoTributaveis, _dependentes, .. _pensao.Campos, _previdencia, _filhos,
          _valeTransporte, _adiantamento, _outrosDescontos];
     public override string NomeArquivoPdf => $"holerite-{_competencia.Valor.Replace('/', '-')}.pdf";
 
@@ -76,5 +85,15 @@ public sealed class CalculadoraHolerite : CalculadoraBase
             leitor.Numero(_divisor), leitor.Horas(_horas1), leitor.Numero(_percentual1), leitor.Horas(_horas2), leitor.Numero(_percentual2), leitor.Horas(_horasNoturnas), leitor.Numero(_percentualNoturno),
             leitor.Inteiro(_feriados), leitor.Inteiro(_faltas), leitor.Inteiro(_descansos), leitor.Horas(_atrasos), leitor.Inteiro(_dependentes), leitor.Inteiro(_filhos), leitor.Pensao(_pensao),
             leitor.Moeda(_valeTransporte), leitor.Moeda(_adiantamento), leitor.Moeda(_outrosDescontos), _trabalho.Valor<bool>(), leitor.Horas(_horasExtrasNoturnas),
-            leitor.Moeda(_premios), leitor.Moeda(_proventosNaoTributaveis), leitor.Moeda(_previdencia)), cancellationToken);
+            leitor.Moeda(_premios), leitor.Moeda(_proventosNaoTributaveis), leitor.Moeda(_previdencia),
+            leitor.Moeda(_comissoes), _comissoesIncluemDsr.Valor<bool>(),
+            _diasComissoesManuais.Valor<bool>() ? leitor.Inteiro(_diasUteisComissoes) : null,
+            _diasComissoesManuais.Valor<bool>() ? leitor.Inteiro(_diasDescansoComissoes) : null,
+            leitor.Moeda(_pisoComissoes)), cancellationToken);
+
+    private void AtualizarCamposComissoes()
+    {
+        var manuais = _diasComissoesManuais.Valor<bool>();
+        _diasUteisComissoes.Visivel = _diasDescansoComissoes.Visivel = manuais;
+    }
 }
