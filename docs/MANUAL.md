@@ -380,7 +380,7 @@ Além da simulação tributária, da pensão, dos débitos judiciais, da estabil
 - **Calcular:** faz o cálculo. A tecla **Enter** também calcula.
 - **Resumo executivo:** os valores mais importantes.
 - **Demonstrativo:** proventos, descontos e o resultado, como em um holerite.
-- **Valores informativos:** valores que não são pagos ao trabalhador, como o FGTS.
+- **Valores informativos:** valores que não entram nos totais nem no resultado, como o FGTS depositado pelo empregador, bases de cálculo e outras referências.
 - **Memória de cálculo:** a fórmula de cada valor, inclusive o INSS faixa a faixa e o IRRF nas duas modalidades.
 - **Observações:** as premissas e os limites do cálculo.
 - **Gerar PDF** e **Gerar Excel:** salvam o demonstrativo completo em um relatório ou em uma planilha.
@@ -698,6 +698,7 @@ A tabela **Comparação no ano** coloca lado a lado o recebido, o INSS, o IRRF, 
 - **CLT:** 11 meses de salário, o mês de férias com 1/3 e o 13º, com INSS e IRRF de cada um. O total soma o líquido, o FGTS depositado (8% de tudo) e os benefícios.
 - **PJ:** o DAS pela alíquota efetiva do anexo, com a receita de 12 meses igual a 12 vezes o valor mensal (Lei Complementar 123/2006); o pró-labore, com INSS de 11% e IRRF; e os custos. O restante é distribuído como lucro, isento de IR. O ISS e a contribuição patronal sobre o pró-labore estão no DAS.
 - **PJ equivalente:** o menor valor mensal de nota com o qual o total do PJ alcança o do CLT.
+- **Simples com receita e folha reais:** o CLT x PJ supõe 12 meses iguais. Para o DAS de um mês com a receita e a folha efetivas, o fator r, o início de atividade e as regras de 2027, use a calculadora **Simples Nacional e fator r** (seção 8.34).
 
 > **Atenção:** como PJ não há FGTS, 13º, férias remuneradas, seguro-desemprego nem multa do FGTS na saída. Acima de R$ 50 mil por mês, o lucro distribuído tem retenção de IRRF de 10% (Lei 15.270/2025), que não está no cálculo; o aplicativo avisa nas observações, e a calculadora [Dividendos](#817-dividendos) faz a conta. O limite do Simples Nacional é de R$ 4,8 milhões por ano.
 
@@ -1201,6 +1202,37 @@ Valores e deduções do pagamento:
 **Declaração anual:** os RRA de anos anteriores podem ser levados ao ajuste anual, por opção irretratável na declaração. A opção abrange todos os RRA do ano, e o imposto retido passa a ser antecipação. A calculadora estima a retenção, não o resultado da declaração.
 
 Fundamentos: [Lei 7.713/1988, arts. 12-A e 12-B](https://www.planalto.gov.br/ccivil_03/leis/l7713compilada.htm), IN RFB 1.500/2014, arts. 25, 26 e 36 a 45, com a redação da IN RFB 2.299/2025, e [Lei 15.270/2025](https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2025/lei/l15270.htm).
+
+### 8.34 Simples Nacional e fator r
+
+Abra pelo cartão **Simples Nacional e fator r**, em **Impostos e salário**. Ela estima o DAS de um período de apuração pela receita bruta e pela folha de salários dos 12 meses que a regra exige, indica o anexo aplicável e, nos serviços sujeitos ao fator r, compara os Anexos III e V e mostra o efeito do pró-labore no custo do PJ.
+
+![Formulário do Simples Nacional com 12 meses de receita e folha](imagens/88-simples-formulario.png)
+
+1. Informe o **Período de apuração**, o mês do DAS, e escolha a **Atividade**: **Serviços sujeitos ao fator r** (Anexo III com folha de pelo menos 28% da receita, Anexo V abaixo disso), **Serviços do Anexo III**, **Serviços do Anexo IV**, **Comércio (Anexo I)** ou **Indústria (Anexo II)**. O anexo depende do CNAE e do serviço prestado; confira o enquadramento com o contador.
+2. Se a empresa tem menos de 14 meses de atividade, informe o **Início das atividades** (MM/AAAA). Nos demais casos, deixe vazio.
+3. Informe a **Receita bruta do mês**. A **Folha do mês com encargos** só é usada no 1º mês de atividade até 2026.
+4. Em **Receita e folha dos meses anteriores**, informe valores sugeridos e clique em **Gerar meses**. O aplicativo cria exatamente as competências que o período exige. Ajuste a receita e a folha de cada mês. Gerar de novo, após mudar o período, preserva os valores dos meses que continuam.
+5. Nos serviços sujeitos ao fator r, informe o **Pró-labore mensal atual** e os **Dependentes do sócio**. No Anexo IV, informe os **Salários e pró-labore do mês**. Clique em **Calcular**.
+
+**Folha com encargos:** salários e pró-labore pagos e informados no eSocial, com o 13º na competência da contribuição, mais a CPP e o FGTS efetivamente recolhidos. Aluguéis e lucros distribuídos não entram.
+
+**Meses considerados:**
+
+- **Até 12/2026:** a receita (RBT12) e a folha (FS12) são as dos 12 meses anteriores ao período. No 1º mês de atividade, vale a receita do próprio mês × 12; do 2º ao 12º mês, a média dos meses anteriores × 12.
+- **A partir de 01/2027:** a Resolução CGSN 190/2026 passa a usar os 12 meses antecedentes ao mês anterior ao do período, ou seja, o mês imediatamente anterior não entra. No 1º e no 2º mês de atividade valem a alíquota da 1ª faixa e o fator r de 0,28; do 3º ao 13º mês, a média dos meses antecedentes ao mês anterior × 12. A alíquota nominal da 6ª faixa de todos os anexos cai 0,1 ponto em 2027 e 2028.
+
+![Resultado do Simples Nacional com o fator r, a comparação entre os Anexos III e V e o DAS](imagens/89-simples-resultado.png)
+
+- **Resumo:** DAS do mês, alíquota efetiva, RBT12 e fator r.
+- **Anexo III e Anexo V:** nos serviços sujeitos ao fator r, faixa, alíquota nominal, parcela a deduzir, alíquota efetiva e DAS nos dois anexos, com o aplicado indicado.
+- **Fator r:** folha de 12 meses ÷ receita de 12 meses. Com folha e sem receita, o fator é 0,28; sem folha, 0,01, conforme a resolução.
+- **Pró-labore para o fator r de 28%:** no Anexo V, a folha que falta em 12 meses, o pró-labore adicional por mês, o INSS de 11% e o IRRF a mais do sócio e a economia de DAS. Com o acréscimo mensal, o fator r chega a 28% depois de 12 meses; o saldo vale a partir daí. No Anexo III, a calculadora mostra a folga até os 28%.
+- **Anexo IV:** a contribuição patronal não está no DAS. A calculadora estima 20% sobre salários e pró-labore, sem o RAT, recolhidos em guia própria.
+
+**Limites:** o cálculo cobre períodos de 01/2018 a 12/2028 e uma única atividade. Receitas em mais de um anexo, exportação, ISS retido, substituição tributária e a repartição do DAS por tributo no PGDAS-D não são simulados. Acima de R$ 3,6 milhões de RBT12, o ICMS e o ISS saem do DAS; acima de R$ 4,8 milhões, a empresa fica sujeita à exclusão do Simples.
+
+Fundamentos: [Lei Complementar 123/2006, art. 18](https://www.planalto.gov.br/ccivil_03/leis/lcp/lcp123.htm) e Resolução CGSN 140/2018, arts. 21, 22, 25 e 26 e Anexos I a V, com a redação da Resolução CGSN 190/2026.
 
 ## 9. Tabelas e parâmetros
 

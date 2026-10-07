@@ -185,6 +185,36 @@
                 </ScrollViewer>
             </StackPanel>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type calculadoras:CampoMesesSimplesViewModel}">
+            <StackPanel Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ItemsControl}}" Margin="0,0,0,14" Visibility="{Binding Visivel, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <TextBlock Text="Receita e folha dos meses anteriores" FontWeight="SemiBold" Margin="0,0,0,5" />
+                <TextBlock Text="Informe a receita bruta e a folha com encargos de cada competência: salários e pró-labore pagos, mais a CPP e o FGTS recolhidos, sem aluguéis nem lucros distribuídos. Gerar meses cria as competências que o período exige; desde 2027, o mês anterior ao período não entra." FontSize="12" Foreground="{DynamicResource MutedTextBrush}" TextWrapping="Wrap" Margin="0,0,0,9" />
+                <WrapPanel Margin="0,0,0,2">
+                    <StackPanel Width="170" Margin="0,0,8,8"><TextBlock Text="Receita por mês (R$)" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" /><TextBox Text="{Binding ReceitaMensal, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" behaviors:FormatacaoNumerica.Formato="N2" AutomationProperties.Name="Receita sugerida para os meses gerados" /></StackPanel>
+                    <StackPanel Width="170" Margin="0,0,8,8"><TextBlock Text="Folha por mês (R$)" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" /><TextBox Text="{Binding FolhaMensal, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" behaviors:FormatacaoNumerica.Formato="N2" AutomationProperties.Name="Folha sugerida para os meses gerados" /></StackPanel>
+                    <Button Content="Gerar meses" Command="{Binding GerarCommand}" Padding="12,6" Margin="0,0,8,8" VerticalAlignment="Bottom" ToolTip="Cria as competências do período de apuração e preserva os valores já digitados" AutomationProperties.Name="Gerar meses do Simples Nacional" />
+                </WrapPanel>
+                <TextBlock Text="{Binding Mensagem}" Foreground="{DynamicResource AccentBrush}" TextWrapping="Wrap" Margin="0,0,0,6" />
+                <Grid Margin="8,0,8,5"><Grid.ColumnDefinitions><ColumnDefinition Width="150" /><ColumnDefinition Width="*" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                    <TextBlock Text="Competência" FontSize="11" Foreground="{DynamicResource MutedTextBrush}" />
+                    <TextBlock Grid.Column="1" Text="Receita bruta (R$)" FontSize="11" Foreground="{DynamicResource MutedTextBrush}" />
+                    <TextBlock Grid.Column="2" Text="Folha com encargos (R$)" FontSize="11" Foreground="{DynamicResource MutedTextBrush}" />
+                </Grid>
+                <ScrollViewer MaxHeight="330" VerticalScrollBarVisibility="Auto">
+                    <ItemsControl ItemsSource="{Binding Meses}" Focusable="False">
+                        <ItemsControl.ItemTemplate><DataTemplate>
+                            <Border Background="{DynamicResource ResultBackgroundBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="8" Margin="0,0,0,6">
+                                <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="150" /><ColumnDefinition Width="*" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                                    <TextBlock Text="{Binding Competencia}" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="SemiBold" />
+                                    <TextBox Grid.Column="1" Text="{Binding Receita, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" Margin="0,0,8,0" behaviors:FormatacaoNumerica.Formato="N2" AutomationProperties.Name="Receita bruta da competência" />
+                                    <TextBox Grid.Column="2" Text="{Binding Folha, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" behaviors:FormatacaoNumerica.Formato="N2" AutomationProperties.Name="Folha com encargos da competência" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate></ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </StackPanel>
+        </DataTemplate>
         <DataTemplate DataType="{x:Type calculadoras:CampoParcelasRraViewModel}">
             <StackPanel Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ItemsControl}}" Margin="0,0,0,14" Visibility="{Binding Visivel, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <TextBlock Text="Parcelas e meses de referência" FontWeight="SemiBold" Margin="0,0,0,5" />
@@ -515,7 +545,7 @@
                                     Visibility="{Binding TemInformativos, Converter={StaticResource BooleanToVisibilityConverter}}">
                                 <StackPanel>
                                     <TextBlock Text="Valores informativos" FontSize="15" FontWeight="SemiBold" />
-                                    <TextBlock Text="Não são pagos ao trabalhador." Foreground="{DynamicResource MutedTextBrush}" Margin="0,4,0,6" />
+                                    <TextBlock Text="Não entram nos totais nem no resultado." Foreground="{DynamicResource MutedTextBrush}" Margin="0,4,0,6" />
                                     <ItemsControl ItemsSource="{Binding Informativos}">
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate>

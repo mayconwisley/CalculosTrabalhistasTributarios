@@ -91,6 +91,7 @@ Todas usam a mesma janela, com resumo, demonstrativo no formato de holerite, val
 | Abono salarial (PIS/Pasep) | Direito e valor do abono, com o limite de renda da EC 135/2024. |
 | Pró-labore e autônomo | INSS de 11% até o teto, IRRF, ISS do autônomo e o custo para a empresa. |
 | CLT x PJ | O ano do mesmo profissional como CLT e como PJ no Simples Nacional (anexos III e V, com o fator R): total para o profissional, custo para a empresa e o valor de PJ que iguala o CLT. |
+| Simples Nacional e fator r | DAS do período pela receita e pela folha com encargos dos 12 meses, nos Anexos I a V, com início de atividade, as regras de 2027 (Resolução CGSN 190/2026), comparação entre os Anexos III e V e o pró-labore que leva o fator r a 28%. |
 | IRPF anual | Declaração do ano-calendário 2026 em diante, com a tabela anual, a redução do art. 11-A, os modelos completo e simplificado e a tributação mínima das altas rendas com o redutor (Lei 15.270/2025). |
 | Dividendos | Retenção de 10% sobre lucros e dividendos acima de R$ 50 mil no mês da mesma empresa, ou sobre qualquer valor para residentes no exterior. |
 | Carnê-leão | IR mensal de honorários, aluguéis e outros rendimentos recebidos de pessoas físicas e do exterior, com livro-caixa, desconto simplificado e a redução mensal. |

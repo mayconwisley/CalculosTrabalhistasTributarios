@@ -38,7 +38,7 @@ internal static class PlanilhaDemonstrativo
 
             if (d.Informativos.Count > 0)
             {
-                aba.Secao("Valores informativos (não são pagos ao trabalhador)");
+                aba.Secao("Valores informativos (não entram nos totais nem no resultado)");
                 aba.Cabecalho("Descrição", "Referência", "Valor");
                 foreach (var verba in d.Informativos)
                     aba.Linha(verba.Descricao, verba.Referencia, Moeda(verba.Valor));

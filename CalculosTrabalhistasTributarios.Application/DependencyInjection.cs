@@ -50,5 +50,6 @@ public static class DependencyInjection
         .AddScoped<ISimularDemonstrativoUseCase<SimularEstagioRequest>, SimularEstagioUseCase>()
         .AddScoped<ISimularDemonstrativoUseCase<SimularIntermitenteRequest>, SimularIntermitenteUseCase>()
         .AddScoped<ISimularDemonstrativoUseCase<SimularRraRequest>, SimularRraUseCase>()
+        .AddScoped<ISimularDemonstrativoUseCase<SimularSimplesNacionalRequest>, SimularSimplesNacionalUseCase>()
         .AddScoped<IVerificarAtualizacoesUseCase, VerificarAtualizacoesUseCase>();
 }

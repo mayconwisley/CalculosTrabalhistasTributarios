@@ -5,7 +5,7 @@ namespace CalculosTrabalhistasTributarios.Application.DTOs;
 
 /// <summary>
 /// Resultado das calculadoras no formato de holerite: proventos, descontos e o resultado (o líquido, ou o custo total),
-/// além de valores informativos que não são pagos ao trabalhador, como o FGTS, e da memória de cálculo passo a passo.
+/// além de valores informativos que não entram nos totais nem no resultado, como o FGTS, e da memória de cálculo passo a passo.
 /// </summary>
 /// <param name="Referencia">Período ou data do cálculo, exibido abaixo do título.</param>
 /// <param name="Observacoes">Premissas e limites do cálculo que o usuário precisa conhecer.</param>

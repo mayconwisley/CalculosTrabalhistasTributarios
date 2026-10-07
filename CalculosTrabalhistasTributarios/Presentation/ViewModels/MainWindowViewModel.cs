@@ -47,6 +47,7 @@ public sealed class MainWindowViewModel : ViewModelBase
                 Calculadora("PLR (participação nos lucros)", "IRRF pela tabela anual exclusiva, sem INSS e sem FGTS.", TipoCalculadora.Plr),
                 Calculadora("Pró-labore e autônomo", "Líquido do pró-labore ou do RPA e o custo para a empresa.", TipoCalculadora.ProLaboreAutonomo),
                 Calculadora("CLT x PJ", "O que sobra para o profissional e o custo para a empresa nos dois regimes.", TipoCalculadora.CltPj),
+                Calculadora("Simples Nacional e fator r", "DAS pela receita e folha de 12 meses, anexo aplicável e efeito do pró-labore.", TipoCalculadora.SimplesNacional),
                 Calculadora("IRPF anual", "Declaração completa ou simplificada, redução anual e tributação mínima.", TipoCalculadora.IrpfAnual),
                 Calculadora("Carnê-leão", "IR mensal de honorários e aluguéis recebidos de pessoas físicas.", TipoCalculadora.CarneLeao),
                 Calculadora("RRA (rendimentos acumulados)", "IRRF de pagamentos atrasados: anos anteriores pela tabela acumulada e o ano do pagamento.", TipoCalculadora.Rra),

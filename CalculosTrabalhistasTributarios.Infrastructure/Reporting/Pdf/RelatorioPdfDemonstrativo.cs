@@ -129,7 +129,7 @@ internal static class RelatorioPdfDemonstrativo
                 CelulaTabela(tabela.Cell(), verba.Referencia);
                 tabela.Cell().BorderBottom(1).BorderColor(CinzaBorda).Padding(6).AlignRight().Text(Moeda(verba.Valor));
             }
-        }), "Não são pagos ao trabalhador");
+        }), "Não entram nos totais nem no resultado");
     }
 
     private static void CriarGrupoMemoria(IContainer container, GrupoMemoriaDto grupo)
