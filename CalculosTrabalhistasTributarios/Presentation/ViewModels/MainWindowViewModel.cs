@@ -51,6 +51,7 @@ public sealed class MainWindowViewModel : ViewModelBase
                 Calculadora("Carnê-leão", "IR mensal de honorários e aluguéis recebidos de pessoas físicas.", TipoCalculadora.CarneLeao),
                 Calculadora("Trabalho no exterior", "Câmbio, taxas, juros e carnê-leão de residente fiscal no Brasil.", TipoCalculadora.TrabalhoExterior),
                 Calculadora("Crédito do Trabalhador", "Consignado: margem, parcelas, juros, custos e crédito líquido.", TipoCalculadora.CreditoTrabalhador),
+                Calculadora("Empréstimo pessoal", "Parcelas, IOF, seguro, custos e valor líquido recebido.", TipoCalculadora.EmprestimoPessoal),
                 Calculadora("Ganho de capital", "IR na venda de imóvel ou outro bem, com isenções e fatores de redução.", TipoCalculadora.GanhoCapital),
                 Calculadora("Dividendos", "Retenção de 10% acima de R$ 50 mil no mês, desde 2026.", TipoCalculadora.Dividendos),
                 Calculadora("Tributo em atraso", "Multa e juros pela Selic de DARF, DAS, DAE ou GPS pago depois do vencimento.", TipoCalculadora.TributoAtraso)

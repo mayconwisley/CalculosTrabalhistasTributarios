@@ -1,3 +1,5 @@
+using CalculosTrabalhistasTributarios.Domain.Financeiro;
+using static CalculosTrabalhistasTributarios.Domain.Financeiro.MatematicaCredito;
 using CalculosTrabalhistasTributarios.Domain.Comum;
 using CalculosTrabalhistasTributarios.Domain.Tributacao;
 
@@ -25,7 +27,7 @@ public static class CalculadoraCreditoTrabalhador
             return Erro.Validacao("Margem livre oficial: informe valor não negativo, com até duas casas decimais, ou deixe vazio para estimar.");
         var livre = e.MargemLivreOficial ?? Math.Max(0m, margem - e.ParcelasExistentes);
         var taxa = e.JurosMensais / 100m;
-        var diasPonderados = e.IofAutomatico ? DiasPonderadosIof(e, taxa) : 0m;
+        var diasPonderados = e.IofAutomatico ? DiasPonderadosIof(e.NumeroParcelas, e.DataLiberacao.GetValueOrDefault(), e.PrimeiroVencimento.GetValueOrDefault(), taxa) : 0m;
         var coeficienteIof = e.IofAutomatico ? 0.0038m + 0.000082m * diasPonderados : 0m;
         var iof = e.IofFinanciado;
         if (e.IofAutomatico)
@@ -74,71 +76,5 @@ public static class CalculadoraCreditoTrabalhador
             cet is { } c ? c * 100m : null, Math.Max(f.Parcela, f.Ultima) <= livre, iof, principal * diasPonderados);
     }
 
-    private static decimal DiasPonderadosIof(EntradaCreditoTrabalhador e, decimal taxa)
-    {
-        // Decreto 6.306/2007, art. 7º, I, b, 2, §§ 1º e 15: PF, 0,0082% ao dia,
-        // até 365 dias por amortização, mais 0,38%. Regra consultada em 07/10/2026:
-        // https://www.planalto.gov.br/ccivil_03/_ato2007-2010/2007/decreto/d6306compilado.htm
-        // Amortizações teóricas Price sem arredondamento intermediário; datas apenas
-        // para IOF, sem ajuste por feriados. Juros da simulação continuam mensais.
-        var fator = Potencia(1m + taxa, e.NumeroParcelas);
-        var parcela = taxa == 0m ? 1m / e.NumeroParcelas : taxa * fator / (fator - 1m);
-        var saldo = 1m;
-        var ponderacao = 0m;
-        for (var i = 0; i < e.NumeroParcelas; i++)
-        {
-            var amortizacao = i == e.NumeroParcelas - 1 ? saldo : parcela - saldo * taxa;
-            var dias = e.PrimeiroVencimento.GetValueOrDefault().AddMonths(i).DayNumber - e.DataLiberacao.GetValueOrDefault().DayNumber;
-            ponderacao += amortizacao * Math.Min(dias, 365);
-            saldo -= amortizacao;
-        }
-        return ponderacao;
-    }
-
-    private static (decimal Parcela, decimal Ultima, decimal Total, decimal Juros) Fluxo(decimal principal, decimal taxa, int n, decimal? parcelaLimite = null)
-    {
-        var fator = Potencia(1m + taxa, n);
-        var parcela = parcelaLimite ?? CalculadoraTributacao.Arredondar(taxa == 0m ? principal / n : principal * taxa * fator / (fator - 1m));
-        var saldo = principal;
-        var total = 0m;
-        var jurosTotal = 0m;
-        var ultima = parcela;
-        for (var i = 1; i <= n; i++)
-        {
-            var juros = CalculadoraTributacao.Arredondar(saldo * taxa);
-            var pagamento = i == n ? saldo + juros : Math.Min(parcela, saldo + juros);
-            saldo = saldo + juros - pagamento;
-            total += pagamento;
-            jurosTotal += juros;
-            if (i == n) ultima = pagamento;
-        }
-        return (parcela, ultima, total, jurosTotal);
-    }
-
-    public static decimal Potencia(decimal valor, int expoente)
-    {
-        var resultado = 1m;
-        for (var i = 0; i < expoente; i++) resultado *= valor;
-        return resultado;
-    }
-
-    private static decimal? TaxaEfetiva(decimal liquido, decimal parcela, decimal ultima, int n)
-    {
-        decimal Presente(decimal taxa)
-        {
-            var desconto = 1m;
-            var soma = 0m;
-            for (var i = 1; i <= n; i++) { desconto /= 1m + taxa; soma += (i == n ? ultima : parcela) * desconto; }
-            return soma;
-        }
-        if (Presente(0m) == liquido) return 0m;
-        decimal menor = 0m, maior = 10m;
-        if (Presente(maior) > liquido) return null;
-        for (var i = 0; i < 80; i++)
-        {
-            var meio = (menor + maior) / 2m;
-            if (Presente(meio) > liquido) menor = meio; else maior = meio;
-        }
-        return (menor + maior) / 2m;
-    }
+    public static decimal Potencia(decimal valor, int expoente) => MatematicaCredito.Potencia(valor, expoente);
 }

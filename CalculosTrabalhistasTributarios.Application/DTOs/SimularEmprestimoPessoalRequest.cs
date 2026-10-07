@@ -1,0 +1,5 @@
+using CalculosTrabalhistasTributarios.Domain.Financeiro;
+
+namespace CalculosTrabalhistasTributarios.Application.DTOs;
+
+public sealed record SimularEmprestimoPessoalRequest(EntradaEmprestimoPessoal Emprestimo);

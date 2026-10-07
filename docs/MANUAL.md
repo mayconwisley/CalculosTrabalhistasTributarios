@@ -941,6 +941,33 @@ FGTS não é somado ao empréstimo nem garante aprovação. Garantias facultativ
 
 ![Crédito do Trabalhador](imagens/70-credito-trabalhador.png)
 
+#### 8.23.3 Empréstimo pessoal
+
+Abra **Empréstimo pessoal** no grupo **Impostos e salário**. Simula nova operação bancária de crédito para pessoa física, sem consignação. Não utiliza salário, margem de 35% nem saldo do FGTS.
+
+Informe o **valor solicitado**, **parcelas (meses)**, **juros (% ao mês)** da proposta e **data de liberação**. O sistema soma os custos financiados e desconta os retidos automaticamente. A primeira parcela é calculada para um mês após a liberação; as seguintes mantêm o dia desse primeiro vencimento, limitado ao último dia de meses menores, sem ajuste por feriados. Por exemplo, liberação em 31/01/2028 gera vencimentos em 29/02/2028 e 29/03/2028.
+
+- **Cálculo do IOF:** automático estimado ou valor informado pelo banco. No modo informado, zero representa IOF zero; não use zero para imposto desconhecido.
+- **Cobrança do IOF:** financiado soma o imposto ao principal; descontado do crédito reduz o valor recebido, sem aumentar o principal.
+- **Seguro financiado (R$):** preço opcional do seguro. Não informe percentual de cobertura, como 100%.
+- **Outros financiados (R$):** demais custos incluídos no saldo, sem repetir seguro ou IOF.
+- **Custos na liberação (R$):** descontos sobre o valor solicitado, exceto IOF. Não repita custos financiados. Deixe os custos opcionais em zero quando não existirem.
+
+O resultado mostra prestação regular e última ajustada, valor líquido recebido, principal financiado, IOF, juros totais, total das prestações e custo total sobre o líquido. O custo efetivo estimado inclui os custos informados e usa intervalos mensais iguais; não substitui o CET contratual calculado por datas.
+
+**Cálculo:** Price = P × i × (1+i)^n / ((1+i)^n - 1), com P/n quando a taxa é zero. Os juros são arredondados a centavos a cada mês e a última prestação quita o saldo residual. Referência: [metodologia de prestações fixas do Banco Central](https://www3.bcb.gov.br/CALCIDADAO/publico/exibirMetodologiaFinanciamentoPrestacoesFixas.do?method=exibirMetodologiaFinanciamentoPrestacoesFixas).
+
+**IOF automático:** adicional de 0,38% mais 0,0082% ao dia sobre cada amortização teórica Price, limitada a 365 dias. A soma das amortizações multiplicadas pelos dias aparece na memória. Com IOF financiado, o sistema resolve principal = (solicitado + seguro + outros custos)/(1 - coeficiente IOF), arredondando o imposto no total. Com IOF retido, aplica o coeficiente diretamente ao principal. Base: [Decreto 6.306/2007, art. 7º, I, b, 2, §§ 1º e 15](https://www.planalto.gov.br/ccivil_03/_ato2007-2010/2007/decreto/d6306compilado.htm), consultado em 07/10/2026.
+
+**Limites:** 1 a 120 parcelas, taxa de 0 a 20% ao mês com até seis casas decimais, cada valor monetário até R$ 10 milhões com duas casas decimais e liberação de 01/01/2025 a 31/12/2100. Esses limites são técnicos. Datas futuras mantêm as alíquotas descritas e precisam de revisão se a legislação mudar. Não cobre carência, primeira parcela em outra data, juros diários ou de acerto, atraso, refinanciamento, portabilidade, isenções ou pessoa jurídica. O resultado não aprova crédito. Arredondamentos e calendário bancários podem diferir. Compare com o CET da proposta, conforme Resolução CMN 4.881/2020.
+
+Exemplo sem custos e com IOF informado zero: R$ 1.000,00 em duas parcelas, a 10% ao mês, gera duas prestações de R$ 576,19, total de R$ 1.152,38 e juros de R$ 152,38. O zero de IOF neste exemplo serve apenas para conferir a fórmula Price.
+
+Os campos e opções podem ser salvos e reabertos pelo histórico. PDF e Excel usam a mesma apuração, com memória e premissas.
+
+![Empréstimo pessoal](imagens/71-emprestimo-pessoal.png)
+
+
 ### 8.24 Ganho de capital
 
 Abra pelo cartão **Ganho de capital**, no grupo **Impostos e salário**. Ele calcula o IR na venda de um imóvel ou de outro bem pela pessoa física.

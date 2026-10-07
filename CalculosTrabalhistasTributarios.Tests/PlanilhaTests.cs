@@ -12,6 +12,22 @@ namespace CalculosTrabalhistasTributarios.Tests;
 
 public class PlanilhaTests
 {
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public async Task Emprestimo_pessoal_exporta_iof_seguro_e_liquido_numericos(bool financiar)
+    {
+        var dto = await new SimularEmprestimoPessoalUseCase().ExecutarAsync(new(new(
+            1000m, 1, 10m, new(2026, 1, 1), false, 20m, financiar, 50m, 30m, 100m)), default).Sucesso();
+        using var pasta = await GerarAsync(caminho => new ClosedXmlPlanilhaService().GerarDemonstrativoAsync(dto, caminho, default));
+        var aba = pasta.Worksheet(1);
+        Assert.Equal(20m, Linha(aba, "IOF da operação").Cell(3).GetValue<decimal>());
+        Assert.Equal(50m, Linha(aba, "Seguro financiado").Cell(3).GetValue<decimal>());
+        Assert.Equal(financiar ? 1100m : 1080m, Linha(aba, "Principal financiado").Cell(3).GetValue<decimal>());
+        Assert.Equal(financiar ? 900m : 880m, aba.RowsUsed().Last(l => l.Cell(1).GetString() == "Crédito líquido na liberação").Cell(3).GetValue<decimal>());
+        Assert.Contains(pasta.Worksheet(2).CellsUsed(), c => c.GetString().Contains("01/02/2026"));
+    }
+
     [Fact]
     public async Task Iof_automatico_exporta_valor_apurado_e_memoria()
     {
