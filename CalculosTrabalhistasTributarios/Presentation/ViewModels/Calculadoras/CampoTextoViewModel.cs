@@ -21,5 +21,13 @@ public sealed class CampoTextoViewModel(string rotulo, TipoCampo tipo, string va
         _ => null
     };
 
+    /// <summary>Máscara de digitação das datas e competências; os demais tipos não usam máscara.</summary>
+    public string? Mascara => Tipo switch
+    {
+        TipoCampo.Data => Behaviors.MascaraData.Data,
+        TipoCampo.Competencia => Behaviors.MascaraData.Competencia,
+        _ => null
+    };
+
     public TextAlignment Alinhamento => Tipo is TipoCampo.Moeda or TipoCampo.Numero or TipoCampo.Inteiro or TipoCampo.Horas ? TextAlignment.Right : TextAlignment.Center;
 }

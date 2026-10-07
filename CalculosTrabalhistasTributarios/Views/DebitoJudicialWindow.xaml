@@ -47,12 +47,12 @@
                         </StackPanel>
                         <StackPanel Grid.Column="1" Margin="0,0,12,14">
                             <TextBlock Text="Data do cálculo" Style="{StaticResource Rotulo}" />
-                            <TextBox Text="{Binding DataCalculo, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" AutomationProperties.Name="Data do cálculo" ToolTip="Data até a qual o débito é atualizado (dd/mm/aaaa)." />
+                            <TextBox Text="{Binding DataCalculo, UpdateSourceTrigger=PropertyChanged}" behaviors:MascaraData.Tipo="Data" TextAlignment="Center" AutomationProperties.Name="Data do cálculo" ToolTip="Data até a qual o débito é atualizado (dd/mm/aaaa)." />
                         </StackPanel>
                         <!-- Trabalhista: o ajuizamento separa a fase pré-judicial da judicial. -->
                         <StackPanel Grid.Column="2" Margin="0,0,12,14" Visibility="{Binding EhTrabalhista, Converter={StaticResource BooleanToVisibilityConverter}}">
                             <TextBlock Text="Data do ajuizamento" Style="{StaticResource Rotulo}" />
-                            <TextBox Text="{Binding DataAjuizamento, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" AutomationProperties.Name="Data do ajuizamento" ToolTip="Data em que a ação foi proposta (dd/mm/aaaa). Vazia: todo o período é pré-judicial, com IPCA-E e TR." />
+                            <TextBox Text="{Binding DataAjuizamento, UpdateSourceTrigger=PropertyChanged}" behaviors:MascaraData.Tipo="Data" TextAlignment="Center" AutomationProperties.Name="Data do ajuizamento" ToolTip="Data em que a ação foi proposta (dd/mm/aaaa). Vazia: todo o período é pré-judicial, com IPCA-E e TR." />
                         </StackPanel>
                         <!-- Cível: o início dos juros, o índice anterior à Lei 14.905/2024 e os acréscimos do cumprimento de sentença. -->
                         <StackPanel Grid.Column="2" Margin="0,0,12,14" Visibility="{Binding EhCivel, Converter={StaticResource BooleanToVisibilityConverter}}" ToolTip="Mora desde o vencimento (Código Civil, art. 397) ou desde a citação (art. 405), conforme a decisão.">
@@ -63,7 +63,7 @@
                         </StackPanel>
                         <StackPanel Grid.Column="3" Margin="0,0,12,14" Visibility="{Binding UsaCitacao, Converter={StaticResource BooleanToVisibilityConverter}}">
                             <TextBlock Text="Data da citação" Style="{StaticResource Rotulo}" />
-                            <TextBox Text="{Binding DataCitacao, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" AutomationProperties.Name="Data da citação" ToolTip="Início dos juros (dd/mm/aaaa)." />
+                            <TextBox Text="{Binding DataCitacao, UpdateSourceTrigger=PropertyChanged}" behaviors:MascaraData.Tipo="Data" TextAlignment="Center" AutomationProperties.Name="Data da citação" ToolTip="Início dos juros (dd/mm/aaaa)." />
                         </StackPanel>
                         <StackPanel Grid.Column="4" Margin="0,0,0,14" Visibility="{Binding EhCivel, Converter={StaticResource BooleanToVisibilityConverter}}" ToolTip="Índice da decisão ou da tabela do tribunal para a correção antes dos juros e antes de 30/08/2024; depois, vale o IPCA (Código Civil, art. 389).">
                             <TextBlock Text="Índice até 29/08/2024" Style="{StaticResource Rotulo}" />
@@ -113,7 +113,7 @@
                                         <DataGridTemplateColumn.CellTemplate><DataTemplate><TextBox Style="{StaticResource CampoDaGrade}" Text="{Binding Descricao, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Descrição da parcela" /></DataTemplate></DataGridTemplateColumn.CellTemplate>
                                     </DataGridTemplateColumn>
                                     <DataGridTemplateColumn Header="Vencimento" Width="124">
-                                        <DataGridTemplateColumn.CellTemplate><DataTemplate><TextBox Style="{StaticResource CampoDaGrade}" TextAlignment="Center" Text="{Binding Vencimento, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Vencimento da parcela" /></DataTemplate></DataGridTemplateColumn.CellTemplate>
+                                        <DataGridTemplateColumn.CellTemplate><DataTemplate><TextBox Style="{StaticResource CampoDaGrade}" TextAlignment="Center" Text="{Binding Vencimento, UpdateSourceTrigger=PropertyChanged}" behaviors:MascaraData.Tipo="Data" AutomationProperties.Name="Vencimento da parcela" /></DataTemplate></DataGridTemplateColumn.CellTemplate>
                                     </DataGridTemplateColumn>
                                     <DataGridTemplateColumn Header="Valor" Width="116" HeaderStyle="{StaticResource CabecalhoNumerico}">
                                         <DataGridTemplateColumn.CellTemplate><DataTemplate><TextBox Style="{StaticResource CampoDaGrade}" TextAlignment="Right" Text="{Binding Valor, UpdateSourceTrigger=PropertyChanged}" behaviors:FormatacaoNumerica.Formato="N2" AutomationProperties.Name="Valor da parcela" /></DataTemplate></DataGridTemplateColumn.CellTemplate>

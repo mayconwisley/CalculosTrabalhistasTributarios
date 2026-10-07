@@ -102,7 +102,7 @@ A tela principal só reúne os atalhos: cada cálculo, inclusive a simulação t
 Estas regras valem para todas as telas do aplicativo:
 
 - **Competência:** informe mês e ano no formato **MM/AAAA**, por exemplo `10/2026`.
-- **Datas:** informe no formato **dd/MM/aaaa**, por exemplo `02/10/2026`.
+- **Datas:** informe no formato **dd/MM/aaaa**, por exemplo `02/10/2026`. Nos campos de data e de competência, digite só os números: as barras entram sozinhas (`02102026` vira `02/10/2026`). Digitar a barra depois de um único número completa o zero (`2/10/2026` vira `02/10/2026`), e uma data colada em outro formato, como `2026-10-02`, é convertida.
 - **Valores em reais:** use vírgula para os centavos, como em `8500,00` ou `8.500,00`. O ponto de milhar é opcional.
 - **Ponto no lugar da vírgula:** sem vírgula, o ponto só é lido como separador de milhar quando separa grupos de três dígitos, como em `3.500`. Nos demais casos, ele vale como vírgula decimal: `1.5` é 1,5 hora, `62.5` é 62,5% e `2200.50` é R$ 2.200,50.
 - **Formatação automática:** ao entrar em um campo numérico que está zerado, ele é limpo para você digitar. Ao sair do campo vazio, ele volta a zero: `0,00` nos valores em reais, `0` nos campos inteiros e nos percentuais, como **Dependentes** e **Faltas**, e `0:00` nas horas. Os valores em reais também são formatados com duas casas decimais ao sair do campo (`8.500,00`).

@@ -67,20 +67,20 @@
                         </StackPanel>
                         <StackPanel Grid.Column="3" Margin="0,0,12,14">
                             <TextBlock Text="Primeira parcela" Style="{StaticResource Rotulo}" />
-                            <TextBox Text="{Binding PrimeiraParcela, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" AutomationProperties.Name="Primeira parcela" ToolTip="Mês da primeira parcela em atraso (MM/AAAA)." />
+                            <TextBox Text="{Binding PrimeiraParcela, UpdateSourceTrigger=PropertyChanged}" behaviors:MascaraData.Tipo="Competencia" TextAlignment="Center" AutomationProperties.Name="Primeira parcela" ToolTip="Mês da primeira parcela em atraso (MM/AAAA)." />
                         </StackPanel>
                         <StackPanel Grid.Column="4" Margin="0,0,0,14">
                             <TextBlock Text="Última parcela" Style="{StaticResource Rotulo}" />
-                            <TextBox Text="{Binding UltimaParcela, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" AutomationProperties.Name="Última parcela" ToolTip="Mês da última parcela em atraso (MM/AAAA); ela precisa vencer até a data do cálculo." />
+                            <TextBox Text="{Binding UltimaParcela, UpdateSourceTrigger=PropertyChanged}" behaviors:MascaraData.Tipo="Competencia" TextAlignment="Center" AutomationProperties.Name="Última parcela" ToolTip="Mês da última parcela em atraso (MM/AAAA); ela precisa vencer até a data do cálculo." />
                         </StackPanel>
 
                         <StackPanel Grid.Row="1" Margin="0,0,12,14">
                             <TextBlock Text="Data do cálculo" Style="{StaticResource Rotulo}" />
-                            <TextBox Text="{Binding DataCalculo, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" AutomationProperties.Name="Data do cálculo" ToolTip="Data até a qual o débito é atualizado (dd/mm/aaaa)." />
+                            <TextBox Text="{Binding DataCalculo, UpdateSourceTrigger=PropertyChanged}" behaviors:MascaraData.Tipo="Data" TextAlignment="Center" AutomationProperties.Name="Data do cálculo" ToolTip="Data até a qual o débito é atualizado (dd/mm/aaaa)." />
                         </StackPanel>
                         <StackPanel Grid.Row="1" Grid.Column="1" Margin="0,0,12,14">
                             <TextBlock Text="Data do ajuizamento (opcional)" Style="{StaticResource Rotulo}" />
-                            <TextBox Text="{Binding DataAjuizamento, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" AutomationProperties.Name="Data do ajuizamento" ToolTip="Data em que a execução foi proposta (dd/mm/aaaa). Vazia: o cálculo considera a data do cálculo." />
+                            <TextBox Text="{Binding DataAjuizamento, UpdateSourceTrigger=PropertyChanged}" behaviors:MascaraData.Tipo="Data" TextAlignment="Center" AutomationProperties.Name="Data do ajuizamento" ToolTip="Data em que a execução foi proposta (dd/mm/aaaa). Vazia: o cálculo considera a data do cálculo." />
                         </StackPanel>
                         <StackPanel Grid.Row="1" Grid.Column="2" Margin="0,0,12,14" ToolTip="Índice definido na decisão. O Código Civil adota o IPCA quando nenhum índice foi fixado (art. 389).">
                             <TextBlock Text="Correção monetária" Style="{StaticResource Rotulo}" />

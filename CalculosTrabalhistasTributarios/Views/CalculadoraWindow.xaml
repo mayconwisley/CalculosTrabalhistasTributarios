@@ -13,7 +13,7 @@
         <DataTemplate DataType="{x:Type calculadoras:CampoTextoViewModel}">
             <StackPanel Width="170" Margin="0,0,14,14" ToolTip="{Binding Dica}" Visibility="{Binding Visivel, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <TextBlock Text="{Binding Rotulo}" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,6" TextTrimming="CharacterEllipsis" />
-                <TextBox Text="{Binding Valor, UpdateSourceTrigger=PropertyChanged}" TextAlignment="{Binding Alinhamento}" behaviors:FormatacaoNumerica.Formato="{Binding Formato}" behaviors:FormatacaoNumerica.ValorVazio="{Binding ValorVazio}" AutomationProperties.Name="{Binding Rotulo}" />
+                <TextBox Text="{Binding Valor, UpdateSourceTrigger=PropertyChanged}" TextAlignment="{Binding Alinhamento}" behaviors:MascaraData.Tipo="{Binding Mascara}" behaviors:FormatacaoNumerica.Formato="{Binding Formato}" behaviors:FormatacaoNumerica.ValorVazio="{Binding ValorVazio}" AutomationProperties.Name="{Binding Rotulo}" />
             </StackPanel>
         </DataTemplate>
         <DataTemplate DataType="{x:Type calculadoras:CampoOpcaoViewModel}">
@@ -37,7 +37,7 @@
             <StackPanel Width="650" Margin="0,0,14,14" Visibility="{Binding Visivel, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <StackPanel Width="170" HorizontalAlignment="Left" Margin="0,0,0,18" ToolTip="{Binding Competencia.Dica}">
                     <TextBlock Text="{Binding Competencia.Rotulo}" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,6" />
-                    <TextBox Text="{Binding Competencia.Valor, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" AutomationProperties.Name="Competência" />
+                    <TextBox Text="{Binding Competencia.Valor, UpdateSourceTrigger=PropertyChanged}" behaviors:MascaraData.Tipo="Competencia" TextAlignment="Center" AutomationProperties.Name="Competência" />
                 </StackPanel>
                 <Grid Margin="0,0,0,6">
                     <Grid.ColumnDefinitions><ColumnDefinition /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
@@ -86,8 +86,8 @@
             <StackPanel Width="650" Margin="0,0,14,14" Visibility="{Binding Visivel, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <TextBlock Text="1. Gere as competências" FontWeight="SemiBold" Margin="0,0,0,8" />
                 <WrapPanel Margin="0,0,0,10">
-                    <StackPanel Width="145" Margin="0,0,8,8"><TextBlock Text="Início (MM/AAAA)" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" /><TextBox Text="{Binding Inicio, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Início do reajuste" /></StackPanel>
-                    <StackPanel Width="145" Margin="0,0,8,8"><TextBlock Text="Fim (MM/AAAA)" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" /><TextBox Text="{Binding Fim, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Fim do reajuste" /></StackPanel>
+                    <StackPanel Width="145" Margin="0,0,8,8"><TextBlock Text="Início (MM/AAAA)" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" /><TextBox Text="{Binding Inicio, UpdateSourceTrigger=PropertyChanged}" behaviors:MascaraData.Tipo="Competencia" AutomationProperties.Name="Início do reajuste" /></StackPanel>
+                    <StackPanel Width="145" Margin="0,0,8,8"><TextBlock Text="Fim (MM/AAAA)" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" /><TextBox Text="{Binding Fim, UpdateSourceTrigger=PropertyChanged}" behaviors:MascaraData.Tipo="Competencia" AutomationProperties.Name="Fim do reajuste" /></StackPanel>
                     <StackPanel Width="145" Margin="0,0,8,8"><TextBlock Text="Salário anterior (R$)" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" /><TextBox Text="{Binding SalarioAnterior, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" behaviors:FormatacaoNumerica.Formato="N2" AutomationProperties.Name="Salário anterior" /></StackPanel>
                     <StackPanel Width="145" Margin="0,0,8,8"><TextBlock Text="Reajuste (%)" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" /><TextBox Text="{Binding Percentual, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" behaviors:FormatacaoNumerica.ValorVazio="0,00" AutomationProperties.Name="Percentual de reajuste" /></StackPanel>
                 </WrapPanel>
@@ -109,7 +109,7 @@
                             <Border Background="{DynamicResource ResultBackgroundBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="8" Margin="0,0,0,6">
                                 <Grid>
                                     <Grid.ColumnDefinitions><ColumnDefinition Width="145" /><ColumnDefinition Width="195" /><ColumnDefinition Width="195" /></Grid.ColumnDefinitions>
-                                    <TextBox Text="{Binding Competencia, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,8,0" AutomationProperties.Name="Competência da diferença salarial" />
+                                    <TextBox Text="{Binding Competencia, UpdateSourceTrigger=PropertyChanged}" behaviors:MascaraData.Tipo="Competencia" Margin="0,0,8,0" AutomationProperties.Name="Competência da diferença salarial" />
                                     <TextBox Grid.Column="1" Text="{Binding BasePaga, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" Margin="0,0,8,0" behaviors:FormatacaoNumerica.Formato="N2" AutomationProperties.Name="Salário pago" />
                                     <TextBox Grid.Column="2" Text="{Binding BaseDevida, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" behaviors:FormatacaoNumerica.Formato="N2" AutomationProperties.Name="Salário devido" />
                                 </Grid>
@@ -129,7 +129,7 @@
                                     <Button Grid.Column="1" Content="Remover" Command="{Binding DataContext.RemoverReflexoCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" CommandParameter="{Binding}" Padding="8,4" MinHeight="28" AutomationProperties.Name="Remover lançamento" />
                                 </Grid>
                                 <WrapPanel>
-                                    <StackPanel Width="122" Margin="0,0,7,0"><TextBlock Text="Competência" FontSize="11" Foreground="{DynamicResource MutedTextBrush}" /><TextBox Text="{Binding Competencia, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Competência do reflexo" /></StackPanel>
+                                    <StackPanel Width="122" Margin="0,0,7,0"><TextBlock Text="Competência" FontSize="11" Foreground="{DynamicResource MutedTextBrush}" /><TextBox Text="{Binding Competencia, UpdateSourceTrigger=PropertyChanged}" behaviors:MascaraData.Tipo="Competencia" AutomationProperties.Name="Competência do reflexo" /></StackPanel>
                                     <StackPanel Width="162" Margin="0,0,7,0"><TextBlock Text="Base paga (R$)" FontSize="11" Foreground="{DynamicResource MutedTextBrush}" /><TextBox Text="{Binding BasePaga, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" behaviors:FormatacaoNumerica.Formato="N2" AutomationProperties.Name="Base salarial paga" /></StackPanel>
                                     <StackPanel Width="162" Margin="0,0,7,0"><TextBlock Text="Base correta (R$)" FontSize="11" Foreground="{DynamicResource MutedTextBrush}" /><TextBox Text="{Binding BaseDevida, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" behaviors:FormatacaoNumerica.Formato="N2" AutomationProperties.Name="Base salarial correta" /></StackPanel>
                                     <StackPanel Width="70"><TextBlock Text="{Binding Unidade}" FontSize="11" Foreground="{DynamicResource MutedTextBrush}" /><TextBox Text="{Binding Quantidade, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" behaviors:FormatacaoNumerica.ValorVazio="0" AutomationProperties.Name="Avos ou dias" /></StackPanel>
@@ -148,8 +148,8 @@
             <StackPanel Width="830" Margin="0,0,14,14" Visibility="{Binding Visivel, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <TextBlock Text="Período da média" FontWeight="SemiBold" Margin="0,0,0,7" />
                 <WrapPanel Margin="0,0,0,8">
-                    <StackPanel Width="150" Margin="0,0,9,8"><TextBlock Text="Início (MM/AAAA)" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" /><TextBox Text="{Binding Inicio, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Início da média" /></StackPanel>
-                    <StackPanel Width="150" Margin="0,0,9,8"><TextBlock Text="Fim (MM/AAAA)" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" /><TextBox Text="{Binding Fim, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Fim da média" /></StackPanel>
+                    <StackPanel Width="150" Margin="0,0,9,8"><TextBlock Text="Início (MM/AAAA)" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" /><TextBox Text="{Binding Inicio, UpdateSourceTrigger=PropertyChanged}" behaviors:MascaraData.Tipo="Competencia" AutomationProperties.Name="Início da média" /></StackPanel>
+                    <StackPanel Width="150" Margin="0,0,9,8"><TextBlock Text="Fim (MM/AAAA)" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" /><TextBox Text="{Binding Fim, UpdateSourceTrigger=PropertyChanged}" behaviors:MascaraData.Tipo="Competencia" AutomationProperties.Name="Fim da média" /></StackPanel>
                     <StackPanel Width="150" Margin="0,0,9,8"><TextBlock Text="Divisor (meses)" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" /><TextBox Text="{Binding Divisor, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" behaviors:FormatacaoNumerica.ValorVazio="0" AutomationProperties.Name="Divisor da média" /></StackPanel>
                     <Button Content="Gerar meses" Command="{Binding GerarCommand}" VerticalAlignment="Bottom" Margin="0,0,0,8" AutomationProperties.Name="Gerar meses da média" />
                 </WrapPanel>
@@ -172,7 +172,7 @@
                             <Border Background="{DynamicResource ResultBackgroundBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="8" Margin="0,0,0,6">
                                 <Grid>
                                     <Grid.ColumnDefinitions><ColumnDefinition Width="120" /><ColumnDefinition Width="134" /><ColumnDefinition Width="134" /><ColumnDefinition Width="134" /><ColumnDefinition Width="134" /><ColumnDefinition Width="134" /></Grid.ColumnDefinitions>
-                                    <TextBox Text="{Binding Competencia, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,7,0" AutomationProperties.Name="Competência das verbas variáveis" />
+                                    <TextBox Text="{Binding Competencia, UpdateSourceTrigger=PropertyChanged}" behaviors:MascaraData.Tipo="Competencia" Margin="0,0,7,0" AutomationProperties.Name="Competência das verbas variáveis" />
                                     <TextBox Grid.Column="1" Text="{Binding Comissoes, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" Margin="0,0,7,0" behaviors:FormatacaoNumerica.Formato="N2" AutomationProperties.Name="Comissões do mês" />
                                     <TextBox Grid.Column="2" Text="{Binding Dsr, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" Margin="0,0,7,0" behaviors:FormatacaoNumerica.Formato="N2" AutomationProperties.Name="DSR do mês" />
                                     <TextBox Grid.Column="3" Text="{Binding HorasExtras, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" Margin="0,0,7,0" behaviors:FormatacaoNumerica.Formato="N2" AutomationProperties.Name="Horas extras do mês" />
@@ -203,7 +203,7 @@
                         <ItemsControl.ItemTemplate><DataTemplate>
                             <Border Background="{DynamicResource ResultBackgroundBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="8" Margin="0,0,0,6">
                                 <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="160" /><ColumnDefinition Width="*" /><ColumnDefinition Width="50" /></Grid.ColumnDefinitions>
-                                    <TextBox Text="{Binding Competencia, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,8,0" AutomationProperties.Name="Competência do depósito do FGTS" />
+                                    <TextBox Text="{Binding Competencia, UpdateSourceTrigger=PropertyChanged}" behaviors:MascaraData.Tipo="Competencia" Margin="0,0,8,0" AutomationProperties.Name="Competência do depósito do FGTS" />
                                     <TextBox Grid.Column="1" Text="{Binding Valor, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" Margin="0,0,8,0" behaviors:FormatacaoNumerica.Formato="N2" AutomationProperties.Name="Valor do depósito do FGTS" />
                                     <Button Grid.Column="2" Content="×" Padding="0" MinHeight="34" Command="{Binding DataContext.RemoverCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" CommandParameter="{Binding}" ToolTip="Remover depósito" AutomationProperties.Name="Remover depósito do FGTS" />
                                 </Grid>
@@ -247,8 +247,8 @@
                     <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
                     <Grid Grid.Column="0" Margin="0,0,0,10">
                         <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="10" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
-                        <StackPanel Grid.Column="0"><TextBlock Text="Início (dd/mm/aaaa)" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" /><TextBox Text="{Binding Inicio, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Início do ciclo" /></StackPanel>
-                        <StackPanel Grid.Column="2"><TextBlock Text="Fim (dd/mm/aaaa)" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" /><TextBox Text="{Binding Fim, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Fim do ciclo" /></StackPanel>
+                        <StackPanel Grid.Column="0"><TextBlock Text="Início (dd/mm/aaaa)" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" /><TextBox Text="{Binding Inicio, UpdateSourceTrigger=PropertyChanged}" behaviors:MascaraData.Tipo="Data" AutomationProperties.Name="Início do ciclo" /></StackPanel>
+                        <StackPanel Grid.Column="2"><TextBlock Text="Fim (dd/mm/aaaa)" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" /><TextBox Text="{Binding Fim, UpdateSourceTrigger=PropertyChanged}" behaviors:MascaraData.Tipo="Data" AutomationProperties.Name="Fim do ciclo" /></StackPanel>
                     </Grid>
                     <StackPanel Grid.Column="2" Margin="0,0,0,10"><TextBlock Text="Regime" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" /><ComboBox ItemsSource="{Binding OpcoesRegime}" SelectedItem="{Binding Regime, Mode=TwoWay}" MinHeight="54" AutomationProperties.Name="Regime do banco de horas"><ComboBox.ItemTemplate><DataTemplate><TextBlock Text="{Binding Texto}" /></DataTemplate></ComboBox.ItemTemplate></ComboBox></StackPanel>
                     <StackPanel Grid.Row="1" Grid.Column="0"><TextBlock Text="Situação" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" /><ComboBox ItemsSource="{Binding OpcoesSituacao}" SelectedItem="{Binding Situacao, Mode=TwoWay}" MinHeight="54" AutomationProperties.Name="Situação do banco de horas"><ComboBox.ItemTemplate><DataTemplate><TextBlock Text="{Binding Texto}" /></DataTemplate></ComboBox.ItemTemplate></ComboBox></StackPanel>
@@ -275,7 +275,7 @@
                             <Border Background="{DynamicResource ResultBackgroundBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="8" Margin="0,0,0,6">
                                 <Grid>
                                     <Grid.ColumnDefinitions><ColumnDefinition Width="140" /><ColumnDefinition Width="210" /><ColumnDefinition Width="100" /><ColumnDefinition Width="120" /><ColumnDefinition Width="*" /><ColumnDefinition Width="65" /></Grid.ColumnDefinitions>
-                                    <TextBox Text="{Binding Data, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,7,0" AutomationProperties.Name="Data do lançamento" />
+                                    <TextBox Text="{Binding Data, UpdateSourceTrigger=PropertyChanged}" behaviors:MascaraData.Tipo="Data" Margin="0,0,7,0" AutomationProperties.Name="Data do lançamento" />
                                     <ComboBox Grid.Column="1" ItemsSource="{Binding Opcoes}" SelectedItem="{Binding Tipo, Mode=TwoWay}" Margin="0,0,7,0" MinHeight="54" AutomationProperties.Name="Tipo de lançamento"><ComboBox.ItemTemplate><DataTemplate><TextBlock Text="{Binding Texto}" /></DataTemplate></ComboBox.ItemTemplate></ComboBox>
                                     <TextBox Grid.Column="2" Text="{Binding Horas, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" Margin="0,0,7,0" behaviors:FormatacaoNumerica.ValorVazio="0:00" AutomationProperties.Name="Horas do lançamento" />
                                     <TextBox Grid.Column="3" Text="{Binding Adicional, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding EhCredito}" TextAlignment="Right" Margin="0,0,7,0" ToolTip="Somente para crédito; deixe vazio para o adicional padrão." AutomationProperties.Name="Adicional do crédito em percentual" />

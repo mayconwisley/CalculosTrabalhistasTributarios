@@ -35,7 +35,7 @@
                         </Grid.ColumnDefinitions>
                         <StackPanel Margin="0,0,14,0">
                             <TextBlock Text="Competência" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,6" />
-                            <TextBox Text="{Binding Competencia, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" AutomationProperties.Name="Competência" />
+                            <TextBox Text="{Binding Competencia, UpdateSourceTrigger=PropertyChanged}" behaviors:MascaraData.Tipo="Competencia" TextAlignment="Center" AutomationProperties.Name="Competência" />
                         </StackPanel>
                         <StackPanel Grid.Column="1" Margin="0,0,14,0">
                             <TextBlock Text="Valor bruto" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,6" />

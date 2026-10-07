@@ -50,7 +50,7 @@
                         <!-- 1ª linha: o mês e a jornada contratual; 2ª linha: o horário padrão usado para gerar os dias e as ações. -->
                         <StackPanel Margin="0,0,12,14">
                             <TextBlock Text="Competência" Style="{StaticResource Rotulo}" />
-                            <TextBox Text="{Binding Competencia, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" AutomationProperties.Name="Competência" ToolTip="Mês do cartão de ponto (MM/AAAA)." />
+                            <TextBox Text="{Binding Competencia, UpdateSourceTrigger=PropertyChanged}" behaviors:MascaraData.Tipo="Competencia" TextAlignment="Center" AutomationProperties.Name="Competência" ToolTip="Mês do cartão de ponto (MM/AAAA)." />
                         </StackPanel>
                         <StackPanel Grid.Column="1" Margin="0,0,12,14">
                             <TextBlock Text="Jornada de seg. a sex." Style="{StaticResource Rotulo}" />

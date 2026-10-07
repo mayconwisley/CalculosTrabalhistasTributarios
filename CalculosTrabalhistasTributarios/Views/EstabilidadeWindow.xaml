@@ -44,11 +44,11 @@
                         </StackPanel>
                         <StackPanel Grid.Column="2" Margin="0,0,12,0">
                             <TextBlock Text="Data de demissão" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,6" />
-                            <TextBox Text="{Binding Demissao, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" />
+                            <TextBox Text="{Binding Demissao, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" behaviors:MascaraData.Tipo="Data" AutomationProperties.Name="Data de demissão" />
                         </StackPanel>
                         <StackPanel Grid.Column="3" Margin="0,0,12,0">
                             <TextBlock Text="Fim da estabilidade" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,6" />
-                            <TextBox Text="{Binding FimEstabilidade, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" />
+                            <TextBox Text="{Binding FimEstabilidade, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" behaviors:MascaraData.Tipo="Data" AutomationProperties.Name="Fim da estabilidade" />
                         </StackPanel>
                         <StackPanel Grid.Column="4" Margin="0,0,12,0">
                             <TextBlock Text="Complementos" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,6" />
