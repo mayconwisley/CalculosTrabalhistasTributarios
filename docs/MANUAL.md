@@ -67,7 +67,7 @@ Na primeira execução, o aplicativo prepara o banco de dados local com as tabel
 
 ### Atualizando e desinstalando
 
-Para atualizar, baixe e execute o instalador da nova versão: ele substitui a versão anterior, fechando o aplicativo se estiver aberto. As tabelas que você incluiu ou alterou são **preservadas**.
+Para atualizar, use o botão **Atualizar agora** do aviso de nova versão (veja abaixo) ou baixe e execute o instalador da nova versão: ele substitui a versão anterior, fechando o aplicativo se estiver aberto. As tabelas que você incluiu ou alterou são **preservadas**.
 
 Para remover, use **Configurações do Windows > Aplicativos > Aplicativos instalados > Cálculos Trabalhistas e Tributários > Desinstalar**. O banco com as suas tabelas (`BancoDados\calculoIrrf.db`, na pasta de instalação) é mantido, para que uma reinstalação recupere os dados. Se não quiser mantê-lo, apague a pasta de instalação depois de desinstalar.
 
@@ -87,7 +87,9 @@ Para remover, use **Configurações do Windows > Aplicativos > Aplicativos insta
 
 A tela principal só reúne os atalhos: cada cálculo, inclusive a simulação tributária, é feito na sua própria janela. Ao fechar a janela, você volta para a tela principal.
 
-**Avisos ao abrir:** logo abaixo do cabeçalho, uma faixa avisa quando há uma versão nova publicada, com o botão **Baixar a nova versão**, e quando as tabelas do ano ainda não foram cadastradas (a do INSS mais recente é de um ano anterior), com o botão **Abrir a tabela do INSS**. **Dispensar** esconde o aviso até a próxima abertura.
+**Avisos ao abrir:** logo abaixo do cabeçalho, uma faixa avisa quando há uma versão nova publicada e quando as tabelas do ano ainda não foram cadastradas (a do INSS mais recente é de um ano anterior), com o botão **Abrir a tabela do INSS**. **Dispensar** esconde o aviso até a próxima abertura.
+
+**Atualizar agora:** baixa o instalador da nova versão direto do release do projeto no GitHub, confere se o arquivo é idêntico ao publicado (SHA-256) e o executa sem perguntas; o aplicativo fecha durante a instalação e abre de novo no fim. Antes de começar, o aplicativo pede confirmação: salve os cálculos abertos. Se o download falhar ou o arquivo não conferir, nada é instalado. **Ver novidades** abre a página do release com as mudanças. Quando o release não traz o instalador com o hash para conferência, o aviso mostra apenas **Baixar a nova versão**, que abre a página para baixar manualmente.
 
 ![Aviso de versão nova na tela principal](imagens/73-aviso-nova-versao.png)
 
