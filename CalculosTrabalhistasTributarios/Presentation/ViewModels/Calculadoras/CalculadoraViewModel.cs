@@ -62,6 +62,7 @@ public sealed class CalculadoraViewModel : ViewModelBase, ICalculoSalvavel
             _ => _demonstrativo?.QuitacaoBancoHoras?.Situacao == SituacaoBancoHoras.Fechamento && _abrirCalculadora is not null);
         UsarNaRescisaoCommand = new RelayCommand(_ => TransferirQuitacao(TipoCalculadora.Rescisao),
             _ => _demonstrativo?.QuitacaoBancoHoras?.Situacao == SituacaoBancoHoras.Rescisao && _abrirCalculadora is not null);
+        CalcularRraCommand = new RelayCommand(_ => AbrirRra(), _ => PodeCalcularRra && _abrirCalculadora is not null);
     }
 
     public string Titulo => _calculadora.Titulo;
@@ -69,14 +70,16 @@ public sealed class CalculadoraViewModel : ViewModelBase, ICalculoSalvavel
     public string InstrucaoInicial => _calculadora.InstrucaoInicial;
     public IReadOnlyList<CampoViewModel> Campos { get; }
     public bool UsaFormularioLarguraTotal => Campos.Count == 1 && Campos[0] is CampoBancoHorasViewModel;
-    public bool UsaBotaoAbaixoFormulario => UsaFormularioLarguraTotal || Campos.Any(campo => campo is CampoDepositosFgtsViewModel or CampoQuitacaoBancoHorasViewModel);
+    public bool UsaBotaoAbaixoFormulario => UsaFormularioLarguraTotal || Campos.Any(campo => campo is CampoDepositosFgtsViewModel or CampoQuitacaoBancoHorasViewModel or CampoParcelasRraViewModel);
     public ICommand CalcularCommand { get; }
     public ICommand ExportarPdfCommand { get; }
     public ICommand ExportarExcelCommand { get; }
     public ICommand UsarNoHoleriteCommand { get; }
     public ICommand UsarNaRescisaoCommand { get; }
+    public ICommand CalcularRraCommand { get; }
     public bool PodeUsarNoHolerite => _demonstrativo?.QuitacaoBancoHoras?.Situacao == SituacaoBancoHoras.Fechamento;
     public bool PodeUsarNaRescisao => _demonstrativo?.QuitacaoBancoHoras?.Situacao == SituacaoBancoHoras.Rescisao;
+    public bool PodeCalcularRra => _demonstrativo?.ParcelasRra is { Count: > 0 };
     public HistoricoDaJanela Historico { get; }
 
     public string TipoHistorico => $"Calculadora.{_tipo}";
@@ -94,6 +97,7 @@ public sealed class CalculadoraViewModel : ViewModelBase, ICalculoSalvavel
         _abrirCalculadora = abrirCalculadora;
         ((RelayCommand)UsarNoHoleriteCommand).RaiseCanExecuteChanged();
         ((RelayCommand)UsarNaRescisaoCommand).RaiseCanExecuteChanged();
+        ((RelayCommand)CalcularRraCommand).RaiseCanExecuteChanged();
     }
 
     public bool TemResultado { get => _temResultado; private set => SetProperty(ref _temResultado, value); }
@@ -162,8 +166,10 @@ public sealed class CalculadoraViewModel : ViewModelBase, ICalculoSalvavel
         TemResultado = true;
         OnPropertyChanged(nameof(PodeUsarNoHolerite));
         OnPropertyChanged(nameof(PodeUsarNaRescisao));
+        OnPropertyChanged(nameof(PodeCalcularRra));
         ((RelayCommand)UsarNoHoleriteCommand).RaiseCanExecuteChanged();
         ((RelayCommand)UsarNaRescisaoCommand).RaiseCanExecuteChanged();
+        ((RelayCommand)CalcularRraCommand).RaiseCanExecuteChanged();
         ((AsyncRelayCommand)ExportarPdfCommand).RaiseCanExecuteChanged();
         ((AsyncRelayCommand)ExportarExcelCommand).RaiseCanExecuteChanged();
     }
@@ -175,6 +181,12 @@ public sealed class CalculadoraViewModel : ViewModelBase, ICalculoSalvavel
         var transferencia = CampoQuitacaoBancoHorasViewModel.Transferencia(quitacao);
         if (transferencia.Destino == destino)
             _abrirCalculadora(destino, transferencia.Valores);
+    }
+
+    private void AbrirRra()
+    {
+        if (_demonstrativo?.ParcelasRra is { Count: > 0 } parcelas && _abrirCalculadora is not null)
+            _abrirCalculadora(TipoCalculadora.Rra, new Dictionary<string, string> { ["Parcelas do RRA"] = CampoParcelasRraViewModel.CriarImportacao(parcelas) });
     }
 
     private async Task ExportarPdfAsync()

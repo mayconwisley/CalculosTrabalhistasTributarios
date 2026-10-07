@@ -185,6 +185,41 @@
                 </ScrollViewer>
             </StackPanel>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type calculadoras:CampoParcelasRraViewModel}">
+            <StackPanel Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ItemsControl}}" Margin="0,0,0,14" Visibility="{Binding Visivel, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <TextBlock Text="Parcelas e meses de referência" FontWeight="SemiBold" Margin="0,0,0,5" />
+                <TextBlock Text="Informe uma linha por competência a que o pagamento se refere, com o valor tributável recebido, sem juros de mora. O ano da linha separa os anos anteriores, tributados pela tabela acumulada, do ano do pagamento. Cada mês conta um mês, e o 13º de cada ano conta mais um. Se souber só o total de um ano, lance-o em um dos meses e deixe os demais desse ano com 0,00." FontSize="12" Foreground="{DynamicResource MutedTextBrush}" TextWrapping="Wrap" Margin="0,0,0,9" />
+                <WrapPanel Margin="0,0,0,2">
+                    <StackPanel Width="140" Margin="0,0,8,8"><TextBlock Text="Início (MM/AAAA)" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" /><TextBox Text="{Binding Inicio, UpdateSourceTrigger=PropertyChanged}" behaviors:MascaraData.Tipo="Competencia" TextAlignment="Center" AutomationProperties.Name="Início dos meses do RRA" /></StackPanel>
+                    <StackPanel Width="140" Margin="0,0,8,8"><TextBlock Text="Fim (MM/AAAA)" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" /><TextBox Text="{Binding Fim, UpdateSourceTrigger=PropertyChanged}" behaviors:MascaraData.Tipo="Competencia" TextAlignment="Center" AutomationProperties.Name="Fim dos meses do RRA" /></StackPanel>
+                    <StackPanel Width="170" Margin="0,0,8,8"><TextBlock Text="Valor por mês (R$)" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" /><TextBox Text="{Binding ValorMensal, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" behaviors:FormatacaoNumerica.Formato="N2" AutomationProperties.Name="Valor sugerido para cada mês gerado" /></StackPanel>
+                    <Button Content="Gerar meses" Command="{Binding GerarCommand}" Padding="12,6" Margin="0,0,8,8" VerticalAlignment="Bottom" ToolTip="Gera as competências do período com o valor por mês e preserva os valores já digitados" AutomationProperties.Name="Gerar meses do RRA" />
+                    <Button Content="+ Mês" Command="{Binding AdicionarMensalCommand}" Padding="10,6" Margin="0,0,8,8" VerticalAlignment="Bottom" AutomationProperties.Name="Adicionar competência mensal ao RRA" />
+                    <Button Content="+ 13º salário" Command="{Binding AdicionarDecimoTerceiroCommand}" Padding="10,6" Margin="0,0,8,8" VerticalAlignment="Bottom" AutomationProperties.Name="Adicionar 13º salário ao RRA" />
+                </WrapPanel>
+                <TextBlock Text="{Binding Mensagem}" Foreground="{DynamicResource AccentBrush}" TextWrapping="Wrap" Margin="0,0,0,6" />
+                <Grid Margin="8,0,8,5"><Grid.ColumnDefinitions><ColumnDefinition Width="150" /><ColumnDefinition Width="180" /><ColumnDefinition Width="*" /><ColumnDefinition Width="50" /></Grid.ColumnDefinitions>
+                    <TextBlock Text="Competência (MM/AAAA)" FontSize="11" Foreground="{DynamicResource MutedTextBrush}" />
+                    <TextBlock Grid.Column="1" Text="Tipo" FontSize="11" Foreground="{DynamicResource MutedTextBrush}" />
+                    <TextBlock Grid.Column="2" Text="Valor tributável recebido (R$)" FontSize="11" Foreground="{DynamicResource MutedTextBrush}" />
+                </Grid>
+                <ScrollViewer MaxHeight="300" VerticalScrollBarVisibility="Auto">
+                    <ItemsControl ItemsSource="{Binding Parcelas}" Focusable="False">
+                        <ItemsControl.ItemTemplate><DataTemplate>
+                            <Border Background="{DynamicResource ResultBackgroundBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="8" Margin="0,0,0,6">
+                                <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="150" /><ColumnDefinition Width="180" /><ColumnDefinition Width="*" /><ColumnDefinition Width="50" /></Grid.ColumnDefinitions>
+                                    <TextBox Text="{Binding Competencia, UpdateSourceTrigger=PropertyChanged}" behaviors:MascaraData.Tipo="Competencia" TextAlignment="Center" Margin="0,0,8,0" AutomationProperties.Name="Competência da parcela do RRA" />
+                                    <ComboBox Grid.Column="1" ItemsSource="{Binding Opcoes}" SelectedItem="{Binding Tipo, Mode=TwoWay}" Margin="0,0,8,0" MinHeight="54" AutomationProperties.Name="Tipo da parcela do RRA"><ComboBox.ItemTemplate><DataTemplate><TextBlock Text="{Binding Texto}" /></DataTemplate></ComboBox.ItemTemplate></ComboBox>
+                                    <TextBox Grid.Column="2" Text="{Binding Valor, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" Margin="0,0,8,0" behaviors:FormatacaoNumerica.Formato="N2" AutomationProperties.Name="Valor tributável da parcela do RRA" />
+                                    <Button Grid.Column="3" Content="×" Padding="0" MinHeight="34" Command="{Binding DataContext.RemoverCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" CommandParameter="{Binding}" ToolTip="Remover parcela" AutomationProperties.Name="Remover parcela do RRA" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate></ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+                <TextBlock Text="{Binding Resumo}" FontSize="11" Foreground="{DynamicResource MutedTextBrush}" Margin="0,2,0,0" />
+            </StackPanel>
+        </DataTemplate>
         <DataTemplate DataType="{x:Type calculadoras:CampoDepositosFgtsViewModel}">
             <StackPanel Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ItemsControl}}" Margin="0,0,0,14" Visibility="{Binding Visivel, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <TextBlock Text="Depósitos históricos do FGTS (opcional)" FontWeight="SemiBold" Margin="0,0,0,5" />
@@ -379,6 +414,7 @@
                             <WrapPanel Margin="0,0,0,12">
                                 <Button Content="Usar no holerite" Command="{Binding UsarNoHoleriteCommand}" Margin="0,0,8,8" ToolTip="Abre o holerite com as parcelas de quitação para conferência" AutomationProperties.Name="Transferir quitação do banco de horas para o holerite" Visibility="{Binding PodeUsarNoHolerite, Converter={StaticResource BooleanToVisibilityConverter}}" />
                                 <Button Content="Usar na rescisão" Command="{Binding UsarNaRescisaoCommand}" Margin="0,0,8,8" ToolTip="Abre a rescisão com as parcelas de quitação para conferência" AutomationProperties.Name="Transferir quitação do banco de horas para a rescisão" Visibility="{Binding PodeUsarNaRescisao, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                <Button Content="Calcular o IR (RRA)" Command="{Binding CalcularRraCommand}" Margin="0,0,8,8" ToolTip="Abre o IR sobre rendimentos recebidos acumuladamente com as diferenças por competência" AutomationProperties.Name="Calcular o IR das diferenças como rendimentos recebidos acumuladamente" Visibility="{Binding PodeCalcularRra, Converter={StaticResource BooleanToVisibilityConverter}}" />
                             </WrapPanel>
                             <TextBlock Text="Resumo executivo" FontSize="15" FontWeight="SemiBold" />
                             <ItemsControl ItemsSource="{Binding Destaques}" Margin="0,10,0,20">

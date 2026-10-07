@@ -94,6 +94,7 @@ Todas usam a mesma janela, com resumo, demonstrativo no formato de holerite, val
 | IRPF anual | Declaração do ano-calendário 2026 em diante, com a tabela anual, a redução do art. 11-A, os modelos completo e simplificado e a tributação mínima das altas rendas com o redutor (Lei 15.270/2025). |
 | Dividendos | Retenção de 10% sobre lucros e dividendos acima de R$ 50 mil no mês da mesma empresa, ou sobre qualquer valor para residentes no exterior. |
 | Carnê-leão | IR mensal de honorários, aluguéis e outros rendimentos recebidos de pessoas físicas e do exterior, com livro-caixa, desconto simplificado e a redução mensal. |
+| RRA (rendimentos acumulados) | IRRF de pagamentos atrasados: anos anteriores pela tabela acumulada (NM), com 13º, correção, juros não tributáveis e despesas rateadas; ano do pagamento com os rendimentos normais do mês ou 3% da Justiça Federal; recebe as diferenças do reajuste retroativo. |
 | Trabalho no exterior | Para residente fiscal no Brasil: salário ou serviços como pessoa física, país selecionável, atualização online do dólar fiscal e referência PTAX, conversão bancária, taxas, juros, imposto exterior e carnê-leão. |
 | Crédito do Trabalhador | Consignado por valor desejado ou margem livre, INSS/IRRF estimados, parcelas mensais, IOF automático por datas ou informado pelo banco, custos, juros, crédito líquido e custo efetivo estimado. |
 | Empréstimo pessoal | Price mensal PF sem carência, IOF automático ou informado, financiado ou retido, seguro, custos, crédito líquido e custo efetivo estimado. |

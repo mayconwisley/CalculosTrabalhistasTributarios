@@ -49,6 +49,7 @@ public sealed class MainWindowViewModel : ViewModelBase
                 Calculadora("CLT x PJ", "O que sobra para o profissional e o custo para a empresa nos dois regimes.", TipoCalculadora.CltPj),
                 Calculadora("IRPF anual", "Declaração completa ou simplificada, redução anual e tributação mínima.", TipoCalculadora.IrpfAnual),
                 Calculadora("Carnê-leão", "IR mensal de honorários e aluguéis recebidos de pessoas físicas.", TipoCalculadora.CarneLeao),
+                Calculadora("RRA (rendimentos acumulados)", "IRRF de pagamentos atrasados: anos anteriores pela tabela acumulada e o ano do pagamento.", TipoCalculadora.Rra),
                 Calculadora("Trabalho no exterior", "Câmbio, taxas, juros e carnê-leão de residente fiscal no Brasil.", TipoCalculadora.TrabalhoExterior),
                 Calculadora("Crédito do Trabalhador", "Consignado: margem, parcelas, juros, custos e crédito líquido.", TipoCalculadora.CreditoTrabalhador),
                 Calculadora("Empréstimo pessoal", "Parcelas, IOF, seguro, custos e valor líquido recebido.", TipoCalculadora.EmprestimoPessoal),

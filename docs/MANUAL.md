@@ -1130,7 +1130,7 @@ Abra pelo cartão **Diferenças de reajuste retroativo**, em **Remuneração e c
 
 **Atenção ao mês das férias:** informe na linha mensal apenas o salário efetivamente pago ou devido fora da parcela de férias; registre as férias gozadas no lançamento específico para evitar contagem em duplicidade. Férias indenizadas não usam este lançamento.
 
-O demonstrativo é **bruto**: não calcula INSS, IRRF, juros, atualização monetária nem diferenças de rescisão. A tributação das parcelas retroativas depende da data e da forma do pagamento; confira a folha e o eSocial antes de efetuar o recolhimento. Para diferenças previstas em acordo ou convenção, confira também os períodos de referência no S-1200/InfoPerAnt e a alteração contratual S-2206.
+O demonstrativo é **bruto**: não calcula INSS, IRRF, juros, atualização monetária nem diferenças de rescisão. A tributação das parcelas retroativas depende da data e da forma do pagamento; confira a folha e o eSocial antes de efetuar o recolhimento. Para diferenças previstas em acordo ou convenção, confira também os períodos de referência no S-1200/InfoPerAnt e a alteração contratual S-2206. Para estimar o IR quando as diferenças são pagas de uma vez, use **Calcular o IR (RRA)** no resultado: o aplicativo abre a calculadora da seção 8.33 com as diferenças por competência. Salário e férias gozadas somam no mês, e o 13º segue em linha própria do ano. Informe a data do pagamento e as deduções antes de calcular.
 
 Fundamentos: [Manual de Orientação do eSocial](https://www.gov.br/esocial/pt-br/documentacao-tecnica/manuais/mos-s-1-3-consolidada-ate-a-no-s-1-3-07-2026-com-marcacoes.pdf), [Lei 4.090/1962 (13º)](https://www.planalto.gov.br/ccivil_03/leis/l4090.htm), [CLT, art. 142 (férias)](https://www.planalto.gov.br/ccivil_03/decreto-lei/del5452compilado.htm) e [Lei 8.036/1990, art. 15 (FGTS)](https://www.planalto.gov.br/ccivil_03/leis/l8036compilada.htm).
 
@@ -1165,6 +1165,42 @@ Se houver saldo positivo e salário informado, o resultado oferece **Usar no hol
 
 Fundamento: [CLT, art. 59, §§ 1º a 6º](https://www.planalto.gov.br/ccivil_03/decreto-lei/del5452compilado.htm).
 Incidências de referência: [Manual do Empregador Doméstico do eSocial, rubrica eSocial1120 — Horas extras - Banco de Horas](https://www.gov.br/esocial/pt-br/documentacao-tecnica/manuais/manual-do-esocial-empregador-domestico-versao-07-10-2025.pdf/@@download/file).
+
+### 8.33 IR sobre rendimentos recebidos acumuladamente (RRA)
+
+Abra pelo cartão **RRA (rendimentos acumulados)**, em **Impostos e salário**. Use esta calculadora quando você recebe de uma vez valores de vários meses, como diferenças salariais, verbas de ação trabalhista ou atrasados de aposentadoria. Ela estima o IR retido no pagamento e separa as duas regras da Receita Federal:
+
+- **Anos anteriores ao pagamento:** tributação **exclusiva na fonte**, em separado dos demais rendimentos do mês. A tabela mensal do mês do pagamento é multiplicada pela quantidade de meses a que os valores se referem (**NM**).
+- **Ano do pagamento:** os valores entram no mês do recebimento, somados aos rendimentos normais pagos pela mesma fonte, e vão para a declaração anual. No precatório ou RPV da **Justiça Federal**, essa parte tem retenção de 3%, sem deduções.
+
+![Formulário do RRA com parcelas de 2025 e 2026, 13º salário, correção, juros e despesas](imagens/86-rra-formulario.png)
+
+1. Informe a **Data do pagamento**. Ela define as tabelas e separa os anos anteriores do ano do pagamento.
+2. Em **Quem paga**, escolha **Fonte pagadora ou Justiça do Trabalho** (empregador, INSS, Justiça do Trabalho ou Estadual) ou **Justiça Federal (precatório ou RPV)**.
+3. Em **Parcelas e meses de referência**, informe o período e o valor por mês e clique em **Gerar meses**. Ajuste o valor tributável de cada competência. Use **+ 13º salário** para cada ano em que houve 13º: ele conta como mais um mês. Se souber só o total de um ano, lance-o em um dos meses e deixe os demais desse ano com 0,00; todos os meses listados contam no NM.
+4. Preencha os valores e as deduções que houver, descritos abaixo, e clique em **Calcular**.
+
+Valores e deduções do pagamento:
+
+- **Correção monetária**, quando não estiver somada nas parcelas. Ela é tributável e é rateada pelo valor das parcelas.
+- **Juros de mora (não tributáveis)** pelo atraso no pagamento de remuneração do trabalho.
+- **Despesas com a ação**, como custas e honorários de advogado pagos por você sem reembolso. Elas são rateadas pelo total recebido; a parte que cabe aos juros não é dedutível.
+- **INSS** e **Pensão** descontados sobre os valores de anos anteriores e sobre os do ano do pagamento, em campos separados.
+- **Total parcelado (opcional)**, só quando o mesmo RRA é pago em meses diferentes: a soma de todas as parcelas de anos anteriores. O NM desta parcela fica proporcional ao valor, com uma casa decimal.
+- **Rendimentos normais do mês**, o **INSS** deles e os **Dependentes**, para a parte do ano do pagamento. Esses campos não aparecem na Justiça Federal.
+
+![Resultado do RRA com o IR de anos anteriores, o IR da parte de 2026 e o total recebido](imagens/87-rra-resultado.png)
+
+- **Resumo:** IR de anos anteriores, IR da parte do ano do pagamento, IR estimado do pagamento e total recebido.
+- **Demonstrativo:** os rendimentos de anos anteriores, os do ano do pagamento e os juros de mora aparecem separados. Os descontos mostram o IRRF de cada parte, o INSS e a pensão informados. As despesas com a ação aparecem como informativas, porque são deduzidas da base, mas não descontadas do pagamento.
+- **Memória:** parcelas por ano e cálculo do NM, rateio da correção e das despesas, tabela acumulada faixa a faixa e a parcela a deduzir exata multiplicada pelo NM. A parte do ano do pagamento tem memória própria do mês com o RRA, e os **rendimentos normais do mês** aparecem em outro grupo, sem o RRA. O IR atribuído ao RRA do ano é a diferença entre os dois cálculos.
+- **Deduções:** na parte de anos anteriores, só as despesas com a ação, a contribuição previdenciária oficial e a pensão alimentícia judicial. Dependentes e desconto simplificado não se aplicam.
+
+**Redução de 2026:** a IN RFB 1.500/2014, art. 37, manda observar a tabela de redução da Lei 15.270/2025 no RRA, mas não detalha como combiná-la com a quantidade de meses. Por padrão, a calculadora multiplica os limites e os valores da redução pelo NM, o que equivale a aplicar a redução à média mensal. Escolha **Não aplicar** para comparar com o cálculo sem redução e confira o critério no comprovante da fonte pagadora.
+
+**Declaração anual:** os RRA de anos anteriores podem ser levados ao ajuste anual, por opção irretratável na declaração. A opção abrange todos os RRA do ano, e o imposto retido passa a ser antecipação. A calculadora estima a retenção, não o resultado da declaração.
+
+Fundamentos: [Lei 7.713/1988, arts. 12-A e 12-B](https://www.planalto.gov.br/ccivil_03/leis/l7713compilada.htm), IN RFB 1.500/2014, arts. 25, 26 e 36 a 45, com a redação da IN RFB 2.299/2025, e [Lei 15.270/2025](https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2025/lei/l15270.htm).
 
 ## 9. Tabelas e parâmetros
 

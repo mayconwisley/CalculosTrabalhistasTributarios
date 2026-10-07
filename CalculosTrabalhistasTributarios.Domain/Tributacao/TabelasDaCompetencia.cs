@@ -120,6 +120,41 @@ public sealed class TabelasDaCompetencia
         return new ApuracaoPlr(baseCalculo, faixa.Numero, faixa.Aliquota, faixa.Deducao, CalculadoraTributacao.CalcularPorFaixa(baseCalculo, _faixasPlr));
     }
 
+    /// <summary>
+    /// IRRF dos rendimentos recebidos acumuladamente relativos a anos anteriores, pela tabela da competência do
+    /// recebimento com limites e parcelas a deduzir multiplicados por <paramref name="meses"/> (IN RFB 1.500/2014,
+    /// art. 37 e Anexo IV). Não há dependentes, desconto simplificado nem dispensa de retenção: a tributação é exclusiva.
+    /// O imposto é a soma exata das faixas, arredondada ao final, o que equivale às parcelas a deduzir do Anexo IV.
+    /// </summary>
+    /// <param name="rendimentosTributaveis">Rendimentos tributáveis do RRA, que definem a faixa da redução.</param>
+    /// <param name="aplicarReducao">
+    /// Aplica a redução da Lei 15.270/2025 com os limites de rendimento e os valores multiplicados pelos meses. O art. 37
+    /// manda observar a tabela do Anexo X, mas não detalha a multiplicação; a escolha fica explícita para o usuário.
+    /// </param>
+    public ApuracaoIrrfAcumulado CalcularIrrfAcumulado(decimal rendimentosTributaveis, decimal baseCalculo, decimal meses, bool aplicarReducao)
+    {
+        var faixas = _faixasIrrf.Select(item => new FaixaTributaria(item.Numero, item.Limite * meses, item.Aliquota, item.Deducao * meses)).ToArray();
+        var baseConsiderada = Math.Max(0m, baseCalculo);
+        var exatas = CalculadoraTributacao.CalcularProgressivo(baseConsiderada, faixas, valor => valor);
+        var impostoAntesReducao = CalculadoraTributacao.Arredondar(exatas.Sum(item => item.Imposto));
+        var faixa = faixas.OrderBy(item => item.Numero).FirstOrDefault(item => baseConsiderada <= item.Limite) ?? faixas.MaxBy(item => item.Limite)!;
+        var anterior = faixas.Where(item => item.Numero < faixa.Numero).Select(item => item.Limite / meses).DefaultIfEmpty(0m).Max();
+        var impostoNoLimiteAnterior = CalculadoraTributacao.CalcularProgressivo(anterior, _faixasIrrf, valor => valor).Sum(item => item.Imposto);
+        var parcelaMensal = anterior * faixa.AliquotaDecimal - impostoNoLimiteAnterior;
+
+        var reducaoAplicavel = aplicarReducao && _regrasReducao.Count > 0;
+        var reducao = reducaoAplicavel
+            ? CalculadoraReducaoMensalIrrf.Calcular(rendimentosTributaveis, impostoAntesReducao,
+                _regrasReducao.Select(item => item with { LimiteRendimentos = item.LimiteRendimentos * meses, ValorBase = item.ValorBase * meses }).ToArray())
+            : 0m;
+        return new ApuracaoIrrfAcumulado(meses, rendimentosTributaveis, baseConsiderada, faixa.Aliquota, parcelaMensal,
+            CalculadoraTributacao.CalcularProgressivo(baseConsiderada, faixas), impostoAntesReducao, reducaoAplicavel, reducao,
+            CalculadoraTributacao.Arredondar(impostoAntesReducao - reducao));
+    }
+
+    /// <summary>Há redução mensal do IRRF na competência (Lei 15.270/2025, a partir de 01/2026).</summary>
+    public bool TemReducaoMensal => _regrasReducao.Count > 0;
+
     private ModalidadeIrrf CalcularModalidade(string nome, decimal rendimentosTributaveis, decimal baseCalculo)
     {
         var faixa = _faixasIrrf.OrderBy(item => item.Numero).FirstOrDefault(item => baseCalculo <= item.Limite) ?? _faixasIrrf.MaxBy(item => item.Limite)!;
