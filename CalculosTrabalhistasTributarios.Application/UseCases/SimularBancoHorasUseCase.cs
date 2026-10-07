@@ -39,7 +39,7 @@ public sealed class SimularBancoHorasUseCase : ISimularDemonstrativoUseCase<Simu
         if (request.Situacao == SituacaoBancoHoras.Acompanhamento)
             observacoes.Add("Modo acompanhamento: o valor de quitação é apenas uma referência e não entra no total a pagar.");
         if (request.Salario == 0m)
-            observacoes.Add("Sem salário informado, o acompanhamento mostra apenas horas; a quitação estimada permanece zerada.");
+            observacoes.Add("Sem salário informado, o acompanhamento mostra apenas horas; a quitação estimada não é calculada.");
         if (banco.SaldoDevedor > 0)
             observacoes.Add("As compensações superaram os créditos do ciclo. O demonstrativo não transforma esse saldo em desconto na folha ou na rescisão.");
 
@@ -52,7 +52,11 @@ public sealed class SimularBancoHorasUseCase : ISimularDemonstrativoUseCase<Simu
                 new("Quitação estimada", quitacaoApresentada, !salarioInformado ? "Informe o salário para estimar" :
                     request.Situacao == SituacaoBancoHoras.Acompanhamento ? "Referência, ainda não devida" : "Saldo positivo no fechamento")
             ],
-            banco.ValorAPagar > 0m ? [new VerbaDto("Horas positivas não compensadas", $"{Horas(banco.SaldoCredor)} em {banco.ParcelasQuitacao.Count} faixa(s) de adicional", banco.ValorAPagar)] : [],
+            // Uma linha por adicional: a composição da quitação é a mesma das parcelas transferidas ao holerite ou à rescisão.
+            banco.ValorAPagar > 0m
+                ? banco.ParcelasQuitacao.Select(parcela => new VerbaDto($"Horas positivas a {Formato.PercentualCurto(parcela.Adicional)}",
+                    $"{Horas(parcela.Minutos)} não compensadas", parcela.Valor)).ToArray()
+                : [],
             [], [],
             [new("Conciliação e valor da hora", $"Saldo final: {Horas(banco.SaldoMinutos)}",
                 [

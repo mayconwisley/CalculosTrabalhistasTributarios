@@ -62,6 +62,41 @@ public class TransferenciaBancoHorasTests
     }
 
     [Fact]
+    public async Task Transferencia_preenche_o_holerite_e_so_calcula_apos_a_conferencia()
+    {
+        var (destino, valores) = CampoQuitacaoBancoHorasViewModel.Transferencia(await ApurarAsync(SituacaoBancoHoras.Fechamento));
+        Assert.Equal(TipoCalculadora.Holerite, destino);
+        var holerite = new CalculadoraHolerite(new SimularHoleriteUseCase(await Ambiente.ConsultaAsync()));
+        holerite.ImportarCampos(valores);
+
+        var campos = holerite.ExportarCampos();
+        Assert.Equal("10/2026", campos["Competência"]);
+        Assert.Equal("2.200,00", campos["Salário"]);
+        Assert.Equal("220,00", campos["Divisor de horas"]);
+        Assert.Contains("Confira as incidências", (await holerite.CalcularAsync(default)).Falha().Mensagem);
+
+        holerite.Campos.OfType<CampoQuitacaoBancoHorasViewModel>().Single().Confirmado = true;
+        var resultado = (await holerite.CalcularAsync(default)).Sucesso();
+        Assert.Equal([("Quitação do banco de horas (50%)", 7.50m), ("Quitação do banco de horas (100%)", 20m)],
+            resultado.Proventos.Where(p => p.Descricao.StartsWith("Quitação do banco de horas")).Select(p => (p.Descricao, p.Valor)));
+        Assert.Contains(resultado.Memoria, grupo => grupo.Titulo == "Quitação do banco de horas");
+    }
+
+    [Fact]
+    public async Task Transferencia_preenche_a_rescisao_na_data_do_fim_do_ciclo()
+    {
+        var (destino, valores) = CampoQuitacaoBancoHorasViewModel.Transferencia(await ApurarAsync(SituacaoBancoHoras.Rescisao));
+        Assert.Equal(TipoCalculadora.Rescisao, destino);
+        var rescisao = new Presentation.ViewModels.Calculadoras.CalculadoraRescisao(new SimularRescisaoUseCase(await Ambiente.ConsultaAsync()));
+        rescisao.ImportarCampos(new Dictionary<string, string>(valores) { ["Data de admissão"] = "01/01/2025" });
+        Assert.Equal("31/10/2026", rescisao.ExportarCampos()["Data de desligamento"]);
+
+        rescisao.Campos.OfType<CampoQuitacaoBancoHorasViewModel>().Single().Confirmado = true;
+        var resultado = (await rescisao.CalcularAsync(default)).Sucesso();
+        Assert.Equal([7.50m, 20m], resultado.Proventos.Where(p => p.Descricao.StartsWith("Quitação do banco de horas")).Select(p => p.Valor));
+    }
+
+    [Fact]
     public async Task Nao_aceita_destino_ou_valor_divergente()
     {
         var fechamento = await ApurarAsync(SituacaoBancoHoras.Fechamento);

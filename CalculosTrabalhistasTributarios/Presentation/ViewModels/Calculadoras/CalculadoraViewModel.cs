@@ -172,24 +172,9 @@ public sealed class CalculadoraViewModel : ViewModelBase, ICalculoSalvavel
     {
         if (_demonstrativo?.QuitacaoBancoHoras is not { } quitacao || _abrirCalculadora is null)
             return;
-        var valores = new Dictionary<string, string>
-        {
-            ["Quitação do banco de horas"] = CampoQuitacaoBancoHorasViewModel.CriarImportacao(quitacao),
-            ["Salário"] = quitacao.SalarioReferencia.ToString("N2", Cultura)
-        };
-        if (destino == TipoCalculadora.Holerite)
-        {
-            if (quitacao.Situacao != SituacaoBancoHoras.Fechamento) return;
-            valores["Competência"] = quitacao.FimCiclo.ToString("MM/yyyy", Cultura);
-            valores["Divisor de horas"] = quitacao.Divisor.ToString("N2", Cultura);
-        }
-        else if (destino == TipoCalculadora.Rescisao)
-        {
-            if (quitacao.Situacao != SituacaoBancoHoras.Rescisao) return;
-            valores["Data de desligamento"] = quitacao.FimCiclo.ToString("dd/MM/yyyy", Cultura);
-        }
-        else return;
-        _abrirCalculadora(destino, valores);
+        var transferencia = CampoQuitacaoBancoHorasViewModel.Transferencia(quitacao);
+        if (transferencia.Destino == destino)
+            _abrirCalculadora(destino, transferencia.Valores);
     }
 
     private async Task ExportarPdfAsync()

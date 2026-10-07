@@ -140,6 +140,24 @@ public class BancoHorasTests
     }
 
     [Fact]
+    public async Task Demonstrativo_separa_a_quitacao_por_adicional()
+    {
+        // Hora normal R$ 10: 30 min a 50% = R$ 7,50; 60 min a 100% = R$ 20,00.
+        var resultado = (await new SimularBancoHorasUseCase().ExecutarAsync(new SimularBancoHorasRequest(
+            Inicio, Fim, RegimeBancoHoras.MesmoMes, SituacaoBancoHoras.Fechamento, 2200m, 220m, 50m,
+            [
+                new(Inicio, TipoLancamentoBancoHoras.Credito, 90, "primeiro", 50m),
+                new(Inicio.AddDays(1), TipoLancamentoBancoHoras.Credito, 60, "segundo", 100m),
+                new(Inicio.AddDays(2), TipoLancamentoBancoHoras.Compensacao, 60, "folga")
+            ]), CancellationToken.None)).Sucesso();
+
+        Assert.Equal([("Horas positivas a 50%", "0:30 não compensadas", 7.50m), ("Horas positivas a 100%", "1:00 não compensadas", 20m)],
+            resultado.Proventos.Select(verba => (verba.Descricao, verba.Referencia, verba.Valor)));
+        Assert.Equal(27.50m, resultado.Resultado);
+        Assert.Equal(resultado.QuitacaoBancoHoras!.Parcelas.Select(parcela => parcela.Valor), resultado.Proventos.Select(verba => verba.Valor));
+    }
+
+    [Fact]
     public async Task Acompanhamento_sem_salario_informa_que_quitacao_nao_foi_calculada()
     {
         var resultado = (await new SimularBancoHorasUseCase().ExecutarAsync(new SimularBancoHorasRequest(

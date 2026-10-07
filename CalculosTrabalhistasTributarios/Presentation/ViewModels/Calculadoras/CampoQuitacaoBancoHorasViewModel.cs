@@ -61,6 +61,27 @@ public sealed class CampoQuitacaoBancoHorasViewModel : CampoViewModel
 
     public static string CriarImportacao(QuitacaoBancoHoras quitacao) => JsonSerializer.Serialize(new DadosSalvos(quitacao, false));
 
+    /// <summary>
+    /// Campos que o banco de horas preenche no destino: o fechamento vai para o holerite da competência do fim do ciclo e
+    /// a rescisão para o desligamento nessa data. As chaves são os rótulos dos campos do holerite e da rescisão.
+    /// </summary>
+    public static (TipoCalculadora Destino, IReadOnlyDictionary<string, string> Valores) Transferencia(QuitacaoBancoHoras quitacao)
+    {
+        var valores = new Dictionary<string, string>
+        {
+            ["Quitação do banco de horas"] = CriarImportacao(quitacao),
+            ["Salário"] = quitacao.SalarioReferencia.ToString("N2", Cultura)
+        };
+        if (quitacao.Situacao == SituacaoBancoHoras.Rescisao)
+        {
+            valores["Data de desligamento"] = quitacao.FimCiclo.ToString("dd/MM/yyyy", Cultura);
+            return (TipoCalculadora.Rescisao, valores);
+        }
+        valores["Competência"] = quitacao.FimCiclo.ToString("MM/yyyy", Cultura);
+        valores["Divisor de horas"] = quitacao.Divisor.ToString("N2", Cultura);
+        return (TipoCalculadora.Holerite, valores);
+    }
+
     private void Descartar()
     {
         _quitacao = null;
