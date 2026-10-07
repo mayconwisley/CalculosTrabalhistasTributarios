@@ -43,5 +43,7 @@ internal static class TextosRescisao
     };
 
     /// <summary>Como as verbas do mês aparecem nas descrições: só o saldo, ou o saldo e os outros proventos.</summary>
-    public static string VerbasDoMes(ContratoRescindido c) => c.OutrosProventos > 0m ? "saldo de salário e outros proventos" : "saldo de salário";
+    public static string VerbasDoMes(ContratoRescindido c) => c.QuitacaoBancoHoras is not null
+        ? "verbas salariais do mês e banco de horas"
+        : c.OutrosProventos > 0m ? "saldo de salário e outros proventos" : "saldo de salário";
 }

@@ -67,7 +67,10 @@ public sealed class SimularBancoHorasUseCase : ISimularDemonstrativoUseCase<Simu
                         : "Não calculada: salário não informado")
                 ]), .. movimentos],
             observacoes,
-            RotuloProventos: "Quitação do saldo", RotuloResultado: "Total a pagar neste cenário");
+            RotuloProventos: "Quitação do saldo", RotuloResultado: "Total a pagar neste cenário",
+            QuitacaoBancoHoras: request.Situacao != SituacaoBancoHoras.Acompanhamento && banco.ValorAPagar > 0m
+                ? new QuitacaoBancoHoras(request.Fim, request.Situacao, request.Salario, request.Divisor, banco.ParcelasQuitacao)
+                : null);
         return Task.FromResult<Result<DemonstrativoDto>>(demonstrativo);
     }
 

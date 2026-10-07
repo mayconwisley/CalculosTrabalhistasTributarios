@@ -1,4 +1,5 @@
 using CalculosTrabalhistasTributarios.Domain.Trabalhista;
+using CalculosTrabalhistasTributarios.Application.Demonstrativos;
 using CalculosTrabalhistasTributarios.Domain.Trabalhista.Rescisao;
 
 namespace CalculosTrabalhistasTributarios.Application.Demonstrativos.Rescisao;
@@ -25,6 +26,8 @@ internal static class ObservacoesRescisao
             observacoes.Add("Empregado doméstico (LC 150/2015): no lugar da multa de 40% do FGTS, o empregador deposita 3,2% todo mês. Na dispensa sem justa causa, o empregado saca esse valor; no acordo, a metade, e a outra metade volta ao empregador, como a metade da indenização do art. 484-A da CLT; na justa causa, no pedido de demissão e no fim do contrato a prazo, tudo volta ao empregador. O FGTS do mês e os 3,2% vão no DAE rescisório.");
         if (c.Vinculo == TipoVinculo.Aprendiz)
             observacoes.Add("Jovem aprendiz: o FGTS é de 2% (Lei 8.036/1990, art. 15, § 7º). No fim do contrato, no desempenho insuficiente, na falta disciplinar grave, na ausência à escola e a pedido do aprendiz, não há as indenizações dos arts. 479 e 480 (CLT, art. 433, § 2º); a dispensa antecipada fora dessas hipóteses segue o art. 479.");
+        if (c.QuitacaoBancoHoras is not null)
+            observacoes.Add(DemonstrativoQuitacaoBancoHoras.Observacao);
         var projecao = v.Aviso.Projecao;
         if (i.DataBase is { } dataBase)
             observacoes.Add(i.Adicional > 0m
@@ -46,8 +49,12 @@ internal static class ObservacoesRescisao
             if (v.Aviso.Cumprimento == CumprimentoAvisoPrevio.Indenizado)
                 observacoes.Add("No acordo, a projeção do aviso indenizado no 13º, nas férias e na data de término usa só os dias pagos, a metade, como na tabela do eSocial para o código 33 (Manual do Empregador Doméstico). Há entendimento minoritário pela projeção dos dias inteiros (CLT, art. 487, § 1º).");
         }
-        if (v.Fgts.UsaSaldo && v.Fgts.SaldoEstimado)
-            observacoes.Insert(1, "O saldo do FGTS foi estimado com o salário atual; informe o saldo do extrato do FGTS para obter a multa e o saque exatos.");
+        if (v.Fgts.UsaSaldo && v.Fgts.SaldoPorHistorico)
+            observacoes.Insert(1, "A base da multa e do saque foi estimada pela soma nominal dos depósitos históricos devidos. Ela não reproduz atualização monetária, juros nem movimentações da conta; confira o saldo para fins rescisórios no extrato ou no FGTS Digital antes de usar os valores como definitivos.");
+        else if (v.Fgts.UsaSaldo && v.Fgts.SaldoEstimado)
+            observacoes.Insert(1, "O saldo do FGTS foi estimado com o salário atual; informe o saldo do extrato do FGTS para conferir a multa e o saque.");
+        else if (v.Fgts.TotalDepositosHistoricos.HasValue)
+            observacoes.Insert(1, "Os depósitos históricos nominais foram exibidos para conferência; a multa e o saque usam o saldo do extrato informado. Diferenças podem incluir atualização monetária, juros e outras movimentações.");
         if (t.Pensao is { } regra)
             observacoes.Add(regra.EhPercentual
                 ? "A pensão incide sobre as verbas salariais: o saldo de salário e o 13º. As indenizatórias (aviso prévio indenizado, férias indenizadas com 1/3, FGTS e multa) ficaram fora da base; se a decisão determinar a incidência sobre elas, informe o valor da pensão."

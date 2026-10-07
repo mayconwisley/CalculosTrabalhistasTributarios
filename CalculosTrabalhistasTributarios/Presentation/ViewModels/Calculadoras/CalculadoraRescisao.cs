@@ -2,6 +2,7 @@ using CalculosTrabalhistasTributarios.Application.DTOs;
 using CalculosTrabalhistasTributarios.Application.Interfaces;
 using CalculosTrabalhistasTributarios.Domain.Comum;
 using CalculosTrabalhistasTributarios.Domain.Trabalhista;
+using CalculosTrabalhistasTributarios.Domain.Trabalhista.Rescisao;
 
 namespace CalculosTrabalhistasTributarios.Presentation.ViewModels.Calculadoras;
 
@@ -25,7 +26,7 @@ public sealed class CalculadoraRescisao : CalculadoraBase
             new("Fim de contrato a prazo", MotivoRescisao.TerminoDeContratoPorPrazo),
             new("Antecipada pela empresa", MotivoRescisao.RescisaoAntecipadaPeloEmpregador),
             new("Antecipada pelo empregado", MotivoRescisao.RescisaoAntecipadaPeloEmpregado)
-        ], "Motivo do desligamento, que define as verbas devidas. As antecipadas encerram o contrato a prazo ou de experiência antes do fim previsto: pela empresa (CLT, art. 479) ou pelo empregado (art. 480).");
+        ], "Motivo do desligamento, que define as verbas devidas. As antecipadas encerram o contrato a prazo ou de experiência antes do fim previsto: pela empresa (CLT, art. 479) ou pelo empregado (art. 480).") { Largura = 300 };
     private readonly CampoTextoViewModel _fimPrevisto = new("Fim previsto do contrato", TipoCampo.Data, "", "Último dia previsto do contrato a prazo ou de experiência (dd/mm/aaaa).");
     private readonly CampoOpcaoViewModel _aviso = new("Aviso prévio",
         [
@@ -36,13 +37,15 @@ public sealed class CalculadoraRescisao : CalculadoraBase
     private readonly CampoTextoViewModel _salario = Moeda("Salário", "Último salário mensal.");
     private readonly CampoTextoViewModel _medias = Moeda("Médias de variáveis", "Média de horas extras, comissões e adicionais, que entra no aviso, no 13º e nas férias.");
     private readonly CampoTextoViewModel _outrosProventos = Moeda("Outros proventos do mês", "Horas extras, adicionais e comissões do mês do desligamento, que têm INSS, IRRF e FGTS.");
+    private readonly CampoQuitacaoBancoHorasViewModel _quitacaoBancoHoras = new();
     private readonly CampoTextoViewModel _verbasIndenizatorias = Moeda("Verbas indenizatórias", "Verbas da convenção ou do acordo sem INSS, IRRF e FGTS, como a multa normativa ou uma indenização por tempo de serviço.");
     private readonly CampoTextoViewModel _faltasNoMes = Inteiro("Faltas no mês", 0, "Faltas injustificadas no mês do desligamento, descontadas do saldo de salário.");
     private readonly CampoTextoViewModel _semanasComFalta = Inteiro("Semanas com falta no mês", 0, "Semanas do mês do desligamento com falta injustificada: cada uma perde o DSR, um dia de salário (Lei 605/1949, art. 6º).");
     private readonly CampoOpcaoViewModel _feriasVencidas = new("Férias vencidas",
         [new("Nenhuma", 0), new("1 período", 1), new("2 períodos", 2)], "Períodos aquisitivos completos cujas férias não foram tiradas.");
     private readonly CampoTextoViewModel _faltas = Inteiro("Faltas no período atual", 0, "Faltas injustificadas no período aquisitivo em curso, que reduzem as férias proporcionais.");
-    private readonly CampoTextoViewModel _saldoFgts = Moeda("Saldo do FGTS", "Saldo do extrato para fins rescisórios; deixe 0,00 para estimar pelo salário.");
+    private readonly CampoTextoViewModel _saldoFgts = Moeda("Saldo do FGTS", "Saldo do extrato para fins rescisórios; com 0,00, o histórico completo é usado. Sem histórico, a estimativa usa o salário atual.");
+    private readonly CampoDepositosFgtsViewModel _depositosFgts;
     private readonly CampoTextoViewModel _adiantamento13 = Moeda("13º já adiantado", "1ª parcela do 13º paga neste ano, descontada na rescisão.");
     private readonly CampoTextoViewModel _outrosDescontos = Moeda("Outros descontos", "Vale-transporte, plano de saúde, vales e adiantamentos descontados na rescisão; no total, até uma remuneração mensal (CLT, art. 477, § 5º).");
     private readonly CampoTextoViewModel _dependentes = Inteiro("Dependentes", 0, "Dependentes para a dedução do IRRF.");
@@ -56,6 +59,7 @@ public sealed class CalculadoraRescisao : CalculadoraBase
     public CalculadoraRescisao(ISimularDemonstrativoUseCase<SimularRescisaoRequest> simulador)
     {
         _simulador = simulador;
+        _depositosFgts = new(_admissao, _desligamento);
         _motivo.AoAlterar = AjustarAoMotivo;
         _vinculo.AoAlterar = AjustarAoMotivo;
         AjustarAoMotivo();
@@ -64,23 +68,43 @@ public sealed class CalculadoraRescisao : CalculadoraBase
     public override string Titulo => "Rescisão";
     public override string Descricao => "Calcule as verbas rescisórias conforme o motivo do desligamento, com aviso prévio proporcional, FGTS e multa.";
     public override string InstrucaoInicial => "Informe as datas, o motivo, o aviso prévio e o salário e selecione Calcular.";
-    public override IReadOnlyList<CampoViewModel> Campos => [_vinculo, _admissao, _desligamento, _motivo, _aviso, _fimPrevisto, _salario, _medias, _outrosProventos, _verbasIndenizatorias, _faltasNoMes, _semanasComFalta,
-        _feriasVencidas, _faltas, _saldoFgts, _adiantamento13, _outrosDescontos, _dependentes, _dataPagamento, _dataBase, .. _pensao.Campos];
+    public override IReadOnlyList<CampoViewModel> Campos => [_vinculo, _admissao, _desligamento, _motivo, _aviso, _fimPrevisto, _salario, _medias, _outrosProventos, _quitacaoBancoHoras, _verbasIndenizatorias, _faltasNoMes, _semanasComFalta,
+        _feriasVencidas, _faltas, _saldoFgts, _depositosFgts, _adiantamento13, _outrosDescontos, _dependentes, _dataPagamento, _dataBase, .. _pensao.Campos];
     public override string NomeArquivoPdf => $"rescisao-{_desligamento.Valor.Replace('/', '-')}.pdf";
 
     protected override CampoTextoViewModel CampoSalario => _salario;
     protected override CampoTextoViewModel CampoDependentes => _dependentes;
 
-    public override Task<Result<DemonstrativoDto>> CalcularAsync(CancellationToken cancellationToken)
+    public override Dictionary<string, string> ExportarCampos()
     {
+        var campos = base.ExportarCampos();
+        campos[_depositosFgts.Rotulo] = _depositosFgts.Exportar();
+        campos[_quitacaoBancoHoras.Rotulo] = _quitacaoBancoHoras.Exportar();
+        return campos;
+    }
+
+    public override void ImportarCampos(IReadOnlyDictionary<string, string> valores)
+    {
+        base.ImportarCampos(valores);
+        if (valores.TryGetValue(_depositosFgts.Rotulo, out var json)) _depositosFgts.Importar(json);
+        if (valores.TryGetValue(_quitacaoBancoHoras.Rotulo, out var quitacaoJson)) _quitacaoBancoHoras.Importar(quitacaoJson);
+        else _quitacaoBancoHoras.DescartarCommand.Execute(null);
+    }
+
+    public override async Task<Result<DemonstrativoDto>> CalcularAsync(CancellationToken cancellationToken)
+    {
+        var historico = _depositosFgts.Visivel ? _depositosFgts.Ler() : Result.Ok<IReadOnlyList<DepositoFgtsHistorico>>([]);
+        if (historico.Falhou) return historico.Erro;
+        var quitacao = _quitacaoBancoHoras.Ler();
+        if (quitacao.Falhou) return quitacao.Erro;
         var dataBase = _dataBase.Visivel ? _dataBase.Valor<int>() : 0;
-        return LerECalcularAsync(_simulador, leitor => new SimularRescisaoRequest(
+        return await LerECalcularAsync(_simulador, leitor => new SimularRescisaoRequest(
             leitor.Data(_admissao), leitor.Data(_desligamento), _motivo.Valor<MotivoRescisao>(), _aviso.Valor<CumprimentoAvisoPrevio>(),
             leitor.Moeda(_salario), leitor.Moeda(_medias), _feriasVencidas.Valor<int>(), leitor.Inteiro(_faltas),
             _saldoFgts.Visivel ? leitor.Moeda(_saldoFgts) : 0m, leitor.Moeda(_adiantamento13), leitor.Inteiro(_dependentes), leitor.Pensao(_pensao),
             leitor.DataOpcional(_dataPagamento), _fimPrevisto.Visivel ? leitor.DataOpcional(_fimPrevisto) : null, dataBase == 0 ? null : dataBase,
             leitor.Moeda(_outrosProventos), leitor.Inteiro(_faltasNoMes), _vinculo.Valor<TipoVinculo>(), leitor.Inteiro(_semanasComFalta),
-            leitor.Moeda(_outrosDescontos), leitor.Moeda(_verbasIndenizatorias)), cancellationToken);
+            leitor.Moeda(_outrosDescontos), leitor.Moeda(_verbasIndenizatorias), historico.Valor, quitacao.Valor), cancellationToken);
     }
 
     // O aviso só existe na dispensa sem justa causa, no pedido de demissão e no acordo; o saldo do FGTS só importa quando há
@@ -92,6 +116,7 @@ public sealed class CalculadoraRescisao : CalculadoraBase
         var domestico = _vinculo.Valor<TipoVinculo>() == TipoVinculo.Domestico;
         _aviso.Visivel = motivo is MotivoRescisao.DispensaSemJustaCausa or MotivoRescisao.PedidoDeDemissao or MotivoRescisao.Acordo;
         _saldoFgts.Visivel = domestico || motivo is MotivoRescisao.DispensaSemJustaCausa or MotivoRescisao.Acordo or MotivoRescisao.TerminoDeContratoPorPrazo or MotivoRescisao.RescisaoAntecipadaPeloEmpregador;
+        _depositosFgts.Visivel = _saldoFgts.Visivel;
         _fimPrevisto.Visivel = motivo is MotivoRescisao.RescisaoAntecipadaPeloEmpregador or MotivoRescisao.RescisaoAntecipadaPeloEmpregado;
         _dataBase.Visivel = motivo == MotivoRescisao.DispensaSemJustaCausa && !domestico;
         var aviso = _aviso.Valor<CumprimentoAvisoPrevio>();

@@ -35,6 +35,8 @@ public sealed class SimularHoleriteUseCase(ITributacaoConsulta tributacaoConsult
             return Erro.Validacao("Pausa suprimida (h) e Interjornada (h) devem ficar entre zero e 744 horas no mês. Confira as marcações da jornada.");
         if (r.Competencia < new DateOnly(2017, 11, 1) && (r.HorasIntervaloIntrajornada > 0m || r.HorasIntervaloInterjornada > 0m))
             return Erro.Validacao("Os campos de intervalos suprimidos usam os critérios posteriores a 11/11/2017. Para uma competência anterior, apure as parcelas conforme a regra vigente na data.");
+        if (r.QuitacaoBancoHoras is { } quitacao && quitacao.Validar(SituacaoBancoHoras.Fechamento, r.Competencia) is { Falhou: true } quitacaoInvalida)
+            return quitacaoInvalida.Erro;
         // Os dois são descontados pelo salário-dia: juntos não passam dos 30 dias do mês comercial.
         if (r.Faltas + r.DescansosPerdidos > 30)
             return Erro.Validacao("As faltas e os descansos perdidos, somados, não podem passar de 30 dias no mês.");
@@ -90,7 +92,7 @@ public sealed class SimularHoleriteUseCase(ITributacaoConsulta tributacaoConsult
         var descansos = CalculadoraTributacao.Arredondar(baseHora * r.DescansosPerdidos / 30m);
         var atrasos = CalculadoraTributacao.Arredondar(baseHora * r.HorasAtraso / r.Divisor);
 
-        var tributaveisSemComplemento = baseHora + r.OutrosProventos + (comissoes?.Total ?? 0m) + horas.Variaveis + horas.Dsr;
+        var tributaveisSemComplemento = baseHora + r.OutrosProventos + (comissoes?.Total ?? 0m) + horas.Variaveis + horas.Dsr + (r.QuitacaoBancoHoras?.Total ?? 0m);
         var complementoComissoes = 0m;
         var pisoComissoes = 0m;
         if (comissoes is not null)
@@ -158,6 +160,7 @@ public sealed class SimularHoleriteUseCase(ITributacaoConsulta tributacaoConsult
         }
         if (complementoComissoes > 0m) proventos.Add(new("Complemento da garantia mínima", "", complementoComissoes));
         if (r.OutrosProventos > 0m) proventos.Add(new("Outros proventos tributáveis", "", r.OutrosProventos));
+        if (r.QuitacaoBancoHoras is { } quitacaoProventos) proventos.AddRange(DemonstrativoQuitacaoBancoHoras.Proventos(quitacaoProventos));
         proventos.AddRange(DemonstrativoHoras.Proventos(horas));
         if (intervaloIntra > 0m) proventos.Add(new("Intervalo intrajornada suprimido", Formato.Horas(r.HorasIntervaloIntrajornada), intervaloIntra));
         if (intervaloInter > 0m) proventos.Add(new("Intervalo entre jornadas suprimido", Formato.Horas(r.HorasIntervaloInterjornada), intervaloInter));
@@ -191,6 +194,8 @@ public sealed class SimularHoleriteUseCase(ITributacaoConsulta tributacaoConsult
         if (intervaloIntra > 0m || intervaloInter > 0m || r.Premios > 0m)
             formulasRemuneracao.Add(new("Bases do mês", $"INSS: {Formato.Moeda(basePrevidenciaria)}; IRRF antes das deduções: {Formato.Moeda(rendimentos)}; FGTS: {Formato.Moeda(baseFgts)}"));
         var memoria = new List<GrupoMemoriaDto> { new("Remuneração do mês", $"Remuneração: {Formato.Moeda(remuneracao)}", formulasRemuneracao) };
+        if (r.QuitacaoBancoHoras is { } quitacaoMemoria)
+            memoria.Add(DemonstrativoQuitacaoBancoHoras.Memoria(quitacaoMemoria));
         if (comissoes is not null)
         {
             var formulasComissoes = new List<FormulaDto>(DemonstrativoComissoes.Formulas(comissoes))
@@ -243,6 +248,8 @@ public sealed class SimularHoleriteUseCase(ITributacaoConsulta tributacaoConsult
             observacoes.Add($"A remuneração variável ficou abaixo da garantia de {Formato.Moeda(pisoComissoes)}; o complemento de {Formato.Moeda(complementoComissoes)} integra INSS, IRRF e FGTS.");
         if (r.OutrosProventos > 0m)
             observacoes.Add("Os outros proventos tributáveis entram no INSS, no IRRF e no FGTS. Comissões informadas nesse campo já devem incluir o DSR e não podem ser repetidas no campo Comissões do mês.");
+        if (r.QuitacaoBancoHoras is not null)
+            observacoes.Add(DemonstrativoQuitacaoBancoHoras.Observacao);
         if (r.Premios > 0m)
             observacoes.Add("Os prêmios por desempenho superior ao esperado não entram no INSS nem no FGTS (CLT, art. 457, §§ 2º e 4º), mas têm IRRF e entram na base da pensão. Valores pagos todo mês ou sem ligação com o desempenho podem ser considerados salário: nesse caso, informe-os nos proventos tributáveis.");
         if (r.ProventosNaoTributaveis > 0m)

@@ -1,3 +1,5 @@
+using CalculosTrabalhistasTributarios.Domain.Trabalhista;
+
 namespace CalculosTrabalhistasTributarios.Application.DTOs;
 
 /// <summary>
@@ -18,7 +20,8 @@ public sealed record DemonstrativoDto(
     IReadOnlyList<string> Observacoes,
     string RotuloProventos = "Proventos",
     string RotuloResultado = "Líquido a receber",
-    TabelaComparativaDto? Comparativo = null)
+    TabelaComparativaDto? Comparativo = null,
+    QuitacaoBancoHoras? QuitacaoBancoHoras = null)
 {
     /// <summary>Falso quando o cálculo não tem proventos nem descontos, como uma comparação de cenários.</summary>
     public bool TemVerbas => Proventos.Count > 0 || Descontos.Count > 0;

@@ -23,13 +23,13 @@ public sealed class WpfWindowNavigator(
     public void AbrirPensao() => Abrir(new PensaoWindow(pensaoViewModelFactory.Criar()));
     public void AbrirPensaoAtraso() => Abrir(new PensaoAtrasoWindow(pensaoAtrasoViewModelFactory.Criar()));
     public void AbrirEstabilidade() => Abrir(new EstabilidadeWindow(estabilidadeViewModelFactory.Criar()));
-    public void AbrirCalculadora(TipoCalculadora tipo) => Abrir(new CalculadoraWindow(calculadoraViewModelFactory.Criar(tipo)));
+    public void AbrirCalculadora(TipoCalculadora tipo) => Abrir(new CalculadoraWindow(CriarCalculadora(tipo)));
     public void AbrirJornada() => Abrir(new JornadaWindow(jornadaViewModelFactory.Criar()));
     public void AbrirDebitoJudicial() => Abrir(new DebitoJudicialWindow(debitoJudicialViewModelFactory.Criar()));
 
     public void AbrirCalculadora(TipoCalculadora tipo, IReadOnlyDictionary<string, string> valores)
     {
-        var calculadora = calculadoraViewModelFactory.Criar(tipo);
+        var calculadora = CriarCalculadora(tipo);
         calculadora.ImportarCampos(valores);
         Abrir(new CalculadoraWindow(calculadora));
     }
@@ -73,12 +73,19 @@ public sealed class WpfWindowNavigator(
             default:
                 if (!salvo.Tipo.StartsWith(PrefixoCalculadora, StringComparison.Ordinal) || !Enum.TryParse<TipoCalculadora>(salvo.Tipo[PrefixoCalculadora.Length..], out var tipo))
                     return Erro.NaoEncontrado($"O cálculo “{salvo.Nome}” é de uma calculadora que não existe nesta versão do aplicativo.");
-                var calculadora = calculadoraViewModelFactory.Criar(tipo);
+                var calculadora = CriarCalculadora(tipo);
                 await calculadora.Historico.CarregarAsync(salvo);
                 Abrir(new CalculadoraWindow(calculadora));
                 break;
         }
         return Result.Ok();
+    }
+
+    private CalculadoraViewModel CriarCalculadora(TipoCalculadora tipo)
+    {
+        var calculadora = calculadoraViewModelFactory.Criar(tipo);
+        calculadora.ConfigurarAberturaCalculadora(AbrirCalculadora);
+        return calculadora;
     }
 
     private static void Abrir(Window janela)

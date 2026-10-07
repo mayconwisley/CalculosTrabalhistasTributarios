@@ -199,6 +199,106 @@ public class DecimoTerceiroTests
 public class FeriasTests
 {
     [Fact]
+    public void Rateio_respeita_fevereiro_bissexto_e_conserva_centavos()
+    {
+        var parcelas = RateioFeriasPorCompetencia.Calcular(new DateOnly(2028, 2, 28), 3, 100m, 33.33m).Sucesso();
+        Assert.Equal([(new DateOnly(2028, 2, 1), 2), (new DateOnly(2028, 3, 1), 1)],
+            parcelas.Select(item => (item.Competencia, item.Dias)));
+        Assert.Equal(100m, parcelas.Sum(item => item.Ferias));
+        Assert.Equal(33.33m, parcelas.Sum(item => item.Terco));
+        Assert.True(RateioFeriasPorCompetencia.Calcular(DateOnly.MaxValue, 2, 100m, 33.33m).Falhou);
+    }
+
+    [Fact]
+    public async Task Formulario_preserva_datas_e_bases_por_mes_e_reabre_historico_antigo()
+    {
+        var simulador = new SimularFeriasUseCase(await Ambiente.ConsultaAsync());
+        var formulario = new CalculosTrabalhistasTributarios.Presentation.ViewModels.Calculadoras.CalculadoraFerias(simulador);
+        formulario.ImportarCampos(new Dictionary<string, string>
+        {
+            ["Competência do pagamento"] = "01/2026", ["Início do gozo (opcional)"] = "20/01/2026",
+            ["Salário"] = "3.000,00", ["Dias de descanso"] = "20", ["Base fora das férias (R$)"] = "1.800,00",
+            ["Base fora das férias: 2º mês"] = "2.200,00"
+        });
+        var reaberto = new CalculosTrabalhistasTributarios.Presentation.ViewModels.Calculadoras.CalculadoraFerias(simulador);
+        reaberto.ImportarCampos(formulario.ExportarCampos());
+        Assert.Equal("20/01/2026", reaberto.ExportarCampos()["Início do gozo (opcional)"]);
+        Assert.Contains((await reaberto.CalcularAsync(default)).Sucesso().Memoria, item => item.Titulo == "Folha de 02/2026");
+
+        var antigo = new CalculosTrabalhistasTributarios.Presentation.ViewModels.Calculadoras.CalculadoraFerias(simulador);
+        antigo.ImportarCampos(new Dictionary<string, string> { ["Competência do pagamento"] = "10/2026", ["Salário"] = "3.000,00" });
+        Assert.Equal("", antigo.ExportarCampos()["Início do gozo (opcional)"]);
+        Assert.DoesNotContain((await antigo.CalcularAsync(default)).Sucesso().Memoria, item => item.Titulo.StartsWith("Folha de "));
+    }
+
+    [Fact]
+    public async Task Pagamento_em_dezembro_e_gozo_em_janeiro_usam_tabelas_distintas()
+    {
+        var pagamento = new DateOnly(2025, 12, 1);
+        var gozo = new DateOnly(2026, 1, 5);
+        var resultado = await new SimularFeriasUseCase(await Ambiente.ConsultaAsync())
+            .ExecutarAsync(new SimularFeriasRequest(pagamento, 3000m, 0m, 0, 15, false, false, 0,
+                BaseSalarialForaFeriasNoMes: 1500m, InicioGozo: gozo), default).Sucesso();
+
+        // Férias R$ 1.500 + terço R$ 500, ambos na folha de janeiro; IRRF permanece no mês do pagamento.
+        var tabela2026 = new DateOnly(2026, 10, 1); // Mesmas faixas de INSS vigentes em janeiro.
+        var provisao = ModeloTributario.Calcular(tabela2026, 2000m, 0).Inss;
+        var total = ModeloTributario.Calcular(tabela2026, 3500m, 0).Inss;
+        Assert.Equal(provisao, resultado.Descontos.Single(item => item.Descricao == "INSS sobre as férias").Valor);
+        Assert.Contains(resultado.Memoria.Single(item => item.Titulo == "Folha de 01/2026").Formulas,
+            item => item.Titulo == "Saldo após provisão" && item.Formula.Contains((total - provisao).ToString("N2", System.Globalization.CultureInfo.GetCultureInfo("pt-BR"))));
+        Assert.Contains("Pagamento 12/2025", resultado.Referencia);
+    }
+
+    [Fact]
+    public async Task Gozo_em_dois_meses_concilia_cada_folha_e_preserva_o_total_do_recibo()
+    {
+        var resultado = await new SimularFeriasUseCase(await Ambiente.ConsultaAsync())
+            .ExecutarAsync(new SimularFeriasRequest(new DateOnly(2026, 1, 1), 3000m, 0m, 0, 20, false, false, 0,
+                BaseSalarialForaFeriasNoMes: 1800m, InicioGozo: new DateOnly(2026, 1, 20),
+                BaseForaFeriasMesSeguinte: 2200m), default).Sucesso();
+
+        // Janeiro: 12 dias, férias R$ 1.200 + 1/3 R$ 400. Fevereiro: 8 dias, R$ 800 + R$ 266,67.
+        var tabela2026 = new DateOnly(2026, 10, 1);
+        var provisao = ModeloTributario.Calcular(tabela2026, 1600m, 0).Inss
+            + ModeloTributario.Calcular(tabela2026, 1066.67m, 0).Inss;
+        Assert.Equal(provisao, resultado.Descontos.Single(item => item.Descricao == "INSS sobre as férias").Valor);
+        var cultura = System.Globalization.CultureInfo.GetCultureInfo("pt-BR");
+        Assert.Equal(ModeloTributario.Calcular(tabela2026, 3400m, 0).Inss.ToString("C", cultura),
+            resultado.Destaques.Single(item => item.Rotulo == "INSS folha 01/2026").Valor);
+        Assert.Equal(ModeloTributario.Calcular(tabela2026, 3266.67m, 0).Inss.ToString("C", cultura),
+            resultado.Destaques.Single(item => item.Rotulo == "INSS folha 02/2026").Valor);
+        Assert.Contains(resultado.Memoria.Single(item => item.Titulo == "Folha de 01/2026").Formulas,
+            item => item.Titulo == "Base do INSS" && item.Formula.Contains("3.400,00"));
+        Assert.Contains(resultado.Memoria.Single(item => item.Titulo == "Folha de 02/2026").Formulas,
+            item => item.Titulo == "Base do INSS" && item.Formula.Contains("3.266,67"));
+        Assert.Equal(2666.67m, resultado.Proventos.Where(item => item.Descricao is "Férias" or "1/3 constitucional sobre as férias").Sum(item => item.Valor));
+    }
+
+    [Fact]
+    public async Task Inicio_no_fim_de_janeiro_pode_alcancar_tres_competencias()
+    {
+        var resultado = await new SimularFeriasUseCase(await Ambiente.ConsultaAsync())
+            .ExecutarAsync(new SimularFeriasRequest(new DateOnly(2026, 1, 1), 3000m, 0m, 0, 30, false, false, 0,
+                InicioGozo: new DateOnly(2026, 1, 31)), default).Sucesso();
+        Assert.Contains(resultado.Memoria, item => item.Titulo == "Folha de 01/2026");
+        Assert.Contains(resultado.Memoria, item => item.Titulo == "Folha de 02/2026");
+        Assert.Contains(resultado.Memoria, item => item.Titulo == "Folha de 03/2026");
+        Assert.Equal(30, resultado.Memoria.Where(item => item.Titulo.StartsWith("Folha de ")).SelectMany(item => item.Formulas)
+            .Where(item => item.Titulo == "Dias de gozo").Sum(item => int.Parse(item.Formula.Split(' ')[0])));
+    }
+
+    [Fact]
+    public async Task Bases_de_meses_sem_gozo_sao_rejeitadas()
+    {
+        var caso = new SimularFeriasUseCase(await Ambiente.ConsultaAsync());
+        Assert.True((await caso.ExecutarAsync(new SimularFeriasRequest(new DateOnly(2026, 1, 1), 3000m, 0m, 0, 15, false, false, 0,
+            BaseForaFeriasMesSeguinte: 100m), default)).Falhou);
+        Assert.True((await caso.ExecutarAsync(new SimularFeriasRequest(new DateOnly(2026, 1, 1), 3000m, 0m, 0, 15, false, false, 0,
+            InicioGozo: new DateOnly(2026, 1, 5), BaseForaFeriasMesSeguinte: 100m), default)).Falhou);
+    }
+
+    [Fact]
     public async Task Concilia_inss_de_ferias_e_salario_da_mesma_competencia()
     {
         var competencia = new DateOnly(2026, 10, 1);

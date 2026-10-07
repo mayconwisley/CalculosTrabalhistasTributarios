@@ -51,6 +51,32 @@ public static class CalculadoraRescisao
             return Erro.Validacao("Informe de 0 a 2 períodos de férias vencidas.");
         if (c.DataPagamento is { } pagamento && pagamento < c.Desligamento)
             return Erro.Validacao("A data do pagamento não pode ser anterior ao desligamento.");
+        if (c.QuitacaoBancoHoras is { } quitacao && quitacao.Validar(SituacaoBancoHoras.Rescisao, c.Desligamento) is { Falhou: true } quitacaoInvalida)
+            return quitacaoInvalida.Erro;
+        var historico = c.DepositosFgts;
+        if (historico is { Count: > 0 })
+        {
+            if (historico.Count > 720)
+                return Erro.Validacao("O histórico do FGTS aceita até 720 competências; reduza o período informado.");
+            var primeira = new DateOnly(c.Admissao.Year, c.Admissao.Month, 1);
+            var ultimaExclusiva = c.CompetenciaDesligamento;
+            var competencias = new HashSet<DateOnly>();
+            foreach (var deposito in historico)
+            {
+                if (deposito is null || deposito.Competencia.Day != 1 || deposito.Competencia < primeira || deposito.Competencia >= ultimaExclusiva)
+                    return Erro.Validacao("Cada depósito histórico do FGTS deve ter competência MM/AAAA desde a admissão até o mês anterior ao desligamento; retire o mês da rescisão.");
+                if (deposito.Valor is < 0m or > 1_000_000_000m || decimal.Round(deposito.Valor, 2) != deposito.Valor)
+                    return Erro.Validacao($"Revise o depósito do FGTS de {deposito.Competencia:MM/yyyy}: informe valor de 0 a R$ 1.000.000.000,00, com até dois decimais.");
+                if (!competencias.Add(deposito.Competencia))
+                    return Erro.Validacao($"A competência {deposito.Competencia:MM/yyyy} aparece duas vezes no histórico do FGTS; mantenha uma linha por mês.");
+            }
+            if (c.SaldoFgts == 0m)
+            {
+                var meses = (ultimaExclusiva.Year - primeira.Year) * 12 + ultimaExclusiva.Month - primeira.Month;
+                if (competencias.Count != meses)
+                    return Erro.Validacao($"O histórico do FGTS tem {competencias.Count} de {meses} competências anteriores ao desligamento. Complete os meses ausentes, inclusive os sem depósito com R$ 0,00, ou informe o saldo do extrato.");
+            }
+        }
         if (c.Motivo == MotivoRescisao.PedidoDeDemissao && c.AvisoAplicavel == CumprimentoAvisoPrevio.Indenizado)
             return Erro.Validacao("No pedido de demissão não há aviso prévio indenizado: o empregado cumpre o aviso, é dispensado dele pelo empregador ou tem o valor descontado se não cumprir.");
         if (c.Motivo != MotivoRescisao.PedidoDeDemissao && c.AvisoAplicavel == CumprimentoAvisoPrevio.NaoCumpridoPeloEmpregado)
@@ -73,7 +99,7 @@ public static class CalculadoraRescisao
         var dias = diasNoMes - c.FaltasNoMes;
         var valor = Arredondar(c.Salario * dias / 30m);
         var dsrPerdido = Arredondar(c.Salario / 30m * c.SemanasComFalta);
-        return new SaldoDeSalario(diasNoMes, dias, valor, valor - dsrPerdido + c.OutrosProventos, c.SemanasComFalta, dsrPerdido);
+        return new SaldoDeSalario(diasNoMes, dias, valor, valor - dsrPerdido + c.OutrosProventos + (c.QuitacaoBancoHoras?.Total ?? 0m), c.SemanasComFalta, dsrPerdido);
     }
 
     // No acordo, o aviso indenizado é pago pela metade (CLT, art. 484-A, I, a).
@@ -181,13 +207,17 @@ public static class CalculadoraRescisao
         var mesesDepositados = RegrasTrabalhistas.AvosFerias(c.Admissao, c.CompetenciaDesligamento.AddDays(-1));
         var mesesAnosAnteriores = RegrasTrabalhistas.AvosFerias(c.Admissao, new DateOnly(c.Desligamento.Year, 1, 1).AddDays(-1));
         var saldoEstimado = c.SaldoFgts == 0m;
-        var saldoFgts = saldoEstimado ? Arredondar((c.Remuneracao * (mesesDepositados + mesesAnosAnteriores / 12m) + c.AdiantamentoDecimoTerceiro) * c.PercentualFgts / 100m) : c.SaldoFgts;
+        var totalHistorico = c.DepositosFgts is { Count: > 0 } ? c.DepositosFgts.Sum(item => item.Valor) : (decimal?)null;
+        var saldoPorHistorico = saldoEstimado && totalHistorico.HasValue;
+        var saldoFgts = !saldoEstimado ? c.SaldoFgts : saldoPorHistorico ? totalHistorico.GetValueOrDefault()
+            : Arredondar((c.Remuneracao * (mesesDepositados + mesesAnosAnteriores / 12m) + c.AdiantamentoDecimoTerceiro) * c.PercentualFgts / 100m);
         var multa = Arredondar((saldoFgts + deposito) * percentualMulta / 100m);
         // O percentual de saque vale sobre todo o saldo, inclusive a multa depositada: no acordo, 80% de tudo (Manual de
         // Movimentação da Conta Vinculada do FGTS da Caixa, versão 28, código 07).
         var saque = Arredondar((saldoFgts + deposito + multa) * percentualSaque / 100m);
         return new FgtsRescisao(deposito, percentualMulta, percentualSaque, percentualMulta > 0m || percentualSaque > 0m || c.Domestico,
-            mesesDepositados, mesesAnosAnteriores, saldoEstimado, saldoFgts, multa, saque, c.PercentualFgts, c.Domestico ? Compensatoria(c, baseDoMes, saldoFgts) : null);
+            mesesDepositados, mesesAnosAnteriores, saldoEstimado, saldoFgts, multa, saque, c.PercentualFgts, c.Domestico ? Compensatoria(c, baseDoMes, saldoFgts) : null,
+            totalHistorico, saldoPorHistorico);
     }
 
     /// <summary>

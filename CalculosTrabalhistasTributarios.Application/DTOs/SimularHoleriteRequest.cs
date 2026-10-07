@@ -51,4 +51,5 @@ public sealed record SimularHoleriteRequest(
     int? DiasDescansoComissoes = null,
     decimal PisoGarantidoComissoes = 0m,
     decimal HorasIntervaloIntrajornada = 0m,
-    decimal HorasIntervaloInterjornada = 0m);
+    decimal HorasIntervaloInterjornada = 0m,
+    QuitacaoBancoHoras? QuitacaoBancoHoras = null);

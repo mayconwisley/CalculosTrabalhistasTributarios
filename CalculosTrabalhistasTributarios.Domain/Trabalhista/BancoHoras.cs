@@ -34,7 +34,7 @@ public static class CalculadoraBancoHoras
             return Erro.Validacao("O período excede o prazo do regime escolhido: mesmo mês, seis meses ou um ano.");
         if (salario < 0m || situacao != SituacaoBancoHoras.Acompanhamento && salario == 0m
             || salario > 1_000_000_000m || decimal.Round(salario, 2) != salario
-            || divisor <= 0m || divisor > 744m || adicional < 50m || adicional > 1000m)
+            || divisor < 1m || divisor > 744m || adicional < 50m || adicional > 1000m)
             return Erro.Validacao("Informe salário e divisor válidos e adicional entre 50% e 1.000%. Para quitar o saldo, o salário deve ser maior que zero.");
         if (lancamentos is null || lancamentos.Count == 0 || lancamentos.Count > 500)
             return Erro.Validacao("Informe de 1 a 500 lançamentos de crédito ou compensação.");

@@ -442,17 +442,20 @@ Em raros casos, o arredondamento em centavos impede chegar exatamente ao valor. 
 
 ### 8.4 Férias
 
-![Férias](imagens/20-ferias.png)
+![Férias com pagamento anterior ao gozo e bases de duas competências](imagens/20-ferias.png)
 
 | Campo | O que informar |
 | --- | --- |
+| Competência do pagamento | Mês em que o recibo é pago; define a tabela do IRRF das férias. |
+| Início do gozo (opcional) | Data em **dd/MM/aaaa**. Ao informá-la, o aplicativo distribui os dias de descanso, as férias e o terço pelas competências de gozo e calcula o INSS de cada folha com a tabela desse mês. Deixe em branco para manter a simulação antiga de uma só competência. |
 | Salário e Médias de variáveis | Salário na data das férias e a média de variáveis do período aquisitivo. |
 | Faltas injustificadas | Faltas no período aquisitivo, que definem os dias de direito (tabela abaixo). |
 | Dias de descanso | Deixe 0 para usar todos os dias de direito que não forem vendidos; informe menos para dividir as férias (mínimo de 5 dias). |
 | Vender 1/3 (abono) | Converte 1/3 dos dias em dinheiro, por exemplo 10 de 30 dias. |
 | Adiantar 13º (1ª parcela) | Paga metade do 13º junto com as férias. |
 | Previdência complementar | A contribuição do trabalhador ao PGBL, ao fundo de pensão ou ao Fapi sobre as férias. |
-| Base fora das férias (R$) | Opcional. Informe a remuneração com INSS da mesma competência de **pagamento e gozo**, sem repetir as férias e o terço. Use para conferir o INSS total da folha e o saldo após a provisão do recibo. Se pagamento e gozo ocorrerem em meses distintos, ou o descanso atravessar meses, apure cada competência separadamente. |
+| Base fora das férias (R$) | Remuneração com INSS fora das férias no **primeiro mês de gozo**, sem repetir férias ou terço. Sem data de início, permanece vinculada à competência do pagamento. |
+| Base fora das férias: 2º e 3º mês | Informe as demais remunerações sujeitas ao INSS nos meses seguintes alcançados pelo gozo. Deixe em zero os meses que não fazem parte do período. Um descanso de até 30 dias pode excepcionalmente alcançar três competências, por exemplo de 31/01 a 01/03. |
 
 | Faltas no período aquisitivo | Dias de férias |
 | --- | --- |
@@ -464,7 +467,8 @@ Em raros casos, o arredondamento em centavos impede chegar exatamente ao valor. 
 
 - **Férias:** (salário + médias) ÷ 30 × dias de descanso, mais o terço constitucional.
 - **Abono pecuniário:** os dias vendidos, também com 1/3. Não tem INSS, IRRF nem FGTS.
-- O INSS e o IRRF incidem sobre as férias + 1/3. O IRRF é calculado à parte dos demais rendimentos do mês. O recibo mostra o INSS provisionado sobre as férias. Ao informar a base salarial fora das férias, a memória também mostra o INSS sobre a base reunida da competência e o saldo a descontar na folha após a provisão. O líquido do recibo não inclui o salário do mês.
+- O INSS e o IRRF incidem sobre as férias + 1/3. O IRRF do recibo é calculado à parte dos demais rendimentos no **mês do pagamento**. Com início do gozo informado, o INSS do recibo soma a provisão calculada sobre a parcela das férias de cada competência; cada folha mostra o INSS da sua base reunida e o saldo após essa provisão. O rateio preserva os centavos totais do recibo no último mês. O líquido do recibo não inclui o salário dos meses de gozo.
+- A distribuição por competência segue o critério de férias gozadas no mês descrito no [Manual do Empregador Doméstico do eSocial](https://www.gov.br/esocial/pt-br/documentacao-tecnica/manuais/manual-do-esocial-empregador-domestico-versao-27-03-2026.pdf). Esta simulação não altera automaticamente o holerite existente: informe nas bases externas as demais verbas sujeitas ao INSS em cada folha, conferindo os adiantamentos efetivamente pagos.
 - **Previdência complementar:** deduzida por inteiro da base do IRRF das férias, só nas deduções legais, como no salário do mês (IN RFB 1.500/2014, art. 52, IV e V). As férias entram na declaração anual, onde se aplica o limite de 12%.
 
 ### 8.5 Rescisão
@@ -480,12 +484,14 @@ Em raros casos, o arredondamento em centavos impede chegar exatamente ao valor. 
 | Fim previsto do contrato | Aparece nas rescisões antecipadas: o último dia previsto do contrato a prazo ou de experiência. |
 | Salário e Médias de variáveis | Último salário e a média de variáveis, que entra no aviso, no 13º e nas férias. |
 | Outros proventos do mês | Horas extras, adicionais e comissões do mês do desligamento. Somam-se ao saldo de salário nas bases do INSS, do IRRF, da pensão e do FGTS. |
+| Quitação do banco de horas | Aparece ao usar **Usar na rescisão** em um banco com saldo positivo na situação **Rescisão**. Confira as parcelas por adicional, os minutos, os valores e as incidências de INSS, IRRF e FGTS, depois marque a confirmação. O fim do ciclo deve ser a data do desligamento; não repita as parcelas em Outros proventos do mês. É possível descartar a transferência. |
 | Verbas indenizatórias | Verbas da convenção ou do acordo sem INSS, IRRF e FGTS, como a multa normativa. |
 | Faltas no mês | Faltas injustificadas no mês do desligamento, descontadas dos dias do saldo de salário. |
 | Semanas com falta no mês | Semanas do mês do desligamento com falta injustificada: cada uma perde o DSR, um dia de salário (Lei 605/1949, art. 6º). |
 | Férias vencidas | Períodos completos cujas férias não foram tiradas (até 2). Com 2 períodos, o mais antigo já passou do prazo de concessão e é pago em dobro (CLT, art. 137). |
 | Faltas no período atual | Faltas injustificadas no período aquisitivo em curso, que reduzem as férias proporcionais. |
-| Saldo do FGTS | Aparece quando há multa ou saque, e sempre no doméstico. Informe o saldo do extrato; com 0,00, o aplicativo estima o saldo pelo salário atual. |
+| Saldo do FGTS | Aparece quando há multa ou saque, e sempre no doméstico. Informe o saldo para fins rescisórios do extrato. Com 0,00, o aplicativo usa os depósitos históricos completos; sem histórico, estima pelo salário atual. |
+| Depósitos históricos do FGTS | Opcional. Informe, em cada competência anterior ao desligamento, o depósito **devido** em reais, inclusive FGTS do 13º pago naquele mês. **Gerar competências** cria os meses entre a admissão e o mês anterior ao desligamento e preserva valores já lançados nesses meses. Sem saldo do extrato, preencha todos os meses, usando 0,00 quando não houver depósito. Com extrato, a soma serve para conferência mesmo se o histórico for parcial. |
 | 13º já adiantado | 1ª parcela do 13º paga no ano, que é descontada. |
 | Outros descontos | Vale-transporte, plano de saúde, vales e adiantamentos. No total, a compensação na rescisão é limitada a uma remuneração mensal (CLT, art. 477, § 5º). |
 | Data do pagamento | Deixe em branco se as verbas forem pagas no prazo, no mês do desligamento. O IRRF usa a tabela do mês do pagamento (regime de caixa) e o INSS, a da competência do desligamento, o que faz diferença quando a tabela do IRRF muda na virada do mês, como em 01/2026. Pagamento depois de 10 dias do fim do contrato gera a multa do art. 477, § 8º. |
@@ -517,7 +523,10 @@ Nas **rescisões antecipadas** do contrato a prazo ou de experiência não há a
 - **Impostos:** o saldo de salário e o 13º têm INSS e IRRF, cada um calculado à parte. Aviso indenizado, férias indenizadas e multa do FGTS são isentos.
 - **Férias vencidas em dobro:** com 2 períodos vencidos, a linha **Férias vencidas em dobro** traz 2 salários do período mais antigo, e o 1/3 incide sobre o total das férias vencidas.
 - **FGTS:** o depósito do mês é de 8% sobre o saldo de salário, o aviso indenizado e o 13º, menos a 1ª parcela do 13º, que já teve o FGTS depositado no mês em que foi paga. A multa incide sobre o saldo do FGTS mais esse depósito. No acordo, o saque é de 80% do saldo, inclusive da multa de 20%, como orienta o Manual de Movimentação da Conta Vinculada do FGTS da Caixa.
-- **Saldo do FGTS estimado:** sem o saldo do extrato, o aplicativo estima os depósitos anteriores ao mês do desligamento: os meses de contrato, o 13º dos anos anteriores e a 1ª parcela do 13º deste ano. Informe o saldo do extrato para obter a multa e o saque exatos.
+
+<!-- pdf:quebra-pagina -->
+
+- **Saldo do FGTS estimado:** sem saldo do extrato, um histórico completo de depósitos devidos por competência substitui a estimativa pelo salário atual. A soma é **nominal** e não inclui atualização monetária, juros nem outras movimentações; por isso, multa, saque e indenização compensatória do doméstico continuam estimados. O depósito do mês do desligamento é calculado à parte e não deve ser lançado no histórico. Sem histórico, a estimativa existente usa a remuneração atual, meses anteriores, 13º dos anos anteriores e a 1ª parcela do 13º deste ano. Com saldo do extrato, ele prevalece para a multa e o saque; a memória mostra a soma mensal e a diferença para conferência. Confira o saldo para fins rescisórios e o histórico no extrato ou no FGTS Digital antes de tomar os valores como definitivos. Fontes: [Lei 8.036/1990, art. 18](https://www.planalto.gov.br/ccivil_03/leis/l8036compilada.htm) e [orientação do Ministério do Trabalho sobre histórico de remunerações e base rescisória](https://www.gov.br/trabalho-e-emprego/pt-br/servicos/empregador/fgtsdigital/comunicados/informando-o-valor-base-para-fins-rescisorios-no-fgts-digital/).
 - **Indenização adicional (Lei 7.238/1984, art. 9º):** na dispensa sem justa causa, se o contrato, projetado pelo aviso, terminar nos 30 dias que antecedem a data-base, o empregado recebe um salário a mais (Súmulas 182 e 242 do TST). Se a projeção passar da data-base, não há indenização, mas as verbas devem ser pagas com o salário reajustado (Súmula 314); o aplicativo avisa nas observações.
 - **Multa por atraso (art. 477, § 8º):** com a data do pagamento depois de 10 dias do fim do contrato, entra um salário de multa. Ela é tratada como indenização, sem INSS, IRRF nem FGTS, como entende a maior parte dos tribunais.
 - **Seguro-desemprego:** na dispensa sem justa causa e na rescisão antecipada pela empresa, **Valores informativos** traz uma estimativa para a 1ª solicitação, com os meses deste contrato e a remuneração atual como média. Para outras situações, use a calculadora [Seguro-desemprego](#812-seguro-desemprego).
@@ -701,6 +710,7 @@ Abra pelo cartão **Holerite do mês**, no grupo **Remuneração e custos**. Ele
 | Salário | Salário-base mensal, sem adicionais. Deixe 0,00 para comissionista puro e informe as comissões no campo próprio. |
 | Insalubridade e Periculosidade (30%) | O grau da insalubridade, sobre o salário mínimo, e a periculosidade, sobre o salário. Os dois não se acumulam: vale o maior (CLT, art. 193, § 2º). |
 | Horas extras, trabalho noturno e feriados | Como na calculadora de horas extras (seção 8.2), inclusive as horas extras noturnas e o trabalho rural. |
+| Quitação do banco de horas | Aparece ao usar **Usar no holerite** em um banco com saldo positivo no **Fechamento do ciclo**. Confira as parcelas por adicional, os minutos, os valores e as incidências de INSS, IRRF e FGTS, depois marque a confirmação. O mês do fim do ciclo deve ser a competência do holerite; não repita as parcelas nas faixas de horas extras ou em Proventos tributáveis. É possível descartar a transferência. |
 | Faltas (dias) e Descansos perdidos | Faltas injustificadas e os domingos e feriados perdidos por elas: um por semana com falta, mais o feriado dessa semana (Lei 605/1949, art. 6º). Somados, não passam de 30 dias. |
 | Atrasos (horas) | Atrasos e saídas antecipadas, descontados pelo valor da hora. |
 | Pausa suprimida (h) e Interjornada (h) | Informe separadamente as horas:minutos de intervalo intrajornada e entre jornadas que faltaram. A **Jornada pelo ponto** preenche esses campos ao usar **Usar no holerite**. Não repita essas horas nas faixas de horas extras. O cenário usa acréscimo de 50% e os critérios posteriores a 11/11/2017. |
@@ -1149,7 +1159,10 @@ Abra pelo cartão **Banco de horas**, em **Remuneração e custos**. A tela conc
 
 A quitação estimada consome os créditos mais antigos primeiro quando há compensação e calcula separadamente o saldo de cada adicional, com arredondamento por grupo. Confira se essa ordem corresponde ao instrumento aplicável. A estimativa não inclui DSR, reflexos, INSS, IRRF ou outros adicionais. Na rescisão, o valor da hora deve usar a remuneração vigente na data do desligamento. Para banco de horas de situação especial, confira as regras específicas do instrumento aplicável antes de usar o valor na folha.
 
+Se houver saldo positivo e salário informado, o resultado oferece **Usar no holerite** para **Fechamento do ciclo** e **Usar na rescisão** para **Rescisão**. A janela de destino recebe o salário, a competência ou a data de desligamento e cada parcela de quitação separada por adicional. Confira os dados e marque **Conferi as incidências e os valores** antes de calcular. As parcelas entram como proventos próprios e nas bases do INSS, IRRF e FGTS. O aplicativo preserva essa composição e a confirmação no histórico; uma transferência nova começa sem confirmação. No acompanhamento ou sem saldo a quitar, não há transferência. O banco continua sem apurar DSR e reflexos dessas horas; confira a norma coletiva e os pagamentos efetivos antes de lançar a folha.
+
 Fundamento: [CLT, art. 59, §§ 1º a 6º](https://www.planalto.gov.br/ccivil_03/decreto-lei/del5452compilado.htm).
+Incidências de referência: [Manual do Empregador Doméstico do eSocial, rubrica eSocial1120 — Horas extras - Banco de Horas](https://www.gov.br/esocial/pt-br/documentacao-tecnica/manuais/manual-do-esocial-empregador-domestico-versao-07-10-2025.pdf/@@download/file).
 
 ## 9. Tabelas e parâmetros
 

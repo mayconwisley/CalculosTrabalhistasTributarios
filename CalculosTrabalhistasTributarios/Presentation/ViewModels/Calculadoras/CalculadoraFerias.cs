@@ -16,12 +16,15 @@ public sealed class CalculadoraFerias(ISimularDemonstrativoUseCase<SimularFerias
     private readonly CampoTextoViewModel _dependentes = Inteiro("Dependentes", 0, "Dependentes para a dedução do IRRF.");
     private readonly CamposPensao _pensao = new("Pensão sobre as férias + 1/3 definida na decisão ou no acordo.");
     private readonly CampoTextoViewModel _previdencia = Moeda("Previdência complementar", "Contribuição do trabalhador ao PGBL, ao fundo de pensão ou ao Fapi sobre as férias: deduzida por inteiro da base do IRRF nas deduções legais.");
-    private readonly CampoTextoViewModel _baseForaFerias = Moeda("Base fora das férias (R$)", "Opcional: remuneração com INSS do mesmo mês de pagamento e gozo, excluindo férias e seu terço. Permite conciliar o INSS total da folha com o provisionado no recibo de férias.");
+    private readonly CampoTextoViewModel _inicioGozo = new("Início do gozo (opcional)", TipoCampo.Data, "", "Informe dd/mm/aaaa para separar férias e INSS pelas competências do descanso; a competência do pagamento continua definindo o IRRF do recibo.");
+    private readonly CampoTextoViewModel _baseForaFerias = Moeda("Base fora das férias (R$)", "Remuneração com INSS fora das férias no primeiro mês de gozo. Sem início informado, corresponde à competência do pagamento.");
+    private readonly CampoTextoViewModel _baseMesSeguinte = Moeda("Base fora das férias: 2º mês", "Opcional: remuneração com INSS fora das férias no segundo mês de gozo; não repita férias e 1/3.");
+    private readonly CampoTextoViewModel _baseTerceiroMes = Moeda("Base fora das férias: 3º mês", "Opcional: use somente se o gozo iniciado no fim de janeiro também alcançar março.");
 
     public override string Titulo => "Férias";
-    public override string Descricao => "Calcule as férias com o terço constitucional, a venda de dias (abono) e o adiantamento do 13º.";
-    public override string InstrucaoInicial => "Informe o salário, as médias, as faltas e as opções de abono e selecione Calcular.";
-    public override IReadOnlyList<CampoViewModel> Campos => [_competencia, _salario, _medias, _faltas, _diasGozo, _abono, _adiantamento13, _dependentes, .. _pensao.Campos, _previdencia, _baseForaFerias];
+    public override string Descricao => "Calcule o recibo de férias e concilie o INSS das folhas de cada mês de gozo.";
+    public override string InstrucaoInicial => "Informe o início do gozo para separar as competências; as bases fora das férias são opcionais e seguem a ordem dos meses de descanso.";
+    public override IReadOnlyList<CampoViewModel> Campos => [_competencia, _inicioGozo, _salario, _medias, _faltas, _diasGozo, _abono, _adiantamento13, _dependentes, .. _pensao.Campos, _previdencia, _baseForaFerias, _baseMesSeguinte, _baseTerceiroMes];
     public override string NomeArquivoPdf => $"ferias-{_competencia.Valor.Replace('/', '-')}.pdf";
 
     protected override CampoTextoViewModel CampoCompetencia => _competencia;
@@ -32,5 +35,5 @@ public sealed class CalculadoraFerias(ISimularDemonstrativoUseCase<SimularFerias
         LerECalcularAsync(simulador, leitor => new SimularFeriasRequest(
             leitor.Competencia(_competencia), leitor.Moeda(_salario), leitor.Moeda(_medias), leitor.Inteiro(_faltas), leitor.Inteiro(_diasGozo),
             _abono.Valor<bool>(), _adiantamento13.Valor<bool>(), leitor.Inteiro(_dependentes), leitor.Pensao(_pensao), leitor.Moeda(_previdencia),
-            leitor.Moeda(_baseForaFerias)), cancellationToken);
+            leitor.Moeda(_baseForaFerias), leitor.DataOpcional(_inicioGozo), leitor.Moeda(_baseMesSeguinte), leitor.Moeda(_baseTerceiroMes)), cancellationToken);
 }

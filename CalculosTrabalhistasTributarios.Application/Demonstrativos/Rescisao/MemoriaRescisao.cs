@@ -1,4 +1,5 @@
 using CalculosTrabalhistasTributarios.Application.DTOs;
+using CalculosTrabalhistasTributarios.Application.Demonstrativos;
 using CalculosTrabalhistasTributarios.Domain.Trabalhista;
 using CalculosTrabalhistasTributarios.Domain.Trabalhista.Rescisao;
 using CalculosTrabalhistasTributarios.Domain.Tributacao;
@@ -16,6 +17,8 @@ internal static class MemoriaRescisao
         var c = v.Contrato;
         var rotuloMes = VerbasDoMes(c);
         var memoria = new List<GrupoMemoriaDto> { Contrato(v), Saldo(c, v.Saldo) };
+        if (c.QuitacaoBancoHoras is { } quitacao)
+            memoria.Add(DemonstrativoQuitacaoBancoHoras.Memoria(quitacao));
         if (Indenizacoes(c, v.Indenizacoes, v.Aviso.Projecao) is { } indenizacoes)
             memoria.Add(indenizacoes);
         if (!c.JustaCausa)
@@ -88,8 +91,8 @@ internal static class MemoriaRescisao
         };
         if (saldo.DsrPerdido > 0m)
             formulas.Add(new("DSR perdido", $"{Formato.Moeda(c.Salario)} ÷ 30 x {saldo.SemanasComFalta} semana(s) com falta = {Formato.Moeda(saldo.DsrPerdido)}, um dia de salário por semana (Lei 605/1949, art. 6º)"));
-        if (c.OutrosProventos > 0m || saldo.DsrPerdido > 0m)
-            formulas.Add(new("Verbas do mês", $"{Formato.Moeda(saldo.Valor)} (saldo){(saldo.DsrPerdido > 0m ? $" - {Formato.Moeda(saldo.DsrPerdido)} (DSR perdido)" : "")}{(c.OutrosProventos > 0m ? $" + {Formato.Moeda(c.OutrosProventos)} (outros proventos)" : "")} = {Formato.Moeda(saldo.VerbasDoMes)}, base do INSS, do IRRF e do FGTS do mês"));
+        if (c.OutrosProventos > 0m || saldo.DsrPerdido > 0m || c.QuitacaoBancoHoras is not null)
+            formulas.Add(new("Verbas do mês", $"{Formato.Moeda(saldo.Valor)} (saldo){(saldo.DsrPerdido > 0m ? $" - {Formato.Moeda(saldo.DsrPerdido)} (DSR perdido)" : "")}{(c.OutrosProventos > 0m ? $" + {Formato.Moeda(c.OutrosProventos)} (outros proventos)" : "")}{(c.QuitacaoBancoHoras is { } quitacao ? $" + {Formato.Moeda(quitacao.Total)} (banco de horas)" : "")} = {Formato.Moeda(saldo.VerbasDoMes)}, base do INSS, do IRRF e do FGTS do mês"));
         return new GrupoMemoriaDto("Saldo de salário", $"Saldo: {Formato.Moeda(saldo.Valor)}", formulas);
     }
 
@@ -149,9 +152,19 @@ internal static class MemoriaRescisao
                 ? $"({Formato.Moeda(v.Saldo.VerbasDoMes)} (verbas do mês) + {Formato.Moeda(v.Aviso.Indenizado)} (aviso) + {Formato.Moeda(v.DecimoTerceiro.Total)} (13º) - {Formato.Moeda(adiantamento)} (1ª parcela do 13º, que já teve FGTS)) x {Formato.PercentualCurto(f.PercentualDeposito)} = {Formato.Moeda(f.Deposito)}"
                 : $"({Formato.Moeda(v.Saldo.VerbasDoMes)} (verbas do mês) + {Formato.Moeda(v.Aviso.Indenizado)} (aviso) + {Formato.Moeda(v.DecimoTerceiro.Total)} (13º)) x {Formato.PercentualCurto(f.PercentualDeposito)} = {Formato.Moeda(f.Deposito)}")
         };
+        if (f.TotalDepositosHistoricos is { } totalHistorico && c.DepositosFgts is { } depositosHistoricos)
+        {
+            foreach (var deposito in depositosHistoricos.OrderBy(item => item.Competencia))
+                formulas.Add(new($"Depósito de {deposito.Competencia:MM/yyyy}", Formato.Moeda(deposito.Valor)));
+            formulas.Add(new("Total dos depósitos históricos", $"{depositosHistoricos.Count} competências anteriores ao desligamento = {Formato.Moeda(totalHistorico)} (valores nominais)"));
+            if (c.SaldoFgts > 0m)
+                formulas.Add(new("Diferença para o extrato", $"{Formato.Moeda(c.SaldoFgts)} (saldo informado) - {Formato.Moeda(totalHistorico)} (depósitos nominais) = {Formato.Moeda(c.SaldoFgts - totalHistorico)}; confira atualização, juros e demais movimentações"));
+        }
         if (f.UsaSaldo)
             formulas.Add(new("Saldo do FGTS", f.SaldoEstimado
-                ? $"Estimado: ({Formato.Moeda(c.Remuneracao)} x ({f.MesesDepositados} meses antes do desligamento + {f.MesesAnosAnteriores}/12 de 13º dos anos anteriores){(adiantamento > 0m ? $" + {Formato.Moeda(adiantamento)} (1ª parcela do 13º)" : "")}) x {Formato.PercentualCurto(f.PercentualDeposito)} = {Formato.Moeda(f.Saldo)}"
+                ? f.SaldoPorHistorico
+                    ? $"Estimado pela soma nominal dos depósitos históricos: {Formato.Moeda(f.Saldo)}; sem atualização monetária ou juros"
+                    : $"Estimado: ({Formato.Moeda(c.Remuneracao)} x ({f.MesesDepositados} meses antes do desligamento + {f.MesesAnosAnteriores}/12 de 13º dos anos anteriores){(adiantamento > 0m ? $" + {Formato.Moeda(adiantamento)} (1ª parcela do 13º)" : "")}) x {Formato.PercentualCurto(f.PercentualDeposito)} = {Formato.Moeda(f.Saldo)}"
                 : $"Informado: {Formato.Moeda(f.Saldo)}"));
         if (f.PercentualMulta > 0m)
             formulas.Add(new("Multa rescisória", $"({Formato.Moeda(f.Saldo)} + {Formato.Moeda(f.Deposito)}) x {Formato.PercentualCurto(f.PercentualMulta)} = {Formato.Moeda(f.Multa)}"));

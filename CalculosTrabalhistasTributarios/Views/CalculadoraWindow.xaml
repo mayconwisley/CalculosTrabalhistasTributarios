@@ -17,7 +17,7 @@
             </StackPanel>
         </DataTemplate>
         <DataTemplate DataType="{x:Type calculadoras:CampoOpcaoViewModel}">
-            <StackPanel Width="170" Margin="0,0,14,14" ToolTip="{Binding Dica}" Visibility="{Binding Visivel, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <StackPanel Width="{Binding Largura}" Margin="0,0,14,14" ToolTip="{Binding Dica}" Visibility="{Binding Visivel, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <TextBlock Text="{Binding Rotulo}" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,6" TextTrimming="CharacterEllipsis" />
                 <ComboBox ItemsSource="{Binding Opcoes}" SelectedItem="{Binding Selecionada, Mode=TwoWay}" MinHeight="54" AutomationProperties.Name="{Binding Rotulo}">
                     <ComboBox.ItemTemplate>
@@ -185,6 +185,60 @@
                 </ScrollViewer>
             </StackPanel>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type calculadoras:CampoDepositosFgtsViewModel}">
+            <StackPanel Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ItemsControl}}" Margin="0,0,0,14" Visibility="{Binding Visivel, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <TextBlock Text="Depósitos históricos do FGTS (opcional)" FontWeight="SemiBold" Margin="0,0,0,5" />
+                <TextBlock Text="Informe o valor devido em cada competência anterior ao desligamento, incluindo FGTS do 13º pago naquele mês. Com saldo do extrato, a soma serve para conferência; sem extrato, preencha todos os meses para estimar a multa. Valores nominais não incluem atualização monetária ou juros." FontSize="12" Foreground="{DynamicResource MutedTextBrush}" TextWrapping="Wrap" Margin="0,0,0,9" />
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                    <Button Content="Gerar competências" Command="{Binding GerarCommand}" Padding="10,6" Margin="0,0,8,0" ToolTip="Gera meses da admissão até o mês anterior ao desligamento e preserva valores desses meses" AutomationProperties.Name="Gerar competências do FGTS" />
+                    <Button Content="+ Depósito" Command="{Binding AdicionarCommand}" Padding="10,6" AutomationProperties.Name="Adicionar depósito do FGTS" />
+                </StackPanel>
+                <TextBlock Text="{Binding Mensagem}" Foreground="{DynamicResource AccentBrush}" TextWrapping="Wrap" Margin="0,0,0,6" />
+                <Grid Margin="8,0,8,5"><Grid.ColumnDefinitions><ColumnDefinition Width="160" /><ColumnDefinition Width="*" /><ColumnDefinition Width="50" /></Grid.ColumnDefinitions>
+                    <TextBlock Text="Competência (MM/AAAA)" FontSize="11" Foreground="{DynamicResource MutedTextBrush}" />
+                    <TextBlock Grid.Column="1" Text="Depósito devido (R$)" FontSize="11" Foreground="{DynamicResource MutedTextBrush}" />
+                </Grid>
+                <ScrollViewer MaxHeight="255" VerticalScrollBarVisibility="Auto">
+                    <ItemsControl ItemsSource="{Binding Depositos}" Focusable="False">
+                        <ItemsControl.ItemTemplate><DataTemplate>
+                            <Border Background="{DynamicResource ResultBackgroundBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="8" Margin="0,0,0,6">
+                                <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="160" /><ColumnDefinition Width="*" /><ColumnDefinition Width="50" /></Grid.ColumnDefinitions>
+                                    <TextBox Text="{Binding Competencia, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,8,0" AutomationProperties.Name="Competência do depósito do FGTS" />
+                                    <TextBox Grid.Column="1" Text="{Binding Valor, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" Margin="0,0,8,0" behaviors:FormatacaoNumerica.Formato="N2" AutomationProperties.Name="Valor do depósito do FGTS" />
+                                    <Button Grid.Column="2" Content="×" Padding="0" MinHeight="34" Command="{Binding DataContext.RemoverCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" CommandParameter="{Binding}" ToolTip="Remover depósito" AutomationProperties.Name="Remover depósito do FGTS" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate></ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </StackPanel>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type calculadoras:CampoQuitacaoBancoHorasViewModel}">
+            <StackPanel Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ItemsControl}}" Margin="0,0,0,14" Visibility="{Binding Visivel, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <Grid Margin="0,0,0,7"><Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                    <TextBlock Text="Quitação transferida do banco de horas" FontWeight="SemiBold" VerticalAlignment="Center" />
+                    <Button Grid.Column="1" Content="Descartar transferência" Command="{Binding DescartarCommand}" Padding="9,5" ToolTip="Retira as parcelas transferidas deste formulário" AutomationProperties.Name="Descartar quitação do banco de horas" />
+                </Grid>
+                <TextBlock FontSize="12" Foreground="{DynamicResource MutedTextBrush}" TextWrapping="Wrap" Margin="0,0,0,8">
+                    <Run Text="Ciclo encerrado em " /><Run Text="{Binding FimCiclo, Mode=OneWay}" /><Run Text=" • salário usado " /><Run Text="{Binding SalarioReferencia, Mode=OneWay}" /><Run Text=" • divisor " /><Run Text="{Binding Divisor, Mode=OneWay}" /><Run Text=". Confira se a remuneração é a aplicável à quitação." />
+                </TextBlock>
+                <TextBlock Text="Cada parcela integra INSS, IRRF e FGTS. O banco não calculou DSR nem reflexos; confira a norma coletiva. Não repita estes valores nas horas extras ou nos outros proventos." FontSize="12" Foreground="{DynamicResource MutedTextBrush}" TextWrapping="Wrap" Margin="0,0,0,9" />
+                <ItemsControl ItemsSource="{Binding Parcelas}" Focusable="False">
+                    <ItemsControl.ItemTemplate><DataTemplate>
+                        <Border Background="{DynamicResource ResultBackgroundBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="9" Margin="0,0,0,6">
+                            <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="125" /><ColumnDefinition Width="115" /><ColumnDefinition Width="135" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                                <TextBlock Text="{Binding Adicional}" VerticalAlignment="Center" />
+                                <TextBlock Grid.Column="1" Text="{Binding Horas}" VerticalAlignment="Center" />
+                                <TextBlock Grid.Column="2" Text="{Binding Valor}" VerticalAlignment="Center" />
+                                <TextBlock Grid.Column="3" Text="{Binding Incidencias}" TextWrapping="Wrap" VerticalAlignment="Center" />
+                            </Grid>
+                        </Border>
+                    </DataTemplate></ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <TextBlock Text="{Binding TotalTexto}" FontWeight="SemiBold" Margin="0,2,0,7" />
+                <CheckBox IsChecked="{Binding Confirmado, Mode=TwoWay}" Content="Conferi as incidências e os valores; incluir estas parcelas no cálculo" AutomationProperties.Name="Confirmar incidências e valores do banco de horas" />
+            </StackPanel>
+        </DataTemplate>
         <DataTemplate DataType="{x:Type calculadoras:CampoBancoHorasViewModel}">
             <StackPanel Margin="0,0,0,4" Visibility="{Binding Visivel, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <TextBlock Text="Ciclo de compensação" FontWeight="SemiBold" Margin="0,0,0,7" />
@@ -271,6 +325,8 @@
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding UsaFormularioLarguraTotal}" Value="True">
                                             <Setter Property="ItemsPanel" Value="{StaticResource CampoEmLarguraTotal}" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding UsaBotaoAbaixoFormulario}" Value="True">
                                             <Setter Property="Grid.ColumnSpan" Value="2" />
                                         </DataTrigger>
                                     </Style.Triggers>
@@ -282,7 +338,7 @@
                                 <Style TargetType="Button" BasedOn="{StaticResource PrimaryButton}">
                                     <Setter Property="Margin" Value="0,0,0,14" />
                                     <Style.Triggers>
-                                        <DataTrigger Binding="{Binding UsaFormularioLarguraTotal}" Value="True">
+                                        <DataTrigger Binding="{Binding UsaBotaoAbaixoFormulario}" Value="True">
                                             <Setter Property="Grid.Row" Value="1" />
                                             <Setter Property="Margin" Value="0,8,0,14" />
                                         </DataTrigger>
@@ -320,6 +376,10 @@
                         </Grid>
                         <TextBlock Grid.Row="1" Style="{StaticResource EstadoVazio}" Text="{Binding InstrucaoInicial}" />
                         <StackPanel Grid.Row="1" Margin="0,16,0,0" Visibility="{Binding TemResultado, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <WrapPanel Margin="0,0,0,12">
+                                <Button Content="Usar no holerite" Command="{Binding UsarNoHoleriteCommand}" Margin="0,0,8,8" ToolTip="Abre o holerite com as parcelas de quitação para conferência" AutomationProperties.Name="Transferir quitação do banco de horas para o holerite" Visibility="{Binding PodeUsarNoHolerite, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                <Button Content="Usar na rescisão" Command="{Binding UsarNaRescisaoCommand}" Margin="0,0,8,8" ToolTip="Abre a rescisão com as parcelas de quitação para conferência" AutomationProperties.Name="Transferir quitação do banco de horas para a rescisão" Visibility="{Binding PodeUsarNaRescisao, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                            </WrapPanel>
                             <TextBlock Text="Resumo executivo" FontSize="15" FontWeight="SemiBold" />
                             <ItemsControl ItemsSource="{Binding Destaques}" Margin="0,10,0,20">
                                 <ItemsControl.ItemsPanel><ItemsPanelTemplate><WrapPanel /></ItemsPanelTemplate></ItemsControl.ItemsPanel>

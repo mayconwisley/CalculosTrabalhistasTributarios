@@ -1,4 +1,5 @@
 using CalculosTrabalhistasTributarios.Application.DTOs;
+using CalculosTrabalhistasTributarios.Application.Demonstrativos;
 using CalculosTrabalhistasTributarios.Domain.Trabalhista;
 using CalculosTrabalhistasTributarios.Domain.Trabalhista.Rescisao;
 using static CalculosTrabalhistasTributarios.Application.Demonstrativos.Rescisao.TextosRescisao;
@@ -40,6 +41,7 @@ internal static class DemonstrativoRescisao
         var (c, aviso, i, d, f) = (v.Contrato, v.Aviso, v.Indenizacoes, v.DecimoTerceiro, v.Ferias);
         var proventos = new List<VerbaDto> { new("Saldo de salário", Formato.Dias(v.Saldo.Dias), v.Saldo.Valor) };
         if (c.OutrosProventos > 0m) proventos.Add(new("Outros proventos do mês", "", c.OutrosProventos));
+        if (c.QuitacaoBancoHoras is { } quitacao) proventos.AddRange(DemonstrativoQuitacaoBancoHoras.Proventos(quitacao));
         if (aviso.Indenizado > 0m) proventos.Add(new("Aviso prévio indenizado", Dias(aviso.DiasIndenizados), aviso.Indenizado));
         if (i.Artigo479 > 0m) proventos.Add(new("Indenização da rescisão antecipada (art. 479)", $"{Formato.Dias(i.DiasRestantes)} ÷ 2", i.Artigo479));
         if (i.Adicional > 0m) proventos.Add(new("Indenização adicional (Lei 7.238/1984)", "1 salário", i.Adicional));
@@ -87,7 +89,9 @@ internal static class DemonstrativoRescisao
     {
         var f = v.Fgts;
         var informativos = new List<VerbaDto> { new("Depósito do FGTS do mês da rescisão", Formato.PercentualCurto(f.PercentualDeposito), f.Deposito) };
-        if (f.UsaSaldo) informativos.Add(new(f.SaldoEstimado ? "Saldo do FGTS (estimado)" : "Saldo do FGTS (informado)", "", f.Saldo));
+        if (f.TotalDepositosHistoricos is { } totalHistorico)
+            informativos.Add(new("Depósitos históricos do FGTS (nominais)", $"{v.Contrato.DepositosFgts?.Count} competências", totalHistorico));
+        if (f.UsaSaldo) informativos.Add(new(f.SaldoEstimado ? "Saldo do FGTS (estimado)" : "Saldo do FGTS (informado)", f.SaldoPorHistorico ? "Pelos depósitos históricos" : "", f.Saldo));
         if (f.Multa > 0m) informativos.Add(new("Multa rescisória do FGTS", Formato.PercentualCurto(f.PercentualMulta), f.Multa));
         if (f.Compensatoria is { } compensatoria)
         {

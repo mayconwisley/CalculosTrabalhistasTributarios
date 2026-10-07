@@ -40,6 +40,7 @@ public sealed class CalculadoraHolerite : CalculadoraBase
     private readonly CampoTextoViewModel _horas1 = new("Horas extras (faixa 1)", TipoCampo.Horas, "0:00", "Horas extras com o primeiro adicional, como 10:30 ou 10,5.");
     private readonly CampoTextoViewModel _percentual1 = new("Adicional da faixa 1 (%)", TipoCampo.Numero, "50", "Mínimo de 50%; convenções coletivas podem prever mais.");
     private readonly CampoTextoViewModel _horas2 = new("Horas extras (faixa 2)", TipoCampo.Horas, "0:00", "Horas com o segundo adicional, como as de domingos e feriados.");
+    private readonly CampoQuitacaoBancoHorasViewModel _quitacaoBancoHoras = new();
     private readonly CampoTextoViewModel _percentual2 = new("Adicional da faixa 2 (%)", TipoCampo.Numero, "100", "Normalmente 100% para domingos e feriados.");
     private readonly CampoTextoViewModel _horasNoturnas = new("Horas noturnas (relógio)", TipoCampo.Horas, "0:00", "Horas normais de relógio no período noturno e na prorrogação depois dele; no trabalho urbano, a conversão para a hora reduzida é automática. As horas extras noturnas vão no campo próprio.");
     private readonly CampoTextoViewModel _percentualNoturno = CamposNoturnos.Percentual();
@@ -63,7 +64,7 @@ public sealed class CalculadoraHolerite : CalculadoraBase
     public override string Descricao => "Monte o holerite com salário, adicionais, horas extras, faltas, vale-transporte, pensão e salário-família.";
     public override string InstrucaoInicial => "Informe o salário ou as comissões e os eventos do mês e selecione Calcular.";
     public override IReadOnlyList<CampoViewModel> Campos =>
-        [_competencia, _salario, _insalubridade, _periculosidade, _divisor, _horas1, _percentual1, _horas2, _percentual2, _trabalho, _horasNoturnas, _percentualNoturno,
+        [_competencia, _salario, _insalubridade, _periculosidade, _divisor, _horas1, _percentual1, _horas2, _percentual2, _quitacaoBancoHoras, _trabalho, _horasNoturnas, _percentualNoturno,
          _horasExtrasNoturnas, _feriados, _faltas, _descansos, _atrasos, _intervaloIntra, _intervaloInter, _comissoes, _comissoesIncluemDsr, _diasComissoesManuais,
          _diasUteisComissoes, _diasDescansoComissoes, _pisoComissoes, _outrosProventos, _premios, _proventosNaoTributaveis, _dependentes, .. _pensao.Campos, _previdencia, _filhos,
          _valeTransporte, _adiantamento, _outrosDescontos];
@@ -73,6 +74,20 @@ public sealed class CalculadoraHolerite : CalculadoraBase
     protected override CampoTextoViewModel CampoSalario => _salario;
     protected override CampoTextoViewModel CampoDependentes => _dependentes;
 
+    public override Dictionary<string, string> ExportarCampos()
+    {
+        var campos = base.ExportarCampos();
+        campos[_quitacaoBancoHoras.Rotulo] = _quitacaoBancoHoras.Exportar();
+        return campos;
+    }
+
+    public override void ImportarCampos(IReadOnlyDictionary<string, string> valores)
+    {
+        base.ImportarCampos(valores);
+        if (valores.TryGetValue(_quitacaoBancoHoras.Rotulo, out var json)) _quitacaoBancoHoras.Importar(json);
+        else _quitacaoBancoHoras.DescartarCommand.Execute(null);
+    }
+
     // Cálculos salvos no histórico antes da troca dos rótulos voltam nos campos novos.
     protected override IReadOnlyDictionary<string, string> RotulosAnteriores { get; } = new Dictionary<string, string>
     {
@@ -81,8 +96,11 @@ public sealed class CalculadoraHolerite : CalculadoraBase
         ["Outros descontos"] = "Descontos sem incidência"
     };
 
-    public override Task<Result<DemonstrativoDto>> CalcularAsync(CancellationToken cancellationToken) =>
-        LerECalcularAsync(_simulador, leitor => new SimularHoleriteRequest(
+    public override async Task<Result<DemonstrativoDto>> CalcularAsync(CancellationToken cancellationToken)
+    {
+        var quitacao = _quitacaoBancoHoras.Ler();
+        if (quitacao.Falhou) return quitacao.Erro;
+        return await LerECalcularAsync(_simulador, leitor => new SimularHoleriteRequest(
             leitor.Competencia(_competencia), leitor.Moeda(_salario), _insalubridade.Valor<GrauInsalubridade>(), _periculosidade.Valor<bool>(), leitor.Moeda(_outrosProventos),
             leitor.Numero(_divisor), leitor.Horas(_horas1), leitor.Numero(_percentual1), leitor.Horas(_horas2), leitor.Numero(_percentual2), leitor.Horas(_horasNoturnas), leitor.Numero(_percentualNoturno),
             leitor.Inteiro(_feriados), leitor.Inteiro(_faltas), leitor.Inteiro(_descansos), leitor.Horas(_atrasos), leitor.Inteiro(_dependentes), leitor.Inteiro(_filhos), leitor.Pensao(_pensao),
@@ -91,7 +109,8 @@ public sealed class CalculadoraHolerite : CalculadoraBase
             leitor.Moeda(_comissoes), _comissoesIncluemDsr.Valor<bool>(),
             _diasComissoesManuais.Valor<bool>() ? leitor.Inteiro(_diasUteisComissoes) : null,
             _diasComissoesManuais.Valor<bool>() ? leitor.Inteiro(_diasDescansoComissoes) : null,
-            leitor.Moeda(_pisoComissoes), leitor.Horas(_intervaloIntra), leitor.Horas(_intervaloInter)), cancellationToken);
+            leitor.Moeda(_pisoComissoes), leitor.Horas(_intervaloIntra), leitor.Horas(_intervaloInter), quitacao.Valor), cancellationToken);
+    }
 
     private void AtualizarCamposComissoes()
     {

@@ -1,11 +1,12 @@
 using CalculosTrabalhistasTributarios.Domain.Pensao;
 using CalculosTrabalhistasTributarios.Domain.Trabalhista;
+using CalculosTrabalhistasTributarios.Domain.Trabalhista.Rescisao;
 
 namespace CalculosTrabalhistasTributarios.Application.DTOs;
 
 /// <param name="Desligamento">Último dia de trabalho; com aviso trabalhado, o fim do aviso.</param>
 /// <param name="FaltasPeriodoAtual">Faltas injustificadas no período aquisitivo em curso, que reduzem as férias proporcionais.</param>
-/// <param name="SaldoFgts">Saldo da conta do FGTS para fins rescisórios; zero estima pelo salário atual.</param>
+/// <param name="SaldoFgts">Saldo da conta do FGTS para fins rescisórios; zero usa o histórico completo ou estima pelo salário atual.</param>
 /// <param name="AdiantamentoDecimoTerceiro">1ª parcela do 13º já paga no ano, descontada na rescisão.</param>
 /// <param name="Pensao">Pensão alimentícia sobre as verbas salariais da rescisão; nula quando não há.</param>
 /// <param name="DataPagamento">Data do pagamento das verbas, que define a tabela do IRRF e, depois de 10 dias do fim do contrato, a multa do art. 477, § 8º; nula quando é paga no prazo, no mês do desligamento.</param>
@@ -17,6 +18,7 @@ namespace CalculosTrabalhistasTributarios.Application.DTOs;
 /// <param name="SemanasComFalta">Semanas do mês do desligamento com falta injustificada, que perdem o DSR.</param>
 /// <param name="OutrosDescontos">Benefícios, vales e adiantamentos descontados, limitados a uma remuneração (CLT, art. 477, § 5º).</param>
 /// <param name="VerbasIndenizatorias">Verbas da convenção ou do acordo sem INSS, IRRF e FGTS.</param>
+/// <param name="DepositosFgts">Depósitos devidos por competência antes do desligamento; históricos parciais só conferem saldo informado.</param>
 public sealed record SimularRescisaoRequest(
     DateOnly Admissao,
     DateOnly Desligamento,
@@ -38,4 +40,6 @@ public sealed record SimularRescisaoRequest(
     TipoVinculo Vinculo = TipoVinculo.Empregado,
     int SemanasComFalta = 0,
     decimal OutrosDescontos = 0m,
-    decimal VerbasIndenizatorias = 0m);
+    decimal VerbasIndenizatorias = 0m,
+    IReadOnlyList<DepositoFgtsHistorico>? DepositosFgts = null,
+    QuitacaoBancoHoras? QuitacaoBancoHoras = null);

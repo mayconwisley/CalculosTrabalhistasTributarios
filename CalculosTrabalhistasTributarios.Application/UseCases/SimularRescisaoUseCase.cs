@@ -54,7 +54,7 @@ public sealed class SimularRescisaoUseCase(ITributacaoConsulta tributacaoConsult
     private static ContratoRescindido Contrato(SimularRescisaoRequest r) => new(
         r.Admissao, r.Desligamento, r.Motivo, r.Aviso, r.Salario, r.Medias, r.PeriodosFeriasVencidas, r.FaltasPeriodoAtual, r.SaldoFgts,
         r.AdiantamentoDecimoTerceiro, r.DataPagamento, r.FimPrevistoContrato, r.MesDataBase, r.OutrosProventos, r.FaltasNoMes,
-        r.Vinculo, r.SemanasComFalta, r.OutrosDescontos, r.VerbasIndenizatorias);
+        r.Vinculo, r.SemanasComFalta, r.OutrosDescontos, r.VerbasIndenizatorias, r.DepositosFgts, r.QuitacaoBancoHoras);
 
     /// <summary>Estimativa na 1ª solicitação, com os meses deste contrato e a remuneração atual como média; nula sem direito ou sem tabela.</summary>
     private static Result<EstimativaSeguroRescisao?> EstimarSeguro(VerbasRescisorias verbas, TabelasDaCompetencia tabelas)

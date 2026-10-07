@@ -5,7 +5,7 @@ namespace CalculosTrabalhistasTributarios.Domain.Trabalhista.Rescisao;
 /// <param name="UsaSaldo">O motivo tem multa ou saque, e por isso o saldo da conta importa.</param>
 /// <param name="MesesDepositados">Meses de contrato antes do mês do desligamento, usados na estimativa do saldo.</param>
 /// <param name="MesesAnosAnteriores">Meses dos anos anteriores, que geraram o FGTS do 13º.</param>
-/// <param name="SaldoEstimado">O saldo não foi informado e foi estimado pelo salário atual.</param>
+/// <param name="SaldoEstimado">O saldo não foi informado e foi estimado pelo salário atual ou pelos depósitos históricos.</param>
 /// <param name="PercentualDeposito">8%, ou 2% do jovem aprendiz.</param>
 /// <param name="Compensatoria">Só do doméstico, que não tem a multa de 40%.</param>
 public sealed record FgtsRescisao(
@@ -20,4 +20,6 @@ public sealed record FgtsRescisao(
     decimal Multa,
     decimal Saque,
     decimal PercentualDeposito = 8m,
-    CompensatoriaDomestico? Compensatoria = null);
+    CompensatoriaDomestico? Compensatoria = null,
+    decimal? TotalDepositosHistoricos = null,
+    bool SaldoPorHistorico = false);

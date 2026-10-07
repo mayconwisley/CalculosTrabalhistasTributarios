@@ -4,7 +4,7 @@ namespace CalculosTrabalhistasTributarios.Domain.Trabalhista.Rescisao;
 /// <param name="Aviso">Como o aviso prévio foi cumprido; só vale na dispensa sem justa causa, no acordo e no pedido de demissão.</param>
 /// <param name="PeriodosFeriasVencidas">Períodos aquisitivos completos sem férias gozadas, de 0 a 2.</param>
 /// <param name="FaltasPeriodoAtual">Faltas injustificadas no período aquisitivo em curso, que definem os dias de férias.</param>
-/// <param name="SaldoFgts">Saldo do extrato antes do mês do desligamento; zero para estimar pelo salário.</param>
+/// <param name="SaldoFgts">Saldo para fins rescisórios antes do mês do desligamento; zero usa histórico completo ou estima pelo salário.</param>
 /// <param name="FimPrevistoContrato">Fim do contrato a prazo, exigido na rescisão antecipada.</param>
 /// <param name="MesDataBase">Mês da data-base da categoria, para a indenização adicional da Lei 7.238/1984.</param>
 /// <param name="OutrosProventos">Horas extras, adicionais e comissões do mês do desligamento.</param>
@@ -12,6 +12,7 @@ namespace CalculosTrabalhistasTributarios.Domain.Trabalhista.Rescisao;
 /// <param name="SemanasComFalta">Semanas do mês do desligamento com falta injustificada, que perdem o DSR.</param>
 /// <param name="OutrosDescontos">Benefícios, vales e adiantamentos descontados na rescisão, sem efeito nos tributos.</param>
 /// <param name="VerbasIndenizatorias">Verbas da convenção ou do acordo sem INSS, IRRF e FGTS, como a multa normativa.</param>
+/// <param name="DepositosFgts">Depósitos devidos por competência anterior ao desligamento.</param>
 public sealed record ContratoRescindido(
     DateOnly Admissao,
     DateOnly Desligamento,
@@ -31,7 +32,9 @@ public sealed record ContratoRescindido(
     TipoVinculo Vinculo = TipoVinculo.Empregado,
     int SemanasComFalta = 0,
     decimal OutrosDescontos = 0m,
-    decimal VerbasIndenizatorias = 0m)
+    decimal VerbasIndenizatorias = 0m,
+    IReadOnlyList<DepositoFgtsHistorico>? DepositosFgts = null,
+    QuitacaoBancoHoras? QuitacaoBancoHoras = null)
 {
     /// <summary>Depósito mensal do FGTS: 2% do jovem aprendiz e 8% dos demais.</summary>
     public decimal PercentualFgts => Vinculo == TipoVinculo.Aprendiz ? 2m : 8m;

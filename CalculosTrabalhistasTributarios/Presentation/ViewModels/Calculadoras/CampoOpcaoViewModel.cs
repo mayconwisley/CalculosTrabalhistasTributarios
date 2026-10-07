@@ -11,6 +11,7 @@ public sealed class CampoOpcaoViewModel : CampoViewModel
     }
 
     public IReadOnlyList<OpcaoCampo> Opcoes { get; }
+    public double Largura { get; init; } = 170;
     public OpcaoCampo Selecionada
     {
         get => _selecionada;

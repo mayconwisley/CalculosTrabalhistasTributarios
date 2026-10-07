@@ -1,5 +1,6 @@
 using CalculosTrabalhistasTributarios.Application.DTOs;
 using CalculosTrabalhistasTributarios.Application.Interfaces;
+using CalculosTrabalhistasTributarios.Domain.Trabalhista;
 using CalculosTrabalhistasTributarios.Presentation.Interfaces;
 using CalculosTrabalhistasTributarios.Presentation.Mvvm;
 using CalculosTrabalhistasTributarios.Presentation.Services;
@@ -21,6 +22,7 @@ public sealed class CalculadoraViewModel : ViewModelBase, ICalculoSalvavel
     private readonly IArquivoDialogService _arquivoDialog;
     private readonly ContextoCompartilhado _contexto;
     private DemonstrativoDto? _demonstrativo;
+    private Action<TipoCalculadora, IReadOnlyDictionary<string, string>>? _abrirCalculadora;
     private string _nomeArquivoPdf = string.Empty;
     private bool _temResultado;
     private string _referencia = string.Empty;
@@ -56,6 +58,10 @@ public sealed class CalculadoraViewModel : ViewModelBase, ICalculoSalvavel
         ExportarExcelCommand = new AsyncRelayCommand(
             () => ExportacaoPlanilha.SalvarAsync(_arquivoDialog, _notificador, _nomeArquivoPdf, caminho => _planilha.GerarDemonstrativoAsync(_demonstrativo!, caminho, CancellationToken.None)),
             () => _demonstrativo is not null);
+        UsarNoHoleriteCommand = new RelayCommand(_ => TransferirQuitacao(TipoCalculadora.Holerite),
+            _ => _demonstrativo?.QuitacaoBancoHoras?.Situacao == SituacaoBancoHoras.Fechamento && _abrirCalculadora is not null);
+        UsarNaRescisaoCommand = new RelayCommand(_ => TransferirQuitacao(TipoCalculadora.Rescisao),
+            _ => _demonstrativo?.QuitacaoBancoHoras?.Situacao == SituacaoBancoHoras.Rescisao && _abrirCalculadora is not null);
     }
 
     public string Titulo => _calculadora.Titulo;
@@ -63,9 +69,14 @@ public sealed class CalculadoraViewModel : ViewModelBase, ICalculoSalvavel
     public string InstrucaoInicial => _calculadora.InstrucaoInicial;
     public IReadOnlyList<CampoViewModel> Campos { get; }
     public bool UsaFormularioLarguraTotal => Campos.Count == 1 && Campos[0] is CampoBancoHorasViewModel;
+    public bool UsaBotaoAbaixoFormulario => UsaFormularioLarguraTotal || Campos.Any(campo => campo is CampoDepositosFgtsViewModel or CampoQuitacaoBancoHorasViewModel);
     public ICommand CalcularCommand { get; }
     public ICommand ExportarPdfCommand { get; }
     public ICommand ExportarExcelCommand { get; }
+    public ICommand UsarNoHoleriteCommand { get; }
+    public ICommand UsarNaRescisaoCommand { get; }
+    public bool PodeUsarNoHolerite => _demonstrativo?.QuitacaoBancoHoras?.Situacao == SituacaoBancoHoras.Fechamento;
+    public bool PodeUsarNaRescisao => _demonstrativo?.QuitacaoBancoHoras?.Situacao == SituacaoBancoHoras.Rescisao;
     public HistoricoDaJanela Historico { get; }
 
     public string TipoHistorico => $"Calculadora.{_tipo}";
@@ -77,6 +88,13 @@ public sealed class CalculadoraViewModel : ViewModelBase, ICalculoSalvavel
 
     /// <summary>Preenche campos vindos de outra janela, como as horas apuradas na jornada, sem calcular.</summary>
     public void ImportarCampos(IReadOnlyDictionary<string, string> valores) => _calculadora.ImportarCampos(valores);
+
+    public void ConfigurarAberturaCalculadora(Action<TipoCalculadora, IReadOnlyDictionary<string, string>> abrirCalculadora)
+    {
+        _abrirCalculadora = abrirCalculadora;
+        ((RelayCommand)UsarNoHoleriteCommand).RaiseCanExecuteChanged();
+        ((RelayCommand)UsarNaRescisaoCommand).RaiseCanExecuteChanged();
+    }
 
     public bool TemResultado { get => _temResultado; private set => SetProperty(ref _temResultado, value); }
     public string Referencia { get => _referencia; private set => SetProperty(ref _referencia, value); }
@@ -142,8 +160,36 @@ public sealed class CalculadoraViewModel : ViewModelBase, ICalculoSalvavel
         ColunasComparativo = demonstrativo.Comparativo?.Colunas ?? [];
         LinhasComparativo = demonstrativo.Comparativo?.Linhas.Select(linha => new LinhaComparativaViewModel(linha.Descricao, linha.Valores, linha.Destaque)).ToArray() ?? [];
         TemResultado = true;
+        OnPropertyChanged(nameof(PodeUsarNoHolerite));
+        OnPropertyChanged(nameof(PodeUsarNaRescisao));
+        ((RelayCommand)UsarNoHoleriteCommand).RaiseCanExecuteChanged();
+        ((RelayCommand)UsarNaRescisaoCommand).RaiseCanExecuteChanged();
         ((AsyncRelayCommand)ExportarPdfCommand).RaiseCanExecuteChanged();
         ((AsyncRelayCommand)ExportarExcelCommand).RaiseCanExecuteChanged();
+    }
+
+    private void TransferirQuitacao(TipoCalculadora destino)
+    {
+        if (_demonstrativo?.QuitacaoBancoHoras is not { } quitacao || _abrirCalculadora is null)
+            return;
+        var valores = new Dictionary<string, string>
+        {
+            ["Quitação do banco de horas"] = CampoQuitacaoBancoHorasViewModel.CriarImportacao(quitacao),
+            ["Salário"] = quitacao.SalarioReferencia.ToString("N2", Cultura)
+        };
+        if (destino == TipoCalculadora.Holerite)
+        {
+            if (quitacao.Situacao != SituacaoBancoHoras.Fechamento) return;
+            valores["Competência"] = quitacao.FimCiclo.ToString("MM/yyyy", Cultura);
+            valores["Divisor de horas"] = quitacao.Divisor.ToString("N2", Cultura);
+        }
+        else if (destino == TipoCalculadora.Rescisao)
+        {
+            if (quitacao.Situacao != SituacaoBancoHoras.Rescisao) return;
+            valores["Data de desligamento"] = quitacao.FimCiclo.ToString("dd/MM/yyyy", Cultura);
+        }
+        else return;
+        _abrirCalculadora(destino, valores);
     }
 
     private async Task ExportarPdfAsync()
