@@ -12,6 +12,21 @@ namespace CalculosTrabalhistasTributarios.Tests;
 
 public class PlanilhaTests
 {
+    [Fact]
+    public async Task Iof_automatico_exporta_valor_apurado_e_memoria()
+    {
+        var entrada = new EntradaCreditoTrabalhador(ObjetivoCreditoTrabalhador.ValorDesejado,
+            1000m, 1, 0m, 0m, 0m, 0m, 0m, 0m, IofAutomatico: true,
+            DataLiberacao: new(2026, 1, 1), PrimeiroVencimento: new(2026, 2, 1));
+        var dto = await new SimularCreditoTrabalhadorUseCase(await Ambiente.ConsultaAsync())
+            .ExecutarAsync(new(new DateOnly(2026, 1, 1), 5000m, 0m, 0, 0m, 0m, entrada), default).Sucesso();
+        using var pasta = await GerarAsync(caminho => new ClosedXmlPlanilhaService().GerarDemonstrativoAsync(dto, caminho, default));
+        Assert.Equal(6.38d, Linha(pasta.Worksheet(1), "IOF financiado").Cell(3).GetDouble());
+        Assert.Equal(1006.38d, Linha(pasta.Worksheet(1), "Principal financiado").Cell(3).GetDouble());
+        Assert.Contains(pasta.Worksheet(2).CellsUsed(), c => c.GetString().Contains("31/01") || c.GetString().Contains("01/02/2026"));
+        Assert.Equal(1000m, dto.Resultado);
+    }
+
     private static async Task<XLWorkbook> GerarAsync(Func<string, Task> gerar)
     {
         var caminho = Path.Combine(Path.GetTempPath(), $"planilha-teste-{Guid.NewGuid():N}.xlsx");
@@ -27,6 +42,20 @@ public class PlanilhaTests
     }
 
     private static IXLRow Linha(IXLWorksheet aba, string rotulo) => aba.RowsUsed().First(linha => linha.Cell(1).GetString() == rotulo);
+
+    [Fact]
+    public async Task Credito_trabalhador_exporta_credito_e_custos_numericos()
+    {
+        var entrada = new EntradaCreditoTrabalhador(ObjetivoCreditoTrabalhador.ValorDesejado, 1000m, 1, 10m, 50m, 50m, 100m, 0m, 0m);
+        var dto = await new SimularCreditoTrabalhadorUseCase(await Ambiente.ConsultaAsync())
+            .ExecutarAsync(new(new DateOnly(2026, 10, 1), 4000m, 0m, 0, 0m, 0m, entrada), default).Sucesso();
+        using var pasta = await GerarAsync(caminho => new ClosedXmlPlanilhaService().GerarDemonstrativoAsync(dto, caminho, default));
+        var aba = pasta.Worksheet(1);
+        Assert.Equal(1000d, Linha(aba, "Crédito antes dos custos da liberação").Cell(3).GetDouble());
+        Assert.Equal(100d, Linha(aba, "Custos descontados na liberação").Cell(4).GetDouble());
+        Assert.Equal(900d, aba.RowsUsed().Last(linha => linha.Cell(1).GetString() == "Crédito líquido na liberação").Cell(3).GetDouble());
+        Assert.Equal(310d, Linha(aba, "Custo total sobre crédito líquido").Cell(3).GetDouble());
+    }
 
     [Fact]
     public async Task Trabalho_exterior_exporta_valores_numericos_e_mesma_apuracao()

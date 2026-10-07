@@ -44,6 +44,7 @@ public static class DependencyInjection
         .AddScoped<ISimularDemonstrativoUseCase<SimularAbonoSalarialRequest>, SimularAbonoSalarialUseCase>()
         .AddScoped<ISimularDemonstrativoUseCase<SimularCarneLeaoRequest>, SimularCarneLeaoUseCase>()
         .AddScoped<ISimularDemonstrativoUseCase<SimularTrabalhoExteriorRequest>, SimularTrabalhoExteriorUseCase>()
+        .AddScoped<ISimularDemonstrativoUseCase<SimularCreditoTrabalhadorRequest>, SimularCreditoTrabalhadorUseCase>()
         .AddScoped<ISimularDemonstrativoUseCase<SimularGanhoCapitalRequest>, SimularGanhoCapitalUseCase>()
         .AddScoped<ISimularDemonstrativoUseCase<SimularEstagioRequest>, SimularEstagioUseCase>()
         .AddScoped<ISimularDemonstrativoUseCase<SimularIntermitenteRequest>, SimularIntermitenteUseCase>()
