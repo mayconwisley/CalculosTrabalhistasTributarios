@@ -20,6 +20,12 @@
         <SolidColorBrush x:Key="AdvantageBackgroundBrush" Color="#ECFDF3" />
         <SolidColorBrush x:Key="AdvantageBorderBrush" Color="#86EFAC" />
         <SolidColorBrush x:Key="AdvantageTextBrush" Color="#027A48" />
+        <SolidColorBrush x:Key="ErrorBackgroundBrush" Color="#FEF3F2" />
+        <SolidColorBrush x:Key="ErrorBorderBrush" Color="#F04438" />
+        <SolidColorBrush x:Key="ErrorTextBrush" Color="#B42318" />
+        <SolidColorBrush x:Key="WarningBackgroundBrush" Color="#FFFAEB" />
+        <SolidColorBrush x:Key="WarningBorderBrush" Color="#FEC84B" />
+        <SolidColorBrush x:Key="WarningTextBrush" Color="#B54708" />
         <SolidColorBrush x:Key="ButtonBackgroundBrush" Color="#F9FAFB" />
         <SolidColorBrush x:Key="ButtonHoverBrush" Color="#F2F4F7" />
         <SolidColorBrush x:Key="DisabledBrush" Color="#EAECF0" />

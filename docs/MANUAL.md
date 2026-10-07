@@ -386,7 +386,7 @@ O botão **Gerar PDF** cria um demonstrativo com as verbas, os dados considerado
 Além da simulação tributária, da pensão, dos débitos judiciais, da estabilidade e da jornada pelo ponto, a aba **Calculadoras** reúne cálculos para o dia a dia do departamento pessoal e do imposto de renda. As calculadoras deste capítulo usam a mesma janela:
 
 - **Formulário:** os campos do cálculo. Passe o mouse sobre um campo para ver uma dica do que informar. Ao abrir uma calculadora, a competência, o salário e os dependentes do último cálculo já vêm preenchidos. Alguns campos só aparecem quando a opção escolhida em outro campo exige.
-- **Calcular:** faz o cálculo. A tecla **Enter** também calcula.
+- **Calcular:** faz o cálculo. A tecla **Enter** também calcula. Feito o cálculo, a janela rola até o **Resultado** quando ele está fora da vista.
 - **Resumo executivo:** os valores mais importantes.
 - **Demonstrativo:** proventos, descontos e o resultado, como em um holerite.
 - **Valores informativos:** valores que não entram nos totais nem no resultado, como o FGTS depositado pelo empregador, bases de cálculo e outras referências.
@@ -394,6 +394,14 @@ Além da simulação tributária, da pensão, dos débitos judiciais, da estabil
 - **Observações:** as premissas e os limites do cálculo.
 - **Gerar PDF** e **Gerar Excel:** salvam o demonstrativo completo em um relatório ou em uma planilha.
 - **Salvar no histórico:** guarda o formulário com um nome, para reabrir depois (seção [10.3](#103-histórico-de-cálculos)).
+
+**Campos a corrigir:** quando um dado impede o cálculo, a borda do campo fica vermelha, a orientação aparece logo abaixo dele, e o cursor vai para o primeiro campo a corrigir. Todos os campos em formato inválido são destacados de uma vez; uma faixa junto do botão **Calcular** lista os campos ou, para uma regra do cálculo, como um valor que precisa ser maior que zero, traz a explicação completa. Ao digitar de novo no campo, o destaque sai; o novo valor é conferido no próximo cálculo. Falhas que não dependem do formulário, como uma tabela que não existe para a competência, continuam em uma mensagem.
+
+![Valor solicitado zerado no empréstimo pessoal: o campo destacado e a explicação junto do botão Calcular](imagens/95-erro-no-formulario.png)
+
+**Resultado desatualizado:** se você alterar o formulário depois de calcular, o resultado continua na tela com o aviso **O formulário mudou depois deste cálculo**. Calcule de novo para atualizar o demonstrativo, o PDF e a planilha. Apenas passar pelo campo, que limpa o zero ou formata o número, não conta como alteração.
+
+**Atalhos:** **Ctrl+S** salva no histórico, **Ctrl+P** gera o PDF e **Ctrl+E** gera a planilha do Excel. **Esc** fecha a janela; se o formulário tiver dados que não estão no histórico, o aplicativo pergunta antes de fechar.
 
 O INSS e o IRRF seguem as mesmas regras da simulação tributária, com as tabelas da competência informada: o IRRF aplica a modalidade mais vantajosa para o trabalhador (deduções legais ou desconto simplificado) e a redução mensal, quando prevista.
 
@@ -1489,7 +1497,7 @@ Por padrão, o aplicativo desenha a interface sem usar a placa de vídeo, o que 
 | "Não há tabela de INSS cadastrada para MM/AAAA: as tabelas começam em 01/2017." (ou de IRRF e demais tabelas) | Não existe tabela vigente para a competência. Informe uma competência a partir da data indicada ou cadastre a tabela correspondente. |
 | "Informe valores válidos para competência e campos numéricos." | Na manutenção de tabelas, confira a competência (MM/AAAA), a faixa (inteiro maior que zero) e os valores. |
 | "Não foi possível atualizar a tabela pela internet." | A mensagem lista o que aconteceu com cada fonte. Verifique a conexão com a internet e tente novamente mais tarde; os dados locais não foram alterados. Se uma fonte alternativa já mostra a tabela nova sem a confirmação da outra, aguarde ou cadastre os valores manualmente. Se o problema persistir, as páginas podem ter mudado de formato: cadastre os valores manualmente. |
-| "O campo "..." está em formato inválido: ..." | Nas calculadoras trabalhistas, corrija o campo indicado conforme a orientação da própria mensagem: valores com vírgula nos centavos, datas no formato dd/mm/aaaa, competência no formato mm/aaaa e horas como `10:30` ou `10,5`. |
+| "O campo "..." está em formato inválido: ..." ou "Corrija os ... campos destacados: ..." | Nas calculadoras trabalhistas, corrija os campos com borda vermelha conforme a orientação abaixo de cada um: valores com vírgula nos centavos, datas no formato dd/mm/aaaa, competência no formato mm/aaaa e horas como `10:30` ou `10,5`. |
 | "Os dias de descanso (...) passam dos ... dias disponíveis" | Nas férias, reduza os dias de descanso: a soma com os dias vendidos não pode passar dos dias de direito. |
 | "No pedido de demissão não há aviso prévio indenizado..." | Na rescisão, escolha **Trabalhado ou dispensado** ou **Não cumprido (descontar)**. |
 | "Na rescisão antecipada, informe o fim previsto do contrato a prazo, posterior ao desligamento." | Preencha **Fim previsto do contrato** com uma data depois do desligamento. |
@@ -1557,6 +1565,9 @@ Use **Atualizar pela internet**, quando disponível, ou corrija os valores manua
 | **Espaço** ou **Enter** com um botão ou cartão selecionado | Aciona o botão ou abre a calculadora do cartão. |
 | **Enter** na simulação tributária e nas calculadoras trabalhistas | Calcula, a partir de qualquer campo do formulário. |
 | **Enter** na pensão alimentícia | Calcula com a memória de cálculo (**Detalhar**). |
+| **Ctrl + S** nas calculadoras trabalhistas | Salva o formulário no histórico. |
+| **Ctrl + P** / **Ctrl + E** nas calculadoras trabalhistas | Gera o PDF / a planilha do Excel do último cálculo. |
+| **Esc** nas calculadoras trabalhistas | Fecha a janela, perguntando antes se houver dados que não estão no histórico. Com uma lista aberta, só fecha a lista. |
 | **Alt + F4** | Fecha a janela atual. |
 
 ---

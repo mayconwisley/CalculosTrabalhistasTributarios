@@ -31,6 +31,9 @@ public sealed class HistoricoDaJanela : ViewModelBase
 
     public ICommand SalvarCommand { get; }
 
+    /// <summary>O formulário passou a corresponder ao histórico: foi aberto dele ou acabou de ser salvo.</summary>
+    public event Action? Sincronizado;
+
     public string Situacao
     {
         get => _situacao;
@@ -48,6 +51,7 @@ public sealed class HistoricoDaJanela : ViewModelBase
         _calculo.ImportarDados(DadosFormulario.DeJson(salvo.Dados));
         _id = salvo.Id;
         _nome = salvo.Nome;
+        Sincronizado?.Invoke();
         Situacao = $"Aberto do histórico: “{salvo.Nome}”, salvo em {salvo.AlteradoEm:dd/MM/yyyy} às {salvo.AlteradoEm:HH:mm}.";
         await _calculo.RecalcularAsync();
     }
@@ -62,6 +66,7 @@ public sealed class HistoricoDaJanela : ViewModelBase
         {
             _id = await _historico.SalvarAsync(escolha.ComoNovo ? null : _id, _calculo.TipoHistorico, _calculo.NomeCalculadora, escolha.Nome, _calculo.ExportarDados().ParaJson(), CancellationToken.None);
             _nome = escolha.Nome;
+            Sincronizado?.Invoke();
             Situacao = $"Salvo no histórico como “{escolha.Nome}” às {DateTime.Now:HH:mm}.";
         }
         catch (Exception exception)

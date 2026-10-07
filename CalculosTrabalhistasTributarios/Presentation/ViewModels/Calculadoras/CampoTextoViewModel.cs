@@ -7,7 +7,18 @@ public sealed class CampoTextoViewModel(string rotulo, TipoCampo tipo, string va
     private string _valor = valorInicial;
 
     public TipoCampo Tipo { get; } = tipo;
-    public string Valor { get => _valor; set => SetProperty(ref _valor, value); }
+    public string Valor
+    {
+        get => _valor;
+        set
+        {
+            // O erro valia para o texto anterior; o novo só é conferido no próximo cálculo. Limpar o zero ao receber o
+            // foco não muda o valor e mantém o erro do campo que a janela acabou de focar.
+            var anterior = _valor;
+            if (SetProperty(ref _valor, value) && !EquivalenciaFormulario.Equivalentes(anterior, value))
+                MensagemErro = null;
+        }
+    }
 
     /// <summary>Formato aplicado ao sair do campo; só os valores monetários são reformatados.</summary>
     // Campos opcionais preservam a diferença entre vazio e zero, sem conversão automática ao perder foco.

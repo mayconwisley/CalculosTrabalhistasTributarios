@@ -1,10 +1,12 @@
 using CalculosTrabalhistasTributarios.Application.DTOs;
 using CalculosTrabalhistasTributarios.Application.Interfaces;
+using CalculosTrabalhistasTributarios.Domain.Comum;
 using CalculosTrabalhistasTributarios.Domain.Trabalhista;
 using CalculosTrabalhistasTributarios.Presentation.Interfaces;
 using CalculosTrabalhistasTributarios.Presentation.Mvvm;
 using CalculosTrabalhistasTributarios.Presentation.Services;
 using CalculosTrabalhistasTributarios.Presentation.ViewModels.Historico;
+using System.ComponentModel;
 using System.Globalization;
 using System.Windows.Input;
 
@@ -40,6 +42,11 @@ public sealed class CalculadoraViewModel : ViewModelBase, ICalculoSalvavel
     private string _tituloComparativo = string.Empty;
     private IReadOnlyList<string> _colunasComparativo = [];
     private IReadOnlyList<LinhaComparativaViewModel> _linhasComparativo = [];
+    private string _aviso = string.Empty;
+    private bool _avisoDosCampos;
+    private bool _resultadoDesatualizado;
+    private IReadOnlyDictionary<string, string>? _dadosDoResultado;
+    private IReadOnlyDictionary<string, string>? _dadosSalvos;
 
     public CalculadoraViewModel(TipoCalculadora tipo, ICalculadora calculadora, IUserNotifier notificador, IRelatorioPdfService relatorioPdf, IPlanilhaService planilha, IArquivoDialogService arquivoDialog,
         ContextoCompartilhado contexto, IHistoricoDaJanelaFactory historico)
@@ -53,7 +60,10 @@ public sealed class CalculadoraViewModel : ViewModelBase, ICalculoSalvavel
         _contexto = contexto;
         Campos = calculadora.Campos;
         Historico = historico.Criar(this);
-        CalcularCommand = new AsyncRelayCommand(CalcularAsync);
+        Historico.Sincronizado += MarcarComoSalvo;
+        foreach (var campo in Campos)
+            campo.PropertyChanged += AoAlterarCampo;
+        CalcularCommand = new AsyncRelayCommand(() => CalcularAsync(solicitadoPeloUsuario: true));
         ExportarPdfCommand = new AsyncRelayCommand(ExportarPdfAsync, () => _demonstrativo is not null);
         ExportarExcelCommand = new AsyncRelayCommand(
             () => ExportacaoPlanilha.SalvarAsync(_arquivoDialog, _notificador, _nomeArquivoPdf, caminho => _planilha.GerarDemonstrativoAsync(_demonstrativo!, caminho, CancellationToken.None)),
@@ -90,7 +100,7 @@ public sealed class CalculadoraViewModel : ViewModelBase, ICalculoSalvavel
     public string NomeSugerido => _calculadora.Contexto.Competencia is { } competencia ? $"{Titulo} - {competencia:MM/yyyy}" : $"{Titulo} - {DateTime.Today:dd/MM/yyyy}";
     public DadosFormulario ExportarDados() => new(_calculadora.ExportarCampos());
     public void ImportarDados(DadosFormulario dados) => _calculadora.ImportarCampos(dados.Campos);
-    public Task RecalcularAsync() => CalcularAsync();
+    public Task RecalcularAsync() => CalcularAsync(solicitadoPeloUsuario: false);
 
     /// <summary>Preenche campos vindos de outra janela, como as horas apuradas na jornada, sem calcular.</summary>
     public void ImportarCampos(IReadOnlyDictionary<string, string> valores) => _calculadora.ImportarCampos(valores);
@@ -127,24 +137,123 @@ public sealed class CalculadoraViewModel : ViewModelBase, ICalculoSalvavel
     public IReadOnlyList<LinhaComparativaViewModel> LinhasComparativo { get => _linhasComparativo; private set { SetProperty(ref _linhasComparativo, value); OnPropertyChanged(nameof(TemComparativo)); } }
     public bool TemComparativo => LinhasComparativo.Count > 0;
 
-    private async Task CalcularAsync()
+    /// <summary>Por que o último cálculo não foi feito, exibido junto do botão Calcular; vazio quando não há aviso.</summary>
+    public string Aviso { get => _aviso; private set { SetProperty(ref _aviso, value); OnPropertyChanged(nameof(TemAviso)); } }
+    public bool TemAviso => Aviso.Length > 0;
+
+    /// <summary>O formulário mudou depois do cálculo: o resultado exibido não corresponde mais aos dados digitados.</summary>
+    public bool ResultadoDesatualizado { get => _resultadoDesatualizado; private set => SetProperty(ref _resultadoDesatualizado, value); }
+
+    /// <summary>Um cálculo pedido pelo usuário terminou; a janela rola até o resultado.</summary>
+    public event Action? ResultadoApresentado;
+
+    /// <summary>Um cálculo pedido pelo usuário parou num campo inválido; a janela leva o foco até ele.</summary>
+    public event Action<CampoViewModel>? CampoComErro;
+
+    /// <summary>Confere se o formulário ainda corresponde ao resultado; a janela chama a cada edição, inclusive nas grades.</summary>
+    public void VerificarAlteracoes()
     {
+        if (_dadosDoResultado is not null && TemResultado)
+            ResultadoDesatualizado = !EquivalenciaFormulario.Equivalentes(_dadosDoResultado, _calculadora.ExportarCampos());
+    }
+
+    /// <summary>Registra o formulário atual como o salvo: ao abrir a janela, ao salvar e ao abrir do histórico.</summary>
+    public void MarcarComoSalvo() => _dadosSalvos = _calculadora.ExportarCampos();
+
+    public bool TemAlteracoesNaoSalvas => _dadosSalvos is not null && !EquivalenciaFormulario.Equivalentes(_dadosSalvos, _calculadora.ExportarCampos());
+
+    /// <summary>Pede confirmação antes de fechar pelo Esc quando há dados que não estão no histórico.</summary>
+    public bool ConfirmarFechamento() => !TemAlteracoesNaoSalvas ||
+        _notificador.Confirmar("Os dados deste formulário não foram salvos no histórico e serão perdidos ao fechar a janela.\n\nFechar mesmo assim?", "Fechar a calculadora");
+
+    private void AoAlterarCampo(object? sender, PropertyChangedEventArgs argumentos)
+    {
+        if (argumentos.PropertyName is nameof(CampoTextoViewModel.Valor) or nameof(CampoOpcaoViewModel.Selecionada))
+            VerificarAlteracoes();
+        // Corrigidos todos os campos apontados, o aviso deles sai; um aviso sem campo fica até o próximo cálculo.
+        else if (argumentos.PropertyName == nameof(CampoViewModel.MensagemErro) && _avisoDosCampos && !Campos.Any(campo => campo.TemErro))
+            LimparAviso();
+    }
+
+    private async Task CalcularAsync(bool solicitadoPeloUsuario)
+    {
+        LimparAviso();
+        foreach (var campo in Campos)
+            campo.MensagemErro = null;
         try
         {
             var resultado = await _calculadora.CalcularAsync(CancellationToken.None);
             if (resultado.Falhou)
             {
-                _notificador.MostrarFalha(resultado.Erro, $"Não foi possível concluir o cálculo de {Titulo.ToLower(Cultura)}.");
+                ApresentarFalha(resultado.Erro, solicitadoPeloUsuario);
                 return;
             }
             _nomeArquivoPdf = _calculadora.NomeArquivoPdf;
             _contexto.Registrar(_calculadora.Contexto);
             Apresentar(resultado.Valor);
+            _dadosDoResultado = _calculadora.ExportarCampos();
+            ResultadoDesatualizado = false;
+            if (solicitadoPeloUsuario)
+                ResultadoApresentado?.Invoke();
         }
         catch (Exception exception)
         {
             _notificador.MostrarErro($"Não foi possível concluir o cálculo de {Titulo.ToLower(Cultura)}.", exception);
         }
+    }
+
+    // Erros de preenchimento ficam no formulário, junto dos campos; falhas de tabela ou de serviço continuam numa mensagem.
+    private void ApresentarFalha(Erro erro, bool solicitadoPeloUsuario)
+    {
+        if (erro.Tipo != TipoErro.Validacao)
+        {
+            _notificador.MostrarFalha(erro, $"Não foi possível concluir o cálculo de {Titulo.ToLower(Cultura)}.");
+            return;
+        }
+
+        var marcados = Campos.Where(campo => campo.Visivel && campo.TemErro).ToList();
+        if (marcados.Count == 0 && CampoCitado(erro.Mensagem) is { } citado)
+        {
+            citado.MensagemErro = "Confira este campo.";
+            marcados.Add(citado);
+        }
+        Aviso = marcados.Count > 1
+            ? $"Corrija os {marcados.Count} campos destacados: {Lista(marcados.Select(campo => campo.Rotulo))}."
+            : erro.Mensagem;
+        _avisoDosCampos = marcados.Count > 0;
+        if (solicitadoPeloUsuario && marcados.Count > 0)
+            CampoComErro?.Invoke(marcados[0]);
+    }
+
+    private void LimparAviso()
+    {
+        Aviso = string.Empty;
+        _avisoDosCampos = false;
+    }
+
+    /// <summary>
+    /// O campo que a mensagem de validação cita pelo rótulo, como em "Valor solicitado: informe..." ou em "O campo
+    /// "Salário" ..."; o complemento do rótulo entre parênteses, como a unidade, é desconsiderado.
+    /// </summary>
+    private CampoViewModel? CampoCitado(string mensagem)
+    {
+        foreach (var campo in Campos.Where(campo => campo.Visivel && campo is CampoTextoViewModel or CampoOpcaoViewModel))
+        {
+            var rotulo = campo.Rotulo.Split(" (")[0].Trim();
+            if (rotulo.Length == 0)
+                continue;
+            if (mensagem.StartsWith(rotulo + ":", StringComparison.CurrentCultureIgnoreCase)
+                || mensagem.Contains($"\"{rotulo}", StringComparison.CurrentCultureIgnoreCase)
+                || mensagem.Contains($"“{rotulo}", StringComparison.CurrentCultureIgnoreCase))
+                return campo;
+        }
+        return null;
+    }
+
+    private static string Lista(IEnumerable<string> itens)
+    {
+        var lista = itens.ToArray();
+        return lista.Length == 1 ? lista[0] : $"{string.Join(", ", lista[..^1])} e {lista[^1]}";
     }
 
     private void Apresentar(DemonstrativoDto demonstrativo)

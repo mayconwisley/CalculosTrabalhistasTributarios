@@ -17,8 +17,10 @@ public sealed class CampoOpcaoViewModel : CampoViewModel
         get => _selecionada;
         set
         {
-            if (SetProperty(ref _selecionada, value))
-                AoAlterar?.Invoke();
+            if (!SetProperty(ref _selecionada, value))
+                return;
+            MensagemErro = null;
+            AoAlterar?.Invoke();
         }
     }
     public T Valor<T>() => (T)Selecionada.Valor;

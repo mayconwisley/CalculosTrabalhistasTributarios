@@ -6,24 +6,53 @@
         Title="{Binding Titulo}" Height="840" Width="1180" MinHeight="620" MinWidth="900"
         Background="{DynamicResource ApplicationBackgroundBrush}"
         Foreground="{DynamicResource TextBrush}" WindowStartupLocation="CenterOwner">
+    <Window.InputBindings>
+        <KeyBinding Modifiers="Ctrl" Key="S" Command="{Binding Historico.SalvarCommand}" />
+        <KeyBinding Modifiers="Ctrl" Key="P" Command="{Binding ExportarPdfCommand}" />
+        <KeyBinding Modifiers="Ctrl" Key="E" Command="{Binding ExportarExcelCommand}" />
+    </Window.InputBindings>
     <Window.Resources>
         <ItemsPanelTemplate x:Key="CamposEmLinhas"><WrapPanel /></ItemsPanelTemplate>
         <ItemsPanelTemplate x:Key="CampoEmLarguraTotal"><Grid /></ItemsPanelTemplate>
+        <Style x:Key="ErroDoCampo" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource ErrorTextBrush}" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="Margin" Value="2,5,0,0" />
+            <Setter Property="Visibility" Value="{Binding TemErro, Converter={StaticResource BooleanToVisibilityConverter}}" />
+        </Style>
         <!-- Cada tipo de campo tem o seu controle; a calculadora só declara os campos. -->
         <DataTemplate DataType="{x:Type calculadoras:CampoTextoViewModel}">
             <StackPanel Width="170" Margin="0,0,14,14" ToolTip="{Binding Dica}" Visibility="{Binding Visivel, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <TextBlock Text="{Binding Rotulo}" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,6" TextTrimming="CharacterEllipsis" />
-                <TextBox Text="{Binding Valor, UpdateSourceTrigger=PropertyChanged}" TextAlignment="{Binding Alinhamento}" behaviors:MascaraData.Tipo="{Binding Mascara}" behaviors:FormatacaoNumerica.Formato="{Binding Formato}" behaviors:FormatacaoNumerica.ValorVazio="{Binding ValorVazio}" AutomationProperties.Name="{Binding Rotulo}" />
+                <TextBox Text="{Binding Valor, UpdateSourceTrigger=PropertyChanged}" TextAlignment="{Binding Alinhamento}" behaviors:MascaraData.Tipo="{Binding Mascara}" behaviors:FormatacaoNumerica.Formato="{Binding Formato}" behaviors:FormatacaoNumerica.ValorVazio="{Binding ValorVazio}" AutomationProperties.Name="{Binding Rotulo}" AutomationProperties.HelpText="{Binding MensagemErro}">
+                    <TextBox.Style>
+                        <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding TemErro}" Value="True"><Setter Property="BorderBrush" Value="{DynamicResource ErrorBorderBrush}" /><Setter Property="BorderThickness" Value="2" /></DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBox.Style>
+                </TextBox>
+                <TextBlock Text="{Binding MensagemErro}" Style="{StaticResource ErroDoCampo}" />
             </StackPanel>
         </DataTemplate>
         <DataTemplate DataType="{x:Type calculadoras:CampoOpcaoViewModel}">
             <StackPanel Width="{Binding Largura}" Margin="0,0,14,14" ToolTip="{Binding Dica}" Visibility="{Binding Visivel, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <TextBlock Text="{Binding Rotulo}" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,6" TextTrimming="CharacterEllipsis" />
-                <ComboBox ItemsSource="{Binding Opcoes}" SelectedItem="{Binding Selecionada, Mode=TwoWay}" MinHeight="54" AutomationProperties.Name="{Binding Rotulo}">
+                <ComboBox ItemsSource="{Binding Opcoes}" SelectedItem="{Binding Selecionada, Mode=TwoWay}" MinHeight="54" AutomationProperties.Name="{Binding Rotulo}" AutomationProperties.HelpText="{Binding MensagemErro}">
+                    <ComboBox.Style>
+                        <Style TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding TemErro}" Value="True"><Setter Property="BorderBrush" Value="{DynamicResource ErrorBorderBrush}" /><Setter Property="BorderThickness" Value="2" /></DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ComboBox.Style>
                     <ComboBox.ItemTemplate>
                         <DataTemplate><TextBlock Text="{Binding Texto}" /></DataTemplate>
                     </ComboBox.ItemTemplate>
                 </ComboBox>
+                <TextBlock Text="{Binding MensagemErro}" Style="{StaticResource ErroDoCampo}" />
             </StackPanel>
         </DataTemplate>
         <DataTemplate DataType="{x:Type calculadoras:CampoAtualizacaoCotacoesViewModel}">
@@ -420,7 +449,7 @@
                     <Grid>
                         <Grid.ColumnDefinitions><ColumnDefinition /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
                         <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
-                        <ItemsControl ItemsSource="{Binding Campos}" Focusable="False">
+                        <ItemsControl x:Name="Formulario" ItemsSource="{Binding Campos}" Focusable="False">
                             <ItemsControl.Style>
                                 <Style TargetType="ItemsControl">
                                     <Setter Property="ItemsPanel" Value="{StaticResource CamposEmLinhas}" />
@@ -435,7 +464,27 @@
                                 </Style>
                             </ItemsControl.Style>
                         </ItemsControl>
-                        <Button Grid.Column="1" Content="Calcular" Command="{Binding CalcularCommand}" IsDefault="True" VerticalAlignment="Bottom" MinWidth="118">
+                        <!-- Por que o cálculo não foi feito; abaixo dos campos e, com o botão abaixo do formulário, à esquerda dele. -->
+                        <Border Grid.Row="1" Padding="14,10" CornerRadius="8" BorderThickness="1" VerticalAlignment="Center"
+                                Background="{DynamicResource ErrorBackgroundBrush}" BorderBrush="{DynamicResource ErrorBorderBrush}"
+                                Visibility="{Binding TemAviso, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                AutomationProperties.LiveSetting="Assertive" AutomationProperties.Name="{Binding Aviso}">
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Setter Property="Grid.ColumnSpan" Value="2" />
+                                    <Setter Property="Margin" Value="0,0,0,14" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding UsaBotaoAbaixoFormulario}" Value="True">
+                                            <Setter Property="Grid.ColumnSpan" Value="1" />
+                                            <Setter Property="Margin" Value="0,8,16,14" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+                            <TextBlock Text="{Binding Aviso}" Foreground="{DynamicResource ErrorTextBrush}" TextWrapping="Wrap" />
+                        </Border>
+                        <Button Grid.Column="1" Content="Calcular" Command="{Binding CalcularCommand}" IsDefault="True" VerticalAlignment="Bottom" MinWidth="118"
+                                ToolTip="Calcula com os dados do formulário (Enter)">
                             <Button.Style>
                                 <Style TargetType="Button" BasedOn="{StaticResource PrimaryButton}">
                                     <Setter Property="Margin" Value="0,0,0,14" />
@@ -451,7 +500,7 @@
                     </Grid>
                 </Border>
 
-                <Border Grid.Row="4" MinHeight="210">
+                <Border x:Name="CartaoResultado" Grid.Row="4" MinHeight="210">
                     <Border.Style>
                         <Style TargetType="Border" BasedOn="{StaticResource Card}">
                             <Style.Triggers>
@@ -469,11 +518,18 @@
                                 <TextBlock Text="Resultado" FontSize="16" FontWeight="SemiBold" />
                                 <TextBlock Text="{Binding Referencia}" Foreground="{DynamicResource AccentBrush}" FontWeight="SemiBold" Margin="0,5,0,0" />
                                 <TextBlock Text="{Binding Historico.Situacao}" Foreground="{DynamicResource MutedTextBrush}" FontSize="12" TextWrapping="Wrap" Margin="0,5,0,0" Visibility="{Binding Historico.TemSituacao, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                <Border Padding="10,6" Margin="0,8,16,0" CornerRadius="6" BorderThickness="1" HorizontalAlignment="Left"
+                                        Background="{DynamicResource WarningBackgroundBrush}" BorderBrush="{DynamicResource WarningBorderBrush}"
+                                        Visibility="{Binding ResultadoDesatualizado, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                        AutomationProperties.LiveSetting="Polite" AutomationProperties.Name="Resultado desatualizado">
+                                    <TextBlock Foreground="{DynamicResource WarningTextBrush}" FontSize="12" TextWrapping="Wrap"
+                                               Text="O formulário mudou depois deste cálculo. Calcule de novo para atualizar o resultado." />
+                                </Border>
                             </StackPanel>
                             <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                <Button Content="Salvar no histórico" Command="{Binding Historico.SalvarCommand}" MinWidth="150" Margin="0,0,8,0" ToolTip="Guarda o formulário com um nome, para reabrir, refazer com outros valores ou duplicar o cálculo pela aba Histórico da tela principal." />
-                                <Button Content="Gerar Excel" Command="{Binding ExportarExcelCommand}" MinWidth="112" Margin="0,0,8,0" ToolTip="Salva o resultado em uma planilha do Excel (.xlsx), com os valores como números para somar e refazer as contas." />
-                                <Button Style="{StaticResource PrimaryButton}" Content="Gerar PDF" Command="{Binding ExportarPdfCommand}" MinWidth="112" />
+                                <Button Content="Salvar no histórico" Command="{Binding Historico.SalvarCommand}" MinWidth="150" Margin="0,0,8,0" ToolTip="Guarda o formulário com um nome, para reabrir, refazer com outros valores ou duplicar o cálculo pela aba Histórico da tela principal (Ctrl+S)." />
+                                <Button Content="Gerar Excel" Command="{Binding ExportarExcelCommand}" MinWidth="112" Margin="0,0,8,0" ToolTip="Salva o resultado em uma planilha do Excel (.xlsx), com os valores como números para somar e refazer as contas (Ctrl+E)." />
+                                <Button Style="{StaticResource PrimaryButton}" Content="Gerar PDF" Command="{Binding ExportarPdfCommand}" MinWidth="112" ToolTip="Salva o demonstrativo e a memória de cálculo em PDF (Ctrl+P)." />
                             </StackPanel>
                         </Grid>
                         <TextBlock Grid.Row="1" Style="{StaticResource EstadoVazio}" Text="{Binding InstrucaoInicial}" />
