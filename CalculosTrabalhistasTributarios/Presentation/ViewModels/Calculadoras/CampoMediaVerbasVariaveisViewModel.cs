@@ -15,6 +15,7 @@ public sealed class CampoMediaVerbasVariaveisViewModel : CampoViewModel
     private string _fim = DateTime.Today.AddMonths(-1).ToString("MM/yyyy", Cultura);
     private string _divisor = "12";
     private string _mensagem = string.Empty;
+    private string? _periodoPendente;
 
     public CampoMediaVerbasVariaveisViewModel() : base("Valores por competência",
         "Informe somente parcelas variáveis salariais efetivamente recebidas no período escolhido.")
@@ -42,14 +43,36 @@ public sealed class CampoMediaVerbasVariaveisViewModel : CampoViewModel
             Mensagem = "O período pode conter até 24 meses.";
             return false;
         }
-        Meses.Clear();
+        var anteriores = Meses.GroupBy(linha => linha.Competencia).ToDictionary(grupo => grupo.Key, grupo => grupo.First());
+        var preservados = 0;
+        var gerados = new List<MediaVerbasMesViewModel>(quantidade);
         for (var indice = 0; indice < quantidade; indice++)
         {
             var data = inicio.AddMonths(indice);
-            Meses.Add(new() { Competencia = data.ToString("MM/yyyy", Cultura) });
+            var chave = data.ToString("MM/yyyy", Cultura);
+            if (anteriores.TryGetValue(chave, out var existente))
+            {
+                gerados.Add(existente);
+                preservados++;
+            }
+            else gerados.Add(new() { Competencia = chave });
         }
-        Divisor = quantidade.ToString(Cultura);
-        Mensagem = $"{quantidade} mês(es) gerado(s). Meses sem verba ficam com zero e contam no divisor informado.";
+        var removidos = Meses.Count - preservados;
+        var periodo = $"{inicio:yyyyMM}-{fim:yyyyMM}";
+        if (removidos > 0 && _periodoPendente != periodo)
+        {
+            _periodoPendente = periodo;
+            Mensagem = $"{removidos} mês(es) ficarão fora do novo período. Clique em Gerar meses novamente para confirmar a remoção; os demais serão preservados.";
+            return false;
+        }
+        _periodoPendente = null;
+        var primeiroPreenchimento = Meses.Count == 0;
+        Meses.Clear();
+        foreach (var linha in gerados) Meses.Add(linha);
+        if (primeiroPreenchimento) Divisor = quantidade.ToString(Cultura);
+        Mensagem = $"{quantidade} mês(es): {preservados} preservado(s), {quantidade - preservados} novo(s)"
+            + (removidos > 0 ? $", {removidos} fora do período removido(s)" : "")
+            + ". Confira o divisor; meses zerados também contam.";
         return true;
     }
 

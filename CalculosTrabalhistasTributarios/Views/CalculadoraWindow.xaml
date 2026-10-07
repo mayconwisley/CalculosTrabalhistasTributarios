@@ -92,7 +92,7 @@
                     <StackPanel Width="145" Margin="0,0,8,8"><TextBlock Text="Reajuste (%)" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" /><TextBox Text="{Binding Percentual, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" behaviors:FormatacaoNumerica.ValorVazio="0,00" AutomationProperties.Name="Percentual de reajuste" /></StackPanel>
                 </WrapPanel>
                 <Button Content="Gerar meses" Command="{Binding GerarCommand}" HorizontalAlignment="Left" Margin="0,0,0,8" AutomationProperties.Name="Gerar competências mensais" />
-                <TextBlock Text="Gerar novamente substitui os meses editados." FontSize="11" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,4" />
+                <TextBlock Text="Gerar novamente preserva os meses que continuarem no período; a exclusão de meses pede confirmação." FontSize="11" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,4" />
                 <TextBlock Text="{Binding Mensagem}" Foreground="{DynamicResource AccentBrush}" TextWrapping="Wrap" Margin="0,0,0,12" />
 
                 <TextBlock Text="2. Revise o que foi pago em cada mês" FontWeight="SemiBold" Margin="0,0,0,5" />
@@ -153,7 +153,7 @@
                     <StackPanel Width="150" Margin="0,0,9,8"><TextBlock Text="Divisor (meses)" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" /><TextBox Text="{Binding Divisor, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" behaviors:FormatacaoNumerica.ValorVazio="0" AutomationProperties.Name="Divisor da média" /></StackPanel>
                     <Button Content="Gerar meses" Command="{Binding GerarCommand}" VerticalAlignment="Bottom" Margin="0,0,0,8" AutomationProperties.Name="Gerar meses da média" />
                 </WrapPanel>
-                <TextBlock Text="Gerar novamente substitui os valores da grade. Meses zerados continuam no divisor informado." FontSize="11" Foreground="{DynamicResource MutedTextBrush}" TextWrapping="Wrap" Margin="0,0,0,5" />
+                <TextBlock Text="Gerar novamente preserva os meses que continuarem no período; a exclusão pede confirmação. Confira o divisor após mudar o período." FontSize="11" Foreground="{DynamicResource MutedTextBrush}" TextWrapping="Wrap" Margin="0,0,0,5" />
                 <TextBlock Text="{Binding Mensagem}" Foreground="{DynamicResource AccentBrush}" TextWrapping="Wrap" Margin="0,0,0,9" />
                 <TextBlock Text="Valores recebidos por competência (R$)" FontWeight="SemiBold" Margin="0,0,0,5" />
                 <TextBlock Text="Separe o DSR somente quando ele não estiver incluído em outra coluna. Use Outras apenas para verbas salariais. Se a regra exigir atualização de horas ou adicionais, ajuste os valores antes de calcular." FontSize="12" Foreground="{DynamicResource MutedTextBrush}" TextWrapping="Wrap" Margin="0,0,0,10" />
@@ -202,29 +202,31 @@
                         <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="10" /><ColumnDefinition Width="*" /><ColumnDefinition Width="10" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
                         <StackPanel Grid.Column="0"><TextBlock Text="Salário atual (R$)" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" /><TextBox Text="{Binding Salario, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" behaviors:FormatacaoNumerica.Formato="N2" ToolTip="Opcional no acompanhamento; obrigatório para calcular a quitação no fechamento ou na rescisão." AutomationProperties.Name="Salário para quitação" /></StackPanel>
                         <StackPanel Grid.Column="2"><TextBlock Text="Divisor de horas" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" /><TextBox Text="{Binding Divisor, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" behaviors:FormatacaoNumerica.ValorVazio="0" AutomationProperties.Name="Divisor de horas" /></StackPanel>
-                        <StackPanel Grid.Column="4" ToolTip="Um único percentual será aplicado a todo o saldo positivo na quitação."><TextBlock Text="Adicional (%)" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" /><TextBox Text="{Binding Adicional, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" behaviors:FormatacaoNumerica.ValorVazio="0,00" AutomationProperties.Name="Adicional de horas extras" /></StackPanel>
+                        <StackPanel Grid.Column="4" ToolTip="Padrão para créditos sem adicional próprio."><TextBlock Text="Adicional padrão (%)" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" /><TextBox Text="{Binding Adicional, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" behaviors:FormatacaoNumerica.ValorVazio="0,00" AutomationProperties.Name="Adicional padrão de horas extras" /></StackPanel>
                     </Grid>
                 </Grid>
                 <TextBlock Text="Lançamentos do ciclo" FontWeight="SemiBold" Margin="0,0,0,5" />
-                <TextBlock Text="Crédito: horas extras destinadas ao banco. Compensação: folga ou redução de jornada. Informe horas:minutos. A quitação usa um adicional único para todo o saldo." FontSize="12" Foreground="{DynamicResource MutedTextBrush}" TextWrapping="Wrap" Margin="0,0,0,10" />
+                <TextBlock Text="Crédito: horas extras destinadas ao banco. Compensação: folga ou redução. Informe horas:minutos. O adicional da linha é opcional nos créditos; vazio usa o padrão. As compensações consomem primeiro os créditos mais antigos." FontSize="12" Foreground="{DynamicResource MutedTextBrush}" TextWrapping="Wrap" Margin="0,0,0,10" />
                 <Grid Margin="8,0,8,5">
-                    <Grid.ColumnDefinitions><ColumnDefinition Width="160" /><ColumnDefinition Width="240" /><ColumnDefinition Width="120" /><ColumnDefinition Width="*" /><ColumnDefinition Width="65" /></Grid.ColumnDefinitions>
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="140" /><ColumnDefinition Width="210" /><ColumnDefinition Width="100" /><ColumnDefinition Width="120" /><ColumnDefinition Width="*" /><ColumnDefinition Width="65" /></Grid.ColumnDefinitions>
                     <TextBlock Text="Data" FontSize="11" Foreground="{DynamicResource MutedTextBrush}" />
                     <TextBlock Grid.Column="1" Text="Tipo" FontSize="11" Foreground="{DynamicResource MutedTextBrush}" />
                     <TextBlock Grid.Column="2" Text="Horas" FontSize="11" Foreground="{DynamicResource MutedTextBrush}" />
-                    <TextBlock Grid.Column="3" Text="Descrição (opcional)" FontSize="11" Foreground="{DynamicResource MutedTextBrush}" />
+                    <TextBlock Grid.Column="3" Text="Adicional (%)" FontSize="11" Foreground="{DynamicResource MutedTextBrush}" />
+                    <TextBlock Grid.Column="4" Text="Descrição (opcional)" FontSize="11" Foreground="{DynamicResource MutedTextBrush}" />
                 </Grid>
                 <ScrollViewer MaxHeight="270" VerticalScrollBarVisibility="Auto" Margin="0,0,0,8">
                     <ItemsControl ItemsSource="{Binding Lancamentos}" Focusable="False">
                         <ItemsControl.ItemTemplate><DataTemplate>
                             <Border Background="{DynamicResource ResultBackgroundBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="8" Margin="0,0,0,6">
                                 <Grid>
-                                    <Grid.ColumnDefinitions><ColumnDefinition Width="160" /><ColumnDefinition Width="240" /><ColumnDefinition Width="120" /><ColumnDefinition Width="*" /><ColumnDefinition Width="65" /></Grid.ColumnDefinitions>
+                                    <Grid.ColumnDefinitions><ColumnDefinition Width="140" /><ColumnDefinition Width="210" /><ColumnDefinition Width="100" /><ColumnDefinition Width="120" /><ColumnDefinition Width="*" /><ColumnDefinition Width="65" /></Grid.ColumnDefinitions>
                                     <TextBox Text="{Binding Data, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,7,0" AutomationProperties.Name="Data do lançamento" />
                                     <ComboBox Grid.Column="1" ItemsSource="{Binding Opcoes}" SelectedItem="{Binding Tipo, Mode=TwoWay}" Margin="0,0,7,0" MinHeight="54" AutomationProperties.Name="Tipo de lançamento"><ComboBox.ItemTemplate><DataTemplate><TextBlock Text="{Binding Texto}" /></DataTemplate></ComboBox.ItemTemplate></ComboBox>
                                     <TextBox Grid.Column="2" Text="{Binding Horas, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" Margin="0,0,7,0" behaviors:FormatacaoNumerica.ValorVazio="0:00" AutomationProperties.Name="Horas do lançamento" />
-                                    <TextBox Grid.Column="3" Text="{Binding Descricao, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,7,0" AutomationProperties.Name="Descrição do lançamento" />
-                                    <Button Grid.Column="4" Content="×" Padding="0" MinHeight="34" Command="{Binding DataContext.RemoverCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" CommandParameter="{Binding}" ToolTip="Remover lançamento" AutomationProperties.Name="Remover lançamento" />
+                                    <TextBox Grid.Column="3" Text="{Binding Adicional, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding EhCredito}" TextAlignment="Right" Margin="0,0,7,0" ToolTip="Somente para crédito; deixe vazio para o adicional padrão." AutomationProperties.Name="Adicional do crédito em percentual" />
+                                    <TextBox Grid.Column="4" Text="{Binding Descricao, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,7,0" AutomationProperties.Name="Descrição do lançamento" />
+                                    <Button Grid.Column="5" Content="×" Padding="0" MinHeight="34" Command="{Binding DataContext.RemoverCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" CommandParameter="{Binding}" ToolTip="Remover lançamento" AutomationProperties.Name="Remover lançamento" />
                                 </Grid>
                             </Border>
                         </DataTemplate></ItemsControl.ItemTemplate>

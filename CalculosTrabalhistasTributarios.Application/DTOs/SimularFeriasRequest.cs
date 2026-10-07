@@ -16,4 +16,5 @@ public sealed record SimularFeriasRequest(
     bool AdiantarDecimoTerceiro,
     int Dependentes,
     RegraPensao? Pensao = null,
-    decimal PrevidenciaComplementar = 0m);
+    decimal PrevidenciaComplementar = 0m,
+    decimal BaseSalarialForaFeriasNoMes = 0m);

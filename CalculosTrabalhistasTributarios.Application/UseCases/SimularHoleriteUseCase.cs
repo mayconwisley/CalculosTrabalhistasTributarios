@@ -30,6 +30,11 @@ public sealed class SimularHoleriteUseCase(ITributacaoConsulta tributacaoConsult
         if (r.OutrosProventos < 0m || r.Comissoes < 0m || r.PisoGarantidoComissoes < 0m || r.Premios < 0m || r.ProventosNaoTributaveis < 0m || r.HorasAtraso < 0m || r.Faltas < 0 || r.DescansosPerdidos < 0 || r.Dependentes < 0 || r.Filhos < 0
             || r.CustoValeTransporte < 0m || r.Adiantamento < 0m || r.OutrosDescontos < 0m || r.PrevidenciaComplementar < 0m)
             return Erro.Validacao("Os valores, as horas, as faltas e as quantidades não podem ser negativos.");
+        if (r.HorasIntervaloIntrajornada < 0m || r.HorasIntervaloInterjornada < 0m
+            || r.HorasIntervaloIntrajornada > 744m || r.HorasIntervaloInterjornada > 744m)
+            return Erro.Validacao("Pausa suprimida (h) e Interjornada (h) devem ficar entre zero e 744 horas no mês. Confira as marcações da jornada.");
+        if (r.Competencia < new DateOnly(2017, 11, 1) && (r.HorasIntervaloIntrajornada > 0m || r.HorasIntervaloInterjornada > 0m))
+            return Erro.Validacao("Os campos de intervalos suprimidos usam os critérios posteriores a 11/11/2017. Para uma competência anterior, apure as parcelas conforme a regra vigente na data.");
         // Os dois são descontados pelo salário-dia: juntos não passam dos 30 dias do mês comercial.
         if (r.Faltas + r.DescansosPerdidos > 30)
             return Erro.Validacao("As faltas e os descansos perdidos, somados, não podem passar de 30 dias no mês.");
@@ -101,11 +106,18 @@ public sealed class SimularHoleriteUseCase(ITributacaoConsulta tributacaoConsult
         if (remuneracao < 0m)
             return Erro.Validacao($"As faltas e os atrasos ({Formato.Moeda(faltas + descansos + atrasos)}) passam da remuneração do mês ({Formato.Moeda(tributaveis)}).");
 
+        // CLT, art. 71, § 4º, e OJ 355 do TST: intervalos têm rubricas próprias e não são duplicados nas horas extras.
+        // SC Cosit 64/2024: ambas as parcelas integram IRRF e contribuição previdenciária. A intrajornada posterior
+        // à Lei 13.467/2017 não integra FGTS por sua natureza indenizatória.
+        var intervaloIntra = CalculadoraTributacao.Arredondar(baseHora * r.HorasIntervaloIntrajornada * 1.5m / r.Divisor);
+        var intervaloInter = CalculadoraTributacao.Arredondar(baseHora * r.HorasIntervaloInterjornada * 1.5m / r.Divisor);
+        var basePrevidenciaria = remuneracao + intervaloIntra + intervaloInter;
+
         // Os prêmios não são salário de contribuição nem entram no FGTS (Lei 8.212/1991, art. 28, § 9º, z; Lei 8.036/1990,
         // art. 15, § 6º), mas são rendimento tributável: somam-se à remuneração só no IRRF e na base da pensão.
-        var rendimentos = remuneracao + r.Premios;
-        var rotuloRendimentos = r.Premios > 0m ? "remuneração e prêmios" : "remuneração do mês";
-        var inss = tabelas.CalcularInss(remuneracao);
+        var rendimentos = basePrevidenciaria + r.Premios;
+        var rotuloRendimentos = r.Premios > 0m ? "remuneração, intervalos e prêmios" : "remuneração e intervalos";
+        var inss = tabelas.CalcularInss(basePrevidenciaria);
         if (r.Pensao is { EhPercentual: false } informada && informada.Valor > rendimentos)
             return Erro.Validacao($"A pensão informada ({Formato.Moeda(informada.Valor)}) é maior que os rendimentos tributáveis do mês ({Formato.Moeda(rendimentos)}).");
         // A previdência complementar reduz a base do IRRF, mas não a da pensão: é desconto voluntário, não obrigatório.
@@ -125,14 +137,15 @@ public sealed class SimularHoleriteUseCase(ITributacaoConsulta tributacaoConsult
         {
             if (tabelas.FaixasSalarioFamilia.Count == 0)
                 return Erro.NaoEncontrado($"Não há tabela de salário-família cadastrada para a competência {Formato.Competencia(r.Competencia)}.");
-            faixaFamilia = tabelas.FaixasSalarioFamilia.OrderBy(item => item.Faixa).FirstOrDefault(item => remuneracao <= item.LimiteRemuneracao);
+            faixaFamilia = tabelas.FaixasSalarioFamilia.OrderBy(item => item.Faixa).FirstOrDefault(item => basePrevidenciaria <= item.LimiteRemuneracao);
             salarioFamilia = (faixaFamilia?.Cota ?? 0m) * r.Filhos;
         }
 
         // O empregado paga até 6% do salário-base, sem adicionais; a empresa paga o restante (Lei 7.418/1985, art. 4º).
         var seisPorCento = CalculadoraTributacao.Arredondar(r.Salario * PercentualValeTransporte / 100m);
         var valeTransporte = Math.Min(seisPorCento, r.CustoValeTransporte);
-        var fgts = CalculadoraTributacao.Arredondar(remuneracao * .08m);
+        var baseFgts = remuneracao + intervaloInter;
+        var fgts = CalculadoraTributacao.Arredondar(baseFgts * .08m);
 
         var nomeAdicional = aplicaPericulosidade ? "Adicional de periculosidade" : $"Adicional de insalubridade ({NomeGrau(r.Insalubridade)})";
         var proventos = new List<VerbaDto>();
@@ -146,6 +159,8 @@ public sealed class SimularHoleriteUseCase(ITributacaoConsulta tributacaoConsult
         if (complementoComissoes > 0m) proventos.Add(new("Complemento da garantia mínima", "", complementoComissoes));
         if (r.OutrosProventos > 0m) proventos.Add(new("Outros proventos tributáveis", "", r.OutrosProventos));
         proventos.AddRange(DemonstrativoHoras.Proventos(horas));
+        if (intervaloIntra > 0m) proventos.Add(new("Intervalo intrajornada suprimido", Formato.Horas(r.HorasIntervaloIntrajornada), intervaloIntra));
+        if (intervaloInter > 0m) proventos.Add(new("Intervalo entre jornadas suprimido", Formato.Horas(r.HorasIntervaloInterjornada), intervaloInter));
         if (r.Premios > 0m) proventos.Add(new("Prêmios", "", r.Premios));
         if (r.ProventosNaoTributaveis > 0m) proventos.Add(new("Proventos não tributáveis (ajuda de custo, diárias, reembolsos)", "", r.ProventosNaoTributaveis));
         if (salarioFamilia > 0m) proventos.Add(new("Salário-família", r.Filhos == 1 ? "1 filho" : $"{r.Filhos} filhos", salarioFamilia));
@@ -169,8 +184,12 @@ public sealed class SimularHoleriteUseCase(ITributacaoConsulta tributacaoConsult
             return Erro.Validacao($"Os descontos ({Formato.Moeda(totalDescontos)}) passam dos proventos ({Formato.Moeda(totalProventos)}). Revise as faltas, o adiantamento e os outros descontos.");
 
         var formulasRemuneracao = FormulasRemuneracao(r, horas, salarioMinimo, insalubridade, periculosidade, aplicaPericulosidade, faltas, descansos, atrasos, tributaveis, remuneracao);
-        if (r.Premios > 0m)
-            formulasRemuneracao.Add(new("Rendimentos do IRRF", $"{Formato.Moeda(remuneracao)} (remuneração) + {Formato.Moeda(r.Premios)} (prêmios, sem INSS e FGTS) = {Formato.Moeda(rendimentos)}"));
+        if (intervaloIntra > 0m)
+            formulasRemuneracao.Add(new("Intervalo intrajornada", $"{Formato.Moeda(baseHora)} ÷ {r.Divisor:N2} × {Formato.Horas(r.HorasIntervaloIntrajornada)} × 1,50 = {Formato.Moeda(intervaloIntra)}; INSS e IRRF, sem FGTS"));
+        if (intervaloInter > 0m)
+            formulasRemuneracao.Add(new("Intervalo entre jornadas", $"{Formato.Moeda(baseHora)} ÷ {r.Divisor:N2} × {Formato.Horas(r.HorasIntervaloInterjornada)} × 1,50 = {Formato.Moeda(intervaloInter)}; INSS, IRRF e FGTS"));
+        if (intervaloIntra > 0m || intervaloInter > 0m || r.Premios > 0m)
+            formulasRemuneracao.Add(new("Bases do mês", $"INSS: {Formato.Moeda(basePrevidenciaria)}; IRRF antes das deduções: {Formato.Moeda(rendimentos)}; FGTS: {Formato.Moeda(baseFgts)}"));
         var memoria = new List<GrupoMemoriaDto> { new("Remuneração do mês", $"Remuneração: {Formato.Moeda(remuneracao)}", formulasRemuneracao) };
         if (comissoes is not null)
         {
@@ -188,8 +207,8 @@ public sealed class SimularHoleriteUseCase(ITributacaoConsulta tributacaoConsult
             memoria.Add(new("Salário-família", $"Valor: {Formato.Moeda(salarioFamilia)}",
             [
                 faixaFamilia is null
-                    ? new("Direito", $"{Formato.Moeda(remuneracao)} passa do limite de {Formato.Moeda(tabelas.FaixasSalarioFamilia.Max(item => item.LimiteRemuneracao))}: sem direito neste mês.")
-                    : new("Direito", $"{Formato.Moeda(remuneracao)} não passa do limite de {Formato.Moeda(faixaFamilia.LimiteRemuneracao)}: cota de {Formato.Moeda(faixaFamilia.Cota)} por filho."),
+                    ? new("Direito", $"{Formato.Moeda(basePrevidenciaria)} passa do limite de {Formato.Moeda(tabelas.FaixasSalarioFamilia.Max(item => item.LimiteRemuneracao))}: sem direito neste mês.")
+                    : new("Direito", $"{Formato.Moeda(basePrevidenciaria)} não passa do limite de {Formato.Moeda(faixaFamilia.LimiteRemuneracao)}: cota de {Formato.Moeda(faixaFamilia.Cota)} por filho."),
                 new("Valor", $"{Formato.Moeda(faixaFamilia?.Cota ?? 0m)} x {r.Filhos} = {Formato.Moeda(salarioFamilia)}")
             ]));
         if (r.CustoValeTransporte > 0m)
@@ -204,14 +223,18 @@ public sealed class SimularHoleriteUseCase(ITributacaoConsulta tributacaoConsult
         var informativos = new List<VerbaDto>
         {
             new("FGTS", "8%", fgts),
-            new("Base do INSS e do FGTS", "", remuneracao),
+            new(basePrevidenciaria == baseFgts ? "Base do INSS e do FGTS" : "Base do INSS", "", basePrevidenciaria),
             new(MemoriaTributaria.DescricaoIrrf("Base do IRRF", irrf), "", irrf.Aplicada.BaseCalculo)
         };
+        if (basePrevidenciaria != baseFgts)
+            informativos.Add(new("Base do FGTS", "", baseFgts));
         if (salarioFamilia > 0m) informativos.Add(new("Salário-família deduzido pela empresa das contribuições ao INSS", "", salarioFamilia));
         if (r.CustoValeTransporte > valeTransporte) informativos.Add(new("Vale-transporte pago pela empresa", "", r.CustoValeTransporte - valeTransporte));
 
         if (r.Faltas > 0 || r.DescansosPerdidos > 0)
             observacoes.Add("As faltas e os descansos perdidos são descontados pelo salário-dia (salário e adicional ÷ 30). A falta injustificada faz perder o descanso remunerado da semana (Lei 605/1949, art. 6º): informe um descanso perdido por semana com falta, e também o feriado dessa semana.");
+        if (intervaloIntra > 0m || intervaloInter > 0m)
+            observacoes.Add("Os intervalos suprimidos são parcelas próprias com acréscimo de 50%, sem lançamento duplicado nas horas extras nem DSR automático. Neste cenário posterior a 11/11/2017, entram no INSS e no IRRF; só o intervalo entre jornadas integra a base do FGTS. Confira a norma coletiva e a rubrica usada na folha (CLT, art. 71, § 4º; SC Cosit 64/2024).");
         if (comissoes is not null)
             observacoes.Add("As comissões e seu DSR entram no INSS, no IRRF e no FGTS. O DSR das comissões foi calculado separadamente do DSR das horas extras; não repita as comissões em Proventos tributáveis. A garantia mínima considera a remuneração antes dos descontos por faltas e atrasos.");
         if (comissoes is not null && (r.HorasFaixa1 > 0m || r.HorasFaixa2 > 0m || r.HorasExtrasNoturnas > 0m))

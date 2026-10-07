@@ -49,6 +49,8 @@ public sealed class CalculadoraHolerite : CalculadoraBase
     private readonly CampoTextoViewModel _faltas = Inteiro("Faltas (dias)", 0, "Faltas injustificadas, descontadas pelo salário-dia (salário e adicional ÷ 30).");
     private readonly CampoTextoViewModel _descansos = Inteiro("Descansos perdidos", 0, "Domingos e feriados perdidos pelas faltas: um por semana com falta injustificada, mais o feriado dessa semana (Lei 605/1949, art. 6º).");
     private readonly CampoTextoViewModel _atrasos = new("Atrasos (horas)", TipoCampo.Horas, "0:00", "Atrasos e saídas antecipadas do mês, descontados pelo valor da hora.");
+    private readonly CampoTextoViewModel _intervaloIntra = new("Pausa suprimida (h)", TipoCampo.Horas, "0:00", "Horas:minutos de intervalo intrajornada para refeição ou descanso não concedido. Parcela separada, com acréscimo de 50%; não repita nas horas extras.");
+    private readonly CampoTextoViewModel _intervaloInter = new("Interjornada (h)", TipoCampo.Horas, "0:00", "Horas:minutos faltantes para 11 horas entre jornadas. Parcela separada, com acréscimo de 50%; não repita nas horas extras.");
     private readonly CampoTextoViewModel _dependentes = Inteiro("Dependentes (IRRF)", 0, "Dependentes declarados para a dedução do IRRF, na modalidade de deduções legais. Os filhos do salário-família vão no campo próprio.");
     private readonly CampoTextoViewModel _filhos = Inteiro("Filhos (salário-família)", 0, "Filhos ou equiparados de até 14 anos, ou inválidos, para o salário-família.");
     private readonly CamposPensao _pensao = new("Pensão mensal definida na decisão ou no acordo.");
@@ -62,7 +64,7 @@ public sealed class CalculadoraHolerite : CalculadoraBase
     public override string InstrucaoInicial => "Informe o salário ou as comissões e os eventos do mês e selecione Calcular.";
     public override IReadOnlyList<CampoViewModel> Campos =>
         [_competencia, _salario, _insalubridade, _periculosidade, _divisor, _horas1, _percentual1, _horas2, _percentual2, _trabalho, _horasNoturnas, _percentualNoturno,
-         _horasExtrasNoturnas, _feriados, _faltas, _descansos, _atrasos, _comissoes, _comissoesIncluemDsr, _diasComissoesManuais,
+         _horasExtrasNoturnas, _feriados, _faltas, _descansos, _atrasos, _intervaloIntra, _intervaloInter, _comissoes, _comissoesIncluemDsr, _diasComissoesManuais,
          _diasUteisComissoes, _diasDescansoComissoes, _pisoComissoes, _outrosProventos, _premios, _proventosNaoTributaveis, _dependentes, .. _pensao.Campos, _previdencia, _filhos,
          _valeTransporte, _adiantamento, _outrosDescontos];
     public override string NomeArquivoPdf => $"holerite-{_competencia.Valor.Replace('/', '-')}.pdf";
@@ -89,7 +91,7 @@ public sealed class CalculadoraHolerite : CalculadoraBase
             leitor.Moeda(_comissoes), _comissoesIncluemDsr.Valor<bool>(),
             _diasComissoesManuais.Valor<bool>() ? leitor.Inteiro(_diasUteisComissoes) : null,
             _diasComissoesManuais.Valor<bool>() ? leitor.Inteiro(_diasDescansoComissoes) : null,
-            leitor.Moeda(_pisoComissoes)), cancellationToken);
+            leitor.Moeda(_pisoComissoes), leitor.Horas(_intervaloIntra), leitor.Horas(_intervaloInter)), cancellationToken);
 
     private void AtualizarCamposComissoes()
     {

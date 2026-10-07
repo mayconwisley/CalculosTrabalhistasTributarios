@@ -56,6 +56,25 @@ public class MediaVerbasVariaveisTests
     }
 
     [Fact]
+    public void Regenerar_preserva_valores_e_divisor_e_confirma_exclusao()
+    {
+        var campo = new CampoMediaVerbasVariaveisViewModel { Inicio = "01/2026", Fim = "03/2026" };
+        Assert.True(campo.Gerar());
+        campo.Meses[1].Comissoes = "350,00";
+        campo.Divisor = "2";
+        campo.Fim = "04/2026";
+        Assert.True(campo.Gerar());
+        Assert.Equal("350,00", campo.Meses[1].Comissoes);
+        Assert.Equal("2", campo.Divisor);
+        campo.Inicio = "02/2026";
+        Assert.False(campo.Gerar());
+        Assert.Equal(4, campo.Meses.Count);
+        Assert.True(campo.Gerar());
+        Assert.Equal(3, campo.Meses.Count);
+        Assert.Equal("350,00", campo.Meses[0].Comissoes);
+    }
+
+    [Fact]
     public async Task Demonstrativo_usa_media_total_como_resultado()
     {
         var demonstrativo = (await new SimularMediaVerbasVariaveisUseCase().ExecutarAsync(

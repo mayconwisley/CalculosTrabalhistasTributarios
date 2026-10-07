@@ -76,6 +76,26 @@ public class ReajusteRetroativoTests
     }
 
     [Fact]
+    public void Regenerar_preserva_mes_editado_e_confirma_exclusao_fora_do_periodo()
+    {
+        var campo = new CampoReajusteRetroativoViewModel
+        {
+            Inicio = "01/2026", Fim = "03/2026", SalarioAnterior = "1.000,00", Percentual = "10"
+        };
+        Assert.True(campo.Gerar());
+        campo.Meses[1].BasePaga = "1.025,00";
+        campo.Percentual = "20";
+        Assert.True(campo.Gerar());
+        Assert.Equal("1.025,00", campo.Meses[1].BasePaga);
+        campo.Inicio = "02/2026";
+        Assert.False(campo.Gerar());
+        Assert.Equal(3, campo.Meses.Count);
+        Assert.True(campo.Gerar());
+        Assert.Equal(["02/2026", "03/2026"], campo.Meses.Select(item => item.Competencia));
+        Assert.Equal("1.025,00", campo.Meses[0].BasePaga);
+    }
+
+    [Fact]
     public void Ultima_competencia_do_calendario_nao_causa_estouro_ao_gerar_meses()
     {
         var campo = new CampoReajusteRetroativoViewModel

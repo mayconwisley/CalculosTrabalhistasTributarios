@@ -21,6 +21,9 @@ public sealed class SimularFeriasUseCase(ITributacaoConsulta tributacaoConsulta)
     {
         if (request.Salario < 0m || request.Medias < 0m || request.Dependentes < 0 || request.Faltas < 0 || request.DiasGozo < 0 || request.PrevidenciaComplementar < 0m)
             return Erro.Validacao("Os valores, as faltas, os dias e a quantidade de dependentes não podem ser negativos.");
+        if (request.BaseSalarialForaFeriasNoMes < 0m || request.BaseSalarialForaFeriasNoMes > 1_000_000_000m
+            || decimal.Round(request.BaseSalarialForaFeriasNoMes, 2) != request.BaseSalarialForaFeriasNoMes)
+            return Erro.Validacao("A Base fora das férias (R$) deve ser um valor não negativo, com centavos e de até R$ 1 bilhão, sem incluir férias ou seu terço.");
 
         var direito = RegrasTrabalhistas.DiasDeFeriasPorFaltas(request.Faltas);
         if (direito == 0)
@@ -54,6 +57,9 @@ public sealed class SimularFeriasUseCase(ITributacaoConsulta tributacaoConsulta)
 
         // As férias entram na declaração anual: a previdência é deduzida por inteiro, como no salário do mês.
         var inss = tabelas.CalcularInss(tributavel);
+        var baseInssMes = tributavel + request.BaseSalarialForaFeriasNoMes;
+        var inssMes = request.BaseSalarialForaFeriasNoMes > 0m ? tabelas.CalcularInss(baseInssMes) : null;
+        var inssResidualFolha = inssMes is null ? 0m : inssMes.Valor - inss.Valor;
         var calculoPensao = request.Pensao is { } regra
             ? CalculadoraPensao.Calcular(regra, tributavel, inss.Valor, valor => tabelas.CalcularIrrf(tributavel, inss.Valor, request.Dependentes, valor, previdenciaComplementar: previdencia), apuracao => apuracao.Imposto)
             : null;
@@ -116,9 +122,13 @@ public sealed class SimularFeriasUseCase(ITributacaoConsulta tributacaoConsulta)
         var observacoes = new List<string>
         {
             "O abono pecuniário e o seu terço não têm INSS, IRRF nem FGTS.",
-            "O IRRF das férias é calculado à parte dos demais rendimentos do mês. O INSS foi calculado só sobre as férias; na folha, ele é somado ao do salário do mês, respeitando o teto.",
+            inssMes is null
+                ? "O IRRF das férias é calculado à parte dos demais rendimentos do mês. O recibo provisiona o INSS sobre as férias; na folha, confira o INSS da base reunida do mês, respeitando o teto."
+                : "O IRRF das férias é calculado à parte dos demais rendimentos do mês. O recibo provisiona o INSS sobre as férias; a conciliação abaixo apura o INSS da base reunida do mês, respeitando o teto.",
             "As férias devem ser pagas até 2 dias antes do início do descanso (CLT, art. 145)."
         };
+        if (inssMes is not null)
+            observacoes.Add("A conciliação do INSS pressupõe pagamento e gozo na mesma competência e considera as férias + 1/3 e a base salarial fora das férias desse mês. O recibo mantém o INSS provisionado sobre as férias; na folha, confira o total sobre a base reunida e desconte o valor já provisionado. O IRRF das férias continua apurado separadamente. Pagamento ou gozo em competências distintas exige apuração de cada mês.");
         if (adiantamento13 > 0m)
             observacoes.Add("O adiantamento do 13º é pago sem descontos; o INSS e o IRRF são descontados na 2ª parcela, em dezembro.");
         if (pensao is not null)
@@ -132,6 +142,13 @@ public sealed class SimularFeriasUseCase(ITributacaoConsulta tributacaoConsulta)
             MemoriaTributaria.Inss("INSS sobre as férias", inss, "férias + 1/3"),
             MemoriaTributaria.Irrf("IRRF sobre as férias", irrf, "férias + 1/3")
         };
+        if (inssMes is not null)
+            memoria.Add(new("Conciliação do INSS na folha do mês", $"INSS total: {Formato.Moeda(inssMes.Valor)}",
+            [
+                new("Base mensal", $"{Formato.Moeda(tributavel)} (férias + 1/3) + {Formato.Moeda(request.BaseSalarialForaFeriasNoMes)} (demais verbas) = {Formato.Moeda(baseInssMes)}"),
+                new("INSS total", $"Tabela da competência sobre {Formato.Moeda(baseInssMes)} = {Formato.Moeda(inssMes.Valor)}"),
+                new("Saldo a descontar na folha", $"{Formato.Moeda(inssMes.Valor)} - {Formato.Moeda(inss.Valor)} (provisionado nas férias) = {Formato.Moeda(inssResidualFolha)}")
+            ]));
         if (request.Pensao is { } regraMemoria && pensao is not null)
             memoria.Add(DemonstrativoPensao.Memoria("Pensão alimentícia sobre as férias", regraMemoria, tributavel, "férias + 1/3", inss.Valor, irrf.Imposto, pensao.Base, pensao.Pensao, "Deduzida da base do IRRF na modalidade de deduções legais; o desconto simplificado substitui essa dedução."));
 
@@ -142,7 +159,8 @@ public sealed class SimularFeriasUseCase(ITributacaoConsulta tributacaoConsulta)
                 new("Líquido das férias", Formato.Moeda(liquido), $"Proventos menos {Formato.Lista(nomesDescontos)}"),
                 new("Férias + 1/3", Formato.Moeda(tributavel), $"{Formato.Dias(diasGozo)} de descanso"),
                 new("Abono + 1/3", Formato.Moeda(abono + tercoAbono), diasAbono > 0 ? $"{Formato.Dias(diasAbono)} vendidos, sem impostos" : "Sem venda de dias"),
-                new("FGTS (8%)", Formato.Moeda(fgts), "Depositado pelo empregador")
+                new("FGTS (8%)", Formato.Moeda(fgts), "Depositado pelo empregador"),
+                .. (inssMes is null ? Array.Empty<DestaqueDto>() : new[] { new DestaqueDto("INSS da folha do mês", Formato.Moeda(inssMes.Valor), $"Saldo após provisão: {Formato.Moeda(inssResidualFolha)}") })
             ],
             proventos,
             descontos,

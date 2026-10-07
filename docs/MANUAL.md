@@ -452,6 +452,7 @@ Em raros casos, o arredondamento em centavos impede chegar exatamente ao valor. 
 | Vender 1/3 (abono) | Converte 1/3 dos dias em dinheiro, por exemplo 10 de 30 dias. |
 | Adiantar 13º (1ª parcela) | Paga metade do 13º junto com as férias. |
 | Previdência complementar | A contribuição do trabalhador ao PGBL, ao fundo de pensão ou ao Fapi sobre as férias. |
+| Base fora das férias (R$) | Opcional. Informe a remuneração com INSS da mesma competência de **pagamento e gozo**, sem repetir as férias e o terço. Use para conferir o INSS total da folha e o saldo após a provisão do recibo. Se pagamento e gozo ocorrerem em meses distintos, ou o descanso atravessar meses, apure cada competência separadamente. |
 
 | Faltas no período aquisitivo | Dias de férias |
 | --- | --- |
@@ -463,7 +464,7 @@ Em raros casos, o arredondamento em centavos impede chegar exatamente ao valor. 
 
 - **Férias:** (salário + médias) ÷ 30 × dias de descanso, mais o terço constitucional.
 - **Abono pecuniário:** os dias vendidos, também com 1/3. Não tem INSS, IRRF nem FGTS.
-- O INSS e o IRRF incidem sobre as férias + 1/3. O IRRF é calculado à parte dos demais rendimentos do mês; o INSS foi calculado só sobre as férias, e na folha ele é somado ao do salário do mês, até o teto.
+- O INSS e o IRRF incidem sobre as férias + 1/3. O IRRF é calculado à parte dos demais rendimentos do mês. O recibo mostra o INSS provisionado sobre as férias. Ao informar a base salarial fora das férias, a memória também mostra o INSS sobre a base reunida da competência e o saldo a descontar na folha após a provisão. O líquido do recibo não inclui o salário do mês.
 - **Previdência complementar:** deduzida por inteiro da base do IRRF das férias, só nas deduções legais, como no salário do mês (IN RFB 1.500/2014, art. 52, IV e V). As férias entram na declaração anual, onde se aplica o limite de 12%.
 
 ### 8.5 Rescisão
@@ -702,6 +703,7 @@ Abra pelo cartão **Holerite do mês**, no grupo **Remuneração e custos**. Ele
 | Horas extras, trabalho noturno e feriados | Como na calculadora de horas extras (seção 8.2), inclusive as horas extras noturnas e o trabalho rural. |
 | Faltas (dias) e Descansos perdidos | Faltas injustificadas e os domingos e feriados perdidos por elas: um por semana com falta, mais o feriado dessa semana (Lei 605/1949, art. 6º). Somados, não passam de 30 dias. |
 | Atrasos (horas) | Atrasos e saídas antecipadas, descontados pelo valor da hora. |
+| Pausa suprimida (h) e Interjornada (h) | Informe separadamente as horas:minutos de intervalo intrajornada e entre jornadas que faltaram. A **Jornada pelo ponto** preenche esses campos ao usar **Usar no holerite**. Não repita essas horas nas faixas de horas extras. O cenário usa acréscimo de 50% e os critérios posteriores a 11/11/2017. |
 | Comissões do mês e Comissões já incluem DSR? | Informe as comissões sem DSR para calculá-lo automaticamente. Se o total já inclui DSR, marque **Sim**: o aplicativo separa as parcelas sem somar um segundo repouso. |
 | Informar dias das comissões? | Para escala ou período parcial, informe os dias úteis e os repousos previstos. Os descansos perdidos são descontados da quantidade de repousos remunerados. |
 | Garantia mínima das comissões | Deixe 0,00 para o salário mínimo nacional em mês completo. Informe um piso maior da categoria ou a garantia proporcional aplicável ao período quando os dias forem informados. |
@@ -715,8 +717,8 @@ Abra pelo cartão **Holerite do mês**, no grupo **Remuneração e custos**. Ele
 | Custo do vale-transporte | Custo das passagens do mês. O desconto é de até 6% do salário-base, sem os adicionais; a empresa paga o restante (Lei 7.418/1985, art. 4º). |
 | Adiantamento (vale) e Descontos sem incidência | Valores que saem do líquido sem reduzir o INSS, o IRRF nem o FGTS, como o vale, o consignado e o plano de saúde. |
 
-- **Remuneração do mês:** salário, adicional, comissões, DSR das comissões, eventual complemento da garantia mínima, demais proventos tributáveis, horas extras, adicional noturno e DSR das horas, menos as faltas, os descansos perdidos e os atrasos. É a base do INSS e do FGTS e define o salário-família.
-- **Rendimentos do IRRF:** a remuneração do mês mais os prêmios. Deles saem o INSS, os dependentes, a pensão e a previdência complementar (deduções legais) ou o desconto simplificado, o que resultar em imposto menor. A base do IRRF aplicada aparece nos informativos.
+- **Remuneração do mês:** salário, adicional, comissões, DSR das comissões, eventual complemento da garantia mínima, demais proventos tributáveis, horas extras, adicional noturno e DSR das horas, menos as faltas, os descansos perdidos e os atrasos. Os intervalos suprimidos são parcelas separadas. Ambos integram a base do INSS e do IRRF; neste cenário, só o intervalo entre jornadas integra o FGTS. As bases aparecem separadas nos informativos quando diferem.
+- **Rendimentos do IRRF:** a remuneração do mês, os intervalos e os prêmios. Deles saem o INSS, os dependentes, a pensão e a previdência complementar (deduções legais) ou o desconto simplificado, o que resultar em imposto menor. A base do IRRF aplicada aparece nos informativos. Critério dos intervalos: CLT, art. 71, § 4º, e [Solução de Consulta Cosit 64/2024](https://normas.receita.fazenda.gov.br/sijut2consulta/anexoOutros.action?idArquivoBinario=73232).
 - **Faltas e descansos perdidos:** salário-dia (salário e adicional ÷ 30) × dias.
 - **Comissões e horas extras:** o DSR sobre comissões é separado do DSR das horas extras. Para comissionista misto, os campos de horas calculam a parcela fixa; o adicional de horas extras sobre as comissões depende das horas efetivamente trabalhadas (Súmula 340 do TST). Informe o valor já apurado em **Proventos tributáveis**, com o DSR correspondente. Para comissionista puro, não use os campos de horas extras ou noturnas nesta tela.
 - **Salário-família:** pela remuneração do mês, uma cota por filho, sem INSS, IRRF nem FGTS. Nos meses de admissão e desligamento, use a calculadora de salário-família, que faz a cota proporcional.
@@ -743,7 +745,7 @@ Abra pelo cartão **Jornada pelo ponto**, no grupo **Remuneração e custos**. A
 | Intervalo intrajornada | Pelo menos 1 hora acima de 6 horas de trabalho e 15 minutos acima de 4 horas (CLT, art. 71), somando as pausas do dia. O tempo que faltou é pago como indenização, com 50% (art. 71, § 4º). |
 | Intervalo entre jornadas | Pelo menos 11 horas entre a última saída de um dia e a primeira entrada do seguinte (CLT, art. 66). As horas que faltaram são pagas como extras (OJ 355 da SDI-1 do TST). |
 
-> **Atenção:** os intervalos suprimidos aparecem nos totais, mas não vão para as horas extras: inclua-os na faixa 1 da calculadora se forem devidos. O botão **Gerar Excel** salva os dias e os totais em uma planilha.
+> **Atenção:** ao usar **Usar no holerite**, os intervalos suprimidos são enviados em campos próprios. **Usar nas horas extras** não inclui esses valores. O botão **Gerar Excel** salva os dias e os totais em uma planilha.
 
 ### 8.16 IRPF anual
 
@@ -1092,7 +1094,7 @@ Regras e exemplos numéricos: [Manual de Orientação do eSocial, seção “Mú
 Abra pelo cartão **Diferenças de reajuste retroativo**, em **Remuneração e custos**.
 
 1. Informe o **início** e o **fim** do período, o **salário anterior** e o **percentual de reajuste**. Clique em **Gerar meses**. O aplicativo preenche até 120 competências com o salário anterior e o salário reajustado.
-2. Revise a grade. Em cada competência, **Salário pago** é o valor efetivamente pago e **Salário devido** é o valor correto após o reajuste. Edite as linhas com antecipação, promoção, admissão, afastamento ou salário proporcional. O botão **Gerar meses** substitui as linhas já editadas.
+2. Revise a grade. Em cada competência, **Salário pago** é o valor efetivamente pago e **Salário devido** é o valor correto após o reajuste. Edite as linhas com antecipação, promoção, admissão, afastamento ou salário proporcional. **Gerar meses** preserva os valores das competências que continuarem no período. Se alguma competência sair do período, o primeiro clique informa quantas serão removidas; clique novamente para confirmar.
 3. Se houver 13º ou férias gozadas **já pagos** com base inferior, adicione um lançamento próprio. Informe o mês, a base salarial paga, a base correta e os **avos** do 13º ou **dias** de férias. A calculadora aplica a proporção e, nas férias, o terço constitucional. O limite é de 10 lançamentos extras.
 4. Clique em **Calcular**. O resultado separa salários, 13º e férias, mostra a diferença de cada lançamento e estima o FGTS à alíquota de 8%. O FGTS é depósito do empregador e não reduz o total bruto devido.
 
@@ -1106,7 +1108,7 @@ Fundamentos: [Manual de Orientação do eSocial](https://www.gov.br/esocial/pt-b
 
 Abra pelo cartão **Média de verbas variáveis**, em **Remuneração e custos**. Esta calculadora organiza os valores mensais que você poderá informar como **Médias de variáveis** nas calculadoras de férias, 13º ou rescisão.
 
-1. Informe início e fim do período em **MM/AAAA** e clique em **Gerar meses**. O limite é de 24 competências. Gerar novamente substitui os valores já digitados.
+1. Informe início e fim do período em **MM/AAAA** e clique em **Gerar meses**. O limite é de 24 competências. Gerar novamente preserva os valores dos meses que continuarem no período e mantém o divisor digitado. Se algum mês sair do período, o primeiro clique avisa quantos serão removidos; clique novamente para confirmar e confira o divisor.
 2. Informe, em cada mês, comissões, DSR, horas extras, adicionais e outras parcelas **de natureza salarial**. Se não houve pagamento em um mês do período, deixe as colunas desse mês zeradas. Não repita na coluna DSR o valor que já estiver incluído nas comissões ou em outra coluna. Quando a regra exigir atualizar o valor das horas ou dos adicionais, ajuste os lançamentos antes de calcular.
 3. Confira o **divisor**. A geração sugere o número de competências, inclusive as zeradas. Altere-o somente quando o critério aplicável ao vínculo e à verba exigir outro divisor. A memória mostra o total e a média de cada categoria, além dos valores lançados em cada mês.
 
@@ -1119,11 +1121,11 @@ Fundamentos: [CLT, art. 142, §§ 1º a 6º](https://www.planalto.gov.br/ccivil_
 Abra pelo cartão **Banco de horas**, em **Remuneração e custos**. A tela concilia um **ciclo** de compensação por vez.
 
 1. Informe início e fim em **dd/MM/aaaa** e escolha o regime: compensação no **mesmo mês**, acordo **individual escrito** de até **seis meses** ou acordo/convenção **coletiva** de até **um ano**. A tela rejeita um ciclo maior que o prazo escolhido.
-2. Escolha **Acompanhamento**, **Fechamento do ciclo** ou **Rescisão**. O salário atual é opcional para acompanhar apenas as horas; para estimar quitação no fechamento ou na rescisão, informe o salário, o divisor de horas e o adicional de pelo menos 50%.
-3. Adicione um lançamento por **Crédito (hora extra)** ou **Compensação (folga)**. Informe a data e a duração em **horas:minutos**, como `1:30`. A descrição é opcional. Os movimentos são mostrados em ordem cronológica. O limite de créditos lançados no mesmo dia é de duas horas; confira também se a jornada total do dia respeita os limites legais e a norma coletiva.
+2. Escolha **Acompanhamento**, **Fechamento do ciclo** ou **Rescisão**. O salário atual é opcional para acompanhar apenas as horas; para estimar quitação no fechamento ou na rescisão, informe o salário, o divisor de horas e o adicional padrão de pelo menos 50%.
+3. Adicione um lançamento por **Crédito (hora extra)** ou **Compensação (folga)**. Informe a data e a duração em **horas:minutos**, como `1:30`. O **Adicional (%)** da linha é opcional para créditos: vazio usa o padrão do ciclo. A descrição é opcional. Os movimentos são mostrados em ordem cronológica. O limite de créditos lançados no mesmo dia é de duas horas; confira também se a jornada total do dia respeita os limites legais e a norma coletiva.
 4. O resultado mostra créditos, compensações e saldo em minutos. No acompanhamento, a quitação é apenas uma estimativa informativa; sem salário informado, aparece como **Não calculada**. No fechamento ou na rescisão, um saldo **positivo** é estimado pelo valor da hora normal acrescido do adicional informado. Saldo negativo aparece como horas a compensar e **não** é lançado automaticamente como desconto.
 
-A quitação estimada aplica **um único adicional** a todo o saldo positivo. Se houver créditos com adicionais diferentes, apure cada parcela conforme o instrumento aplicável. A estimativa não inclui DSR, reflexos, INSS, IRRF ou outros adicionais. Na rescisão, o valor da hora deve usar a remuneração vigente na data do desligamento. Para banco de horas de situação especial, confira as regras específicas do instrumento aplicável antes de usar o valor na folha.
+A quitação estimada consome os créditos mais antigos primeiro quando há compensação e calcula separadamente o saldo de cada adicional, com arredondamento por grupo. Confira se essa ordem corresponde ao instrumento aplicável. A estimativa não inclui DSR, reflexos, INSS, IRRF ou outros adicionais. Na rescisão, o valor da hora deve usar a remuneração vigente na data do desligamento. Para banco de horas de situação especial, confira as regras específicas do instrumento aplicável antes de usar o valor na folha.
 
 Fundamento: [CLT, art. 59, §§ 1º a 6º](https://www.planalto.gov.br/ccivil_03/decreto-lei/del5452compilado.htm).
 
@@ -1372,7 +1374,7 @@ Não. Quando a base ultrapassa o teto da tabela do INSS, o cálculo do INSS é l
 Eles servem para conferência e planejamento. A folha de pagamento considera outras verbas e regras do contrato e da convenção coletiva; confira sempre as premissas listadas em **Observações** no resultado de cada cálculo.
 
 **Por que o INSS das férias parece diferente do que vem no holerite do mês?**
-A calculadora de férias calcula o INSS só sobre as férias + 1/3. Na folha, ele é somado ao INSS do salário do mês e recalculado sobre o total, respeitando o teto.
+A calculadora de férias mantém o INSS provisionado sobre as férias + 1/3 no recibo. Informe **Base fora das férias (R$)** para ver, na memória, o INSS da competência sobre a base reunida e o saldo a descontar na folha após essa provisão.
 
 **Ao instalar uma nova versão, perco as tabelas que alterei?**
 Não. O instalador só copia o banco de dados na primeira instalação; nas atualizações, o seu banco é mantido como está.

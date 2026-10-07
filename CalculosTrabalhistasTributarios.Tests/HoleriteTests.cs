@@ -4,6 +4,7 @@ using CalculosTrabalhistasTributarios.Domain.Comum;
 using CalculosTrabalhistasTributarios.Domain.Pensao;
 using CalculosTrabalhistasTributarios.Domain.Trabalhista;
 using CalculosTrabalhistasTributarios.Tests.Referencia;
+using CalculosTrabalhistasTributarios.Presentation.ViewModels.Calculadoras;
 using Xunit;
 
 namespace CalculosTrabalhistasTributarios.Tests;
@@ -24,6 +25,49 @@ public class HoleriteTests
     private static Task<DemonstrativoDto> CalcularAsync(SimularHoleriteRequest request) => ResultadoAsync(request).Sucesso();
 
     private static decimal Valor(IEnumerable<VerbaDto> verbas, string inicio) => verbas.Single(verba => verba.Descricao.StartsWith(inicio)).Valor;
+
+    [Fact]
+    public async Task Intervalos_entram_separados_com_bases_explicitas()
+    {
+        var resultado = await CalcularAsync(Pedido() with { HorasIntervaloIntrajornada = 1m, HorasIntervaloInterjornada = 2m });
+
+        // R$ 3.000 ÷ 220 × 150%: uma hora = R$ 20,45; duas horas = R$ 40,91.
+        Assert.Equal(20.45m, Valor(resultado.Proventos, "Intervalo intrajornada"));
+        Assert.Equal(40.91m, Valor(resultado.Proventos, "Intervalo entre jornadas"));
+        Assert.Equal(3061.36m, Valor(resultado.Informativos, "Base do INSS"));
+        Assert.Equal(3040.91m, Valor(resultado.Informativos, "Base do FGTS"));
+        Assert.Equal(ModeloTributario.Calcular(Outubro2026, 3061.36m, 0).Inss, Valor(resultado.Descontos, "INSS"));
+        Assert.Equal(ModeloTributario.Arredondar(3040.91m * .08m), Valor(resultado.Informativos, "FGTS"));
+        Assert.DoesNotContain(resultado.Proventos, verba => verba.Descricao.StartsWith("Horas extras"));
+    }
+
+    [Fact]
+    public async Task Campos_de_intervalo_recebem_valores_da_jornada_e_voltam_no_historico()
+    {
+        var calculadora = new CalculadoraHolerite(new SimularHoleriteUseCase(await Ambiente.ConsultaAsync()));
+        calculadora.ImportarCampos(new Dictionary<string, string>
+        {
+            ["Pausa suprimida (h)"] = "0:30",
+            ["Interjornada (h)"] = "1:00"
+        });
+        var salvo = calculadora.ExportarCampos();
+        Assert.Equal("0:30", salvo["Pausa suprimida (h)"]);
+        Assert.Equal("1:00", salvo["Interjornada (h)"]);
+        var reaberto = new CalculadoraHolerite(new SimularHoleriteUseCase(await Ambiente.ConsultaAsync()));
+        reaberto.ImportarCampos(salvo);
+        Assert.Equal("0:30", reaberto.ExportarCampos()["Pausa suprimida (h)"]);
+    }
+
+    [Fact]
+    public async Task Intervalos_rejeitam_horas_negativas_e_competencia_anterior_a_reforma()
+    {
+        Assert.True((await ResultadoAsync(Pedido() with { HorasIntervaloIntrajornada = -1m })).Falhou);
+        Assert.True((await ResultadoAsync(Pedido() with { HorasIntervaloInterjornada = 745m })).Falhou);
+        Assert.True((await ResultadoAsync(Pedido() with
+        {
+            Competencia = new DateOnly(2017, 10, 1), HorasIntervaloIntrajornada = 1m
+        })).Falhou);
+    }
 
     [Fact]
     public async Task Horas_faltas_atrasos_e_descontos_no_mesmo_holerite()

@@ -248,6 +248,8 @@ public sealed class JornadaViewModel : ViewModelBase, ICalculoSalvavel
             valores["Faltas (dias)"] = t.Faltas.ToString(Cultura);
             valores["Descansos perdidos"] = t.DescansosPerdidos.ToString(Cultura);
             valores["Atrasos (horas)"] = Horas(t.Faltantes);
+            valores["Pausa suprimida (h)"] = Horas(t.IntervaloSuprimido);
+            valores["Interjornada (h)"] = Horas(t.InterjornadaSuprimida);
         }
         _navegador.AbrirCalculadora(tipo, valores);
     }

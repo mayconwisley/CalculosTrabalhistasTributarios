@@ -49,4 +49,6 @@ public sealed record SimularHoleriteRequest(
     bool ComissoesIncluemDsr = false,
     int? DiasUteisComissoes = null,
     int? DiasDescansoComissoes = null,
-    decimal PisoGarantidoComissoes = 0m);
+    decimal PisoGarantidoComissoes = 0m,
+    decimal HorasIntervaloIntrajornada = 0m,
+    decimal HorasIntervaloInterjornada = 0m);

@@ -71,7 +71,14 @@ public sealed class CampoBancoHorasViewModel : CampoViewModel
             if (!DateOnly.TryParseExact(linha.Data, "dd/MM/yyyy", Cultura, DateTimeStyles.None, out var data)
                 || linha.Tipo.Valor is not TipoLancamentoBancoHoras tipo || !TentarMinutos(linha.Horas, out var minutos))
                 return Erro.Validacao($"Revise data, tipo e horas do lançamento de {linha.Data}. Use horas como 1:30.");
-            lancamentos.Add(new(data, tipo, minutos, linha.Descricao?.Trim() ?? string.Empty));
+            decimal? adicionalDaLinha = null;
+            if (tipo == TipoLancamentoBancoHoras.Credito && !string.IsNullOrWhiteSpace(linha.Adicional))
+            {
+                if (!LeituraNumerica.TentarLer(linha.Adicional, out var percentual))
+                    return Erro.Validacao($"Revise o adicional do crédito de {linha.Data}: use percentual numérico ou deixe vazio para o adicional padrão.");
+                adicionalDaLinha = percentual;
+            }
+            lancamentos.Add(new(data, tipo, minutos, linha.Descricao?.Trim() ?? string.Empty, adicionalDaLinha));
         }
         return (inicio, fim, regime, situacao, salario, divisor, adicional, lancamentos);
     }
@@ -79,7 +86,7 @@ public sealed class CampoBancoHorasViewModel : CampoViewModel
     public string Exportar() => JsonSerializer.Serialize(new DadosSalvos(Inicio, Fim,
         (RegimeBancoHoras)Regime.Valor, (SituacaoBancoHoras)Situacao.Valor, Salario, Divisor, Adicional,
         Lancamentos.Select(linha => new LinhaSalva(linha.Data, (TipoLancamentoBancoHoras)linha.Tipo.Valor,
-            linha.Horas, linha.Descricao)).ToArray()));
+            linha.Horas, linha.Descricao, linha.Adicional)).ToArray()));
 
     public bool Importar(string? json)
     {
@@ -104,7 +111,7 @@ public sealed class CampoBancoHorasViewModel : CampoViewModel
                 Lancamentos.Add(new()
                 {
                     Data = linha.Data, Tipo = LancamentoBancoHorasViewModel.Tipos.Single(item => (TipoLancamentoBancoHoras)item.Valor == linha.Tipo),
-                    Horas = linha.Horas, Descricao = linha.Descricao
+                    Horas = linha.Horas, Descricao = linha.Descricao, Adicional = linha.Adicional ?? string.Empty
                 });
             Mensagem = string.Empty;
             return true;
@@ -134,7 +141,8 @@ public sealed class CampoBancoHorasViewModel : CampoViewModel
         return true;
     }
 
-    private sealed record LinhaSalva(string Data, TipoLancamentoBancoHoras Tipo, string Horas, string Descricao);
+    private sealed record LinhaSalva(string Data, TipoLancamentoBancoHoras Tipo, string Horas, string Descricao,
+        string? Adicional = null);
     private sealed record DadosSalvos(string Inicio, string Fim, RegimeBancoHoras Regime, SituacaoBancoHoras Situacao,
         string Salario, string Divisor, string Adicional, LinhaSalva[] Lancamentos);
 }

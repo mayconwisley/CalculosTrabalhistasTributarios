@@ -199,6 +199,34 @@ public class DecimoTerceiroTests
 public class FeriasTests
 {
     [Fact]
+    public async Task Concilia_inss_de_ferias_e_salario_da_mesma_competencia()
+    {
+        var competencia = new DateOnly(2026, 10, 1);
+        var resultado = await new SimularFeriasUseCase(await Ambiente.ConsultaAsync())
+            .ExecutarAsync(new SimularFeriasRequest(competencia, 6000m, 0m, 0, 15, false, false, 0,
+                BaseSalarialForaFeriasNoMes: 3000m), default).Sucesso();
+
+        // 15 dias: R$ 3.000 de férias + R$ 1.000 de terço; com R$ 3.000 de salário, base mensal R$ 7.000.
+        var provisao = ModeloTributario.Calcular(competencia, 4000m, 0).Inss;
+        var total = ModeloTributario.Calcular(competencia, 7000m, 0).Inss;
+        Assert.Equal(provisao, resultado.Descontos.Single(verba => verba.Descricao == "INSS sobre as férias").Valor);
+        Assert.Equal(total.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("pt-BR")),
+            resultado.Destaques.Single(item => item.Rotulo == "INSS da folha do mês").Valor);
+        Assert.Contains(resultado.Memoria.Single(item => item.Titulo == "Conciliação do INSS na folha do mês").Formulas,
+            item => item.Titulo == "Saldo a descontar na folha" && item.Formula.Contains((total - provisao).ToString("N2", System.Globalization.CultureInfo.GetCultureInfo("pt-BR"))));
+        Assert.Contains(resultado.Observacoes, texto => texto.Contains("pagamento e gozo na mesma competência"));
+    }
+
+    [Fact]
+    public async Task Concilia_ferias_sem_salario_fora_da_base_apenas_quando_informado()
+    {
+        var resultado = await new SimularFeriasUseCase(await Ambiente.ConsultaAsync())
+            .ExecutarAsync(new SimularFeriasRequest(new DateOnly(2026, 10, 1), 3000m, 0m, 0, 30, false, false, 0), default).Sucesso();
+        Assert.DoesNotContain(resultado.Destaques, item => item.Rotulo == "INSS da folha do mês");
+        Assert.Contains(resultado.Observacoes, texto => texto.Contains("confira o INSS da base reunida"));
+    }
+
+    [Fact]
     public async Task Previdencia_complementar_nas_ferias_deduzida_por_inteiro()
     {
         var resultado = await new SimularFeriasUseCase(await Ambiente.ConsultaAsync())

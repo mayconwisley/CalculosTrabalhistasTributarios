@@ -16,6 +16,7 @@ public sealed class CampoReajusteRetroativoViewModel : CampoViewModel
     private string _salarioAnterior = "0,00";
     private string _percentual = "0,00";
     private string _mensagem = string.Empty;
+    private string? _periodoPendente;
 
     public CampoReajusteRetroativoViewModel() : base("Competências e reflexos", "Gere os meses e ajuste cada linha conforme o valor efetivamente pago e o valor devido.")
     {
@@ -68,19 +69,40 @@ public sealed class CampoReajusteRetroativoViewModel : CampoViewModel
             Mensagem = "O salário reajustado excede o limite de R$ 1 bilhão por mês.";
             return false;
         }
-        Meses.Clear();
+        var anteriores = Meses.GroupBy(linha => linha.Competencia).ToDictionary(grupo => grupo.Key, grupo => grupo.First());
+        var preservados = 0;
+        var gerados = new List<ParcelaReajusteLinhaViewModel>(quantidade);
         for (var indice = 0; indice < quantidade; indice++)
         {
             var competencia = inicio.AddMonths(indice);
-            Meses.Add(new(TipoParcelaReajuste.Salario)
+            var chave = competencia.ToString("MM/yyyy", Cultura);
+            if (anteriores.TryGetValue(chave, out var existente))
             {
-                Competencia = competencia.ToString("MM/yyyy", Cultura),
+                gerados.Add(existente);
+                preservados++;
+                continue;
+            }
+            gerados.Add(new(TipoParcelaReajuste.Salario)
+            {
+                Competencia = chave,
                 BasePaga = salario.ToString("N2", Cultura),
                 BaseDevida = devido.ToString("N2", Cultura),
                 Quantidade = "1"
             });
         }
-        Mensagem = $"{quantidade} competência(s) gerada(s). Revise os meses com antecipação, promoção, afastamento ou férias.";
+        var removidos = Meses.Count - preservados;
+        var periodo = $"{inicio:yyyyMM}-{fim:yyyyMM}";
+        if (removidos > 0 && _periodoPendente != periodo)
+        {
+            _periodoPendente = periodo;
+            Mensagem = $"{removidos} competência(s) ficarão fora do novo período. Clique em Gerar meses novamente para confirmar a remoção; as demais serão preservadas.";
+            return false;
+        }
+        _periodoPendente = null;
+        Meses.Clear();
+        foreach (var linha in gerados) Meses.Add(linha);
+        Mensagem = $"{quantidade} competência(s): {preservados} preservada(s), {quantidade - preservados} nova(s)"
+            + (removidos > 0 ? $", {removidos} fora do período removida(s)" : "") + ". Revise os valores de cada mês.";
         return true;
     }
 
