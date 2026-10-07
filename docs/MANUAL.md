@@ -895,7 +895,7 @@ Abra pelo cartão **Carnê-leão**, no grupo **Impostos e salário**. Ele calcul
 
 Abra **Trabalho no exterior** em **Impostos e salário** para simular um recebimento mensal de trabalho de fonte estrangeira como **pessoa física residente fiscal no Brasil**. Escolha **Emprego assalariado** ou **Serviço como pessoa física**. O segundo permite livro-caixa comprovado; o primeiro não. A calculadora não cobre faturamento por empresa brasileira, não residentes, décimo terceiro ou situações especiais de servidores brasileiros no exterior.
 
-![Trabalho no exterior](imagens/69-trabalho-exterior.png)
+![Formulário de trabalho no exterior preenchido com valores ilustrativos](imagens/69-trabalho-exterior.png)
 
 <!-- pdf:quebra-pagina -->
 
@@ -913,7 +913,13 @@ Abra **Trabalho no exterior** em **Impostos e salário** para simular um recebim
 
 O resultado separa **conversão fiscal** (base do IR e do crédito estrangeiro) de **conversão efetiva** (valor recebido no banco). Taxas, juros bancários e spread afetam o dinheiro disponível, mas não são automaticamente deduções do carnê-leão. O imposto brasileiro usa a tabela mensal da competência e compara deduções legais com desconto simplificado. Quando devido, o DARF 0190 vence no último dia útil do mês seguinte; valores inferiores a R$ 10,00 são acumulados. O resumo mostra o crédito bancário antes do imposto brasileiro e o disponível estimado depois dele.
 
+![Resultado do trabalho no exterior com resumo e demonstrativo](imagens/74-trabalho-exterior-resultado.png)
+
 Exemplo com valores ilustrativos, sem outras deduções: salário de USD 10.000, juros de mora recebidos de USD 50, imposto exterior de USD 2.000, cotação fiscal de R$ 5,00/USD e câmbio efetivo de R$ 4,80/USD. Com taxas de USD 10 e R$ 20 e juros bancários de USD 5, o banco credita **R$ 38.548,00**. Para outubro de 2026, o IR brasileiro sobre o salário é **R$ 12.674,29** antes do crédito. Se a compensação de **R$ 10.000,00** for legalmente cabível, restam **R$ 2.674,29** de carnê-leão e **R$ 35.873,71** disponíveis após os tributos.
+
+Role a página para conferir a memória de cálculo da conversão, do carnê-leão e do crédito do imposto estrangeiro:
+
+![Memória de cálculo do trabalho no exterior](imagens/75-trabalho-exterior-memoria.png)
 
 Use um recebimento por simulação. Imposto exterior pago em outra data, outros rendimentos do mês, previdência estrangeira, imposto devido no outro país e aplicação concreta de tratados exigem apuração própria. A atualização consulta apenas o dólar fiscal da Receita e, quando disponível, uma referência de [câmbio PTAX do Banco Central](https://dadosabertos.bcb.gov.br/dataset/dolar-americano-usd-todos-os-boletins-diarios) para a moeda selecionada. **Câmbio efetivo, taxas, juros e IR estrangeiro retido não podem ser apurados de uma cotação pública:** informe os valores da operação e dos comprovantes. Consulte as orientações da [Receita sobre rendimentos do exterior](https://www.gov.br/receitafederal/pt-br/assuntos/meu-imposto-de-renda/pagamento/carne-leao/rendimentos) e [deduções do carnê-leão](https://www.gov.br/receitafederal/pt-br/assuntos/meu-imposto-de-renda/pagamento/carne-leao/deducoes).
 
@@ -996,6 +1002,8 @@ Abra pelo cartão **Abono salarial (PIS/Pasep)**, no grupo **FGTS, afastamentos 
 
 Abra pelo cartão **Comissões e DSR**, no grupo **Remuneração e custos**. A calculadora separa comissões e repouso remunerado, mostra a remuneração do mês com INSS e IRRF, o depósito de FGTS e o impacto líquido das comissões.
 
+![Formulário de comissões e DSR preenchido com dados fictícios](imagens/76-comissoes-dsr-formulario.png)
+
 | Campo | O que informar |
 | --- | --- |
 | Salário fixo | Parcela fixa mensal; deixe 0,00 para comissionista puro. |
@@ -1005,6 +1013,8 @@ Abra pelo cartão **Comissões e DSR**, no grupo **Remuneração e custos**. A c
 | Repousos perdidos | Repousos ou feriados sem remuneração por falta injustificada; são retirados dos repousos previstos antes de calcular o DSR. |
 | Garantia mínima do período | Deixe 0,00 para usar o salário mínimo nacional no mês completo. Informe o piso da categoria quando maior. Com dias informados, preencha a garantia aplicável ao período. |
 | Dependentes (IRRF) | Dependentes usados na modalidade de deduções legais do IRRF. |
+
+![Resultado da simulação de comissões e DSR](imagens/77-comissoes-dsr-resultado.png)
 
 - **DSR:** comissões sem DSR ÷ dias úteis × repousos remunerados. A calculadora arredonda o DSR aos centavos. Se o total informado já contém DSR, ela separa o total proporcionalmente aos dias, preservando o valor pago.
 - **Garantia mínima:** quando salário fixo + comissões + DSR fica abaixo da garantia informada ou do salário mínimo, a diferença aparece como complemento salarial, com INSS, IRRF e FGTS. A garantia de quem recebe remuneração variável está prevista no art. 7º, VII, da Constituição e na Lei 8.716/1993.
@@ -1016,11 +1026,15 @@ Abra pelo cartão **Comissões e DSR**, no grupo **Remuneração e custos**. A c
 
 Abra pelo cartão **INSS em múltiplos vínculos**, no grupo **Impostos e salário**. Informe uma competência a partir de 03/2020. A tela já apresenta dois vínculos, que é a quantidade mínima para este cálculo:
 
+![Formulário de INSS em múltiplos vínculos com dois empregadores fictícios](imagens/78-inss-vinculos-formulario.png)
+
 1. Em cada vínculo, selecione a **Categoria** e digite a **Remuneração (R$)** da competência. A **Fonte** é opcional; pode ser o nome da empresa ou do tomador e aparece no demonstrativo.
 2. Use **+ Adicionar vínculo** para incluir outros empregos ou serviços. A ordem na tela é a ordem de desconto. Use as setas **↑** e **↓** para reorganizar; o botão **×** remove um vínculo adicional.
 3. Selecione **Calcular** para ver a contribuição por vínculo, as faixas usadas e a parcela do teto disponível em cada etapa.
 
 As categorias disponíveis são **Empregado**, **Doméstico**, **Avulso**, **Individual (11%)** para contribuinte individual com retenção pela empresa e **Individual EBAS (20%)** quando o tomador for entidade beneficente nessa condição. A simulação aceita de 2 a 50 vínculos. O aplicativo não precisa do CNPJ ou CPF para simular.
+
+![Resultado do INSS distribuído entre dois vínculos](imagens/79-inss-vinculos-resultado.png)
 
 - **Teto compartilhado:** a remuneração de todos os vínculos ocupa o mesmo limite máximo mensal do salário de contribuição. Quando um vínculo cruza o teto, apenas a parte residual sofre desconto; os seguintes não geram novo desconto.
 - **Faixas progressivas:** empregado, doméstico e avulso compartilham as faixas na ordem informada. Cada faixa de cada vínculo é truncada em centavos. O contribuinte individual ocupa o teto, mas não avança a faixa progressiva dos empregados.
@@ -1034,10 +1048,14 @@ Regras e exemplos numéricos: [Manual de Orientação do eSocial, seção “Mú
 
 Abra pelo cartão **Diferenças de reajuste retroativo**, em **Remuneração e custos**.
 
+![Formulário de reajuste retroativo com três competências e reflexo de 13º salário](imagens/80-reajuste-retroativo-formulario.png)
+
 1. Informe o **início** e o **fim** do período, o **salário anterior** e o **percentual de reajuste**. Clique em **Gerar meses**. O aplicativo preenche até 120 competências com o salário anterior e o salário reajustado.
 2. Revise a grade. Em cada competência, **Salário pago** é o valor efetivamente pago e **Salário devido** é o valor correto após o reajuste. Edite as linhas com antecipação, promoção, admissão, afastamento ou salário proporcional. O botão **Gerar meses** substitui as linhas já editadas.
 3. Se houver 13º ou férias gozadas **já pagos** com base inferior, adicione um lançamento próprio. Informe o mês, a base salarial paga, a base correta e os **avos** do 13º ou **dias** de férias. A calculadora aplica a proporção e, nas férias, o terço constitucional. O limite é de 10 lançamentos extras.
 4. Clique em **Calcular**. O resultado separa salários, 13º e férias, mostra a diferença de cada lançamento e estima o FGTS à alíquota de 8%. O FGTS é depósito do empregador e não reduz o total bruto devido.
+
+![Resultado das diferenças salariais e reflexo de 13º salário](imagens/81-reajuste-retroativo-resultado.png)
 
 **Atenção ao mês das férias:** informe na linha mensal apenas o salário efetivamente pago ou devido fora da parcela de férias; registre as férias gozadas no lançamento específico para evitar contagem em duplicidade. Férias indenizadas não usam este lançamento.
 
@@ -1049,9 +1067,13 @@ Fundamentos: [Manual de Orientação do eSocial](https://www.gov.br/esocial/pt-b
 
 Abra pelo cartão **Média de verbas variáveis**, em **Remuneração e custos**. Esta calculadora organiza os valores mensais que você poderá informar como **Médias de variáveis** nas calculadoras de férias, 13º ou rescisão.
 
+![Formulário de médias de verbas variáveis com três meses fictícios](imagens/82-media-verbas-formulario.png)
+
 1. Informe início e fim do período em **MM/AAAA** e clique em **Gerar meses**. O limite é de 24 competências. Gerar novamente substitui os valores já digitados.
 2. Informe, em cada mês, comissões, DSR, horas extras, adicionais e outras parcelas **de natureza salarial**. Se não houve pagamento em um mês do período, deixe as colunas desse mês zeradas. Não repita na coluna DSR o valor que já estiver incluído nas comissões ou em outra coluna. Quando a regra exigir atualizar o valor das horas ou dos adicionais, ajuste os lançamentos antes de calcular.
 3. Confira o **divisor**. A geração sugere o número de competências, inclusive as zeradas. Altere-o somente quando o critério aplicável ao vínculo e à verba exigir outro divisor. A memória mostra o total e a média de cada categoria, além dos valores lançados em cada mês.
+
+![Resultado da média mensal de comissões, DSR, horas extras e adicionais](imagens/83-media-verbas-resultado.png)
 
 A **média mensal total** é a soma de todas as verbas informadas dividida pelo divisor, arredondada nos centavos. As médias individuais são arredondadas separadamente e podem somar um centavo a mais ou a menos. Esta ferramenta não determina automaticamente qual período ou divisor deve ser usado em cada verba: para comissões nas férias, a CLT prevê a média dos 12 meses anteriores à concessão; para adicionais e horas de valor não uniforme, o período aquisitivo e reajustes posteriores podem alterar a base. Para o 13º, confira os meses trabalhados no ano e a revisão após dezembro. Consulte também a norma coletiva.
 
@@ -1061,10 +1083,14 @@ Fundamentos: [CLT, art. 142, §§ 1º a 6º](https://www.planalto.gov.br/ccivil_
 
 Abra pelo cartão **Banco de horas**, em **Remuneração e custos**. A tela concilia um **ciclo** de compensação por vez.
 
+![Formulário de banco de horas com crédito e compensação fictícios](imagens/84-banco-horas-formulario.png)
+
 1. Informe início e fim em **dd/MM/aaaa** e escolha o regime: compensação no **mesmo mês**, acordo **individual escrito** de até **seis meses** ou acordo/convenção **coletiva** de até **um ano**. A tela rejeita um ciclo maior que o prazo escolhido.
 2. Escolha **Acompanhamento**, **Fechamento do ciclo** ou **Rescisão**. O salário atual é opcional para acompanhar apenas as horas; para estimar quitação no fechamento ou na rescisão, informe o salário, o divisor de horas e o adicional de pelo menos 50%.
 3. Adicione um lançamento por **Crédito (hora extra)** ou **Compensação (folga)**. Informe a data e a duração em **horas:minutos**, como `1:30`. A descrição é opcional. Os movimentos são mostrados em ordem cronológica. O limite de créditos lançados no mesmo dia é de duas horas; confira também se a jornada total do dia respeita os limites legais e a norma coletiva.
 4. O resultado mostra créditos, compensações e saldo em minutos. No acompanhamento, a quitação é apenas uma estimativa informativa; sem salário informado, aparece como **Não calculada**. No fechamento ou na rescisão, um saldo **positivo** é estimado pelo valor da hora normal acrescido do adicional informado. Saldo negativo aparece como horas a compensar e **não** é lançado automaticamente como desconto.
+
+![Resultado do banco de horas com saldo positivo e quitação estimada](imagens/85-banco-horas-resultado.png)
 
 A quitação estimada aplica **um único adicional** a todo o saldo positivo. Se houver créditos com adicionais diferentes, apure cada parcela conforme o instrumento aplicável. A estimativa não inclui DSR, reflexos, INSS, IRRF ou outros adicionais. Na rescisão, o valor da hora deve usar a remuneração vigente na data do desligamento. Para banco de horas de situação especial, confira as regras específicas do instrumento aplicável antes de usar o valor na folha.
 

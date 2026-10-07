@@ -334,3 +334,16 @@ Considere a tarefa concluída quando os itens aplicáveis estiverem atendidos:
 - Manual e demais documentos afetados estão coerentes com o código entregue.
 - Arquivos temporários foram removidos e alterações preexistentes foram preservadas.
 - A resposta final descreve de forma curta o resultado, a validação realizada e o que ainda não pôde ser comprovado.
+
+## Execução de tarefas longas
+
+- Divida mudanças grandes em etapas independentes e verificáveis.
+- Antes de iniciar uma etapa extensa, identifique os arquivos e componentes afetados.
+- Priorize concluir uma etapa antes de iniciar a próxima.
+- Não deixe refatorações parcialmente aplicadas entre camadas.
+- Após cada etapa relevante, execute build e os testes relacionados.
+- Se houver risco de interrupção por limite de execução, priorize:
+  1. manter o projeto compilável;
+  2. concluir alterações já iniciadas;
+  3. registrar claramente o trabalho restante;
+  4. não iniciar uma nova refatoração extensa.
