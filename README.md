@@ -77,7 +77,7 @@ Todas usam a mesma janela, com resumo, demonstrativo no formato de holerite, val
 | Horas extras e adicionais | Horas extras em duas faixas, adicional noturno urbano com a hora reduzida ou rural de 25% sem redução e o reflexo no DSR, com o líquido do mês. |
 | Insalubridade e periculosidade | Insalubridade de 10%, 20% ou 40% sobre o salário mínimo (ou outra base de convenção) e periculosidade de 30%, aplicando o maior quando os dois se aplicam. |
 | Salário-família | Direito e valor pela remuneração e pelos filhos, com as duas faixas anteriores a 2020 e a cota proporcional na admissão e no desligamento. |
-| 13º salário | 1ª e 2ª parcelas, com médias, avos e INSS e IRRF de tributação exclusiva. |
+| 13º salário | 1ª e 2ª parcelas, com médias, avos e INSS e IRRF de tributação exclusiva; complemento das médias de variáveis pago até 10 de janeiro, com o IRRF como RRA de um mês ou pelo recálculo do 13º. |
 | Férias | Férias com 1/3, dias de direito conforme as faltas, venda de 1/3 (abono, isento) e adiantamento do 13º. |
 | PLR | IRRF pela tabela anual exclusiva da Lei 10.101/2000, recalculado sobre o total do ano, com a dedução da pensão alimentícia e sem INSS e FGTS. |
 | Rescisão | Verbas por motivo de desligamento, inclusive a rescisão antecipada do contrato a prazo (arts. 479 e 480), aviso prévio proporcional com projeção, férias vencidas (em dobro) e proporcionais, indenização adicional da data-base, multa por atraso (art. 477), DSR perdido, verbas indenizatórias e outros descontos (limitados pelo art. 477, § 5º), FGTS, multa, saque e o seguro-desemprego estimado; para o doméstico, a indenização compensatória de 3,2% no lugar da multa, e para o aprendiz, FGTS de 2%. |
@@ -88,6 +88,7 @@ Todas usam a mesma janela, com resumo, demonstrativo no formato de holerite, val
 | Trabalho intermitente | Pagamento de cada convocação: horas, DSR, férias proporcionais com 1/3, 13º proporcional e FGTS (CLT, art. 452-A). |
 | Afastamentos e licenças | Doença e acidente de trabalho (15 dias da empresa e o auxílio estimado do INSS), licença-maternidade (120 ou 180 dias) e paternidade (LC 229/2026), com FGTS e estabilidade. |
 | Saque-aniversário do FGTS | Composição automática do saldo, exclusão da multa incluída, desconto da parcela cedida e análise dos impedimentos informados para nova antecipação. |
+| Conferência do FGTS | Devido e depositado por competência (8%, 2% do aprendiz, 8% + 3,2% do doméstico), diferenças mensais e rescisórias, vencimentos do dia 7 e do dia 20 do FGTS Digital, reflexo na multa e envio dos depósitos devidos à rescisão. |
 | Abono salarial (PIS/Pasep) | Direito e valor do abono, com o limite de renda da EC 135/2024. |
 | Pró-labore e autônomo | INSS de 11% até o teto, IRRF, ISS do autônomo e o custo para a empresa. |
 | CLT x PJ | O ano do mesmo profissional como CLT e como PJ no Simples Nacional (anexos III e V, com o fator R): total para o profissional, custo para a empresa e o valor de PJ que iguala o CLT. |

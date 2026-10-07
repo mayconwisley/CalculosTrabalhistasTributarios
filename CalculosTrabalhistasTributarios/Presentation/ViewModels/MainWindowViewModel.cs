@@ -94,6 +94,7 @@ public sealed class MainWindowViewModel : ViewModelBase
             [
                 Calculadora("Afastamentos e licenças", "Doença, acidente de trabalho e licenças: quem paga, quanto e até quando.", TipoCalculadora.Afastamento),
                 Calculadora("Saque-aniversário do FGTS", "O valor que pode ser sacado no aniversário e o efeito numa dispensa.", TipoCalculadora.SaqueAniversario),
+                Calculadora("Conferência do FGTS", "Devido e depositado por competência, com diferenças mensais e rescisórias.", TipoCalculadora.ConferenciaFgts),
                 Calculadora("Abono salarial (PIS/Pasep)", "Direito e valor do abono pelos meses trabalhados no ano-base.", TipoCalculadora.AbonoSalarial)
             ])
         ];

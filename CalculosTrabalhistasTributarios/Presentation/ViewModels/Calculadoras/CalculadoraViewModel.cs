@@ -63,6 +63,7 @@ public sealed class CalculadoraViewModel : ViewModelBase, ICalculoSalvavel
         UsarNaRescisaoCommand = new RelayCommand(_ => TransferirQuitacao(TipoCalculadora.Rescisao),
             _ => _demonstrativo?.QuitacaoBancoHoras?.Situacao == SituacaoBancoHoras.Rescisao && _abrirCalculadora is not null);
         CalcularRraCommand = new RelayCommand(_ => AbrirRra(), _ => PodeCalcularRra && _abrirCalculadora is not null);
+        LevarFgtsRescisaoCommand = new RelayCommand(_ => LevarFgtsRescisao(), _ => PodeLevarFgtsRescisao && _abrirCalculadora is not null);
     }
 
     public string Titulo => _calculadora.Titulo;
@@ -70,16 +71,18 @@ public sealed class CalculadoraViewModel : ViewModelBase, ICalculoSalvavel
     public string InstrucaoInicial => _calculadora.InstrucaoInicial;
     public IReadOnlyList<CampoViewModel> Campos { get; }
     public bool UsaFormularioLarguraTotal => Campos.Count == 1 && Campos[0] is CampoBancoHorasViewModel;
-    public bool UsaBotaoAbaixoFormulario => UsaFormularioLarguraTotal || Campos.Any(campo => campo is CampoDepositosFgtsViewModel or CampoQuitacaoBancoHorasViewModel or CampoParcelasRraViewModel or CampoMesesSimplesViewModel);
+    public bool UsaBotaoAbaixoFormulario => UsaFormularioLarguraTotal || Campos.Any(campo => campo is CampoDepositosFgtsViewModel or CampoQuitacaoBancoHorasViewModel or CampoParcelasRraViewModel or CampoMesesSimplesViewModel or CampoConferenciaFgtsViewModel);
     public ICommand CalcularCommand { get; }
     public ICommand ExportarPdfCommand { get; }
     public ICommand ExportarExcelCommand { get; }
     public ICommand UsarNoHoleriteCommand { get; }
     public ICommand UsarNaRescisaoCommand { get; }
     public ICommand CalcularRraCommand { get; }
+    public ICommand LevarFgtsRescisaoCommand { get; }
     public bool PodeUsarNoHolerite => _demonstrativo?.QuitacaoBancoHoras?.Situacao == SituacaoBancoHoras.Fechamento;
     public bool PodeUsarNaRescisao => _demonstrativo?.QuitacaoBancoHoras?.Situacao == SituacaoBancoHoras.Rescisao;
     public bool PodeCalcularRra => _demonstrativo?.ParcelasRra is { Count: > 0 };
+    public bool PodeLevarFgtsRescisao => _demonstrativo?.DepositosFgts is { Depositos.Count: > 0 };
     public HistoricoDaJanela Historico { get; }
 
     public string TipoHistorico => $"Calculadora.{_tipo}";
@@ -98,6 +101,7 @@ public sealed class CalculadoraViewModel : ViewModelBase, ICalculoSalvavel
         ((RelayCommand)UsarNoHoleriteCommand).RaiseCanExecuteChanged();
         ((RelayCommand)UsarNaRescisaoCommand).RaiseCanExecuteChanged();
         ((RelayCommand)CalcularRraCommand).RaiseCanExecuteChanged();
+        ((RelayCommand)LevarFgtsRescisaoCommand).RaiseCanExecuteChanged();
     }
 
     public bool TemResultado { get => _temResultado; private set => SetProperty(ref _temResultado, value); }
@@ -167,9 +171,11 @@ public sealed class CalculadoraViewModel : ViewModelBase, ICalculoSalvavel
         OnPropertyChanged(nameof(PodeUsarNoHolerite));
         OnPropertyChanged(nameof(PodeUsarNaRescisao));
         OnPropertyChanged(nameof(PodeCalcularRra));
+        OnPropertyChanged(nameof(PodeLevarFgtsRescisao));
         ((RelayCommand)UsarNoHoleriteCommand).RaiseCanExecuteChanged();
         ((RelayCommand)UsarNaRescisaoCommand).RaiseCanExecuteChanged();
         ((RelayCommand)CalcularRraCommand).RaiseCanExecuteChanged();
+        ((RelayCommand)LevarFgtsRescisaoCommand).RaiseCanExecuteChanged();
         ((AsyncRelayCommand)ExportarPdfCommand).RaiseCanExecuteChanged();
         ((AsyncRelayCommand)ExportarExcelCommand).RaiseCanExecuteChanged();
     }
@@ -187,6 +193,17 @@ public sealed class CalculadoraViewModel : ViewModelBase, ICalculoSalvavel
     {
         if (_demonstrativo?.ParcelasRra is { Count: > 0 } parcelas && _abrirCalculadora is not null)
             _abrirCalculadora(TipoCalculadora.Rra, new Dictionary<string, string> { ["Parcelas do RRA"] = CampoParcelasRraViewModel.CriarImportacao(parcelas) });
+    }
+
+    // A rescisão recebe o FGTS devido de cada competência anterior ao desligamento e, se informada, a data de desligamento.
+    private void LevarFgtsRescisao()
+    {
+        if (_demonstrativo?.DepositosFgts is not { Depositos.Count: > 0 } fgts || _abrirCalculadora is null)
+            return;
+        var valores = new Dictionary<string, string> { ["Depósitos históricos do FGTS"] = CampoDepositosFgtsViewModel.CriarImportacao(fgts.Depositos) };
+        if (fgts.Desligamento is { } desligamento)
+            valores["Data de desligamento"] = desligamento.ToString("dd/MM/yyyy", Cultura);
+        _abrirCalculadora(TipoCalculadora.Rescisao, valores);
     }
 
     private async Task ExportarPdfAsync()

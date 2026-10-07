@@ -43,9 +43,17 @@ public sealed class CamposPensao
     public CampoTextoViewModel Valor { get; }
     public IEnumerable<CampoViewModel> Campos => [Forma, Percentual, Valor];
 
+    /// <summary>Mostra ou oculta a pensão inteira; ao mostrar, o percentual e o valor seguem a forma escolhida.</summary>
+    public void Exibir(bool visivel)
+    {
+        Forma.Visivel = visivel;
+        Ajustar();
+    }
+
     private void Ajustar()
     {
-        var forma = Forma.Selecionada.Valor as BasePensao?;
+        // Com a pensão oculta, uma forma escolhida (por exemplo, ao reabrir o histórico) não mostra o percentual nem o valor.
+        var forma = Forma.Visivel ? Forma.Selecionada.Valor as BasePensao? : null;
         Percentual.Visivel = forma is BasePensao.RendimentosLiquidos or BasePensao.RendimentosBrutos or BasePensao.SalarioMinimo;
         Valor.Visivel = forma == BasePensao.ValorFixo;
     }

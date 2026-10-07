@@ -185,6 +185,43 @@
                 </ScrollViewer>
             </StackPanel>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type calculadoras:CampoConferenciaFgtsViewModel}">
+            <StackPanel Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ItemsControl}}" Margin="0,0,0,14" Visibility="{Binding Visivel, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <TextBlock Text="Competências conferidas" FontWeight="SemiBold" Margin="0,0,0,5" />
+                <TextBlock Text="Informe, em cada competência, a remuneração que integra o FGTS (salário, horas extras, adicionais, 13º no mês do pagamento, férias gozadas com o terço) e o depósito que consta no extrato ou na guia. A rescisória é a do mês do desligamento, com as verbas rescisórias e o aviso prévio indenizado." FontSize="12" Foreground="{DynamicResource MutedTextBrush}" TextWrapping="Wrap" Margin="0,0,0,9" />
+                <WrapPanel Margin="0,0,0,2">
+                    <StackPanel Width="140" Margin="0,0,8,8"><TextBlock Text="Início (MM/AAAA)" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" /><TextBox Text="{Binding Inicio, UpdateSourceTrigger=PropertyChanged}" behaviors:MascaraData.Tipo="Competencia" TextAlignment="Center" AutomationProperties.Name="Início das competências do FGTS" /></StackPanel>
+                    <StackPanel Width="140" Margin="0,0,8,8"><TextBlock Text="Fim (MM/AAAA)" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" /><TextBox Text="{Binding Fim, UpdateSourceTrigger=PropertyChanged}" behaviors:MascaraData.Tipo="Competencia" TextAlignment="Center" AutomationProperties.Name="Fim das competências do FGTS" /></StackPanel>
+                    <StackPanel Width="170" Margin="0,0,8,8"><TextBlock Text="Remuneração por mês (R$)" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" /><TextBox Text="{Binding RemuneracaoMensal, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" behaviors:FormatacaoNumerica.Formato="N2" AutomationProperties.Name="Remuneração sugerida para os meses gerados" /></StackPanel>
+                    <StackPanel Width="170" Margin="0,0,8,8"><TextBlock Text="Depósito por mês (R$)" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" /><TextBox Text="{Binding DepositoMensal, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" behaviors:FormatacaoNumerica.Formato="N2" AutomationProperties.Name="Depósito sugerido para os meses gerados" /></StackPanel>
+                    <Button Content="Gerar meses" Command="{Binding GerarCommand}" Padding="12,6" Margin="0,0,8,8" VerticalAlignment="Bottom" ToolTip="Gera as competências mensais do período e preserva os valores já digitados" AutomationProperties.Name="Gerar competências do FGTS a conferir" />
+                    <Button Content="+ Mês" Command="{Binding AdicionarCommand}" Padding="10,6" Margin="0,0,8,8" VerticalAlignment="Bottom" AutomationProperties.Name="Adicionar competência mensal do FGTS" />
+                    <Button Content="+ Rescisória" Command="{Binding AdicionarRescisoriaCommand}" Padding="10,6" Margin="0,0,8,8" VerticalAlignment="Bottom" AutomationProperties.Name="Adicionar competência rescisória do FGTS" />
+                </WrapPanel>
+                <TextBlock Text="{Binding Mensagem}" Foreground="{DynamicResource AccentBrush}" TextWrapping="Wrap" Margin="0,0,0,6" />
+                <Grid Margin="8,0,8,5"><Grid.ColumnDefinitions><ColumnDefinition Width="150" /><ColumnDefinition Width="170" /><ColumnDefinition Width="*" /><ColumnDefinition Width="*" /><ColumnDefinition Width="50" /></Grid.ColumnDefinitions>
+                    <TextBlock Text="Competência (MM/AAAA)" FontSize="11" Foreground="{DynamicResource MutedTextBrush}" />
+                    <TextBlock Grid.Column="1" Text="Tipo" FontSize="11" Foreground="{DynamicResource MutedTextBrush}" />
+                    <TextBlock Grid.Column="2" Text="Remuneração (R$)" FontSize="11" Foreground="{DynamicResource MutedTextBrush}" />
+                    <TextBlock Grid.Column="3" Text="Depósito informado (R$)" FontSize="11" Foreground="{DynamicResource MutedTextBrush}" />
+                </Grid>
+                <ScrollViewer MaxHeight="330" VerticalScrollBarVisibility="Auto">
+                    <ItemsControl ItemsSource="{Binding Linhas}" Focusable="False">
+                        <ItemsControl.ItemTemplate><DataTemplate>
+                            <Border Background="{DynamicResource ResultBackgroundBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="8" Margin="0,0,0,6">
+                                <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="150" /><ColumnDefinition Width="170" /><ColumnDefinition Width="*" /><ColumnDefinition Width="*" /><ColumnDefinition Width="50" /></Grid.ColumnDefinitions>
+                                    <TextBox Text="{Binding Competencia, UpdateSourceTrigger=PropertyChanged}" behaviors:MascaraData.Tipo="Competencia" TextAlignment="Center" Margin="0,0,8,0" AutomationProperties.Name="Competência do FGTS conferida" />
+                                    <ComboBox Grid.Column="1" ItemsSource="{Binding Opcoes}" SelectedItem="{Binding Tipo, Mode=TwoWay}" Margin="0,0,8,0" MinHeight="54" AutomationProperties.Name="Tipo da competência do FGTS"><ComboBox.ItemTemplate><DataTemplate><TextBlock Text="{Binding Texto}" /></DataTemplate></ComboBox.ItemTemplate></ComboBox>
+                                    <TextBox Grid.Column="2" Text="{Binding Remuneracao, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" Margin="0,0,8,0" behaviors:FormatacaoNumerica.Formato="N2" AutomationProperties.Name="Remuneração da competência do FGTS" />
+                                    <TextBox Grid.Column="3" Text="{Binding Deposito, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" Margin="0,0,8,0" behaviors:FormatacaoNumerica.Formato="N2" AutomationProperties.Name="Depósito informado da competência do FGTS" />
+                                    <Button Grid.Column="4" Content="×" Padding="0" MinHeight="34" Command="{Binding DataContext.RemoverCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" CommandParameter="{Binding}" ToolTip="Remover competência" AutomationProperties.Name="Remover competência do FGTS" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate></ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </StackPanel>
+        </DataTemplate>
         <DataTemplate DataType="{x:Type calculadoras:CampoMesesSimplesViewModel}">
             <StackPanel Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ItemsControl}}" Margin="0,0,0,14" Visibility="{Binding Visivel, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <TextBlock Text="Receita e folha dos meses anteriores" FontWeight="SemiBold" Margin="0,0,0,5" />
@@ -445,6 +482,7 @@
                                 <Button Content="Usar no holerite" Command="{Binding UsarNoHoleriteCommand}" Margin="0,0,8,8" ToolTip="Abre o holerite com as parcelas de quitação para conferência" AutomationProperties.Name="Transferir quitação do banco de horas para o holerite" Visibility="{Binding PodeUsarNoHolerite, Converter={StaticResource BooleanToVisibilityConverter}}" />
                                 <Button Content="Usar na rescisão" Command="{Binding UsarNaRescisaoCommand}" Margin="0,0,8,8" ToolTip="Abre a rescisão com as parcelas de quitação para conferência" AutomationProperties.Name="Transferir quitação do banco de horas para a rescisão" Visibility="{Binding PodeUsarNaRescisao, Converter={StaticResource BooleanToVisibilityConverter}}" />
                                 <Button Content="Calcular o IR (RRA)" Command="{Binding CalcularRraCommand}" Margin="0,0,8,8" ToolTip="Abre o IR sobre rendimentos recebidos acumuladamente com as diferenças por competência" AutomationProperties.Name="Calcular o IR das diferenças como rendimentos recebidos acumuladamente" Visibility="{Binding PodeCalcularRra, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                <Button Content="Levar à rescisão" Command="{Binding LevarFgtsRescisaoCommand}" Margin="0,0,8,8" ToolTip="Abre a rescisão com o FGTS devido de cada competência no histórico de depósitos" AutomationProperties.Name="Levar os depósitos conferidos do FGTS à rescisão" Visibility="{Binding PodeLevarFgtsRescisao, Converter={StaticResource BooleanToVisibilityConverter}}" />
                             </WrapPanel>
                             <TextBlock Text="Resumo executivo" FontSize="15" FontWeight="SemiBold" />
                             <ItemsControl ItemsSource="{Binding Destaques}" Margin="0,10,0,20">

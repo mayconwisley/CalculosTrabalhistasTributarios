@@ -429,6 +429,7 @@ Em raros casos, o arredondamento em centavos impede chegar exatamente ao valor. 
 
 | Campo | O que informar |
 | --- | --- |
+| Cálculo | **1ª e 2ª parcelas** (padrão) ou **Complemento das médias (até 10/01)**, descrito em 8.3.1. |
 | Competência do pagamento | Mês da 2ª parcela, normalmente 12/AAAA. |
 | Salário e Médias de variáveis | Salário de dezembro e a média anual de horas extras, comissões e adicionais. |
 | Avos | Meses do ano com 15 dias ou mais de trabalho, de 1 a 12. |
@@ -441,6 +442,28 @@ Em raros casos, o arredondamento em centavos impede chegar exatamente ao valor. 
 - **Previdência complementar:** deduzida da base do IRRF do 13º até 12% do valor integral (Lei 9.532/1997, art. 11; Solução de Consulta Cosit 185/2024), só nas deduções legais. Como o 13º é tributado à parte e não entra na declaração anual, o limite é aplicado na fonte; o excedente é descontado, mas não reduz o IRRF.
 - O INSS e o IRRF são calculados sobre o 13º integral, à parte do salário de dezembro. Como o 13º tem tributação exclusiva, o IRRF dele é descontado mesmo quando não passa de R$ 10,00.
 - Se a 2ª parcela ficar negativa, porque a 1ª parcela já paga supera o que resta depois dos descontos, o aplicativo avisa nas observações.
+
+#### 8.3.1 Complemento das médias de variáveis
+
+Para quem recebe horas extras, comissões ou adicionais, a 2ª parcela usa a média das variáveis até novembro. Até 10 de janeiro, o 13º é refeito com as variáveis de dezembro, e a diferença é paga ou compensada (Decreto 57.155/1965, art. 2º). Em **Cálculo**, escolha **Complemento das médias (até 10/01)**.
+
+![Formulário do complemento do 13º com as variáveis do ano](imagens/90-decimo-terceiro-complemento-formulario.png)
+
+| Campo | O que informar |
+| --- | --- |
+| Competência do pagamento | Dezembro do ano do 13º, mês da 2ª parcela: define as tabelas do INSS e do recálculo do IRRF. |
+| Salário, Médias de variáveis e Avos | O salário e a média **usada na 2ª parcela**, com os avos do ano. |
+| Variáveis de janeiro a novembro e de dezembro | A soma das variáveis do ano até novembro e as de dezembro. A média final é a soma ÷ avos (12 no ano completo). |
+| Pagamento do complemento | Mês em que a diferença é paga, normalmente janeiro do ano seguinte. |
+| IRRF no ano seguinte | **RRA de 1 mês (eSocial)** ou **Recálculo do 13º (IN 1.500, art. 13)**. |
+
+![Resultado do complemento do 13º com o 13º de dezembro e o revisado](imagens/91-decimo-terceiro-complemento-resultado.png)
+
+- **Comparação:** a tabela mostra o 13º de dezembro e o revisado, com a média, o 13º integral, o INSS e o IRRF recalculado.
+- **INSS:** a diferença entre o INSS sobre o 13º revisado e o já descontado, pela tabela de dezembro.
+- **IRRF:** pago no mesmo ano, o 13º total é recalculado pela tabela de dezembro, deduzido o imposto já retido (IN RFB 1.500/2014, art. 13, § 3º). Pago no ano seguinte, o eSocial orienta informar a diferença de 13º como RRA de um mês, no período de referência de dezembro; a IN prevê o recálculo. Os dois critérios são oficiais: escolha o da folha. A memória mostra o valor pelos dois.
+- **Média final menor:** se a média final ficar abaixo da usada em dezembro, o 13º foi pago a maior. O resultado mostra o valor a compensar e o INSS e o IRRF descontados a mais.
+- O FGTS de 8% sobre o complemento aparece como informativo. Pensão, previdência complementar e adiantamento não entram neste modo.
 
 ### 8.4 Férias
 
@@ -493,7 +516,7 @@ Em raros casos, o arredondamento em centavos impede chegar exatamente ao valor. 
 | Férias vencidas | Períodos completos cujas férias não foram tiradas (até 2). Com 2 períodos, o mais antigo já passou do prazo de concessão e é pago em dobro (CLT, art. 137). |
 | Faltas no período atual | Faltas injustificadas no período aquisitivo em curso, que reduzem as férias proporcionais. |
 | Saldo do FGTS | Aparece quando há multa ou saque, e sempre no doméstico. Informe o saldo para fins rescisórios do extrato. Com 0,00, o aplicativo usa os depósitos históricos completos; sem histórico, estima pelo salário atual. |
-| Depósitos históricos do FGTS | Opcional. Informe, em cada competência anterior ao desligamento, o depósito **devido** em reais, inclusive FGTS do 13º pago naquele mês. **Gerar competências** cria os meses entre a admissão e o mês anterior ao desligamento e preserva valores já lançados nesses meses. Sem saldo do extrato, preencha todos os meses, usando 0,00 quando não houver depósito. Com extrato, a soma serve para conferência mesmo se o histórico for parcial. |
+| Depósitos históricos do FGTS | Opcional. Informe, em cada competência anterior ao desligamento, o depósito **devido** em reais, inclusive FGTS do 13º pago naquele mês. **Gerar competências** cria os meses entre a admissão e o mês anterior ao desligamento e preserva valores já lançados nesses meses. Sem saldo do extrato, preencha todos os meses, usando 0,00 quando não houver depósito. Com extrato, a soma serve para conferência mesmo se o histórico for parcial. A **Conferência do FGTS** (seção 8.35) pode preencher este campo com **Levar à rescisão**. |
 | 13º já adiantado | 1ª parcela do 13º paga no ano, que é descontada. |
 | Outros descontos | Vale-transporte, plano de saúde, vales e adiantamentos. No total, a compensação na rescisão é limitada a uma remuneração mensal (CLT, art. 477, § 5º). |
 | Data do pagamento | Deixe em branco se as verbas forem pagas no prazo, no mês do desligamento. O IRRF usa a tabela do mês do pagamento (regime de caixa) e o INSS, a da competência do desligamento, o que faz diferença quando a tabela do IRRF muda na virada do mês, como em 01/2026. Pagamento depois de 10 dias do fim do contrato gera a multa do art. 477, § 8º. |
@@ -1233,6 +1256,32 @@ Abra pelo cartão **Simples Nacional e fator r**, em **Impostos e salário**. El
 **Limites:** o cálculo cobre períodos de 01/2018 a 12/2028 e uma única atividade. Receitas em mais de um anexo, exportação, ISS retido, substituição tributária e a repartição do DAS por tributo no PGDAS-D não são simulados. Acima de R$ 3,6 milhões de RBT12, o ICMS e o ISS saem do DAS; acima de R$ 4,8 milhões, a empresa fica sujeita à exclusão do Simples.
 
 Fundamentos: [Lei Complementar 123/2006, art. 18](https://www.planalto.gov.br/ccivil_03/leis/lcp/lcp123.htm) e Resolução CGSN 140/2018, arts. 21, 22, 25 e 26 e Anexos I a V, com a redação da Resolução CGSN 190/2026.
+
+### 8.35 Conferência do FGTS
+
+Abra pelo cartão **Conferência do FGTS**, em **FGTS, afastamentos e benefícios**. Ela compara, em cada competência, o FGTS devido com o depósito informado, separa as diferenças mensais e rescisórias e mostra o vencimento de cada depósito. É uma conferência local: o aplicativo não consulta o FGTS Digital nem o extrato oficial.
+
+![Formulário da conferência do FGTS com três competências mensais e a rescisória](imagens/92-conferencia-fgts-formulario.png)
+
+1. Escolha a **Categoria**: **Empregado (8%)**, **Aprendiz (2%)** ou **Doméstico (8% + 3,2%)**.
+2. Se houver rescisão, informe o **Desligamento** (dd/mm/aaaa).
+3. Informe o período, a remuneração e o depósito sugeridos e clique em **Gerar meses**. Gerar de novo preserva os valores das competências que continuam; se alguma sair do período, o primeiro clique avisa e o segundo confirma.
+4. Em cada competência, informe a **Remuneração** que integra o FGTS e o **Depósito informado** no extrato ou na guia. Use **+ Rescisória** para a competência do desligamento, com as verbas rescisórias e o aviso prévio indenizado.
+5. Clique em **Calcular**.
+
+**Remuneração:** salário, horas extras, adicionais, comissões, 13º no mês do pagamento e férias gozadas com o terço. Não entram as parcelas do art. 28, § 9º, da Lei 8.212/1991, como férias indenizadas. Em afastamento por acidente do trabalho e no serviço militar, o depósito continua devido.
+
+![Resultado da conferência do FGTS com as diferenças mensais e rescisórias](imagens/93-conferencia-fgts-resultado.png)
+
+- **Devido:** remuneração × alíquota, por competência. No doméstico, os 3,2% da indenização compensatória aparecem à parte, como referência.
+- **Diferenças:** o que falta depositar em cada competência, somado separadamente para as mensais e a rescisória. Um depósito a maior em um mês não quita outro e aparece como informativo.
+- **Reflexo na multa de 40%:** 40% do que falta depositar, para a dispensa sem justa causa. Não se aplica ao doméstico.
+- **Vencimentos:** até a competência 02/2024, o depósito mensal vencia no dia 7 do mês seguinte; desde 03/2024, no FGTS Digital, vence no dia 20. Sem expediente bancário, o prazo é antecipado; o aplicativo só considera sábados e domingos. O rescisório vence no 10º dia corrido após o desligamento.
+- **Levar à rescisão:** abre a calculadora de rescisão com o FGTS devido de cada competência anterior ao desligamento no campo **Depósitos históricos do FGTS** e com a data de desligamento.
+
+O FGTS Digital individualiza os débitos a partir das remunerações informadas no eSocial. Juros, multa e atualização de depósitos em atraso (Lei 8.036/1990, art. 22) são calculados por ele e não estão incluídos aqui.
+
+Fundamentos: [Lei 8.036/1990, arts. 15 e 22](https://www.planalto.gov.br/ccivil_03/leis/l8036consol.htm) e [LC 150/2015, arts. 22 e 34](https://www.planalto.gov.br/ccivil_03/leis/lcp/lcp150.htm).
 
 ## 9. Tabelas e parâmetros
 

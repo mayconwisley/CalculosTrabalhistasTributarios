@@ -10,6 +10,7 @@ namespace CalculosTrabalhistasTributarios.Application.DTOs;
 /// <param name="Referencia">Período ou data do cálculo, exibido abaixo do título.</param>
 /// <param name="Observacoes">Premissas e limites do cálculo que o usuário precisa conhecer.</param>
 /// <param name="ParcelasRra">Diferenças por competência que podem seguir para o cálculo do IR sobre rendimentos acumulados.</param>
+/// <param name="DepositosFgts">Depósitos devidos conferidos, que podem seguir para o histórico do FGTS da rescisão.</param>
 /// <param name="Comparativo">Comparação lado a lado, exibida antes do demonstrativo; sem proventos e descontos, ela o substitui.</param>
 public sealed record DemonstrativoDto(
     string Titulo,
@@ -24,7 +25,8 @@ public sealed record DemonstrativoDto(
     string RotuloResultado = "Líquido a receber",
     TabelaComparativaDto? Comparativo = null,
     QuitacaoBancoHoras? QuitacaoBancoHoras = null,
-    IReadOnlyList<ParcelaRra>? ParcelasRra = null)
+    IReadOnlyList<ParcelaRra>? ParcelasRra = null,
+    DepositosFgtsRescisaoDto? DepositosFgts = null)
 {
     /// <summary>Falso quando o cálculo não tem proventos nem descontos, como uma comparação de cenários.</summary>
     public bool TemVerbas => Proventos.Count > 0 || Descontos.Count > 0;

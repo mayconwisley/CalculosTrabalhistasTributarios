@@ -67,6 +67,10 @@ public sealed class CampoDepositosFgtsViewModel : CampoViewModel
         catch (JsonException) { return false; }
     }
 
+    /// <summary>Depósitos vindos da conferência do FGTS, no formato salvo no histórico, para abrir a rescisão já preenchida.</summary>
+    public static string CriarImportacao(IReadOnlyList<DepositoFgtsHistorico> depositos) => JsonSerializer.Serialize(depositos
+        .Select(item => new LinhaSalva(item.Competencia.ToString("MM/yyyy", Cultura), item.Valor.ToString("N2", Cultura))).ToArray());
+
     private void GerarMeses()
     {
         if (!DateOnly.TryParseExact(_admissao.Valor.Trim(), "dd/MM/yyyy", Cultura, DateTimeStyles.None, out var admissao)
