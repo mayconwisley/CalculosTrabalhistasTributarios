@@ -56,6 +56,18 @@ public class PlanilhaTests
     }
 
     [Fact]
+    public async Task Antecipacao_exporta_impedimento_sem_tratar_saldo_livre_como_credito()
+    {
+        var analise = new EntradaAnaliseAntecipacaoFgts(new DateOnly(2026, 10, 7), ConfirmacaoAntecipacaoFgts.Sim,
+            ConfirmacaoAntecipacaoFgts.Sim, ConfirmacaoAntecipacaoFgts.Sim);
+        var dto = await new SimularSaqueAniversarioUseCase().ExecutarAsync(new(18000m, 4, 0m, 10000m, 0m, true, analise), default).Sucesso();
+        using var pasta = await GerarAsync(caminho => new ClosedXmlPlanilhaService().GerarDemonstrativoAsync(dto, caminho, default));
+        Assert.Contains(pasta.Worksheet(1).CellsUsed(), celula => celula.GetString() == "Impedimento informado");
+        Assert.Equal(8000d, Linha(pasta.Worksheet(1), "Saldo fora da garantia informada").Cell(3).GetDouble());
+        Assert.Contains(pasta.Worksheet(2).CellsUsed(), celula => celula.GetString().Contains("quitação da antecipação vigente"));
+    }
+
+    [Fact]
     public async Task Demonstrativo_tem_os_valores_como_numeros_e_a_memoria_em_outra_aba()
     {
         var demonstrativo = await new SimularHoleriteUseCase(await Ambiente.ConsultaAsync()).ExecutarAsync(new SimularHoleriteRequest(

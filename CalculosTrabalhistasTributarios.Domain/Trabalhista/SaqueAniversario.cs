@@ -37,4 +37,21 @@ public static class SaqueAniversario
         // Contratos anteriores a 01/11/2025 não se submetem ao novo limite de R$ 500 por parcela.
         return new ParcelaSaqueAniversario(indice + 1, indice == 0 ? 0m : Faixas[indice - 1].Limite, aliquota, adicional, valor, parcelaComprometida);
     }
+
+    public static Result<decimal> ComporSaldo(decimal saldoExtrato, decimal garantiaBloqueada, decimal multaIncluida, bool saldoIncluiGarantia = false)
+    {
+        if (new[] { saldoExtrato, garantiaBloqueada, multaIncluida }.Any(valor =>
+            valor < 0m || valor > 1_000_000_000_000m || decimal.Round(valor, 2) != valor))
+            return Erro.Validacao("Saldo do extrato, garantia bloqueada e multa incluída devem ser não negativos, até R$ 1 trilhão e com até duas casas decimais.");
+        if (multaIncluida > saldoExtrato)
+            return Erro.Validacao("A multa incluída não pode superar o saldo do extrato. Informe somente a multa que está dentro desse saldo.");
+        if (saldoIncluiGarantia && garantiaBloqueada + multaIncluida > saldoExtrato)
+            return Erro.Validacao("A garantia e a multa incluídas não podem superar o saldo total do extrato. Confira os valores e a opção Saldo inclui garantia.");
+        // FGTS: a garantia faz parte da base; a multa rescisória é excluída.
+        // https://www.fgts.gov.br/Paginas/trabalhador/saque/saque-aniversario.aspx
+        var saldo = saldoExtrato + (saldoIncluiGarantia ? 0m : garantiaBloqueada) - multaIncluida;
+        return saldo is > 0m and <= 1_000_000_000_000m
+            ? saldo
+            : Erro.Validacao("A base após a composição do saldo e exclusão da multa, deve ser maior que zero e até R$ 1 trilhão.");
+    }
 }

@@ -87,7 +87,7 @@ Todas usam a mesma janela, com resumo, demonstrativo no formato de holerite, val
 | Estágio | Bolsa líquida com o IRRF, sem INSS e FGTS, e o recesso remunerado proporcional (Lei 11.788/2008). |
 | Trabalho intermitente | Pagamento de cada convocação: horas, DSR, férias proporcionais com 1/3, 13º proporcional e FGTS (CLT, art. 452-A). |
 | Afastamentos e licenças | Doença e acidente de trabalho (15 dias da empresa e o auxílio estimado do INSS), licença-maternidade (120 ou 180 dias) e paternidade (LC 229/2026), com FGTS e estabilidade. |
-| Saque-aniversário do FGTS | Valor do saque pela tabela da Lei 8.036/1990 e o efeito da opção numa dispensa. |
+| Saque-aniversário do FGTS | Composição automática do saldo, exclusão da multa incluída, desconto da parcela cedida e análise dos impedimentos informados para nova antecipação. |
 | Abono salarial (PIS/Pasep) | Direito e valor do abono, com o limite de renda da EC 135/2024. |
 | Pró-labore e autônomo | INSS de 11% até o teto, IRRF, ISS do autônomo e o custo para a empresa. |
 | CLT x PJ | O ano do mesmo profissional como CLT e como PJ no Simples Nacional (anexos III e V, com o fator R): total para o profissional, custo para a empresa e o valor de PJ que iguala o CLT. |

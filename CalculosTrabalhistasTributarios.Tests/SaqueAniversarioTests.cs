@@ -10,6 +10,44 @@ namespace CalculosTrabalhistasTributarios.Tests;
 
 public class SaqueAniversarioTests
 {
+    [Fact]
+    public async Task Componentes_do_extrato_sao_somados_e_multa_excluida()
+    {
+        // 3.000 livres + 6.000 bloqueados - 1.000 de multa incluída = base 8.000.
+        var dto = await new SimularSaqueAniversarioUseCase().ExecutarAsync(new(3000m, 4, 1800m, 6000m, 1000m), default).Sucesso();
+        Assert.Equal(2250m, dto.TotalProventos);
+        Assert.Equal(450m, dto.Resultado);
+        Assert.Equal("R$ 5.750,00", dto.Destaques[1].Valor);
+        Assert.Contains(dto.Memoria.SelectMany(grupo => grupo.Formulas), linha => linha.Titulo == "Composição do saldo");
+    }
+
+    [Fact]
+    public async Task Saldo_integralmente_bloqueado_tambem_entra_na_base()
+    {
+        var dto = await new SimularSaqueAniversarioUseCase().ExecutarAsync(new(0m, 4, 0m, 8000m), default).Sucesso();
+        Assert.Equal(2250m, dto.Resultado);
+    }
+
+    [Fact]
+    public async Task Saldo_total_nao_soma_garantia_duplicada()
+    {
+        var dto = await new SimularSaqueAniversarioUseCase().ExecutarAsync(new(9000m, 4, 1800m, 6000m, 1000m, true), default).Sucesso();
+        Assert.Equal(2250m, dto.TotalProventos);
+        Assert.Equal(450m, dto.Resultado);
+    }
+
+    [Theory]
+    [InlineData(-1, 0, 0)]
+    [InlineData(100, -1, 0)]
+    [InlineData(100, 0, 101)]
+    [InlineData(100, 0.001, 0)]
+    [InlineData(1000000000000, 1000000000000, 0)]
+    public async Task Componentes_invalidos_nao_geram_resultado(decimal saldo, decimal garantia, decimal multa)
+    {
+        var resultado = await new SimularSaqueAniversarioUseCase().ExecutarAsync(new(saldo, 4, 0m, garantia, multa), default);
+        Assert.True(resultado.Falhou);
+    }
+
     [Theory]
     [InlineData(0, 2250)]
     [InlineData(500, 1750)]
@@ -58,7 +96,9 @@ public class SaqueAniversarioTests
         var original = new CalculadoraSaqueAniversario(new SimularSaqueAniversarioUseCase());
         original.ImportarCampos(new Dictionary<string, string>
         {
-            ["Saldo do FGTS"] = "8.000,00",
+            ["Saldo do extrato (R$)"] = "3.000,00",
+            ["Garantia bloqueada (R$)"] = "6.000,00",
+            ["Multa incluída (R$)"] = "1.000,00",
             ["Mês de aniversário"] = "Novembro",
             ["Parcela ao banco (R$)"] = "1.800,00"
         });
@@ -75,5 +115,7 @@ public class SaqueAniversarioTests
         });
         Assert.Equal(2250m, (await reaberto.CalcularAsync(default)).Sucesso().Resultado);
         Assert.Equal("0,00", reaberto.ExportarCampos()["Parcela ao banco (R$)"]);
+        Assert.Equal("0,00", reaberto.ExportarCampos()["Garantia bloqueada (R$)"]);
+        Assert.Equal("0,00", reaberto.ExportarCampos()["Multa incluída (R$)"]);
     }
 }
