@@ -12,4 +12,9 @@ public sealed class Configuracoes
 
     /// <summary>Consulta no GitHub, ao abrir, se há uma versão mais nova.</summary>
     public bool VerificarNovasVersoes { get; set; } = true;
+
+    /// <summary>Chaves dos cartões favoritos da tela inicial, na ordem em que foram marcados.</summary>
+    public List<string> Favoritos { get => _favoritos; set => _favoritos = value ?? []; }
+
+    private List<string> _favoritos = [];
 }

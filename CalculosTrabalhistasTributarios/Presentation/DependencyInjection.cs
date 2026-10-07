@@ -24,6 +24,7 @@ public static class DependencyInjection
         .AddScoped<IEstabilidadeViewModelFactory, EstabilidadeViewModelFactory>()
         .AddSingleton<IUserNotifier, WpfUserNotifier>()
         .AddSingleton<IExecutorInstalador, WpfExecutorInstalador>()
+        .AddSingleton<IFavoritosAtalhos, FavoritosAtalhosConfiguracao>()
         .AddSingleton<IArquivoDialogService, WpfArquivoDialogService>()
         .AddSingleton<IManualUsuarioService, WpfManualUsuarioService>()
         .AddSingleton<INomeDialogService, WpfNomeDialogService>()

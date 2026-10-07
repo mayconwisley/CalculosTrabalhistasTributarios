@@ -23,9 +23,10 @@ public sealed class MainWindowViewModel : ViewModelBase
     private readonly IUserNotifier _notificador;
     private ThemeMode _temaSelecionado = ThemeManager.CurrentMode;
     private bool _historicoAberto;
+    private string _busca = string.Empty;
 
     public MainWindowViewModel(IWindowNavigator navegador, HistoricoViewModel historico, IVerificarAtualizacoesUseCase verificarAtualizacoes, IRegistroDeErros registroDeErros,
-        IBaixadorDeAtualizacao baixador, IExecutorInstalador executor, IUserNotifier notificador)
+        IBaixadorDeAtualizacao baixador, IExecutorInstalador executor, IUserNotifier notificador, IFavoritosAtalhos favoritos)
     {
         _baixador = baixador;
         _executor = executor;
@@ -34,14 +35,14 @@ public sealed class MainWindowViewModel : ViewModelBase
         _navegador = navegador;
         _verificarAtualizacoes = verificarAtualizacoes;
         _registroDeErros = registroDeErros;
-        AtalhoViewModel Calculadora(string titulo, string descricao, TipoCalculadora tipo) => Atalho(titulo, descricao, () => navegador.AbrirCalculadora(tipo));
-        AtalhoViewModel Tabela(string titulo, string descricao, TipoTabelaTributaria tipo) => Atalho(titulo, descricao, () => navegador.AbrirTabela(tipo));
+        AtalhoViewModel Calculadora(string titulo, string descricao, TipoCalculadora tipo) => Atalho($"Calculadora.{tipo}", titulo, descricao, () => navegador.AbrirCalculadora(tipo));
+        AtalhoViewModel Tabela(string titulo, string descricao, TipoTabelaTributaria tipo) => Atalho($"Tabela.{tipo}", titulo, descricao, () => navegador.AbrirTabela(tipo));
 
-        Calculadoras =
+        GrupoAtalhosViewModel[] calculadoras =
         [
             new("Impostos e salário",
             [
-                Atalho("Simulação tributária", "IRRF nas duas modalidades, INSS por faixas, salário líquido e FGTS.", navegador.AbrirSimulacaoTributaria),
+                Atalho("Simulacao", "Simulação tributária", "IRRF nas duas modalidades, INSS por faixas, salário líquido e FGTS.", navegador.AbrirSimulacaoTributaria),
                 Calculadora("INSS em múltiplos vínculos", "Distribuição do desconto entre empregos e serviços, respeitando o teto mensal.", TipoCalculadora.InssMultiplosVinculos),
                 Calculadora("Salário bruto pelo líquido", "O salário bruto necessário para chegar a um líquido desejado.", TipoCalculadora.SalarioPeloLiquido),
                 Calculadora("PLR (participação nos lucros)", "IRRF pela tabela anual exclusiva, sem INSS e sem FGTS.", TipoCalculadora.Plr),
@@ -60,10 +61,10 @@ public sealed class MainWindowViewModel : ViewModelBase
             ]),
             new("Pensão e débitos judiciais",
             [
-                Atalho("Pensão alimentícia", "Um ou mais beneficiários, com a pensão deduzida da base do IRRF.", navegador.AbrirPensao),
+                Atalho("Pensao", "Pensão alimentícia", "Um ou mais beneficiários, com a pensão deduzida da base do IRRF.", navegador.AbrirPensao),
                 Calculadora("Revisão de pensão", "A pensão atual e a proposta lado a lado, com o efeito em quem paga.", TipoCalculadora.RevisaoPensao),
-                Atalho("Pensão em atraso", "Débito corrigido, com juros e a separação entre prisão e penhora.", navegador.AbrirPensaoAtraso),
-                Atalho("Débitos judiciais", "Atualização trabalhista e cível pelas fases do STF, do TST e da Lei 14.905/2024.", navegador.AbrirDebitoJudicial),
+                Atalho("PensaoAtraso", "Pensão em atraso", "Débito corrigido, com juros e a separação entre prisão e penhora.", navegador.AbrirPensaoAtraso),
+                Atalho("DebitoJudicial", "Débitos judiciais", "Atualização trabalhista e cível pelas fases do STF, do TST e da Lei 14.905/2024.", navegador.AbrirDebitoJudicial),
                 Calculadora("Correção de valores", "Valor atualizado pelo IPCA, INPC, Selic ou outro índice, com juros e multa.", TipoCalculadora.CorrecaoValor)
             ]),
             new("Remuneração e custos",
@@ -73,7 +74,7 @@ public sealed class MainWindowViewModel : ViewModelBase
                 Calculadora("Diferenças de reajuste retroativo", "Salários pagos e devidos por competência, com 13º, férias e FGTS.", TipoCalculadora.ReajusteRetroativo),
                 Calculadora("Média de verbas variáveis", "Comissões, DSR, horas extras e adicionais por mês para férias, 13º e rescisão.", TipoCalculadora.MediaVerbasVariaveis),
                 Calculadora("Banco de horas", "Créditos, folgas, saldo e quitação estimada no fechamento ou na rescisão.", TipoCalculadora.BancoHoras),
-                Atalho("Jornada pelo ponto", "Horas extras, noturnas, faltas e intervalos pelas marcações do mês.", navegador.AbrirJornada),
+                Atalho("Jornada", "Jornada pelo ponto", "Horas extras, noturnas, faltas e intervalos pelas marcações do mês.", navegador.AbrirJornada),
                 Calculadora("Horas extras e adicionais", "Horas extras, adicional noturno e reflexo no DSR.", TipoCalculadora.HorasExtras),
                 Calculadora("Insalubridade e periculosidade", "Adicionais pelo grau de insalubridade ou pela periculosidade.", TipoCalculadora.Adicionais),
                 Calculadora("Salário-família", "Direito e valor das cotas pela remuneração e pelos filhos.", TipoCalculadora.SalarioFamilia),
@@ -88,7 +89,7 @@ public sealed class MainWindowViewModel : ViewModelBase
                 Calculadora("Férias", "Terço constitucional, venda de dias e adiantamento do 13º.", TipoCalculadora.Ferias),
                 Calculadora("Rescisão", "Verbas pelo motivo do desligamento, com aviso prévio e multa do FGTS.", TipoCalculadora.Rescisao),
                 Calculadora("Seguro-desemprego", "Parcelas e valor do benefício pela média dos últimos salários.", TipoCalculadora.SeguroDesemprego),
-                Atalho("Estabilidade", "Indenização do período restante de estabilidade.", navegador.AbrirEstabilidade)
+                Atalho("Estabilidade", "Estabilidade", "Indenização do período restante de estabilidade.", navegador.AbrirEstabilidade)
             ]),
             new("FGTS, afastamentos e benefícios",
             [
@@ -99,7 +100,7 @@ public sealed class MainWindowViewModel : ViewModelBase
             ])
         ];
 
-        Tabelas =
+        GrupoAtalhosViewModel[] tabelas =
         [
             new("INSS e salário",
             [
@@ -130,10 +131,25 @@ public sealed class MainWindowViewModel : ViewModelBase
                 Tabela("TR", "Taxa referencial mensal, juros da fase pré-judicial trabalhista.", TipoTabelaTributaria.Tr)
             ])
         ];
+
+        Calculadoras = new PainelAtalhosViewModel(calculadoras, favoritos, "calculadora");
+        Tabelas = new PainelAtalhosViewModel(tabelas, favoritos, "tabela");
     }
 
-    public IReadOnlyList<GrupoAtalhosViewModel> Calculadoras { get; }
-    public int QuantidadeCalculadoras => Calculadoras.Sum(grupo => grupo.Atalhos.Count);
+    public PainelAtalhosViewModel Calculadoras { get; }
+    public PainelAtalhosViewModel Tabelas { get; }
+    public int QuantidadeCalculadoras => Calculadoras.Quantidade;
+
+    /// <summary>Busca das abas Calculadoras e Tabelas; cada aba filtra os seus cartões.</summary>
+    public string Busca
+    {
+        get => _busca;
+        set
+        {
+            if (!SetProperty(ref _busca, value ?? string.Empty)) return;
+            Calculadoras.Filtro = Tabelas.Filtro = _busca;
+        }
+    }
 
     /// <summary>Versão nova publicada e tabelas do ano ainda não cadastradas, verificadas ao abrir.</summary>
     public ObservableCollection<AvisoInicioViewModel> Avisos { get; } = [];
@@ -149,7 +165,6 @@ public sealed class MainWindowViewModel : ViewModelBase
             OnPropertyChanged();
         }
     }
-    public IReadOnlyList<GrupoAtalhosViewModel> Tabelas { get; }
     public HistoricoViewModel Historico { get; }
 
     /// <summary>Aba Histórico ativa: a lista é lida de novo cada vez que ela abre.</summary>
@@ -175,7 +190,7 @@ public sealed class MainWindowViewModel : ViewModelBase
         }
     }
 
-    private static AtalhoViewModel Atalho(string titulo, string descricao, Action abrir) => new(titulo, descricao, new RelayCommand(_ => abrir()));
+    private static AtalhoViewModel Atalho(string chave, string titulo, string descricao, Action abrir) => new(chave, titulo, descricao, new RelayCommand(_ => abrir()));
 
     /// <summary>Chamado pela janela ao abrir. Um aviso que não pôde ser verificado simplesmente não aparece.</summary>
     public async Task CarregarAvisosAsync()

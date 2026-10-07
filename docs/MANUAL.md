@@ -81,11 +81,20 @@ Para remover, use **Configurações do Windows > Aplicativos > Aplicativos insta
 | 2 | Manual do usuário | Abre este manual. Também pode ser aberto com a tecla **F1** em qualquer janela. |
 | 3 | Calculadoras | Aba com as calculadoras, em cinco grupos: **Impostos e salário**, **Pensão e débitos judiciais**, **Remuneração e custos**, **Férias, 13º e desligamento** e **FGTS, afastamentos e benefícios**. |
 | 4 | Tabelas | Aba com as tabelas de INSS, IRRF, PLR, salário-família, salário mínimo, seguro-desemprego, os parâmetros usados nos cálculos e os índices INPC, IPCA, IPCA-E, taxa legal, Selic e TR. Veja a seção [Tabelas e parâmetros](#9-tabelas-e-parâmetros). |
-| 5 | Grupo | Título do grupo, que reúne as calculadoras de um mesmo assunto. |
-| 6 | Cartão | Abre a calculadora em uma janela própria. Clique no cartão ou selecione-o com **Tab** e pressione **Enter**. |
-| 7 | Histórico | Aba com os cálculos salvos, para abrir, duplicar, renomear ou excluir. Veja a seção [Histórico de cálculos](#103-histórico-de-cálculos). |
+| 5 | Procurar | Busca pelo nome e pela descrição dos cartões da aba aberta, sem diferenciar maiúsculas e acentos. Atalho **Ctrl+F**; **Esc** ou **×** limpa a busca. |
+| 6 | Favoritas | Seção com os cartões marcados com a estrela, na ordem em que foram marcados. Só aparece quando há alguma favorita. |
+| 7 | Grupo | Título do grupo, que reúne os cartões de um mesmo assunto, com a quantidade de cartões exibidos. |
+| 8 | Cartão | Abre a calculadora em uma janela própria. Clique no cartão ou selecione-o com **Tab** e pressione **Enter**. |
+| 9 | Estrela | Marca o cartão como favorito, levando-o para a seção **Favoritas**; clicar de novo o devolve ao grupo. Pelo teclado, a estrela vem logo depois do cartão na ordem do **Tab**. |
+| 10 | Histórico | Aba com os cálculos salvos, para abrir, duplicar, renomear ou excluir. Veja a seção [Histórico de cálculos](#103-histórico-de-cálculos). |
 
 A tela principal só reúne os atalhos: cada cálculo, inclusive a simulação tributária, é feito na sua própria janela. Ao fechar a janela, você volta para a tela principal.
+
+**Favoritas:** clique na estrela (☆) de um cartão para levá-lo à seção **Favoritas**, no alto da aba; a estrela fica preenchida (★). O cartão sai do grupo de origem, que mostra um aviso quando todos os seus cartões estão nas favoritas. Para desfazer, clique de novo na estrela. As favoritas valem para as abas **Calculadoras** e **Tabelas** e ficam gravadas neste computador, nas preferências do usuário, de uma abertura para outra.
+
+**Procurar:** digite parte do nome ou da descrição, como `fgts`, `pensao` ou `13`. A busca não diferencia maiúsculas e acentos e, com várias palavras, mostra os cartões que têm todas. As favoritas e os grupos mostram só os cartões encontrados; um grupo sem resultado avisa **Nenhum cartão encontrado neste grupo**, e as colunas continuam no lugar. Na aba **Histórico**, a busca própria procura nos cálculos salvos.
+
+![Busca por "pensao" com uma favorita e o grupo Pensão e débitos judiciais](imagens/94-busca-calculadoras.png)
 
 **Avisos ao abrir:** logo abaixo do cabeçalho, uma faixa avisa quando há uma versão nova publicada e quando as tabelas do ano ainda não foram cadastradas (a do INSS mais recente é de um ano anterior), com o botão **Abrir a tabela do INSS**. **Dispensar** esconde o aviso até a próxima abertura.
 
