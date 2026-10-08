@@ -8,12 +8,15 @@ public static class CalculadoraInss
 {
     private static readonly DateOnly InicioRegimeProgressivo = new(2020, 3, 1);
 
+    /// <summary>Desde 03/2020, cada parte da base paga a alíquota da sua faixa (EC 103/2019, art. 28); antes, a alíquota da faixa incidia sobre toda a base.</summary>
+    public static bool Progressivo(DateOnly competencia) => competencia >= InicioRegimeProgressivo;
+
     public static IReadOnlyList<ResultadoFaixaTributaria> CalcularDetalhes(
         DateOnly competencia,
         decimal baseCalculo,
         IReadOnlyList<FaixaTributaria> faixas)
     {
-        if (competencia >= InicioRegimeProgressivo)
+        if (Progressivo(competencia))
             return CalculadoraTributacao.CalcularProgressivo(baseCalculo, faixas, CalculadoraTributacao.Truncar);
 
         if (baseCalculo <= 0m)

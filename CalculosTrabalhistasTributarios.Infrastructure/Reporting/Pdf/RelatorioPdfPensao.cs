@@ -57,11 +57,12 @@ internal static class RelatorioPdfPensao
             coluna.Spacing(8);
             coluna.Item().Text(MemoriaCalculoPensao.Explicacao(simulacao, entrada, Moeda, Percentual)).FontSize(9);
             coluna.Item().Text(MemoriaCalculoPensao.EfeitoNoIrrf(simulacao, Moeda)).FontSize(9);
+            coluna.Item().Text(MemoriaCalculoPensao.Faixas(simulacao, Moeda)).FontSize(9);
             coluna.Item().Text(simulacao.MensagemVantagem).SemiBold().FontColor(AzulPrimario);
             coluna.Item().Table(tabela =>
             {
-                tabela.ColumnsDefinition(colunas => { colunas.RelativeColumn(2); colunas.RelativeColumn(); colunas.RelativeColumn(); colunas.RelativeColumn(); });
-                CabecalhoTabela(tabela.Cell(), "Modelo"); CabecalhoTabela(tabela.Cell(), "IRRF final"); CabecalhoTabela(tabela.Cell(), "Pensão"); CabecalhoTabela(tabela.Cell(), "IRRF + pensão");
+                tabela.ColumnsDefinition(colunas => { colunas.RelativeColumn(2); colunas.RelativeColumn(2); colunas.RelativeColumn(); colunas.RelativeColumn(); colunas.RelativeColumn(); });
+                CabecalhoTabela(tabela.Cell(), "Modelo"); CabecalhoTabela(tabela.Cell(), "Faixa do IRRF"); CabecalhoTabela(tabela.Cell(), "IRRF final"); CabecalhoTabela(tabela.Cell(), "Pensão"); CabecalhoTabela(tabela.Cell(), "IRRF + pensão");
                 foreach (var modalidade in simulacao.Modalidades)
                     LinhaPensao(tabela, modalidade);
             });
@@ -89,6 +90,7 @@ internal static class RelatorioPdfPensao
     private static void LinhaPensao(TableDescriptor tabela, ModalidadePensaoDto modalidade)
     {
         CelulaTabela(tabela.Cell(), modalidade.Nome);
+        CelulaTabela(tabela.Cell(), MemoriaCalculoPensao.FaixaIrrf(modalidade.Detalhes[^1].Aliquota, modalidade.Imposto));
         CelulaTabela(tabela.Cell(), Moeda(modalidade.Imposto));
         CelulaTabela(tabela.Cell(), Moeda(modalidade.Pensao));
         CelulaTabela(tabela.Cell(), Moeda(modalidade.Total));

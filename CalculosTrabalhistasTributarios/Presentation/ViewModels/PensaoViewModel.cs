@@ -303,10 +303,14 @@ public sealed class PensaoViewModel : ViewModelBase, ICalculoSalvavel
             new("Líquido de quem paga", temRendimentos ? Moeda(liquido) : "—", temRendimentos
                 ? $"Bruto menos {(entrada.OutrosDescontos > 0m ? "outros descontos, " : "")}INSS, IRRF e {(pensoes.Count > 1 ? "pensões" : "pensão")}"
                 : "Sem valor bruto informado"),
-            new(pensoes.Count > 1 ? "IRRF com pensões" : "IRRF com pensão", Moeda(aplicada.Imposto), aplicada.DeduzPensao ? "Deduções legais, com a pensão" : "Desconto simplificado"),
-            new(pensoes.Count > 1 ? "IRRF sem pensões" : "IRRF sem pensão", Moeda(simulacao.ImpostoSemPensao), "Se não houvesse a pensão"),
+            new(pensoes.Count > 1 ? "IRRF com pensões" : "IRRF com pensão", Moeda(aplicada.Imposto),
+                $"{(aplicada.DeduzPensao ? "Deduções legais, com a pensão" : "Desconto simplificado")}; {MemoriaCalculoPensao.FaixaIrrf(aplicada.Detalhes[^1].Aliquota, aplicada.Imposto)}"),
+            new(pensoes.Count > 1 ? "IRRF sem pensões" : "IRRF sem pensão", Moeda(simulacao.ImpostoSemPensao),
+                $"Se não houvesse a pensão; {MemoriaCalculoPensao.FaixaIrrf(simulacao.AliquotaIrrfSemPensao, simulacao.ImpostoSemPensao)}"),
             new("Economia de IRRF", Moeda(simulacao.EconomiaIrrf), simulacao.EconomiaIrrf > 0m ? "Pela dedução da pensão" : "A pensão não reduziu o IRRF"),
-            new("INSS", Moeda(simulacao.ValorInss), $"Base: {Moeda(entrada.BaseInss)}")
+            new("INSS", Moeda(simulacao.ValorInss), simulacao.FaixasInss.Count == 0
+                ? $"Base: {Moeda(entrada.BaseInss)}"
+                : $"Base: {Moeda(entrada.BaseInss)}; {MemoriaCalculoPensao.FaixaInss(simulacao)}")
         ];
         PensoesPorBeneficiario = pensoes.Select(pensao => new PensaoPorBeneficiarioViewModel(pensao.Nome, pensao.Descrever(Moeda, FormatarPercentual), Moeda(pensao.Pensao))).ToArray();
         Explicacao = MemoriaCalculoPensao.Explicacao(simulacao, entrada, Moeda, FormatarPercentual);
@@ -320,7 +324,9 @@ public sealed class PensaoViewModel : ViewModelBase, ICalculoSalvavel
     }
 
     private static ComparativoPensaoViewModel CriarComparativo(ModalidadePensaoDto modalidade) =>
-        new(modalidade.Nome, Moeda(modalidade.Imposto), Moeda(modalidade.Pensao), Moeda(modalidade.Total));
+        new(modalidade.Nome, PrimeiraMaiuscula(MemoriaCalculoPensao.FaixaIrrf(modalidade.Detalhes[^1].Aliquota, modalidade.Imposto)), Moeda(modalidade.Imposto), Moeda(modalidade.Pensao), Moeda(modalidade.Total));
+
+    private static string PrimeiraMaiuscula(string texto) => texto.Length == 0 ? texto : char.ToUpper(texto[0], Cultura) + texto[1..];
 
     private static SecaoMemoriaPensaoViewModel CriarMemoria(ModalidadePensaoDto modalidade, EntradaPensaoDto entrada, decimal valorInss)
     {

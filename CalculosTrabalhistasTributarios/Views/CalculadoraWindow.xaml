@@ -546,7 +546,7 @@
                             </WrapPanel>
                             <Expander Header="Entradas utilizadas neste resultado" Margin="0,0,0,14"
                                       AutomationProperties.Name="Entradas utilizadas neste resultado">
-                                <ScrollViewer MaxHeight="180" VerticalScrollBarVisibility="Auto" Margin="8,6,0,8">
+                                <ScrollViewer MaxHeight="180" VerticalScrollBarVisibility="Auto">
                                     <ItemsControl ItemsSource="{Binding EntradasConferencia}">
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate><TextBlock Text="{Binding}" TextWrapping="Wrap" Margin="0,0,0,4" /></DataTemplate>

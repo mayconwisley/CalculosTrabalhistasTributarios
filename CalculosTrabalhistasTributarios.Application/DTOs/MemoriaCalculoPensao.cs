@@ -1,4 +1,5 @@
 
+using CalculosTrabalhistasTributarios.Application.Demonstrativos;
 using CalculosTrabalhistasTributarios.Domain.Pensao;
 
 namespace CalculosTrabalhistasTributarios.Application.DTOs;
@@ -52,6 +53,37 @@ public static class MemoriaCalculoPensao
             ? $"Sem a pensão, o IRRF de quem paga seria de {moeda(simulacao.ImpostoSemPensao)}; com a dedução da pensão, é de {moeda(simulacao.Aplicada.Imposto)}, uma economia de {moeda(simulacao.EconomiaIrrf)}."
             : $"A pensão não reduz o IRRF de quem paga, que é de {moeda(simulacao.Aplicada.Imposto)} com ou sem ela.";
 
+    /// <summary>
+    /// Faixa do INSS em que a base termina: "até a faixa de 14%" no regime progressivo, desde 03/2020, em que cada parte da
+    /// base paga a alíquota da sua faixa; antes, "alíquota de 9% sobre toda a base". Vazio sem base de INSS.
+    /// </summary>
+    public static string FaixaInss(SimulacaoPensaoDto simulacao)
+    {
+        if (simulacao.FaixasInss.Count == 0)
+            return string.Empty;
+        var aliquota = Formato.PercentualCurto(simulacao.FaixasInss[^1].Aliquota);
+        return simulacao.InssProgressivo ? $"até a faixa de {aliquota}" : $"alíquota de {aliquota} sobre toda a base";
+    }
+
+    /// <summary>
+    /// Faixa da tabela progressiva do IRRF em que a base ficou. Na faixa tributada, o imposto ainda pode ser zero pela
+    /// redução mensal ou por não passar do limite de retenção.
+    /// </summary>
+    public static string FaixaIrrf(decimal aliquota, decimal imposto) =>
+        aliquota == 0m ? "faixa isenta"
+        : imposto == 0m ? $"faixa de {Formato.PercentualCurto(aliquota)}, sem IRRF a reter"
+        : $"faixa de {Formato.PercentualCurto(aliquota)}";
+
+    /// <summary>Faixas do INSS e do IRRF, com e sem a pensão, em uma frase para os relatórios.</summary>
+    public static string Faixas(SimulacaoPensaoDto simulacao, Func<decimal, string> moeda)
+    {
+        var aplicada = simulacao.Aplicada.Detalhes[^1];
+        var inss = simulacao.FaixasInss.Count == 0
+            ? "sem base de INSS"
+            : $"INSS de {moeda(simulacao.ValorInss)}, {FaixaInss(simulacao)}";
+        return $"Faixas aplicadas: {inss}; IRRF com a pensão na {FaixaIrrf(aplicada.Aliquota, aplicada.Imposto)} e sem a pensão na {FaixaIrrf(simulacao.AliquotaIrrfSemPensao, simulacao.ImpostoSemPensao)}.";
+    }
+
     /// <summary>Complemento de "na modalidade ...": "normal (deduções legais)" ou "de desconto simplificado".</summary>
     public static string NomeModalidade(ModalidadePensaoDto modalidade) => modalidade.DeduzPensao ? "normal (deduções legais)" : "de desconto simplificado";
 
@@ -74,7 +106,7 @@ public static class MemoriaCalculoPensao
         var formulas = new List<FormulaDto>
         {
             new("Base do IRRF", baseIrrf),
-            new("IR progressivo", $"{moeda(iteracao.BaseIrrf)} x {percentual(iteracao.Aliquota)} - {moeda(iteracao.Deducao)} = {moeda(iteracao.ImpostoAntesReducao)}"),
+            new($"IR progressivo ({FaixaIrrf(iteracao.Aliquota, iteracao.ImpostoAntesReducao)})", $"{moeda(iteracao.BaseIrrf)} x {percentual(iteracao.Aliquota)} - {moeda(iteracao.Deducao)} = {moeda(iteracao.ImpostoAntesReducao)}"),
             new("IRRF após redução mensal", iteracao.ImpostoAntesReducao - iteracao.ReducaoMensal == iteracao.Imposto
                 ? $"{moeda(iteracao.ImpostoAntesReducao)} - {moeda(iteracao.ReducaoMensal)} = {moeda(iteracao.Imposto)}"
                 : $"{moeda(iteracao.ImpostoAntesReducao)} - {moeda(iteracao.ReducaoMensal)} = {moeda(iteracao.ImpostoAntesReducao - iteracao.ReducaoMensal)}, que não passa do limite de retenção e não é descontado (Lei 9.430/1996, art. 67): {moeda(iteracao.Imposto)}")

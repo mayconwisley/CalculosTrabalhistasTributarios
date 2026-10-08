@@ -189,7 +189,7 @@ Abra pelo cartão **Pensão alimentícia**, no grupo **Pensão e débitos judici
 4. **Resumo** calcula e mostra a explicação, o resumo executivo e o comparativo entre as modalidades.
 5. **Detalhar** faz o mesmo cálculo e inclui a memória de cálculo de cada iteração. A tecla **Enter** também detalha.
 6. **Como a pensão foi calculada:** explica em uma frase de onde vem o valor da pensão e para que servem o valor bruto, o INSS e o IRRF de quem paga.
-7. **Comparação entre modalidades:** IRRF final, pensão e IRRF + pensão nas modalidades normal e simplificada.
+7. **Comparação entre modalidades:** faixa do IRRF, IRRF final, pensão e IRRF + pensão nas modalidades normal e simplificada.
 
 O **resumo executivo** mostra o resultado na modalidade de menor IRRF, a que a fonte pagadora aplica:
 
@@ -197,10 +197,12 @@ O **resumo executivo** mostra o resultado na modalidade de menor IRRF, a que a f
 | --- | --- |
 | Pensão | O valor da pensão e a regra usada, como "30,00% do salário mínimo de R$ 1.621,00". |
 | Líquido de quem paga | Valor bruto menos outros descontos, INSS, IRRF e pensão. Sem valor bruto informado, mostra "—". |
-| IRRF com pensão | O IRRF de quem paga, já com a pensão deduzida da base na modalidade normal. |
-| IRRF sem pensão | O IRRF que quem paga teria se não houvesse a pensão. |
+| IRRF com pensão | O IRRF de quem paga, já com a pensão deduzida da base na modalidade normal, e a faixa da tabela progressiva em que a base ficou. |
+| IRRF sem pensão | O IRRF que quem paga teria se não houvesse a pensão, e a faixa dessa base. |
 | Economia de IRRF | A diferença entre os dois: quanto a dedução da pensão reduz o imposto de quem paga. |
-| INSS | A contribuição de quem paga, sobre a base de INSS. |
+| INSS | A contribuição de quem paga, sobre a base de INSS, e a faixa em que a base termina. |
+
+**Faixa:** é a alíquota da faixa da tabela em que a base ficou, como **faixa de 27,5%**. No IRRF, ela é a alíquota da conta base × alíquota − parcela a deduzir; **faixa isenta** indica base até o limite de isenção, e **sem IRRF a reter** indica base em faixa tributada com imposto zerado pela redução mensal ou por não passar do limite de retenção. No INSS, **até a faixa de 14%** indica a última faixa alcançada: desde 03/2020 cada parte da base paga a alíquota da sua faixa, por isso a contribuição é menor que 14% da base. Antes de 03/2020, a alíquota da faixa valia para toda a base, e o cartão mostra **alíquota de ... sobre toda a base**. A faixa também aparece no PDF e na planilha.
 
 Na base do salário mínimo, a tela fica assim:
 
@@ -222,7 +224,7 @@ Se você só precisa do valor da pensão, por exemplo quando quem paga não tem 
 **Na modalidade normal (deduções legais),** a pensão é deduzida da base do IRRF. Quando ela é calculada sobre os rendimentos líquidos, há uma dependência circular: a pensão reduz o IRRF, e o IRRF reduz o valor sobre o qual a pensão é calculada. Por isso o aplicativo repete o cálculo até que o valor da pensão não mude mais: no resultado, o IRRF é exatamente o calculado com a pensão final deduzida. Em cada iteração:
 
 1. A base do IRRF é recalculada descontando a pensão encontrada na iteração anterior.
-2. O IRRF é apurado pela tabela progressiva e pela redução mensal, quando houver.
+2. O IRRF é apurado pela tabela progressiva e pela redução mensal, quando houver. O título **IR progressivo** indica a faixa usada na iteração.
 3. A base da pensão é calculada como rendimentos − INSS − IRRF.
 4. A nova pensão é calculada aplicando o percentual sobre essa base.
 

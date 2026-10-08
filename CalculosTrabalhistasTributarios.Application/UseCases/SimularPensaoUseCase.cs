@@ -41,7 +41,8 @@ public sealed class SimularPensaoUseCase(ITributacaoConsulta tributacaoConsulta)
         var irrf = perfil.FaixasIrrf;
         var regrasReducao = perfil.ReducoesMensaisIrrf;
         var baseInss = Math.Min(request.BaseInss, inss.Max(x => x.Limite));
-        var valorInss = CalculadoraTributacao.Arredondar(CalculadoraInss.CalcularDetalhes(request.Competencia, baseInss, inss).Sum(x => x.Imposto));
+        var faixasInss = CalculadoraInss.CalcularDetalhes(request.Competencia, baseInss, inss);
+        var valorInss = CalculadoraTributacao.Arredondar(faixasInss.Sum(x => x.Imposto));
         var rendimentos = request.ValorBruto - request.OutrosDescontos;
         var pensoes = new CalculoPensoes(request.Beneficiarios, request.Sucessiva, rendimentos, valorInss, salarioMinimo ?? 0m);
         var deducoesNormal = valorInss + request.Dependentes * perfil.DeducaoPorDependente;
@@ -54,10 +55,20 @@ public sealed class SimularPensaoUseCase(ITributacaoConsulta tributacaoConsulta)
             : normal.Imposto == simplificada.Imposto ? "As duas modalidades resultam no mesmo IRRF."
             : normal.Imposto < simplificada.Imposto ? "O cálculo normal é mais vantajoso." : "O cálculo simplificado é mais vantajoso.";
         // Sem a pensão, a fonte pagadora aplicaria a modalidade de menor imposto; o simplificado não muda com a pensão.
-        var semPensaoAntesReducao = CalculadoraTributacao.CalcularPorFaixa(Math.Max(0m, rendimentos - deducoesNormal), irrf);
+        var baseSemPensao = Math.Max(0m, rendimentos - deducoesNormal);
+        var semPensaoAntesReducao = CalculadoraTributacao.CalcularPorFaixa(baseSemPensao, irrf);
         var normalSemPensao = Reter(CalculadoraTributacao.Arredondar(semPensaoAntesReducao - CalculadoraReducaoMensalIrrf.Calcular(rendimentos, semPensaoAntesReducao, regrasReducao)), limiteDispensa);
-        return new SimulacaoPensaoDto(valorInss, normal, simplificada, vantagem, simplificadoDisponivel ? Math.Min(normalSemPensao, simplificada.Imposto) : normalSemPensao, simplificadoDisponivel);
+        var simplificadaSemPensao = simplificadoDisponivel && simplificada.Imposto < normalSemPensao;
+        return new SimulacaoPensaoDto(valorInss, normal, simplificada, vantagem, simplificadaSemPensao ? simplificada.Imposto : normalSemPensao, simplificadoDisponivel)
+        {
+            FaixasInss = faixasInss,
+            InssProgressivo = CalculadoraInss.Progressivo(request.Competencia),
+            AliquotaIrrfSemPensao = simplificadaSemPensao ? simplificada.Detalhes[^1].Aliquota : FaixaDaBase(baseSemPensao, irrf).Aliquota
+        };
     }
+
+    private static FaixaTributaria FaixaDaBase(decimal baseIrrf, IReadOnlyList<FaixaTributaria> faixas) =>
+        faixas.OrderBy(item => item.Numero).FirstOrDefault(item => baseIrrf <= item.Limite) ?? faixas.MaxBy(item => item.Limite)!;
 
     /// <param name="deduzPensao">Nas deduções legais, as pensões reduzem a base do IRRF e o cálculo se repete até o total se estabilizar.</param>
     /// <summary>O IRRF de até o limite (R$ 10,00) não é retido (Lei 9.430/1996, art. 67).</summary>
@@ -74,7 +85,7 @@ public sealed class SimularPensaoUseCase(ITributacaoConsulta tributacaoConsulta)
         {
             var pensaoDeduzida = deduzPensao ? pensao : 0m;
             var baseIrrf = Math.Max(0m, baseIrrfInicial - pensaoDeduzida);
-            var faixa = faixas.OrderBy(item => item.Numero).FirstOrDefault(item => baseIrrf <= item.Limite) ?? faixas.MaxBy(item => item.Limite)!;
+            var faixa = FaixaDaBase(baseIrrf, faixas);
             impostoAntesReducao = CalculadoraTributacao.CalcularPorFaixa(baseIrrf, faixas);
             reducaoMensal = CalculadoraReducaoMensalIrrf.Calcular(rendimentosTributaveis, impostoAntesReducao, regrasReducao);
             imposto = Reter(CalculadoraTributacao.Arredondar(impostoAntesReducao - reducaoMensal), limiteDispensa);

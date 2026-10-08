@@ -23,11 +23,16 @@ internal static class PlanilhaPensao
             aba.Secao("Resumo");
             aba.Par("Pensões", Moeda(aplicada.Pensao));
             aba.Par("INSS", Moeda(s.ValorInss));
+            if (s.FaixasInss.Count > 0)
+                aba.Par("Alíquota da faixa do INSS", Percentual(s.FaixasInss[^1].Aliquota));
             aba.Par($"IRRF com {(entrada.Beneficiarios.Count > 1 ? "pensões" : "pensão")}", Moeda(aplicada.Imposto));
+            aba.Par("Alíquota da faixa do IRRF com pensão", Percentual(aplicada.Detalhes[^1].Aliquota));
             aba.Par("IRRF sem pensão", Moeda(s.ImpostoSemPensao));
+            aba.Par("Alíquota da faixa do IRRF sem pensão", Percentual(s.AliquotaIrrfSemPensao));
             aba.Par("Economia de IRRF", Moeda(s.EconomiaIrrf));
             aba.Par("Líquido de quem paga", Moeda(entrada.ValorBruto - entrada.OutrosDescontos - s.ValorInss - aplicada.Imposto - aplicada.Pensao));
             aba.Texto(MemoriaCalculoPensao.Explicacao(s, entrada, MoedaTexto, PercentualTexto));
+            aba.Texto(MemoriaCalculoPensao.Faixas(s, MoedaTexto));
 
             aba.Secao("Pensão por beneficiário");
             aba.Cabecalho("Beneficiário", "Regra", "Base", "Pensão");
@@ -35,9 +40,9 @@ internal static class PlanilhaPensao
                 aba.Linha(pensao.Nome, pensao.Regra.Descrever(MoedaTexto, PercentualTexto), Moeda(pensao.Base), Moeda(pensao.Pensao));
 
             aba.Secao("Comparação entre modalidades");
-            aba.Cabecalho("Modalidade", "IRRF final", "Pensão", "IRRF + pensão", "Iterações");
+            aba.Cabecalho("Modalidade", "Alíquota da faixa do IRRF", "IRRF final", "Pensão", "IRRF + pensão", "Iterações");
             foreach (var modalidade in s.Modalidades)
-                aba.Linha(modalidade.Nome, Moeda(modalidade.Imposto), Moeda(modalidade.Pensao), Moeda(modalidade.Total), modalidade.Iteracoes);
+                aba.Linha(modalidade.Nome, Percentual(modalidade.Detalhes[^1].Aliquota), Moeda(modalidade.Imposto), Moeda(modalidade.Pensao), Moeda(modalidade.Total), modalidade.Iteracoes);
             aba.Texto(s.MensagemVantagem);
             aba.Ajustar();
 

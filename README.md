@@ -110,7 +110,7 @@ As regras da CLT ficam em `CalculosTrabalhistasTributarios.Domain/Trabalhista` (
 
 - Simula pensão alimentícia de um ou mais beneficiários, com os próprios dados de rendimentos, sobre os rendimentos líquidos, os brutos, o salário mínimo ou em valor fixo; com vários beneficiários, as pensões incidem sobre a mesma base ou cada uma após descontar as anteriores.
 - Compara as modalidades de tributação: a pensão é deduzida da base do IRRF nas deduções legais, e não no desconto simplificado, que substitui todas elas.
-- Explica como a pensão foi obtida e mostra o efeito dela em quem paga: IRRF com e sem a pensão, economia de imposto e líquido.
+- Explica como a pensão foi obtida e mostra o efeito dela em quem paga: IRRF com e sem a pensão, economia de imposto e líquido, com a faixa do INSS e do IRRF em que cada base ficou.
 - Desconta a pensão também no 13º salário, nas férias, na rescisão (sobre as verbas salariais) e na PLR, com a dedução no IRRF de cada verba.
 - Compara a pensão atual com a proposta em uma revisão, com o efeito no IRRF e no líquido de quem paga.
 - Atualiza a pensão em atraso pelo INPC ou pelo IPCA, com juros de 1% ao mês até 29/08/2024 e a taxa legal publicada pelo Banco Central depois (Lei 14.905/2024 e Resolução CMN 5.171/2024, proporcional aos dias), separa as parcelas do rito da prisão (Súmula 309 do STJ) das do rito da penhora e inclui, se escolhidos, a multa e os honorários de 10% do art. 523 do CPC.

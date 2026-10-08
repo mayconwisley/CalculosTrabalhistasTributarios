@@ -94,4 +94,49 @@ public class PensaoTests
         Assert.Equal("R$ 2.431,50", Texto.Normalizar(revisao.Destaques[1].Valor));
         Assert.Equal("+R$ 319,51", Texto.Normalizar(revisao.Destaques[2].Valor));
     }
+
+    [Fact]
+    public async Task Informa_a_faixa_do_inss_e_do_irrf_com_e_sem_a_pensao()
+    {
+        // 8.500,00 passa do teto: o INSS de 988,07 termina na faixa de 14%. Com a pensão, a base do IRRF é
+        // 8.500,00 - 988,07 - 2 x 189,59 - 2.111,99 = 5.020,76; sem ela, 7.132,75: as duas acima de 4.664,68, na faixa de 27,5%.
+        var simulacao = await new SimularPensaoUseCase(await Ambiente.ConsultaAsync()).ExecutarAsync(new SimularPensaoRequest(new DateOnly(2026, 10, 1), 8500m, 8500m, 2, RegraPensao.PercentualDosLiquidos(30m), 0m), default).Sucesso();
+
+        Assert.Equal(5020.76m, simulacao.Aplicada.Detalhes[^1].BaseIrrf);
+        Assert.Equal(27.5m, simulacao.Aplicada.Detalhes[^1].Aliquota);
+        Assert.Equal(27.5m, simulacao.AliquotaIrrfSemPensao);
+        Assert.Equal("até a faixa de 14%", MemoriaCalculoPensao.FaixaInss(simulacao));
+        Assert.Equal("Faixas aplicadas: INSS de R$ 988,07, até a faixa de 14%; IRRF com a pensão na faixa de 27,5% e sem a pensão na faixa de 27,5%.",
+            Texto.Normalizar(MemoriaCalculoPensao.Faixas(simulacao, valor => valor.ToString("C2", new System.Globalization.CultureInfo("pt-BR")))));
+    }
+
+    [Fact]
+    public async Task Faixa_isenta_do_irrf_e_inss_progressivo_de_2022()
+    {
+        // 06/2022: INSS de 1.212,00 x 7,5% + 788,00 x 9% = 90,90 + 70,92 = 161,82, na faixa de 9%. Bases do IRRF de
+        // 2.000,00 - 161,82 - 200,00 (10% do bruto) = 1.638,18 e, sem a pensão, 1.838,18: ambas até 1.903,98, isentas.
+        var simulacao = await new SimularPensaoUseCase(await Ambiente.ConsultaAsync()).ExecutarAsync(new SimularPensaoRequest(new DateOnly(2022, 6, 1), 2000m, 2000m, 0, new RegraPensao(BasePensao.RendimentosBrutos, 10m, 0m), 0m), default).Sucesso();
+
+        Assert.Equal(161.82m, simulacao.ValorInss);
+        Assert.Equal("até a faixa de 9%", MemoriaCalculoPensao.FaixaInss(simulacao));
+        Assert.Equal(0m, simulacao.AliquotaIrrfSemPensao);
+        Assert.Equal("faixa isenta", MemoriaCalculoPensao.FaixaIrrf(simulacao.Aplicada.Detalhes[^1].Aliquota, simulacao.Aplicada.Imposto));
+    }
+
+    [Fact]
+    public async Task Antes_de_marco_de_2020_a_aliquota_do_inss_vale_para_toda_a_base()
+    {
+        // 06/2019: 2.500,00 está entre 1.751,82 e 2.919,72, faixa de 9% sobre toda a base: 225,00.
+        var simulacao = await new SimularPensaoUseCase(await Ambiente.ConsultaAsync()).ExecutarAsync(new SimularPensaoRequest(new DateOnly(2019, 6, 1), 2500m, 2500m, 0, new RegraPensao(BasePensao.RendimentosBrutos, 10m, 0m), 0m), default).Sucesso();
+
+        Assert.Equal(225.00m, simulacao.ValorInss);
+        Assert.Equal("alíquota de 9% sobre toda a base", MemoriaCalculoPensao.FaixaInss(simulacao));
+    }
+
+    [Fact]
+    public void Faixa_tributada_sem_imposto_a_reter_e_explicada()
+    {
+        Assert.Equal("faixa de 22,5%, sem IRRF a reter", MemoriaCalculoPensao.FaixaIrrf(22.5m, 0m));
+        Assert.Equal("faixa de 7,5%", MemoriaCalculoPensao.FaixaIrrf(7.5m, 12.34m));
+    }
 }
