@@ -692,28 +692,25 @@ No 13º, nas férias e na rescisão, a pensão é deduzida da base do IRRF na mo
 
 Abra pelo cartão **Seguro-desemprego**, no grupo **Férias, 13º e desligamento**. Ele calcula o valor de cada parcela e quantas parcelas o trabalhador dispensado sem justa causa recebe.
 
-![Seguro-desemprego](imagens/41-seguro-desemprego.png)
-
 | Campo | O que informar |
 | --- | --- |
 | Data da dispensa | Data do desligamento, que define a tabela usada. |
 | Salários do último, do penúltimo e do antepenúltimo mês | Os salários dos 3 meses anteriores à dispensa, com horas extras e adicionais. Deixe 0,00 nos meses sem salário: a média usa só os meses informados. |
-| Meses trabalhados | Meses com carteira assinada nos 36 meses antes da dispensa, em qualquer emprego; a fração de 15 dias ou mais conta como mês. |
+| Meses trabalhados | Meses com carteira assinada nos 36 meses antes da dispensa, em qualquer emprego; a fração de 15 dias ou mais conta como mês. Este total define a quantidade de parcelas, até 36 meses. |
 | Solicitação | **1ª solicitação**, **2ª solicitação** ou **3ª ou seguinte**, contando esta. |
+| Meses com salário na carência | Informe a quantidade na janela mostrada após escolher a solicitação: últimos 18 meses na 1ª, 12 na 2ª ou 6 nas seguintes. Conte os meses efetivos, inclusive de outros vínculos. O campo é necessário para calcular; ao abrir um histórico antigo, preencha-o antes de recalcular. |
 
 | Regra | Como funciona (Lei 7.998/1990, com a redação da Lei 13.134/2015) |
 | --- | --- |
 | Valor da parcela | Pela média dos salários, na tabela **Seguro-desemprego** vigente na dispensa. Em 2026: até R$ 2.222,17, 80% da média; até R$ 3.703,99, R$ 1.777,74 mais 50% do que passar de R$ 2.222,17; acima, R$ 2.518,65. A parcela nunca fica abaixo do salário mínimo. |
-| Carência | Salário em pelo menos 12 dos últimos 18 meses na 1ª solicitação, 9 dos últimos 12 na 2ª e em cada um dos 6 últimos nas seguintes. O aplicativo considera que os meses informados são os imediatamente anteriores à dispensa. |
+| Carência | Salário em pelo menos 12 dos últimos 18 meses na 1ª solicitação, 9 dos últimos 12 na 2ª e em cada um dos 6 últimos nas seguintes. O aplicativo confere a contagem informada na janela aplicável, separada do total de 36 meses. |
 | Parcelas | 3 parcelas de 6 a 11 meses trabalhados (a partir da 2ª solicitação), 4 de 12 a 23 meses e 5 com 24 meses ou mais. |
 
-A memória de cálculo mostra a média, a fórmula da faixa e a regra das parcelas:
-
-![Memória de cálculo do seguro-desemprego](imagens/42-seguro-desemprego-memoria.png)
+A memória de cálculo mostra a média, a fórmula da faixa, a contagem da carência e a regra das parcelas.
 
 Não têm direito o pedido de demissão, a justa causa, o acordo (CLT, art. 484-A, § 4º) e o fim normal do contrato a prazo. O benefício é pago pelo governo, não pela empresa, não tem desconto de INSS nem de IRRF e deve ser pedido de 7 a 120 dias depois da dispensa.
 
-**Empregado doméstico:** escolha o vínculo **Empregado doméstico**. A parcela é de um salário mínimo, em até 3 parcelas, para quem trabalhou como doméstico pelo menos 15 meses nos últimos 24 (LC 150/2015, arts. 26 e 28), e deve ser pedida de 7 a 90 dias depois da dispensa. Os salários e a solicitação não entram no cálculo e ficam ocultos.
+**Empregado doméstico:** escolha o vínculo **Empregado doméstico**. A parcela é de um salário mínimo, em até 3 parcelas, para quem trabalhou como doméstico pelo menos 15 meses nos últimos 24 (LC 150/2015, arts. 26 e 28), e deve ser pedida de 7 a 90 dias depois da dispensa. Os salários, a solicitação e os campos de carência do trabalhador formal não entram no cálculo e ficam ocultos.
 
 ![Seguro-desemprego do doméstico](imagens/71-seguro-domestico.png)
 

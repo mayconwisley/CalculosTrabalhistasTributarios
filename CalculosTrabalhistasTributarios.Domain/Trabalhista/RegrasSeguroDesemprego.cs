@@ -26,13 +26,22 @@ public static class RegrasSeguroDesemprego
         _ => 6
     };
 
+    /// <summary>Janela anterior à dispensa usada para conferir os meses com salário (Lei 7.998/1990, art. 3º, I).</summary>
+    public static int MesesPeriodoCarencia(SolicitacaoSeguroDesemprego solicitacao) => solicitacao switch
+    {
+        SolicitacaoSeguroDesemprego.Primeira => 18,
+        SolicitacaoSeguroDesemprego.Segunda => 12,
+        _ => 6
+    };
+
     /// <summary>
     /// Parcelas pelos meses trabalhados nos 36 meses anteriores à dispensa (art. 4º, § 2º): 3 de 6 a 11 meses (a partir da 2ª
-    /// solicitação), 4 de 12 a 23 meses e 5 com 24 meses ou mais. Sem a carência, nenhuma.
+    /// solicitação), 4 de 12 a 23 meses e 5 com 24 meses ou mais. A carência do art. 3º, I, deve ser cumprida na janela
+    /// específica da solicitação, mesmo quando o total dos últimos 36 meses é suficiente.
     /// </summary>
-    public static int Parcelas(SolicitacaoSeguroDesemprego solicitacao, int mesesTrabalhados)
+    public static int Parcelas(SolicitacaoSeguroDesemprego solicitacao, int mesesTrabalhados, int mesesNoPeriodoCarencia)
     {
-        if (mesesTrabalhados < MesesMinimos(solicitacao))
+        if (mesesNoPeriodoCarencia < MesesMinimos(solicitacao) || mesesTrabalhados < mesesNoPeriodoCarencia)
             return 0;
         return mesesTrabalhados >= 24 ? 5 : mesesTrabalhados >= 12 ? 4 : 3;
     }

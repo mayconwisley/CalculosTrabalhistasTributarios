@@ -21,6 +21,14 @@ public sealed class SimularSeguroDesempregoUseCase(ITributacaoConsulta tributaca
     {
         if (r.Salarios.Any(salario => salario < 0m) || r.MesesTrabalhados < 0)
             return Erro.Validacao("Os salários e os meses trabalhados não podem ser negativos.");
+        var periodoCarencia = RegrasSeguroDesemprego.MesesPeriodoCarencia(r.Solicitacao);
+        if (r.MesesTrabalhados > (r.Domestico ? 24 : PeriodoDeReferencia))
+            return Erro.Validacao($"Meses trabalhados: informe no máximo {(r.Domestico ? 24 : PeriodoDeReferencia)} meses anteriores à dispensa.");
+        if (!r.Domestico && r.MesesNoPeriodoCarencia is null)
+            return Erro.Validacao($"Meses com salário ({periodoCarencia}): informe a quantidade dos últimos {periodoCarencia} meses para conferir a carência.");
+        var mesesCarencia = r.MesesNoPeriodoCarencia.GetValueOrDefault();
+        if (!r.Domestico && (mesesCarencia < 0 || mesesCarencia > periodoCarencia || mesesCarencia > r.MesesTrabalhados))
+            return Erro.Validacao($"Meses com salário ({periodoCarencia}): informe de 0 a {Math.Min(periodoCarencia, r.MesesTrabalhados)} meses, sem superar o total trabalhado nos últimos 36.");
         var salarios = r.Salarios.Where(salario => salario > 0m).ToArray();
         if (salarios.Length == 0 && !r.Domestico)
             return Erro.Validacao("Informe pelo menos o salário do último mês antes da dispensa.");
@@ -44,8 +52,8 @@ public sealed class SimularSeguroDesempregoUseCase(ITributacaoConsulta tributaca
         if (calculoParcela.Falhou)
             return calculoParcela.Erro;
         var parcela = calculoParcela.Valor;
-        var meses = Math.Min(r.MesesTrabalhados, PeriodoDeReferencia);
-        var quantidade = RegrasSeguroDesemprego.Parcelas(r.Solicitacao, meses);
+        var meses = r.MesesTrabalhados;
+        var quantidade = RegrasSeguroDesemprego.Parcelas(r.Solicitacao, meses, mesesCarencia);
         var total = parcela.Valor * quantidade;
         var nomeSolicitacao = NomeSolicitacao(r.Solicitacao);
 
@@ -58,9 +66,12 @@ public sealed class SimularSeguroDesempregoUseCase(ITributacaoConsulta tributaca
         };
         if (parcela.Valor > parcela.ValorPelaTabela)
             formulas.Add(new("Piso", $"{Formato.Moeda(parcela.ValorPelaTabela)} é menor que o salário mínimo de {Formato.Moeda(salarioMinimo)}: cada parcela é de {Formato.Moeda(parcela.Valor)} (Lei 7.998/1990, art. 5º, § 2º)."));
+        formulas.Add(new("Carência", $"{mesesCarencia} mês(es) com salário nos últimos {periodoCarencia}; exigidos {RegrasSeguroDesemprego.MesesMinimos(r.Solicitacao)} na {nomeSolicitacao} (Lei 7.998/1990, art. 3º, I)"));
         formulas.Add(new("Quantidade de parcelas", quantidade > 0
-            ? $"{meses} meses trabalhados nos últimos {PeriodoDeReferencia}, na {nomeSolicitacao}: {quantidade} parcelas (3 de 6 a 11 meses, 4 de 12 a 23 e 5 a partir de 24; Lei 7.998/1990, art. 4º)"
-            : $"Na {nomeSolicitacao}, é preciso ter trabalhado pelo menos {RegrasSeguroDesemprego.MesesMinimos(r.Solicitacao)} meses; com {meses}, não há direito ao benefício."));
+            ? $"{meses} meses trabalhados nos últimos {PeriodoDeReferencia}: {quantidade} parcelas (3 de 6 a 11 meses, 4 de 12 a 23 e 5 a partir de 24; Lei 7.998/1990, art. 4º)"
+            : mesesCarencia < RegrasSeguroDesemprego.MesesMinimos(r.Solicitacao)
+                ? $"Carência não cumprida: {mesesCarencia} de {RegrasSeguroDesemprego.MesesMinimos(r.Solicitacao)} meses exigidos nos últimos {periodoCarencia}."
+                : $"Com {meses} meses trabalhados nos últimos {PeriodoDeReferencia}, não há parcelas disponíveis."));
         if (quantidade > 0)
             formulas.Add(new("Total do benefício", $"{quantidade} x {Formato.Moeda(parcela.Valor)} = {Formato.Moeda(total)}"));
 
@@ -68,7 +79,7 @@ public sealed class SimularSeguroDesempregoUseCase(ITributacaoConsulta tributaca
         {
             "Tem direito quem foi dispensado sem justa causa, inclusive na rescisão indireta e na rescisão antecipada do contrato a prazo pelo empregador. Não cabe no pedido de demissão, na justa causa, no acordo (CLT, art. 484-A, § 4º) nem no fim normal do contrato a prazo.",
             "Também é preciso não ter renda própria suficiente para a família e não receber benefício de prestação continuada da Previdência, exceto pensão por morte e auxílio-acidente.",
-            $"Os meses trabalhados são considerados os imediatamente anteriores à dispensa: a carência exige {Carencia(r.Solicitacao)}.",
+            $"A carência exige {Carencia(r.Solicitacao)}; foram informados {mesesCarencia} meses com salário nessa janela.",
             "Peça de 7 a 120 dias depois da dispensa, pela Carteira de Trabalho Digital ou pelo gov.br. Entre um benefício e outro é preciso esperar 16 meses.",
             "O seguro-desemprego é pago pelo governo, com recursos do FAT, e não pela empresa; não tem desconto de INSS nem de IRRF.",
             $"Tabela de {Formato.Competencia(tabelas.Competencia)}, a vigente na data da dispensa; ela é reajustada todo ano em janeiro pelo INPC."
@@ -79,7 +90,7 @@ public sealed class SimularSeguroDesempregoUseCase(ITributacaoConsulta tributaca
             $"Dispensa em {Formato.Data(r.Dispensa)} • {char.ToUpper(nomeSolicitacao[0])}{nomeSolicitacao[1..]}",
             [
                 new("Valor da parcela", Formato.Moeda(parcela.Valor), parcela.Valor > parcela.ValorPelaTabela ? "O salário mínimo, que é o piso" : $"Faixa {parcela.Faixa} da tabela"),
-                new("Parcelas", quantidade > 0 ? quantidade.ToString(Formato.Cultura) : "Sem direito", $"{meses} meses trabalhados"),
+                new("Parcelas", quantidade > 0 ? quantidade.ToString(Formato.Cultura) : "Sem direito", $"{meses} meses em 36; {mesesCarencia} em {periodoCarencia}"),
                 new("Total do benefício", Formato.Moeda(total), quantidade > 0 ? $"{quantidade} x {Formato.Moeda(parcela.Valor)}" : "Carência não cumprida"),
                 new("Média salarial", Formato.Moeda(media), salarios.Length == 1 ? "Do último salário" : $"Dos últimos {salarios.Length} salários")
             ],

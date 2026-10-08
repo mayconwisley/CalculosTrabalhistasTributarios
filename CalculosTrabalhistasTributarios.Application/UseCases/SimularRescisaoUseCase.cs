@@ -75,7 +75,7 @@ public sealed class SimularRescisaoUseCase(ITributacaoConsulta tributacaoConsult
         var parcela = RegrasSeguroDesemprego.ValorDaParcela(c.Remuneracao, tabelas.FaixasSeguroDesemprego, tabelas.SalarioMinimo!.Value);
         return parcela.Falhou
             ? parcela.Erro
-            : Result.Ok<EstimativaSeguroRescisao?>(new EstimativaSeguroRescisao(meses, RegrasSeguroDesemprego.Parcelas(SolicitacaoSeguroDesemprego.Primeira, meses), parcela.Valor));
+            : Result.Ok<EstimativaSeguroRescisao?>(new EstimativaSeguroRescisao(meses, RegrasSeguroDesemprego.Parcelas(SolicitacaoSeguroDesemprego.Primeira, meses, Math.Min(meses, 18)), parcela.Valor));
     }
 
     /// <summary>

@@ -2,6 +2,7 @@ using CalculosTrabalhistasTributarios.Application.DTOs;
 using CalculosTrabalhistasTributarios.Application.UseCases;
 using CalculosTrabalhistasTributarios.Domain.Comum;
 using CalculosTrabalhistasTributarios.Domain.Trabalhista;
+using CalculosTrabalhistasTributarios.Presentation.ViewModels.Calculadoras;
 using Xunit;
 
 namespace CalculosTrabalhistasTributarios.Tests;
@@ -10,7 +11,8 @@ public class SeguroDesempregoTests
 {
     private static async Task<DemonstrativoDto> CalcularAsync(string dispensa, decimal[] salarios, SolicitacaoSeguroDesemprego solicitacao, int meses) =>
         await new SimularSeguroDesempregoUseCase(await Ambiente.ConsultaAsync())
-            .ExecutarAsync(new SimularSeguroDesempregoRequest(DateOnly.Parse(dispensa), salarios, solicitacao, meses), default).Sucesso();
+            .ExecutarAsync(new SimularSeguroDesempregoRequest(DateOnly.Parse(dispensa), salarios, solicitacao, meses,
+                MesesNoPeriodoCarencia: Math.Min(meses, RegrasSeguroDesemprego.MesesPeriodoCarencia(solicitacao))), default).Sucesso();
 
     // Tabela de 2026: até 2.222,17, 80% da média; até 3.703,99, 1.777,74 + 50% do excedente; acima, 2.518,65. Piso: 1.621,00.
     [Theory]
@@ -51,7 +53,66 @@ public class SeguroDesempregoTests
     [InlineData(SolicitacaoSeguroDesemprego.TerceiraOuMais, 6, 3)]
     [InlineData(SolicitacaoSeguroDesemprego.TerceiraOuMais, 60, 5)]
     public void Parcelas_pela_solicitacao_e_pelos_meses(SolicitacaoSeguroDesemprego solicitacao, int meses, int parcelas) =>
-        Assert.Equal(parcelas, RegrasSeguroDesemprego.Parcelas(solicitacao, meses));
+        Assert.Equal(parcelas, RegrasSeguroDesemprego.Parcelas(solicitacao, meses,
+            Math.Min(meses, RegrasSeguroDesemprego.MesesPeriodoCarencia(solicitacao))));
+
+    [Theory]
+    [InlineData(SolicitacaoSeguroDesemprego.Primeira, 24, 11, 18)]
+    [InlineData(SolicitacaoSeguroDesemprego.Segunda, 24, 8, 12)]
+    [InlineData(SolicitacaoSeguroDesemprego.TerceiraOuMais, 24, 5, 6)]
+    public async Task Meses_fora_da_janela_nao_cumprem_carencia(SolicitacaoSeguroDesemprego solicitacao, int total, int carencia, int periodo)
+    {
+        var resultado = await new SimularSeguroDesempregoUseCase(await Ambiente.ConsultaAsync())
+            .ExecutarAsync(new SimularSeguroDesempregoRequest(new DateOnly(2026, 10, 15), [3000m], solicitacao, total,
+                MesesNoPeriodoCarencia: carencia), default).Sucesso();
+
+        Assert.Empty(resultado.Proventos);
+        Assert.Equal("Sem direito", resultado.Destaques[1].Valor);
+        Assert.Contains(resultado.Memoria.SelectMany(grupo => grupo.Formulas), formula =>
+            formula.Titulo == "Carência" && formula.Formula.Contains($"{carencia} mês(es) com salário nos últimos {periodo}"));
+    }
+
+    [Fact]
+    public async Task Historico_sem_contagem_da_carencia_exige_preenchimento()
+    {
+        var calculadora = new CalculadoraSeguroDesemprego(new SimularSeguroDesempregoUseCase(await Ambiente.ConsultaAsync()));
+        calculadora.ImportarCampos(new Dictionary<string, string>
+        {
+            ["Data da dispensa"] = "15/10/2026", ["Salário do último mês"] = "3.000,00",
+            ["Meses trabalhados"] = "24", ["Solicitação"] = "1ª solicitação"
+        });
+
+        var erro = (await calculadora.CalcularAsync(default)).Falha();
+        Assert.Contains("Meses com salário (18)", erro.Mensagem);
+        Assert.Equal(string.Empty, ((CampoTextoViewModel)calculadora.Campos.Single(campo => campo.Rotulo == "Meses com salário (18)")).Valor);
+    }
+
+    [Theory]
+    [InlineData(SolicitacaoSeguroDesemprego.Primeira, 24, 19)]
+    [InlineData(SolicitacaoSeguroDesemprego.Segunda, 8, 9)]
+    [InlineData(SolicitacaoSeguroDesemprego.TerceiraOuMais, 24, 7)]
+    public async Task Contagem_incoerente_e_rejeitada(SolicitacaoSeguroDesemprego solicitacao, int total, int carencia)
+    {
+        var erro = await new SimularSeguroDesempregoUseCase(await Ambiente.ConsultaAsync())
+            .ExecutarAsync(new SimularSeguroDesempregoRequest(new DateOnly(2026, 10, 15), [3000m], solicitacao, total,
+                MesesNoPeriodoCarencia: carencia), default).Falha();
+
+        Assert.Contains("Meses com salário", erro.Mensagem);
+    }
+
+    [Fact]
+    public async Task Formulario_mostra_apenas_a_janela_da_solicitacao()
+    {
+        var calculadora = new CalculadoraSeguroDesemprego(new SimularSeguroDesempregoUseCase(await Ambiente.ConsultaAsync()));
+        calculadora.ImportarCampos(new Dictionary<string, string>
+        {
+            ["Solicitação"] = "3ª ou seguinte", ["Meses com salário (6)"] = "6"
+        });
+
+        Assert.True(calculadora.Campos.Single(campo => campo.Rotulo == "Meses com salário (6)").Visivel);
+        Assert.False(calculadora.Campos.Single(campo => campo.Rotulo == "Meses com salário (18)").Visivel);
+        Assert.Equal("6", calculadora.ExportarCampos()["Meses com salário (6)"]);
+    }
 
     [Fact]
     public async Task Sem_carencia_mostra_que_nao_ha_direito()
