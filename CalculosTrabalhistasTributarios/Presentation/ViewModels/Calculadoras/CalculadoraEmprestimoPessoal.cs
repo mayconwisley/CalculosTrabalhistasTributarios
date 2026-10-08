@@ -10,10 +10,11 @@ public sealed class CalculadoraEmprestimoPessoal : CalculadoraBase
     private readonly ISimularDemonstrativoUseCase<SimularEmprestimoPessoalRequest> _simulador;
     private readonly CampoTextoViewModel _valor = Moeda("Valor solicitado (R$)", "Crédito antes dos descontos na liberação. Seguro, outros custos financiados e IOF financiado são somados automaticamente.");
     private readonly CampoTextoViewModel _parcelas = Inteiro("Parcelas (meses)", 24, "De 1 a 120 meses; primeira parcela um mês após a liberação, sem carência.");
-    private readonly CampoTextoViewModel _juros = new("Juros (% ao mês)", TipoCampo.Numero, "0", "Taxa mensal da proposta, de 0 a 20%, até seis casas decimais. Não informe taxa anual nem CET.");
+    private readonly CampoTextoViewModel _juros = new("Juros (% ao mês)", TipoCampo.Numero, "0", "Taxa mensal da proposta, de 0 a 20%, até seis casas decimais. Não informe taxa anual nem CET.")
+    { MostrarDica = true, DicaEmLinha = "Informe a taxa mensal da proposta; não use taxa anual nem CET." };
     private readonly CampoTextoViewModel _data = new("Data de liberação", TipoCampo.Data, DateTime.Today.ToString("dd/MM/yyyy", Cultura), "De 01/01/2025 a 31/12/2100. Define o calendário mensal e os dias para estimar o IOF.");
     private readonly CampoOpcaoViewModel _modoIof = new("Cálculo do IOF", [new("Automático (estimado)", true), new("Informado pelo banco", false)]);
-    private readonly CampoOpcaoViewModel _cobrancaIof = new("Cobrança do IOF", [new("Financiado", true), new("Descontado do crédito", false)]);
+    private readonly CampoOpcaoViewModel _cobrancaIof = new("Cobrança do IOF", [new("Financiado", true), new("Descontado do crédito", false)], "Financiado aumenta o saldo devedor; descontado reduz o valor recebido.") { MostrarDica = true };
     private readonly CampoTextoViewModel _iof = Moeda("IOF informado (R$)", "IOF da proposta; informe zero apenas se o banco confirmou ausência de cobrança.");
     private readonly CampoTextoViewModel _seguro = Moeda("Seguro financiado (R$)", "Opcional: preço do seguro em reais, não o percentual de cobertura.");
     private readonly CampoTextoViewModel _custos = Moeda("Outros financiados (R$)", "Opcional: demais custos somados ao financiamento. Não repita seguro nem IOF.");

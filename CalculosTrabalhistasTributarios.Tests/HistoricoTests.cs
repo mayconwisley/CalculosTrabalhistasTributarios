@@ -1,4 +1,5 @@
 using CalculosTrabalhistasTributarios.Presentation.Interfaces;
+using CalculosTrabalhistasTributarios.Application.DTOs;
 using CalculosTrabalhistasTributarios.Presentation.ViewModels.Calculadoras;
 using CalculosTrabalhistasTributarios.Presentation.ViewModels.Historico;
 using Xunit;
@@ -7,6 +8,22 @@ namespace CalculosTrabalhistasTributarios.Tests;
 
 public class HistoricoTests
 {
+    [Fact]
+    public void Comparacao_mostra_diferencas_em_campos_e_linhas_salvas()
+    {
+        var primeiro = new CalculoSalvoDto(1, "Calculadora.Rescisao", "Rescisão", "Cenário A",
+            new DadosFormulario(new() { ["Salário"] = "3.000,00", ["Depósitos"] = "[{\"Competencia\":\"01/2026\",\"Valor\":\"240,00\"}]" }).ParaJson(), DateTime.Today, DateTime.Today);
+        var segundo = primeiro with { Id = 2, Nome = "Cenário B",
+            Dados = new DadosFormulario(new() { ["Salário"] = "3.500,00", ["Depósitos"] = "[{\"Competencia\":\"01/2026\",\"Valor\":\"280,00\"}]" }).ParaJson() };
+
+        var comparacao = new ComparacaoHistoricoViewModel(primeiro, segundo);
+
+        Assert.Contains(comparacao.Linhas, linha => linha.Campo == "Salário" && linha.Primeiro == "3.000,00" && linha.Segundo == "3.500,00");
+        Assert.Contains(comparacao.Linhas, linha => linha.Campo == "Depósitos · linha 1 · Valor" && linha.Diferente);
+        comparacao.SomenteDiferencas = true;
+        Assert.DoesNotContain(comparacao.Linhas, linha => linha.Campo == "Depósitos · linha 1 · Competencia");
+    }
+
     [Fact]
     public async Task Salva_altera_duplica_renomeia_e_exclui()
     {
@@ -38,6 +55,30 @@ public class HistoricoTests
         var novo = await historico.SalvarAsync(id, "Calculadora.Rescisao", "Rescisão", "João da Silva", "{}", default);
         Assert.NotEqual(id, novo);
         await historico.ExcluirAsync(novo, default);
+    }
+
+    [Fact]
+    public async Task Historico_filtra_por_calculadora_e_ordena_por_nome()
+    {
+        var historico = await Ambiente.HistoricoAsync();
+        await historico.SalvarAsync(null, "Calculadora.Rescisao", "Rescisão", "Zeta", "{}", default);
+        await historico.SalvarAsync(null, "Calculadora.Ferias", "Férias", "Alfa", "{}", default);
+        await historico.SalvarAsync(null, "Calculadora.Rescisao", "Rescisão", "Beta", "{}", default);
+        var tela = new HistoricoViewModel(historico, null!, null!, null!, null!);
+
+        await tela.CarregarAsync();
+        tela.CalculadoraSelecionada = "Rescisão";
+        tela.OrdemSelecionada = "Nome";
+
+        Assert.Equal(["Beta", "Zeta"], tela.Itens.Select(item => item.Nome));
+        tela.Itens[0].Selecionado = true;
+        tela.Itens[1].Selecionado = true;
+        Assert.True(tela.CompararCommand.CanExecute(null));
+        tela.PeriodoSelecionado = "Este ano";
+        Assert.Equal(2, tela.Itens.Count);
+        Assert.False(tela.CompararCommand.CanExecute(null));
+        tela.Filtro = "zeta";
+        Assert.Single(tela.Itens);
     }
 
     /// <summary>Todas as calculadoras da janela padrão, com os simuladores nulos: só o formulário é usado.</summary>

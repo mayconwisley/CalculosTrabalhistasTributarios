@@ -26,7 +26,8 @@ public sealed class CalculadoraRescisao : CalculadoraBase
             new("Fim de contrato a prazo", MotivoRescisao.TerminoDeContratoPorPrazo),
             new("Antecipada pela empresa", MotivoRescisao.RescisaoAntecipadaPeloEmpregador),
             new("Antecipada pelo empregado", MotivoRescisao.RescisaoAntecipadaPeloEmpregado)
-        ], "Motivo do desligamento, que define as verbas devidas. As antecipadas encerram o contrato a prazo ou de experiência antes do fim previsto: pela empresa (CLT, art. 479) ou pelo empregado (art. 480).") { Largura = 300 };
+        ], "Motivo do desligamento, que define as verbas devidas. As antecipadas encerram o contrato a prazo ou de experiência antes do fim previsto: pela empresa (CLT, art. 479) ou pelo empregado (art. 480).")
+        { Largura = 300, MostrarDica = true, DicaEmLinha = "Define as verbas devidas. Nas opções 'antecipada', informe também o fim previsto." };
     private readonly CampoTextoViewModel _fimPrevisto = new("Fim previsto do contrato", TipoCampo.Data, "", "Último dia previsto do contrato a prazo ou de experiência (dd/mm/aaaa).");
     private readonly CampoOpcaoViewModel _aviso = new("Aviso prévio",
         [
@@ -60,6 +61,8 @@ public sealed class CalculadoraRescisao : CalculadoraBase
     {
         _simulador = simulador;
         _depositosFgts = new(_admissao, _desligamento);
+        _saldoFgts.MostrarDica = true;
+        _saldoFgts.DicaEmLinha = "Use o saldo do extrato. Com 0,00, informe o histórico completo ou será feita uma estimativa.";
         _motivo.AoAlterar = AjustarAoMotivo;
         _vinculo.AoAlterar = AjustarAoMotivo;
         AjustarAoMotivo();

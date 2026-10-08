@@ -28,6 +28,7 @@ public static class DependencyInjection
         .AddSingleton<IArquivoDialogService, WpfArquivoDialogService>()
         .AddSingleton<IManualUsuarioService, WpfManualUsuarioService>()
         .AddSingleton<INomeDialogService, WpfNomeDialogService>()
+        .AddSingleton<IComparacaoHistoricoService, WpfComparacaoHistoricoService>()
         .AddSingleton<IHistoricoDaJanelaFactory, HistoricoDaJanelaFactory>()
         .AddScoped<IWindowNavigator, WpfWindowNavigator>()
         .AddScoped<IDebitoJudicialViewModelFactory, DebitoJudicialViewModelFactory>()

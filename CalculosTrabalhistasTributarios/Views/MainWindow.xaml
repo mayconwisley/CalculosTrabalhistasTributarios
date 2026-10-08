@@ -203,7 +203,7 @@
 									</Border>
 									<ControlTemplate.Triggers>
 										<Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Fundo" Property="Background" Value="{DynamicResource ButtonHoverBrush}" /></Trigger>
-										<Trigger Property="IsKeyboardFocused" Value="True"><Setter TargetName="Fundo" Property="Background" Value="{DynamicResource ButtonHoverBrush}" /></Trigger>
+										<Trigger Property="IsKeyboardFocused" Value="True"><Setter TargetName="Fundo" Property="Background" Value="{DynamicResource ButtonHoverBrush}" /><Setter TargetName="Fundo" Property="BorderBrush" Value="{DynamicResource AccentBrush}" /><Setter TargetName="Fundo" Property="BorderThickness" Value="1" /></Trigger>
 									</ControlTemplate.Triggers>
 								</ControlTemplate>
 							</Button.Template>
@@ -253,6 +253,24 @@
 								</StackPanel>
 								<TextBlock Grid.Column="1" Text="{Binding Historico.Resumo}" Foreground="{DynamicResource MutedTextBrush}" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,0,10" />
 							</Grid>
+							<WrapPanel Margin="0,0,0,14">
+								<StackPanel Margin="0,0,12,8">
+									<TextBlock Text="Calculadora" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" />
+									<ComboBox Width="230" ItemsSource="{Binding Historico.CalculadorasDisponiveis}" SelectedItem="{Binding Historico.CalculadoraSelecionada}" AutomationProperties.Name="Filtrar histórico por calculadora" />
+								</StackPanel>
+								<StackPanel Margin="0,0,12,8">
+									<TextBlock Text="Data da alteração" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" />
+									<ComboBox Width="170" ItemsSource="{Binding Historico.Periodos}" SelectedItem="{Binding Historico.PeriodoSelecionado}" AutomationProperties.Name="Filtrar histórico por data de alteração" />
+								</StackPanel>
+								<StackPanel Margin="0,0,12,8">
+									<TextBlock Text="Ordenar por" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" />
+									<ComboBox Width="160" ItemsSource="{Binding Historico.Ordens}" SelectedItem="{Binding Historico.OrdemSelecionada}" AutomationProperties.Name="Ordenar histórico" />
+								</StackPanel>
+							</WrapPanel>
+							<WrapPanel Margin="0,0,0,14">
+								<Button Content="Comparar entradas" Command="{Binding Historico.CompararCommand}" Margin="0,0,12,0" AutomationProperties.Name="Comparar entradas de dois cálculos salvos" />
+								<TextBlock Text="{Binding Historico.SituacaoComparacao}" TextWrapping="Wrap" VerticalAlignment="Center" Foreground="{DynamicResource MutedTextBrush}" />
+							</WrapPanel>
 							<TextBlock Text="{Binding Historico.MensagemVazia}" Foreground="{DynamicResource MutedTextBrush}" TextWrapping="Wrap" MaxWidth="520" HorizontalAlignment="Left" Margin="0,8,0,0">
 								<TextBlock.Style>
 									<Style TargetType="TextBlock">
@@ -267,12 +285,13 @@
 									<DataTemplate>
 										<Border Padding="16,12" Margin="0,0,0,10" Background="{DynamicResource ResultBackgroundBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="10">
 											<Grid>
-												<Grid.ColumnDefinitions><ColumnDefinition /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
-												<StackPanel VerticalAlignment="Center">
+											<Grid.ColumnDefinitions><ColumnDefinition Width="Auto" /><ColumnDefinition /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+											<CheckBox IsChecked="{Binding Selecionado}" VerticalAlignment="Center" Margin="0,0,12,0" AutomationProperties.Name="{Binding Nome, StringFormat='Selecionar {0} para comparação'}" />
+											<StackPanel Grid.Column="1" VerticalAlignment="Center">
 													<TextBlock Text="{Binding Nome}" FontSize="14" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
 													<TextBlock Text="{Binding Detalhe}" Foreground="{DynamicResource MutedTextBrush}" FontSize="12" Margin="0,3,0,0" TextTrimming="CharacterEllipsis" />
 												</StackPanel>
-												<StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="16,0,0,0">
+											<StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" Margin="16,0,0,0">
 													<Button Content="Excluir" Style="{StaticResource LinkButton}" Margin="0,0,16,0" VerticalAlignment="Center" AutomationProperties.Name="{Binding Nome, StringFormat='Excluir {0}'}"
 													        Command="{Binding DataContext.Historico.ExcluirCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" CommandParameter="{Binding}" />
 													<Button Content="Renomear" MinWidth="104" Margin="0,0,8,0" AutomationProperties.Name="{Binding Nome, StringFormat='Renomear {0}'}"

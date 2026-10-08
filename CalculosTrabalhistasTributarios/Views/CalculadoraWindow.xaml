@@ -25,7 +25,7 @@
         <DataTemplate DataType="{x:Type calculadoras:CampoTextoViewModel}">
             <StackPanel Width="170" Margin="0,0,14,14" ToolTip="{Binding Dica}" Visibility="{Binding Visivel, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <TextBlock Text="{Binding Rotulo}" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,6" TextTrimming="CharacterEllipsis" />
-                <TextBox Text="{Binding Valor, UpdateSourceTrigger=PropertyChanged}" TextAlignment="{Binding Alinhamento}" behaviors:MascaraData.Tipo="{Binding Mascara}" behaviors:FormatacaoNumerica.Formato="{Binding Formato}" behaviors:FormatacaoNumerica.ValorVazio="{Binding ValorVazio}" AutomationProperties.Name="{Binding Rotulo}" AutomationProperties.HelpText="{Binding MensagemErro}">
+                <TextBox Text="{Binding Valor, UpdateSourceTrigger=PropertyChanged}" TextAlignment="{Binding Alinhamento}" behaviors:MascaraData.Tipo="{Binding Mascara}" behaviors:FormatacaoNumerica.Formato="{Binding Formato}" behaviors:FormatacaoNumerica.ValorVazio="{Binding ValorVazio}" AutomationProperties.Name="{Binding Rotulo}" AutomationProperties.HelpText="{Binding AjudaAcessivel}">
                     <TextBox.Style>
                         <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
                             <Style.Triggers>
@@ -35,12 +35,14 @@
                     </TextBox.Style>
                 </TextBox>
                 <TextBlock Text="{Binding MensagemErro}" Style="{StaticResource ErroDoCampo}" />
+                <TextBlock Text="{Binding TextoDicaEmLinha}" Foreground="{DynamicResource MutedTextBrush}" FontSize="11" TextWrapping="Wrap" Margin="2,5,0,0"
+                           Visibility="{Binding MostrarDica, Converter={StaticResource BooleanToVisibilityConverter}}" />
             </StackPanel>
         </DataTemplate>
         <DataTemplate DataType="{x:Type calculadoras:CampoOpcaoViewModel}">
             <StackPanel Width="{Binding Largura}" Margin="0,0,14,14" ToolTip="{Binding Dica}" Visibility="{Binding Visivel, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <TextBlock Text="{Binding Rotulo}" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,6" TextTrimming="CharacterEllipsis" />
-                <ComboBox ItemsSource="{Binding Opcoes}" SelectedItem="{Binding Selecionada, Mode=TwoWay}" MinHeight="54" AutomationProperties.Name="{Binding Rotulo}" AutomationProperties.HelpText="{Binding MensagemErro}">
+                <ComboBox ItemsSource="{Binding Opcoes}" SelectedItem="{Binding Selecionada, Mode=TwoWay}" MinHeight="54" AutomationProperties.Name="{Binding Rotulo}" AutomationProperties.HelpText="{Binding AjudaAcessivel}">
                     <ComboBox.Style>
                         <Style TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
                             <Style.Triggers>
@@ -53,6 +55,8 @@
                     </ComboBox.ItemTemplate>
                 </ComboBox>
                 <TextBlock Text="{Binding MensagemErro}" Style="{StaticResource ErroDoCampo}" />
+                <TextBlock Text="{Binding TextoDicaEmLinha}" Foreground="{DynamicResource MutedTextBrush}" FontSize="11" TextWrapping="Wrap" Margin="2,5,0,0"
+                           Visibility="{Binding MostrarDica, Converter={StaticResource BooleanToVisibilityConverter}}" />
             </StackPanel>
         </DataTemplate>
         <DataTemplate DataType="{x:Type calculadoras:CampoAtualizacaoCotacoesViewModel}">
@@ -528,8 +532,8 @@
                             </StackPanel>
                             <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
                                 <Button Content="Salvar no histórico" Command="{Binding Historico.SalvarCommand}" MinWidth="150" Margin="0,0,8,0" ToolTip="Guarda o formulário com um nome, para reabrir, refazer com outros valores ou duplicar o cálculo pela aba Histórico da tela principal (Ctrl+S)." />
-                                <Button Content="Gerar Excel" Command="{Binding ExportarExcelCommand}" MinWidth="112" Margin="0,0,8,0" ToolTip="Salva o resultado em uma planilha do Excel (.xlsx), com os valores como números para somar e refazer as contas (Ctrl+E)." />
-                                <Button Style="{StaticResource PrimaryButton}" Content="Gerar PDF" Command="{Binding ExportarPdfCommand}" MinWidth="112" ToolTip="Salva o demonstrativo e a memória de cálculo em PDF (Ctrl+P)." />
+                                <Button Content="Gerar Excel" Command="{Binding ExportarExcelCommand}" MinWidth="112" Margin="0,0,8,0" ToolTip="Recalcula se o formulário mudou e salva a planilha (.xlsx), com valores numéricos (Ctrl+E)." />
+                                <Button Style="{StaticResource PrimaryButton}" Content="Gerar PDF" Command="{Binding ExportarPdfCommand}" MinWidth="112" ToolTip="Recalcula se o formulário mudou e salva o demonstrativo e a memória em PDF (Ctrl+P)." />
                             </StackPanel>
                         </Grid>
                         <TextBlock Grid.Row="1" Style="{StaticResource EstadoVazio}" Text="{Binding InstrucaoInicial}" />
@@ -540,6 +544,16 @@
                                 <Button Content="Calcular o IR (RRA)" Command="{Binding CalcularRraCommand}" Margin="0,0,8,8" ToolTip="Abre o IR sobre rendimentos recebidos acumuladamente com as diferenças por competência" AutomationProperties.Name="Calcular o IR das diferenças como rendimentos recebidos acumuladamente" Visibility="{Binding PodeCalcularRra, Converter={StaticResource BooleanToVisibilityConverter}}" />
                                 <Button Content="Levar à rescisão" Command="{Binding LevarFgtsRescisaoCommand}" Margin="0,0,8,8" ToolTip="Abre a rescisão com o FGTS devido de cada competência no histórico de depósitos" AutomationProperties.Name="Levar os depósitos conferidos do FGTS à rescisão" Visibility="{Binding PodeLevarFgtsRescisao, Converter={StaticResource BooleanToVisibilityConverter}}" />
                             </WrapPanel>
+                            <Expander Header="Entradas utilizadas neste resultado" Margin="0,0,0,14"
+                                      AutomationProperties.Name="Entradas utilizadas neste resultado">
+                                <ScrollViewer MaxHeight="180" VerticalScrollBarVisibility="Auto" Margin="8,6,0,8">
+                                    <ItemsControl ItemsSource="{Binding EntradasConferencia}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate><TextBlock Text="{Binding}" TextWrapping="Wrap" Margin="0,0,0,4" /></DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </ScrollViewer>
+                            </Expander>
                             <TextBlock Text="Resumo executivo" FontSize="15" FontWeight="SemiBold" />
                             <ItemsControl ItemsSource="{Binding Destaques}" Margin="0,10,0,20">
                                 <ItemsControl.ItemsPanel><ItemsPanelTemplate><WrapPanel /></ItemsPanelTemplate></ItemsControl.ItemsPanel>

@@ -385,9 +385,10 @@ O botão **Gerar PDF** cria um demonstrativo com as verbas, os dados considerado
 
 Além da simulação tributária, da pensão, dos débitos judiciais, da estabilidade e da jornada pelo ponto, a aba **Calculadoras** reúne cálculos para o dia a dia do departamento pessoal e do imposto de renda. As calculadoras deste capítulo usam a mesma janela:
 
-- **Formulário:** os campos do cálculo. Passe o mouse sobre um campo para ver uma dica do que informar. Ao abrir uma calculadora, a competência, o salário e os dependentes do último cálculo já vêm preenchidos. Alguns campos só aparecem quando a opção escolhida em outro campo exige.
+- **Formulário:** os campos do cálculo. Passe o mouse sobre um campo para ver uma dica do que informar. Orientações essenciais também aparecem abaixo de alguns campos de rescisão, crédito e empréstimo. Ao abrir uma calculadora, a competência, o salário e os dependentes do último cálculo já vêm preenchidos. Alguns campos só aparecem quando a opção escolhida em outro campo exige.
 - **Calcular:** faz o cálculo. A tecla **Enter** também calcula. Feito o cálculo, a janela rola até o **Resultado** quando ele está fora da vista.
 - **Resumo executivo:** os valores mais importantes.
+- **Entradas utilizadas neste resultado:** seção expansível para conferir os valores do formulário no momento do cálculo. Nas listas, abra o formulário para conferir cada linha.
 - **Demonstrativo:** proventos, descontos e o resultado, como em um holerite.
 - **Valores informativos:** valores que não entram nos totais nem no resultado, como o FGTS depositado pelo empregador, bases de cálculo e outras referências.
 - **Memória de cálculo:** a fórmula de cada valor, inclusive o INSS faixa a faixa e o IRRF nas duas modalidades.
@@ -399,7 +400,7 @@ Além da simulação tributária, da pensão, dos débitos judiciais, da estabil
 
 ![Valor solicitado zerado no empréstimo pessoal: o campo destacado e a explicação junto do botão Calcular](imagens/95-erro-no-formulario.png)
 
-**Resultado desatualizado:** se você alterar o formulário depois de calcular, o resultado continua na tela com o aviso **O formulário mudou depois deste cálculo**. Calcule de novo para atualizar o demonstrativo, o PDF e a planilha. Apenas passar pelo campo, que limpa o zero ou formata o número, não conta como alteração.
+**Resultado desatualizado:** se você alterar o formulário depois de calcular, o resultado continua na tela com o aviso **O formulário mudou depois deste cálculo**. Use **Calcular** para atualizar a tela. Ao escolher **Gerar PDF** ou **Gerar Excel**, o aplicativo recalcula antes de salvar; se o novo cálculo falhar, não cria o arquivo com o resultado anterior. Ações que levam valores a outra calculadora ficam indisponíveis até o recálculo. Apenas passar pelo campo, que limpa o zero ou formata o número, não conta como alteração.
 
 **Atalhos:** **Ctrl+S** salva no histórico, **Ctrl+P** gera o PDF e **Ctrl+E** gera a planilha do Excel. **Esc** fecha a janela; se o formulário tiver dados que não estão no histórico, o aplicativo pergunta antes de fechar.
 
@@ -1444,9 +1445,9 @@ Em qualquer calculadora, o botão **Salvar no histórico** guarda os valores do 
 
 ![Salvar no histórico](imagens/55-salvar-historico.png)
 
-A aba **Histórico** da tela principal lista os cálculos salvos, do alterado mais recentemente para o mais antigo. O campo **Procurar** filtra pelo nome ou pela calculadora, sem diferenciar maiúsculas e acentos.
+A aba **Histórico** da tela principal lista os cálculos salvos, do alterado mais recentemente para o mais antigo. O campo **Procurar** filtra pelo nome ou pela calculadora, sem diferenciar maiúsculas e acentos. Também é possível filtrar por calculadora e pela data da última alteração e ordenar por data ou nome.
 
-![Aba Histórico](imagens/54-historico.png)
+Marque dois cálculos da mesma calculadora e selecione **Comparar entradas** para ver os dados salvos lado a lado. **Mostrar apenas diferenças** oculta os campos iguais. A comparação mostra entradas, inclusive linhas salvas, e não totais anteriores: o histórico não guarda uma cópia do resultado calculado. Para conferir os totais, abra cada cálculo e recalcule com as tabelas atuais.
 
 | Ação | O que faz |
 | --- | --- |
@@ -1570,7 +1571,7 @@ Use **Atualizar pela internet**, quando disponível, ou corrija os valores manua
 | **Enter** na simulação tributária e nas calculadoras trabalhistas | Calcula, a partir de qualquer campo do formulário. |
 | **Enter** na pensão alimentícia | Calcula com a memória de cálculo (**Detalhar**). |
 | **Ctrl + S** nas calculadoras trabalhistas | Salva o formulário no histórico. |
-| **Ctrl + P** / **Ctrl + E** nas calculadoras trabalhistas | Gera o PDF / a planilha do Excel do último cálculo. |
+| **Ctrl + P** / **Ctrl + E** nas calculadoras trabalhistas | Recalcula se o formulário mudou e gera o PDF / a planilha do Excel. |
 | **Esc** nas calculadoras trabalhistas | Fecha a janela, perguntando antes se houver dados que não estão no histórico. Com uma lista aberta, só fecha a lista. |
 | **Alt + F4** | Fecha a janela atual. |
 

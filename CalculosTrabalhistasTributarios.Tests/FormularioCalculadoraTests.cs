@@ -1,4 +1,5 @@
 using CalculosTrabalhistasTributarios.Application.DTOs;
+using CalculosTrabalhistasTributarios.Application.Interfaces;
 using CalculosTrabalhistasTributarios.Domain.Comum;
 using CalculosTrabalhistasTributarios.Presentation.Interfaces;
 using CalculosTrabalhistasTributarios.Presentation.ViewModels.Calculadoras;
@@ -178,6 +179,34 @@ public class FormularioCalculadoraTests
     }
 
     [Fact]
+    public void Exportacao_recalcula_o_formulario_e_nao_grava_resultado_antigo_quando_falha()
+    {
+        var calculadora = new CalculadoraFalsa();
+        var pdf = new RelatorioFalso();
+        var excel = new PlanilhaFalsa();
+        var notificador = new NotificadorFalso();
+        var janela = new CalculadoraViewModel(TipoCalculadora.Holerite, calculadora, notificador, pdf, excel,
+            new ArquivoDialogFalso(), new ContextoCompartilhado(), new HistoricoDaJanelaFactory(null!, null!, notificador));
+        janela.CalcularCommand.Execute(null);
+
+        calculadora.Salario.Valor = "4.000,00";
+        janela.ExportarPdfCommand.Execute(null);
+        Assert.Equal(4_000m, pdf.Ultimo?.Resultado);
+        Assert.False(janela.ResultadoDesatualizado);
+
+        calculadora.Salario.Valor = "5.000,00";
+        janela.ExportarExcelCommand.Execute(null);
+        Assert.Equal(5_000m, excel.Ultimo?.Resultado);
+
+        calculadora.Salario.Valor = "inválido";
+        janela.ExportarPdfCommand.Execute(null);
+        janela.ExportarExcelCommand.Execute(null);
+        Assert.Equal(4_000m, pdf.Ultimo?.Resultado);
+        Assert.Equal(5_000m, excel.Ultimo?.Resultado);
+        Assert.True(janela.ResultadoDesatualizado);
+    }
+
+    [Fact]
     public void Fechar_pelo_esc_so_pergunta_com_dados_nao_salvos()
     {
         var (janela, calculadora, notificador) = Criar();
@@ -251,5 +280,36 @@ public class FormularioCalculadoraTests
             Perguntas++;
             return Resposta;
         }
+    }
+
+    private sealed class ArquivoDialogFalso : IArquivoDialogService
+    {
+        public string SolicitarDestinoPdf(string nomeArquivoSugerido) => "teste.pdf";
+        public string SolicitarDestinoPlanilha(string nomeArquivoSugerido) => "teste.xlsx";
+    }
+
+    private sealed class RelatorioFalso : IRelatorioPdfService
+    {
+        public DemonstrativoDto? Ultimo { get; private set; }
+        public Task GerarDemonstrativoAsync(DemonstrativoDto demonstrativo, string caminhoArquivo, CancellationToken cancellationToken)
+        { Ultimo = demonstrativo; return Task.CompletedTask; }
+        public Task GerarRelatorioImpostoAsync(SimulacaoImpostoDto simulacao, string caminhoArquivo, CancellationToken cancellationToken) => throw new NotSupportedException();
+        public Task GerarRelatorioPensaoAsync(SimulacaoPensaoDto simulacao, EntradaPensaoDto entrada, bool incluirDetalhes, string caminhoArquivo, CancellationToken cancellationToken) => throw new NotSupportedException();
+        public Task GerarRelatorioPensaoAtrasoAsync(SimulacaoPensaoAtrasoDto simulacao, string caminhoArquivo, CancellationToken cancellationToken) => throw new NotSupportedException();
+        public Task GerarRelatorioDebitoJudicialAsync(SimulacaoDebitoJudicialDto simulacao, string caminhoArquivo, CancellationToken cancellationToken) => throw new NotSupportedException();
+        public Task GerarRelatorioEstabilidadeAsync(SimulacaoEstabilidadeDto simulacao, EntradaEstabilidadeDto entrada, string caminhoArquivo, CancellationToken cancellationToken) => throw new NotSupportedException();
+    }
+
+    private sealed class PlanilhaFalsa : IPlanilhaService
+    {
+        public DemonstrativoDto? Ultimo { get; private set; }
+        public Task GerarDemonstrativoAsync(DemonstrativoDto demonstrativo, string caminhoArquivo, CancellationToken cancellationToken)
+        { Ultimo = demonstrativo; return Task.CompletedTask; }
+        public Task GerarImpostoAsync(SimulacaoImpostoDto simulacao, string caminhoArquivo, CancellationToken cancellationToken) => throw new NotSupportedException();
+        public Task GerarPensaoAsync(SimulacaoPensaoDto simulacao, EntradaPensaoDto entrada, string caminhoArquivo, CancellationToken cancellationToken) => throw new NotSupportedException();
+        public Task GerarPensaoAtrasoAsync(SimulacaoPensaoAtrasoDto simulacao, string caminhoArquivo, CancellationToken cancellationToken) => throw new NotSupportedException();
+        public Task GerarEstabilidadeAsync(SimulacaoEstabilidadeDto simulacao, EntradaEstabilidadeDto entrada, string caminhoArquivo, CancellationToken cancellationToken) => throw new NotSupportedException();
+        public Task GerarJornadaAsync(SimulacaoJornadaDto apuracao, string caminhoArquivo, CancellationToken cancellationToken) => throw new NotSupportedException();
+        public Task GerarDebitoJudicialAsync(SimulacaoDebitoJudicialDto simulacao, string caminhoArquivo, CancellationToken cancellationToken) => throw new NotSupportedException();
     }
 }

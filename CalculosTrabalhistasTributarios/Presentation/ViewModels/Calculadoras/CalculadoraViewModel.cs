@@ -33,6 +33,7 @@ public sealed class CalculadoraViewModel : ViewModelBase, ICalculoSalvavel
     private IReadOnlyList<LinhaDemonstrativoViewModel> _informativos = [];
     private IReadOnlyList<SecaoMemoriaIrrfViewModel> _memoria = [];
     private IReadOnlyList<string> _observacoes = [];
+    private IReadOnlyList<string> _entradasConferencia = [];
     private string _totalProventos = string.Empty;
     private string _totalDescontos = string.Empty;
     private string _resultado = string.Empty;
@@ -65,15 +66,13 @@ public sealed class CalculadoraViewModel : ViewModelBase, ICalculoSalvavel
             campo.PropertyChanged += AoAlterarCampo;
         CalcularCommand = new AsyncRelayCommand(() => CalcularAsync(solicitadoPeloUsuario: true));
         ExportarPdfCommand = new AsyncRelayCommand(ExportarPdfAsync, () => _demonstrativo is not null);
-        ExportarExcelCommand = new AsyncRelayCommand(
-            () => ExportacaoPlanilha.SalvarAsync(_arquivoDialog, _notificador, _nomeArquivoPdf, caminho => _planilha.GerarDemonstrativoAsync(_demonstrativo!, caminho, CancellationToken.None)),
-            () => _demonstrativo is not null);
+        ExportarExcelCommand = new AsyncRelayCommand(ExportarExcelAsync, () => _demonstrativo is not null);
         UsarNoHoleriteCommand = new RelayCommand(_ => TransferirQuitacao(TipoCalculadora.Holerite),
-            _ => _demonstrativo?.QuitacaoBancoHoras?.Situacao == SituacaoBancoHoras.Fechamento && _abrirCalculadora is not null);
+            _ => !ResultadoDesatualizado && _demonstrativo?.QuitacaoBancoHoras?.Situacao == SituacaoBancoHoras.Fechamento && _abrirCalculadora is not null);
         UsarNaRescisaoCommand = new RelayCommand(_ => TransferirQuitacao(TipoCalculadora.Rescisao),
-            _ => _demonstrativo?.QuitacaoBancoHoras?.Situacao == SituacaoBancoHoras.Rescisao && _abrirCalculadora is not null);
-        CalcularRraCommand = new RelayCommand(_ => AbrirRra(), _ => PodeCalcularRra && _abrirCalculadora is not null);
-        LevarFgtsRescisaoCommand = new RelayCommand(_ => LevarFgtsRescisao(), _ => PodeLevarFgtsRescisao && _abrirCalculadora is not null);
+            _ => !ResultadoDesatualizado && _demonstrativo?.QuitacaoBancoHoras?.Situacao == SituacaoBancoHoras.Rescisao && _abrirCalculadora is not null);
+        CalcularRraCommand = new RelayCommand(_ => AbrirRra(), _ => !ResultadoDesatualizado && PodeCalcularRra && _abrirCalculadora is not null);
+        LevarFgtsRescisaoCommand = new RelayCommand(_ => LevarFgtsRescisao(), _ => !ResultadoDesatualizado && PodeLevarFgtsRescisao && _abrirCalculadora is not null);
     }
 
     public string Titulo => _calculadora.Titulo;
@@ -122,6 +121,7 @@ public sealed class CalculadoraViewModel : ViewModelBase, ICalculoSalvavel
     public bool TemInformativos => Informativos.Count > 0;
     public IReadOnlyList<SecaoMemoriaIrrfViewModel> Memoria { get => _memoria; private set => SetProperty(ref _memoria, value); }
     public IReadOnlyList<string> Observacoes { get => _observacoes; private set { SetProperty(ref _observacoes, value); OnPropertyChanged(nameof(TemObservacoes)); } }
+    public IReadOnlyList<string> EntradasConferencia { get => _entradasConferencia; private set => SetProperty(ref _entradasConferencia, value); }
     public bool TemObservacoes => Observacoes.Count > 0;
     public string TotalProventos { get => _totalProventos; private set => SetProperty(ref _totalProventos, value); }
     public string TotalDescontos { get => _totalDescontos; private set { SetProperty(ref _totalDescontos, value); OnPropertyChanged(nameof(TemDescontos)); } }
@@ -142,7 +142,18 @@ public sealed class CalculadoraViewModel : ViewModelBase, ICalculoSalvavel
     public bool TemAviso => Aviso.Length > 0;
 
     /// <summary>O formulário mudou depois do cálculo: o resultado exibido não corresponde mais aos dados digitados.</summary>
-    public bool ResultadoDesatualizado { get => _resultadoDesatualizado; private set => SetProperty(ref _resultadoDesatualizado, value); }
+    public bool ResultadoDesatualizado
+    {
+        get => _resultadoDesatualizado;
+        private set
+        {
+            if (!SetProperty(ref _resultadoDesatualizado, value)) return;
+            ((RelayCommand)UsarNoHoleriteCommand).RaiseCanExecuteChanged();
+            ((RelayCommand)UsarNaRescisaoCommand).RaiseCanExecuteChanged();
+            ((RelayCommand)CalcularRraCommand).RaiseCanExecuteChanged();
+            ((RelayCommand)LevarFgtsRescisaoCommand).RaiseCanExecuteChanged();
+        }
+    }
 
     /// <summary>Um cálculo pedido pelo usuário terminou; a janela rola até o resultado.</summary>
     public event Action? ResultadoApresentado;
@@ -175,7 +186,7 @@ public sealed class CalculadoraViewModel : ViewModelBase, ICalculoSalvavel
             LimparAviso();
     }
 
-    private async Task CalcularAsync(bool solicitadoPeloUsuario)
+    private async Task<bool> CalcularAsync(bool solicitadoPeloUsuario)
     {
         LimparAviso();
         foreach (var campo in Campos)
@@ -186,19 +197,27 @@ public sealed class CalculadoraViewModel : ViewModelBase, ICalculoSalvavel
             if (resultado.Falhou)
             {
                 ApresentarFalha(resultado.Erro, solicitadoPeloUsuario);
-                return;
+                return false;
             }
             _nomeArquivoPdf = _calculadora.NomeArquivoPdf;
             _contexto.Registrar(_calculadora.Contexto);
             Apresentar(resultado.Valor);
             _dadosDoResultado = _calculadora.ExportarCampos();
+            EntradasConferencia = Campos.Where(campo => campo.Visivel).Select(campo => campo switch
+            {
+                CampoTextoViewModel texto => $"{texto.Rotulo}: {(string.IsNullOrWhiteSpace(texto.Valor) ? "não informado" : texto.Valor)}",
+                CampoOpcaoViewModel opcao => $"{opcao.Rotulo}: {opcao.Selecionada?.Texto}",
+                _ => $"{campo.Rotulo}: confira as linhas no formulário"
+            }).ToArray();
             ResultadoDesatualizado = false;
             if (solicitadoPeloUsuario)
                 ResultadoApresentado?.Invoke();
+            return true;
         }
         catch (Exception exception)
         {
             _notificador.MostrarErro($"Não foi possível concluir o cálculo de {Titulo.ToLower(Cultura)}.", exception);
+            return false;
         }
     }
 
@@ -317,7 +336,7 @@ public sealed class CalculadoraViewModel : ViewModelBase, ICalculoSalvavel
 
     private async Task ExportarPdfAsync()
     {
-        if (_demonstrativo is null)
+        if (!await AtualizarResultadoParaExportacaoAsync() || _demonstrativo is null)
             return;
 
         var caminhoArquivo = _arquivoDialog.SolicitarDestinoPdf(_nomeArquivoPdf);
@@ -332,6 +351,20 @@ public sealed class CalculadoraViewModel : ViewModelBase, ICalculoSalvavel
         {
             _notificador.MostrarErro("Não foi possível gerar o relatório em PDF.", exception);
         }
+    }
+
+    private async Task ExportarExcelAsync()
+    {
+        if (!await AtualizarResultadoParaExportacaoAsync() || _demonstrativo is null)
+            return;
+        await ExportacaoPlanilha.SalvarAsync(_arquivoDialog, _notificador, _nomeArquivoPdf,
+            caminho => _planilha.GerarDemonstrativoAsync(_demonstrativo, caminho, CancellationToken.None));
+    }
+
+    private async Task<bool> AtualizarResultadoParaExportacaoAsync()
+    {
+        VerificarAlteracoes();
+        return _demonstrativo is not null && (!ResultadoDesatualizado || await CalcularAsync(solicitadoPeloUsuario: false));
     }
 
     private static string Moeda(decimal valor) => valor.ToString("C2", Cultura);

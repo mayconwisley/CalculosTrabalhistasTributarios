@@ -10,6 +10,10 @@ public abstract class CampoViewModel(string rotulo, string? dica) : ViewModelBas
 
     public string Rotulo { get; } = rotulo;
     public string? Dica { get; } = dica;
+    public bool MostrarDica { get; set; }
+    public string? DicaEmLinha { get; set; }
+    public string? TextoDicaEmLinha => DicaEmLinha ?? Dica;
+    public string? AjudaAcessivel => MensagemErro ?? Dica;
 
     /// <summary>Campos que só valem para uma opção de outro campo ficam ocultos enquanto ela não está escolhida.</summary>
     public bool Visivel
@@ -30,7 +34,10 @@ public abstract class CampoViewModel(string rotulo, string? dica) : ViewModelBas
         set
         {
             if (SetProperty(ref _erro, value))
+            {
                 OnPropertyChanged(nameof(TemErro));
+                OnPropertyChanged(nameof(AjudaAcessivel));
+            }
         }
     }
 
