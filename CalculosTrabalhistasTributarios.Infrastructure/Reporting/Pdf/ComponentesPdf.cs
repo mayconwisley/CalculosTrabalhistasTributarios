@@ -64,11 +64,11 @@ internal static class ComponentesPdf
             {
                 aviso.Spacing(3);
                 aviso.Item().Text("CÁLCULO SIMULADO - VALORES ESTIMADOS").SemiBold().FontColor(AzulPrimario);
-                aviso.Item().Text("Este documento apresenta uma simulação. Procure um profissional especializado para apurar e validar os valores aplicáveis ao seu caso antes de utilizá-los.");
+                aviso.Item().Text("Este documento apresenta uma simulação. Procure um profissional especializado neste cálculo para apurar e validar os valores aplicáveis ao seu caso antes de utilizá-los.");
             });
             rodape.Item().Row(informacoes =>
             {
-                informacoes.RelativeItem().Text("Cálculos Trabalhistas e Tributários - dados processados localmente").FontSize(8).FontColor(CinzaTexto);
+                informacoes.RelativeItem().Text($"Cálculos Trabalhistas e Tributários - versão {IdentificacaoExportacao.Versao} - dados processados localmente").FontSize(8).FontColor(CinzaTexto);
                 informacoes.AutoItem().Text(texto =>
                 {
                     texto.Span("Página ").FontSize(8).FontColor(CinzaTexto);

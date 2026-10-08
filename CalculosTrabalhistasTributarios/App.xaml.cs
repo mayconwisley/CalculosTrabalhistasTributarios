@@ -109,8 +109,8 @@ public partial class App : System.Windows.Application
             return;
         MessageBox.Show(janela,
             "Os resultados deste aplicativo são simulações feitas com a legislação e as tabelas cadastradas.\n\n" +
-            "Antes de usá-los num pagamento, numa rescisão ou num processo, confira a competência, as tabelas, a convenção coletiva " +
-            "da categoria e, se preciso, consulte um contador ou um advogado.\n\n" +
+            "Antes de usá-los num pagamento, numa rescisão ou num processo, confira a competência, as tabelas e a convenção coletiva " +
+            "da categoria. Procure um profissional especializado no cálculo para apurar e validar os valores aplicáveis ao seu caso.\n\n" +
             "O manual do usuário abre pelo botão Manual do usuário ou pela tecla F1.",
             "Antes de começar", MessageBoxButton.OK, MessageBoxImage.Information);
         ConfiguracoesUsuario.Alterar(configuracoes => configuracoes.AvisoSimulacaoLido = true);

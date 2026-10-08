@@ -16,8 +16,15 @@ internal sealed class Aba(IXLWorksheet folha)
         folha.Cell(_linha, 1).Style.Font.SetBold().Font.SetFontSize(15).Font.SetFontColor(XLColor.FromHtml("#" + AzulPrimario));
         _linha++;
         folha.Cell(_linha++, 1).SetValue(subtitulo);
-        folha.Cell(_linha, 1).SetValue($"Gerado em {DateTime.Now:dd/MM/yyyy HH:mm} por Cálculos Trabalhistas e Tributários");
+        folha.Cell(_linha, 1).SetValue($"Gerado em {DateTime.Now:dd/MM/yyyy HH:mm} por Cálculos Trabalhistas e Tributários | Versão {IdentificacaoExportacao.Versao}");
         folha.Cell(_linha++, 1).Style.Font.SetFontColor(XLColor.Gray).Font.SetItalic();
+        var aviso = folha.Range(_linha, 1, _linha, 6);
+        aviso.Merge();
+        aviso.FirstCell().SetValue("CÁLCULO SIMULADO - VALORES ESTIMADOS. Procure um profissional especializado neste cálculo para apurar e validar os valores aplicáveis ao seu caso antes de utilizá-los.");
+        aviso.Style.Fill.SetBackgroundColor(XLColor.FromHtml("#" + AzulClaro));
+        aviso.Style.Font.SetFontColor(XLColor.FromHtml("#" + AzulPrimario)).Font.SetBold();
+        aviso.Style.Alignment.SetWrapText().Alignment.SetVertical(XLAlignmentVerticalValues.Center);
+        folha.Row(_linha++).Height = 45;
     }
 
     public void Secao(string titulo)

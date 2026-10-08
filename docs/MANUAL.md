@@ -1428,11 +1428,13 @@ Todas as calculadoras possuem o botão **Gerar PDF**, que fica disponível depoi
 
 O relatório sempre reflete o **último cálculo** feito na tela.
 
-Todas as páginas dos relatórios em PDF exibem o aviso **CÁLCULO SIMULADO - VALORES ESTIMADOS**. Procure um profissional especializado para apurar e validar os valores aplicáveis ao seu caso antes de utilizá-los.
+Todas as páginas dos relatórios em PDF exibem o aviso **CÁLCULO SIMULADO - VALORES ESTIMADOS**. Procure um profissional especializado no cálculo para apurar e validar os valores aplicáveis ao seu caso antes de utilizá-los. O rodapé identifica a versão do aplicativo; o cabeçalho informa a emissão e, conforme a calculadora, a competência ou data de referência.
 
 ### 10.2 Planilhas do Excel
 
 O botão **Gerar Excel**, ao lado do **Gerar PDF**, salva o mesmo conteúdo em uma planilha (.xlsx), com o nome sugerido do PDF. Os valores, os percentuais, os fatores e as datas vão como números, com o formato brasileiro, para você somar, filtrar e refazer as contas; a memória de cálculo fica em uma aba própria. A jornada pelo ponto tem só a planilha, com os dias e os totais do mês.
+
+Cada aba da planilha exibe o aviso de simulação e validação por profissional especializado, a referência do cálculo, a data e hora da geração e a versão do aplicativo.
 
 Se a planilha com o mesmo nome estiver aberta no Excel, o aplicativo avisa: feche-a e gere de novo, ou salve com outro nome.
 
@@ -1454,6 +1456,8 @@ A aba **Histórico** da tela principal lista os cálculos salvos, do alterado ma
 | Excluir | Remove o cálculo do histórico, depois de confirmar. |
 
 Os cálculos salvos ficam no banco do aplicativo, neste computador, e são mantidos nas atualizações. A pensão, a pensão em atraso, os débitos judiciais e a jornada guardam também as listas: os beneficiários, as parcelas com os pagamentos e as marcações de cada dia.
+
+O histórico preserva os dados digitados do formulário, mas não uma cópia dos valores das tabelas e índices usados no cálculo anterior. Ao abrir, o aplicativo calcula novamente com os dados locais disponíveis naquele momento; alterações nessas tabelas ou nas regras de uma versão posterior podem mudar o resultado. Guarde o PDF ou a planilha gerados quando precisar conferir os valores exibidos em uma ocasião anterior.
 
 ## 11. Tema e configurações
 

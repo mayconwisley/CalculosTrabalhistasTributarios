@@ -128,6 +128,13 @@ public class PlanilhaTests
         var liquido = aba.RowsUsed().Last(linha => linha.Cell(1).GetString() == "Líquido a receber").Cell(3);
         Assert.Equal((double)demonstrativo.Resultado, liquido.GetDouble(), 2);
         Assert.Equal("Memória de cálculo", pasta.Worksheet(2).Name);
+        foreach (var folha in pasta.Worksheets)
+        {
+            Assert.Contains("CÁLCULO SIMULADO - VALORES ESTIMADOS", folha.Cell(4, 1).GetString());
+            Assert.Contains("profissional especializado neste cálculo", folha.Cell(4, 1).GetString());
+            Assert.Contains("Versão", folha.Cell(3, 1).GetString());
+            Assert.Contains("Competência", folha.Cell(2, 1).GetString());
+        }
     }
 
     [Fact]
