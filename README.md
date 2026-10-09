@@ -72,7 +72,7 @@ Todas usam a mesma janela, com resumo, demonstrativo no formato de holerite, val
 | Média de verbas variáveis | Grade mensal de comissões, DSR, horas extras, adicionais e outras verbas salariais, com divisor informado e memória por competência. |
 | Banco de horas | Lançamentos de crédito e compensação por data, saldo em minutos, limites do regime e estimativa de quitação no fechamento ou na rescisão. |
 | INSS em múltiplos vínculos | Desconto do segurado por vínculo, na ordem informada, com teto mensal compartilhado; considera empregos, trabalho doméstico, avulso e prestação de serviço como contribuinte individual. |
-| Jornada pelo ponto | Apuração das marcações de entrada e saída do mês: horas extras, noturnas (com a prorrogação da Súmula 60), faltas, atrasos e intervalos suprimidos (arts. 66 e 71), levadas à calculadora de horas extras ou ao holerite. |
+| Jornada pelo ponto | Apuração das marcações de entrada e saída do período do ponto (o mês da competência ou um fechamento entre dois meses, como de 16/09 a 15/10): horas extras, noturnas (com a prorrogação da Súmula 60), faltas, atrasos e intervalos suprimidos (arts. 66 e 71), levadas à calculadora de horas extras ou ao holerite. |
 | Salário bruto a partir do líquido | O salário bruto que, descontados INSS e IRRF, resulta no líquido desejado. |
 | Horas extras e adicionais | Horas extras em duas faixas, adicional noturno urbano com a hora reduzida ou rural de 25% sem redução e o reflexo no DSR, com o líquido do mês. |
 | Insalubridade e periculosidade | Insalubridade de 10%, 20% ou 40% sobre o salário mínimo (ou outra base de convenção) e periculosidade de 30%, aplicando o maior quando os dois se aplicam. |

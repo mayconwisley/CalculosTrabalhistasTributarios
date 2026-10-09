@@ -11,9 +11,9 @@ internal static class PlanilhaJornada
         SalvarAsync(caminhoArquivo, cancellationToken, pasta =>
         {
             var aba = new Aba(pasta.AddWorksheet("Jornada"));
-            aba.Titulo("Jornada pelas marcações de ponto", $"Competência {a.Competencia:MM/yyyy}");
+            aba.Titulo("Jornada pelas marcações de ponto", $"Competência {a.Competencia:MM/yyyy} • ponto de {a.Dias[0].Data:dd/MM/yyyy} a {a.Dias[^1].Data:dd/MM/yyyy}");
             var t = a.Totais;
-            aba.Secao("Totais do mês");
+            aba.Secao("Totais do período");
             aba.Par("Horas trabalhadas", Horas(t.Trabalhadas));
             aba.Par("Horas previstas", Horas(t.Previstas));
             aba.Par("Extras dos dias úteis (faixa 1)", Horas(t.ExtrasFaixa1));

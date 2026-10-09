@@ -2,7 +2,10 @@ using CalculosTrabalhistasTributarios.Application.DTOs;
 using CalculosTrabalhistasTributarios.Application.UseCases;
 using CalculosTrabalhistasTributarios.Domain.Comum;
 using CalculosTrabalhistasTributarios.Domain.Trabalhista;
+using CalculosTrabalhistasTributarios.Presentation.Interfaces;
 using CalculosTrabalhistasTributarios.Presentation.ViewModels;
+using CalculosTrabalhistasTributarios.Presentation.ViewModels.Calculadoras;
+using CalculosTrabalhistasTributarios.Presentation.ViewModels.Historico;
 using Xunit;
 
 namespace CalculosTrabalhistasTributarios.Tests;
@@ -138,4 +141,106 @@ public class JornadaTests
     [InlineData("8:75")]
     [InlineData("oito")]
     public void Recusa_horarios_invalidos(string texto) => Assert.False(LeituraDeHoras.TentarLerHorario(texto, out _));
+
+    private static MarcacaoDia Data(int mes, int dia, string marcacoes, int previstos = 8 * 60, TipoDia tipo = TipoDia.Util) =>
+        Dia(dia, marcacoes, previstos, tipo) with { Data = new DateOnly(2026, mes, dia) };
+
+    [Fact]
+    public void Periodo_do_ponto_entre_dois_meses_entra_na_competencia()
+    {
+        // Sexta 30/10 e segunda 02/11 sem marcações: duas faltas em semanas diferentes (26/10 a 01/11 e 02/11 a 08/11),
+        // dois descansos perdidos. Sábado 31/10 com 4 horas e o domingo 01/11 de descanso.
+        var apuracao = Apurar(TrabalhoNoturno.Urbano,
+            Data(10, 30, ""), Data(10, 31, "08:00-12:00", 4 * 60), Data(11, 1, "", 0, TipoDia.Descanso), Data(11, 2, ""));
+
+        Assert.Equal(Outubro, apuracao.Competencia);
+        Assert.Equal(2, apuracao.Totais.Faltas);
+        Assert.Equal(2, apuracao.Totais.DescansosPerdidos);
+        Assert.Equal(4 * 60, apuracao.Totais.Trabalhadas);
+        Assert.Contains(apuracao.Observacoes, observacao => observacao.StartsWith("O ponto vai de 30/10/2026 a 02/11/2026, e as horas apuradas entram na folha de 10/2026."));
+    }
+
+    [Fact]
+    public void Periodo_igual_ao_mes_da_competencia_nao_gera_aviso()
+    {
+        var dias = Enumerable.Range(1, 31).Select(dia => Dia(dia, "", 0, TipoDia.Descanso)).ToArray();
+        Assert.DoesNotContain(Apurar(TrabalhoNoturno.Urbano, dias).Observacoes, observacao => observacao.StartsWith("O ponto vai de"));
+    }
+
+    [Fact]
+    public void Periodo_do_ponto_tem_limite_de_dias_e_datas_unicas()
+    {
+        var longo = Enumerable.Range(0, ApurarJornadaRequest.MaximoDias + 1)
+            .Select(i => Dia(1, "", 0, TipoDia.Descanso) with { Data = new DateOnly(2026, 9, 1).AddDays(i) }).ToArray();
+        Assert.Contains("até 62 dias", Resultado(TrabalhoNoturno.Urbano, longo).Erro.Mensagem);
+        Assert.Contains("mesma data", Resultado(TrabalhoNoturno.Urbano, Dia(5, ""), Dia(5, "")).Erro.Mensagem);
+    }
+
+    [Fact]
+    public void Gera_os_dias_do_periodo_do_ponto_e_acompanha_a_competencia()
+    {
+        var notificador = new NotificadorFalso();
+        var tela = Tela(notificador);
+        tela.Competencia = "10/2026";
+        Assert.Equal(("01/10/2026", "31/10/2026"), (tela.InicioPeriodo, tela.FimPeriodo));
+
+        // De quinta 15/10 a sábado 14/11: 31 dias, com os domingos 18/10, 25/10, 01/11 e 08/11 de descanso.
+        tela.InicioPeriodo = "15/10/2026";
+        tela.FimPeriodo = "14/11/2026";
+        tela.GerarDiasCommand.Execute(null);
+        Assert.Empty(notificador.Mensagens);
+        Assert.Equal(31, tela.Dias.Count);
+        Assert.Equal(new DateOnly(2026, 10, 15), tela.Dias[0].Data);
+        Assert.Equal(new DateOnly(2026, 11, 14), tela.Dias[^1].Data);
+        Assert.Equal(4, tela.Dias.Count(dia => (TipoDia)dia.TipoSelecionado.Valor == TipoDia.Descanso));
+
+        // Um período escolhido não muda com a competência, nem ao digitá-la; o mês inteiro acompanha.
+        tela.Competencia = "11/202";
+        tela.Competencia = "11/2026";
+        Assert.Equal(("15/10/2026", "14/11/2026"), (tela.InicioPeriodo, tela.FimPeriodo));
+        tela.InicioPeriodo = "01/11/2026";
+        tela.FimPeriodo = "30/11/2026";
+        tela.Competencia = "02/";
+        tela.Competencia = "02/2028";
+        Assert.Equal(("01/02/2028", "29/02/2028"), (tela.InicioPeriodo, tela.FimPeriodo));
+    }
+
+    [Theory]
+    [InlineData("15/11/2026", "14/10/2026")]
+    [InlineData("01/09/2026", "02/11/2026")]
+    [InlineData("31/02/2026", "14/03/2026")]
+    public void Recusa_periodo_do_ponto_invalido(string inicio, string fim)
+    {
+        var notificador = new NotificadorFalso();
+        var tela = Tela(notificador);
+        tela.InicioPeriodo = inicio;
+        tela.FimPeriodo = fim;
+        tela.GerarDiasCommand.Execute(null);
+        Assert.Empty(tela.Dias);
+        Assert.Single(notificador.Mensagens);
+    }
+
+    [Fact]
+    public void Historico_sem_periodo_reabre_com_o_mes_da_competencia()
+    {
+        var tela = Tela(new NotificadorFalso());
+        tela.ImportarDados(new(new() { ["Competencia"] = "09/2026" }));
+        Assert.Equal(("01/09/2026", "30/09/2026"), (tela.InicioPeriodo, tela.FimPeriodo));
+
+        tela.ImportarDados(new(new() { ["Competencia"] = "10/2026", ["InicioPeriodo"] = "16/09/2026", ["FimPeriodo"] = "15/10/2026" }));
+        Assert.Equal(("16/09/2026", "15/10/2026"), (tela.InicioPeriodo, tela.FimPeriodo));
+        Assert.Equal("16/09/2026", tela.ExportarDados().Campos["InicioPeriodo"]);
+    }
+
+    private static JornadaViewModel Tela(NotificadorFalso notificador) =>
+        new(new ApurarJornadaUseCase(), notificador, null!, null!, null!, new ContextoCompartilhado(), new HistoricoDaJanelaFactory(null!, null!, notificador));
+
+    private sealed class NotificadorFalso : IUserNotifier
+    {
+        public List<string> Mensagens { get; } = [];
+        public void MostrarAviso(string mensagem, string titulo = "Dados inválidos") => Mensagens.Add(mensagem);
+        public void MostrarErro(string mensagem, Exception exception) => throw exception;
+        public void MostrarFalha(Erro erro, string contexto) => Mensagens.Add(erro.Mensagem);
+        public bool Confirmar(string mensagem, string titulo) => true;
+    }
 }

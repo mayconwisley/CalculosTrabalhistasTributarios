@@ -779,15 +779,24 @@ Abra pelo cartão **Holerite do mês**, no grupo **Remuneração e custos**. Ele
 
 ### 8.15 Jornada pelo ponto
 
-Abra pelo cartão **Jornada pelo ponto**, no grupo **Remuneração e custos**. A partir das marcações de entrada e saída de cada dia do mês, ela apura as horas normais, as extras, as noturnas, as faltas, os atrasos e os intervalos não concedidos, e leva os totais para a calculadora de horas extras ou para o holerite.
+Abra pelo cartão **Jornada pelo ponto**, no grupo **Remuneração e custos**. A partir das marcações de entrada e saída de cada dia do período do ponto, ela apura as horas normais, as extras, as noturnas, as faltas, os atrasos e os intervalos não concedidos, e leva os totais para a calculadora de horas extras ou para o holerite.
 
 ![Jornada pelo ponto](imagens/48-jornada.png)
 
-1. Informe a **competência**, a **jornada** de segunda a sexta e de sábado (0:00 quando o sábado é compensado), o **trabalho noturno** e o **horário padrão**.
-2. Clique em **Gerar dias**: os dias úteis vêm com o horário padrão e o domingo como descanso.
+1. Informe a **competência**, o **período do ponto** (**Início do ponto** e **Fim do ponto**), a **jornada** de segunda a sexta e de sábado (0:00 quando o sábado é compensado), o **trabalho noturno** e o **horário padrão**.
+2. Clique em **Gerar dias**: os dias do período vêm com o horário padrão nos dias úteis e o domingo como descanso.
 3. Na grade, ajuste o **tipo** de cada dia (**Útil**, **Descanso** ou **Feriado**) e as marcações que forem diferentes. Deixe as marcações em branco nos dias de falta. Horários depois da meia-noite continuam no mesmo dia.
 4. Clique em **Apurar**. Os cartões mostram os totais, e a grade, o resultado de cada dia; os dias com falta ou intervalo suprimido ficam destacados.
 5. Clique em **Usar nas horas extras** ou em **Usar no holerite**: a calculadora abre com as horas, os feriados e, no holerite, as faltas, os descansos perdidos e os atrasos. Informe o salário e calcule.
+
+**Período do ponto:** a **competência** é o mês da folha em que as horas são pagas; o período do ponto são os dias do cartão. Por padrão, o período é o mês inteiro da competência e acompanha a competência quando ela muda. Quando a empresa fecha o ponto entre dois meses, informe as datas, por exemplo de `16/09/2026` a `15/10/2026` para a folha de 10/2026. O período pode ter até 62 dias, e um período escolhido não muda ao alterar a competência. Os cálculos salvos antes deste campo reabrem com o mês inteiro da competência.
+
+![Ponto de 16/09 a 15/10 na folha de 10/2026](imagens/96-jornada-periodo.png)
+
+1. **Início do ponto:** o primeiro dia do cartão.
+2. **Fim do ponto:** o último dia do cartão.
+
+Com um período diferente do mês da competência, as observações lembram que **Usar no holerite** e **Usar nas horas extras** levam em **Feriados no mês** os feriados marcados no período, mas essas calculadoras calculam o DSR pelo calendário da competência: confira esse campo. As faltas tiram o descanso de cada semana, de segunda a domingo, mesmo quando a semana passa de um mês para o outro.
 
 | Regra | Como funciona |
 | --- | --- |
@@ -798,7 +807,7 @@ Abra pelo cartão **Jornada pelo ponto**, no grupo **Remuneração e custos**. A
 | Intervalo intrajornada | Pelo menos 1 hora acima de 6 horas de trabalho e 15 minutos acima de 4 horas (CLT, art. 71), somando as pausas do dia. O tempo que faltou é pago como indenização, com 50% (art. 71, § 4º). |
 | Intervalo entre jornadas | Pelo menos 11 horas entre a última saída de um dia e a primeira entrada do seguinte (CLT, art. 66). As horas que faltaram são pagas como extras (OJ 355 da SDI-1 do TST). |
 
-> **Atenção:** ao usar **Usar no holerite**, os intervalos suprimidos são enviados em campos próprios. **Usar nas horas extras** não inclui esses valores. O botão **Gerar Excel** salva os dias e os totais em uma planilha.
+> **Atenção:** ao usar **Usar no holerite**, os intervalos suprimidos são enviados em campos próprios. **Usar nas horas extras** não inclui esses valores. O botão **Gerar Excel** salva os dias e os totais do período em uma planilha.
 
 ### 8.16 IRPF anual
 
@@ -1432,7 +1441,7 @@ Todas as páginas dos relatórios em PDF exibem o aviso **CÁLCULO SIMULADO - VA
 
 ### 10.2 Planilhas do Excel
 
-O botão **Gerar Excel**, ao lado do **Gerar PDF**, salva o mesmo conteúdo em uma planilha (.xlsx), com o nome sugerido do PDF. Os valores, os percentuais, os fatores e as datas vão como números, com o formato brasileiro, para você somar, filtrar e refazer as contas; a memória de cálculo fica em uma aba própria. A jornada pelo ponto tem só a planilha, com os dias e os totais do mês.
+O botão **Gerar Excel**, ao lado do **Gerar PDF**, salva o mesmo conteúdo em uma planilha (.xlsx), com o nome sugerido do PDF. Os valores, os percentuais, os fatores e as datas vão como números, com o formato brasileiro, para você somar, filtrar e refazer as contas; a memória de cálculo fica em uma aba própria. A jornada pelo ponto tem só a planilha, com os dias e os totais do período do ponto.
 
 Cada aba da planilha exibe o aviso de simulação e validação por profissional especializado, a referência do cálculo, a data e hora da geração e a versão do aplicativo.
 

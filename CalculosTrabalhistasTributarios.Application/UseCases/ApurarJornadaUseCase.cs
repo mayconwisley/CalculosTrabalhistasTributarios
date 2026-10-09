@@ -24,7 +24,13 @@ public sealed class ApurarJornadaUseCase : IApurarJornadaUseCase
     public Result<SimulacaoJornadaDto> Apurar(ApurarJornadaRequest r)
     {
         if (r.Dias.Count == 0)
-            return Erro.Validacao("Gere os dias do mês e informe as marcações antes de apurar.");
+            return Erro.Validacao("Gere os dias do período e informe as marcações antes de apurar.");
+        if (r.Dias.Select(dia => dia.Data).Distinct().Count() != r.Dias.Count)
+            return Erro.Validacao("O período do ponto tem a mesma data mais de uma vez; gere os dias de novo.");
+        var inicio = r.Dias.Min(dia => dia.Data);
+        var fim = r.Dias.Max(dia => dia.Data);
+        if (fim.DayNumber - inicio.DayNumber + 1 > ApurarJornadaRequest.MaximoDias)
+            return Erro.Validacao($"O período do ponto pode ter até {ApurarJornadaRequest.MaximoDias} dias.");
         var (inicioNoite, fimNoite, nomeNoite) = r.Noturno switch
         {
             TrabalhoNoturno.RuralLavoura => (21 * 60, 5 * 60, "das 21h às 5h (rural, na lavoura)"),
@@ -68,7 +74,7 @@ public sealed class ApurarJornadaUseCase : IApurarJornadaUseCase
         }
 
         var totais = Totalizar(dias);
-        return new SimulacaoJornadaDto(r.Competencia, r.Noturno, dias, totais, Criterios(nomeNoite, r.Noturno), Observacoes(totais, r.Noturno));
+        return new SimulacaoJornadaDto(r.Competencia, r.Noturno, dias, totais, Criterios(nomeNoite, r.Noturno), Observacoes(totais, r.Noturno, r.Competencia, inicio, fim));
     }
 
     /// <summary>Períodos do dia em minutos desde a meia-noite, em ordem; o que passa da meia-noite soma 24 horas.</summary>
@@ -181,9 +187,13 @@ public sealed class ApurarJornadaUseCase : IApurarJornadaUseCase
         "Intervalo entre jornadas: pelo menos 11 horas entre a última saída de um dia e a primeira entrada do seguinte (CLT, art. 66)."
     ];
 
-    private static IReadOnlyList<string> Observacoes(TotaisJornadaDto totais, TrabalhoNoturno noturno)
+    private static IReadOnlyList<string> Observacoes(TotaisJornadaDto totais, TrabalhoNoturno noturno, DateOnly competencia, DateOnly inicio, DateOnly fim)
     {
         var observacoes = new List<string>();
+        var mes = new DateOnly(competencia.Year, competencia.Month, 1);
+        if (inicio != mes || fim != mes.AddMonths(1).AddDays(-1))
+            observacoes.Add($"O ponto vai de {inicio:dd/MM/yyyy} a {fim:dd/MM/yyyy}, e as horas apuradas entram na folha de {competencia:MM/yyyy}. " +
+                $"O holerite e as horas extras recebem em Feriados no mês os feriados fora do domingo marcados neste período ({totais.Feriados}), mas calculam o DSR pelo calendário de {competencia:MM/yyyy}: confira esse campo.");
         if (totais.IntervaloSuprimido > 0)
             observacoes.Add("O intervalo de descanso não concedido é pago como indenização, só pelo tempo suprimido, com acréscimo de 50% sobre a hora normal (CLT, art. 71, § 4º). Por ser indenização, não entra no INSS, no IRRF nem no FGTS e não foi somado às horas extras.");
         if (totais.InterjornadaSuprimida > 0)

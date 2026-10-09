@@ -40,27 +40,28 @@
 
                 <StackPanel>
                     <TextBlock Text="Jornada pelo ponto" FontSize="24" FontWeight="SemiBold" />
-                    <TextBlock Text="Apure horas extras, noturnas, faltas, atrasos e intervalos pelas marcações de entrada e saída do mês." Foreground="{DynamicResource MutedTextBrush}" Margin="0,5,0,0" />
+                    <TextBlock Text="Apure horas extras, noturnas, faltas, atrasos e intervalos pelas marcações de entrada e saída do período do ponto." Foreground="{DynamicResource MutedTextBrush}" Margin="0,5,0,0" />
                 </StackPanel>
 
                 <Border Grid.Row="2" Style="{StaticResource Card}" Padding="24,24,24,10">
                     <Grid>
                         <Grid.ColumnDefinitions><ColumnDefinition /><ColumnDefinition /><ColumnDefinition /><ColumnDefinition /><ColumnDefinition /><ColumnDefinition /></Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
-                        <!-- 1ª linha: o mês e a jornada contratual; 2ª linha: o horário padrão usado para gerar os dias e as ações. -->
+                        <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
+                        <!-- 1ª linha: a folha e o período do ponto, que pode começar num mês e terminar no seguinte; 2ª linha: a jornada
+                             contratual e o horário padrão usado para gerar os dias; 3ª linha: as ações. -->
                         <StackPanel Margin="0,0,12,14">
                             <TextBlock Text="Competência" Style="{StaticResource Rotulo}" />
-                            <TextBox Text="{Binding Competencia, UpdateSourceTrigger=PropertyChanged}" behaviors:MascaraData.Tipo="Competencia" TextAlignment="Center" AutomationProperties.Name="Competência" ToolTip="Mês do cartão de ponto (MM/AAAA)." />
+                            <TextBox Text="{Binding Competencia, UpdateSourceTrigger=PropertyChanged}" behaviors:MascaraData.Tipo="Competencia" TextAlignment="Center" AutomationProperties.Name="Competência" ToolTip="Mês da folha em que as horas apuradas são pagas (MM/AAAA). Ao mudar, o período do ponto que era o mês inteiro acompanha." />
                         </StackPanel>
                         <StackPanel Grid.Column="1" Margin="0,0,12,14">
-                            <TextBlock Text="Jornada de seg. a sex." Style="{StaticResource Rotulo}" />
-                            <TextBox Text="{Binding JornadaSemana, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" AutomationProperties.Name="Jornada de segunda a sexta" ToolTip="Horas previstas por dia de segunda a sexta, como 8:00 ou 8:48." />
+                            <TextBlock Text="Início do ponto" Style="{StaticResource Rotulo}" />
+                            <TextBox Text="{Binding InicioPeriodo, UpdateSourceTrigger=PropertyChanged}" behaviors:MascaraData.Tipo="Data" TextAlignment="Center" AutomationProperties.Name="Início do período do ponto" ToolTip="Primeiro dia do cartão de ponto (DD/MM/AAAA). Para um ponto de 16/09 a 15/10, informe 16/09." />
                         </StackPanel>
                         <StackPanel Grid.Column="2" Margin="0,0,12,14">
-                            <TextBlock Text="Jornada de sábado" Style="{StaticResource Rotulo}" />
-                            <TextBox Text="{Binding JornadaSabado, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" AutomationProperties.Name="Jornada de sábado" ToolTip="Horas previstas no sábado; 0:00 quando o sábado é compensado durante a semana." />
+                            <TextBlock Text="Fim do ponto" Style="{StaticResource Rotulo}" />
+                            <TextBox Text="{Binding FimPeriodo, UpdateSourceTrigger=PropertyChanged}" behaviors:MascaraData.Tipo="Data" TextAlignment="Center" AutomationProperties.Name="Fim do período do ponto" ToolTip="Último dia do cartão de ponto (DD/MM/AAAA), com até 62 dias no período." />
                         </StackPanel>
-                        <StackPanel Grid.Column="3" Grid.ColumnSpan="2" Margin="0,0,12,14" ToolTip="Define o período noturno: urbano das 22h às 5h, com hora reduzida; rural das 21h às 5h na lavoura e das 20h às 4h na pecuária, sem redução.">
+                        <StackPanel Grid.Column="3" Grid.ColumnSpan="3" Margin="0,0,0,14" ToolTip="Define o período noturno: urbano das 22h às 5h, com hora reduzida; rural das 21h às 5h na lavoura e das 20h às 4h na pecuária, sem redução.">
                             <TextBlock Text="Trabalho noturno" Style="{StaticResource Rotulo}" />
                             <ComboBox ItemsSource="{Binding OpcoesNoturno}" SelectedItem="{Binding NoturnoSelecionado, Mode=TwoWay}" MinHeight="54" AutomationProperties.Name="Trabalho noturno">
                                 <ComboBox.ItemTemplate><DataTemplate><TextBlock Text="{Binding Texto}" /></DataTemplate></ComboBox.ItemTemplate>
@@ -68,23 +69,31 @@
                         </StackPanel>
 
                         <StackPanel Grid.Row="1" Margin="0,0,12,14">
+                            <TextBlock Text="Jornada de seg. a sex." Style="{StaticResource Rotulo}" />
+                            <TextBox Text="{Binding JornadaSemana, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" AutomationProperties.Name="Jornada de segunda a sexta" ToolTip="Horas previstas por dia de segunda a sexta, como 8:00 ou 8:48." />
+                        </StackPanel>
+                        <StackPanel Grid.Row="1" Grid.Column="1" Margin="0,0,12,14">
+                            <TextBlock Text="Jornada de sábado" Style="{StaticResource Rotulo}" />
+                            <TextBox Text="{Binding JornadaSabado, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" AutomationProperties.Name="Jornada de sábado" ToolTip="Horas previstas no sábado; 0:00 quando o sábado é compensado durante a semana." />
+                        </StackPanel>
+                        <StackPanel Grid.Row="1" Grid.Column="2" Margin="0,0,12,14">
                             <TextBlock Text="Entrada" Style="{StaticResource Rotulo}" />
                             <TextBox Text="{Binding Entrada1, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" AutomationProperties.Name="Entrada padrão" ToolTip="Horário padrão usado ao gerar os dias úteis; depois, ajuste os dias diferentes na grade." />
                         </StackPanel>
-                        <StackPanel Grid.Row="1" Grid.Column="1" Margin="0,0,12,14">
+                        <StackPanel Grid.Row="1" Grid.Column="3" Margin="0,0,12,14">
                             <TextBlock Text="Saída para o intervalo" Style="{StaticResource Rotulo}" />
                             <TextBox Text="{Binding Saida1, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" AutomationProperties.Name="Saída para o intervalo padrão" />
                         </StackPanel>
-                        <StackPanel Grid.Row="1" Grid.Column="2" Margin="0,0,12,14">
+                        <StackPanel Grid.Row="1" Grid.Column="4" Margin="0,0,12,14">
                             <TextBlock Text="Volta do intervalo" Style="{StaticResource Rotulo}" />
                             <TextBox Text="{Binding Entrada2, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" AutomationProperties.Name="Volta do intervalo padrão" />
                         </StackPanel>
-                        <StackPanel Grid.Row="1" Grid.Column="3" Margin="0,0,12,14">
+                        <StackPanel Grid.Row="1" Grid.Column="5" Margin="0,0,0,14">
                             <TextBlock Text="Saída" Style="{StaticResource Rotulo}" />
                             <TextBox Text="{Binding Saida2, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" AutomationProperties.Name="Saída padrão" />
                         </StackPanel>
-                        <StackPanel Grid.Row="1" Grid.Column="4" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,0,14">
-                            <Button Content="Gerar dias" Margin="0,0,8,0" MinWidth="118" Command="{Binding GerarDiasCommand}" ToolTip="Monta os dias do mês com o horário padrão nos dias úteis e o domingo como descanso; marque os feriados e ajuste as marcações na grade." />
+                        <StackPanel Grid.Row="2" Grid.ColumnSpan="6" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,0,14">
+                            <Button Content="Gerar dias" Margin="0,0,8,0" MinWidth="118" Command="{Binding GerarDiasCommand}" ToolTip="Monta os dias do período do ponto com o horário padrão nos dias úteis e o domingo como descanso; marque os feriados e ajuste as marcações na grade." />
                             <Button Style="{StaticResource PrimaryButton}" Content="Apurar" MinWidth="118" Command="{Binding ApurarCommand}" IsDefault="True" />
                         </StackPanel>
                     </Grid>
@@ -108,7 +117,7 @@
                                 <Button Style="{StaticResource PrimaryButton}" Content="Usar nas horas extras" Command="{Binding UsarNasHorasExtrasCommand}" MinWidth="160" ToolTip="Abre a calculadora de horas extras com as horas apuradas; informe o salário e os percentuais." />
                             </StackPanel>
                         </Grid>
-                        <TextBlock Grid.Row="1" Style="{StaticResource EstadoSemDias}" Text="Informe a competência, a jornada e o horário padrão e selecione Gerar dias para montar o cartão de ponto, ou Apurar para gerar e apurar direto." />
+                        <TextBlock Grid.Row="1" Style="{StaticResource EstadoSemDias}" Text="Informe a competência, o período do ponto, a jornada e o horário padrão e selecione Gerar dias para montar o cartão de ponto, ou Apurar para gerar e apurar direto." />
                         <StackPanel Grid.Row="1" Margin="0,16,0,0" Visibility="{Binding TemDias, Converter={StaticResource BooleanToVisibilityConverter}}">
                             <ItemsControl ItemsSource="{Binding Indicadores}" Margin="0,0,0,10" Visibility="{Binding TemResultado, Converter={StaticResource BooleanToVisibilityConverter}}">
                                 <ItemsControl.ItemsPanel><ItemsPanelTemplate><UniformGrid Rows="1" /></ItemsPanelTemplate></ItemsControl.ItemsPanel>

@@ -13,8 +13,10 @@ using System.Windows.Input;
 namespace CalculosTrabalhistasTributarios.Presentation.ViewModels;
 
 /// <summary>
-/// Jornada pelas marcações de ponto: gera os dias do mês com o horário padrão, recebe as marcações de cada dia e apura
-/// horas extras, noturnas, faltas, atrasos e intervalos, que podem ir para a calculadora de horas extras ou para o holerite.
+/// Jornada pelas marcações de ponto: gera os dias do período do ponto com o horário padrão, recebe as marcações de cada dia
+/// e apura horas extras, noturnas, faltas, atrasos e intervalos, que podem ir para a calculadora de horas extras ou para o
+/// holerite da competência. O período acompanha o mês da competência, mas pode começar num mês e terminar no outro, como
+/// muitas empresas fecham o ponto (de 16/09 a 15/10, por exemplo).
 /// </summary>
 public sealed class JornadaViewModel : ViewModelBase, ICalculoSalvavel
 {
@@ -25,6 +27,9 @@ public sealed class JornadaViewModel : ViewModelBase, ICalculoSalvavel
     private readonly IArquivoDialogService _arquivoDialog;
     private readonly IWindowNavigator _navegador;
     private string _competencia;
+    private DateOnly _ultimaCompetencia;
+    private string _inicioPeriodo;
+    private string _fimPeriodo;
     private string _jornadaSemana = "8:00";
     private string _jornadaSabado = "4:00";
     private string _entrada1 = "08:00";
@@ -47,7 +52,10 @@ public sealed class JornadaViewModel : ViewModelBase, ICalculoSalvavel
         _arquivoDialog = arquivoDialog;
         _navegador = navegador;
         _noturnoSelecionado = OpcoesNoturno[0];
-        _competencia = (contexto.Atual.Competencia ?? DateOnly.FromDateTime(DateTime.Today)).ToString("MM/yyyy", Cultura);
+        var mes = contexto.Atual.Competencia ?? DateOnly.FromDateTime(DateTime.Today);
+        _competencia = mes.ToString("MM/yyyy", Cultura);
+        _ultimaCompetencia = new DateOnly(mes.Year, mes.Month, 1);
+        (_inicioPeriodo, _fimPeriodo) = MesInteiro(_ultimaCompetencia);
         Historico = historico.Criar(this);
         Dias.CollectionChanged += (_, _) => OnPropertyChanged(nameof(TemDias));
         GerarDiasCommand = new RelayCommand(_ => GerarDias());
@@ -60,7 +68,30 @@ public sealed class JornadaViewModel : ViewModelBase, ICalculoSalvavel
             () => _ultimaApuracao is not null);
     }
 
-    public string Competencia { get => _competencia; set { if (SetProperty(ref _competencia, value)) Desatualizar(); } }
+    /// <summary>Mês da folha em que as horas são pagas. Ao mudar, o período que era o mês inteiro passa para o novo mês.</summary>
+    public string Competencia
+    {
+        get => _competencia;
+        set
+        {
+            if (!SetProperty(ref _competencia, value))
+                return;
+            // Compara com a última competência válida: ao digitar, o campo passa por valores incompletos, como "11/202".
+            if (LerCompetencia(value) is { } novo)
+            {
+                if ((InicioPeriodo, FimPeriodo) == MesInteiro(_ultimaCompetencia))
+                    (InicioPeriodo, FimPeriodo) = MesInteiro(novo);
+                _ultimaCompetencia = novo;
+            }
+            Desatualizar();
+        }
+    }
+
+    /// <summary>Primeiro dia do cartão de ponto (dd/mm/aaaa); por padrão, o dia 1º da competência.</summary>
+    public string InicioPeriodo { get => _inicioPeriodo; set => SetProperty(ref _inicioPeriodo, value); }
+
+    /// <summary>Último dia do cartão de ponto (dd/mm/aaaa); por padrão, o último dia da competência.</summary>
+    public string FimPeriodo { get => _fimPeriodo; set => SetProperty(ref _fimPeriodo, value); }
     public string JornadaSemana { get => _jornadaSemana; set => SetProperty(ref _jornadaSemana, value); }
     public string JornadaSabado { get => _jornadaSabado; set => SetProperty(ref _jornadaSabado, value); }
     public string Entrada1 { get => _entrada1; set => SetProperty(ref _entrada1, value); }
@@ -98,6 +129,8 @@ public sealed class JornadaViewModel : ViewModelBase, ICalculoSalvavel
         new()
         {
             [nameof(Competencia)] = Competencia,
+            [nameof(InicioPeriodo)] = InicioPeriodo,
+            [nameof(FimPeriodo)] = FimPeriodo,
             [nameof(JornadaSemana)] = JornadaSemana,
             [nameof(JornadaSabado)] = JornadaSabado,
             [nameof(Entrada1)] = Entrada1,
@@ -120,6 +153,10 @@ public sealed class JornadaViewModel : ViewModelBase, ICalculoSalvavel
     public void ImportarDados(DadosFormulario dados)
     {
         Competencia = dados.Valor(nameof(Competencia), Competencia);
+        // Os cálculos salvos antes do período do ponto usavam o mês da competência inteiro.
+        var (inicio, fim) = LerCompetencia(Competencia) is { } mes ? MesInteiro(mes) : (InicioPeriodo, FimPeriodo);
+        InicioPeriodo = dados.Valor(nameof(InicioPeriodo), inicio);
+        FimPeriodo = dados.Valor(nameof(FimPeriodo), fim);
         JornadaSemana = dados.Valor(nameof(JornadaSemana), JornadaSemana);
         JornadaSabado = dados.Valor(nameof(JornadaSabado), JornadaSabado);
         Entrada1 = dados.Valor(nameof(Entrada1), Entrada1);
@@ -148,7 +185,7 @@ public sealed class JornadaViewModel : ViewModelBase, ICalculoSalvavel
 
     private void GerarDias()
     {
-        if (!TentarLerCompetencia(out var mes))
+        if (!TentarLerCompetencia(out _) || !TentarLerPeriodo(out var inicio, out var fim))
             return;
         if (!LeituraDeHoras.TentarLerDuracao(JornadaSemana, out var semana) || !LeituraDeHoras.TentarLerDuracao(JornadaSabado, out var sabado))
         {
@@ -160,7 +197,7 @@ public sealed class JornadaViewModel : ViewModelBase, ICalculoSalvavel
             return;
 
         Dias.Clear();
-        for (var data = mes; data.Month == mes.Month; data = data.AddDays(1))
+        for (var data = inicio; data <= fim; data = data.AddDays(1))
         {
             var (tipo, minutos) = data.DayOfWeek switch
             {
@@ -274,15 +311,39 @@ public sealed class JornadaViewModel : ViewModelBase, ICalculoSalvavel
 
     private bool TentarLerCompetencia(out DateOnly mes)
     {
-        mes = default;
-        if (DateTime.TryParseExact(Competencia.Trim(), "MM/yyyy", Cultura, DateTimeStyles.None, out var data))
+        if (LerCompetencia(Competencia) is { } lida)
         {
-            mes = DateOnly.FromDateTime(data);
+            mes = lida;
             return true;
         }
+        mes = default;
         _notificador.MostrarAviso("Informe a competência no formato mm/aaaa.");
         return false;
     }
+
+    private bool TentarLerPeriodo(out DateOnly inicio, out DateOnly fim)
+    {
+        fim = default;
+        if (!DateOnly.TryParseExact(InicioPeriodo.Trim(), "dd/MM/yyyy", Cultura, DateTimeStyles.None, out inicio)
+            || !DateOnly.TryParseExact(FimPeriodo.Trim(), "dd/MM/yyyy", Cultura, DateTimeStyles.None, out fim))
+        {
+            _notificador.MostrarAviso("Informe o início e o fim do período do ponto no formato dd/mm/aaaa, como 16/09/2026 e 15/10/2026.");
+            return false;
+        }
+        var dias = fim.DayNumber - inicio.DayNumber + 1;
+        if (dias is < 1 or > ApurarJornadaRequest.MaximoDias)
+        {
+            _notificador.MostrarAviso($"O fim do período do ponto deve ser igual ou posterior ao início, com até {ApurarJornadaRequest.MaximoDias} dias.");
+            return false;
+        }
+        return true;
+    }
+
+    private static DateOnly? LerCompetencia(string texto) =>
+        DateTime.TryParseExact(texto.Trim(), "MM/yyyy", Cultura, DateTimeStyles.None, out var data) ? DateOnly.FromDateTime(data) : null;
+
+    private static (string Inicio, string Fim) MesInteiro(DateOnly mes) =>
+        (mes.ToString("dd/MM/yyyy", Cultura), mes.AddMonths(1).AddDays(-1).ToString("dd/MM/yyyy", Cultura));
 
     private static string Horas(int minutos) => DiaJornadaViewModel.Horas(minutos);
 }
