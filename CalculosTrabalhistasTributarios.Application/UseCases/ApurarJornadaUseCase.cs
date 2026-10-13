@@ -49,11 +49,14 @@ public sealed class ApurarJornadaUseCase : IApurarJornadaUseCase
                 return linhaDoTempo.Erro;
             var periodos = linhaDoTempo.Valor;
             var trabalhados = periodos.Sum(periodo => periodo.Fim - periodo.Inicio);
-            var previstos = dia.Tipo == TipoDia.Util ? dia.MinutosPrevistos : 0;
+            // Na 12x36, a remuneração mensal já paga os feriados, que são considerados compensados (CLT, art. 59-A, parágrafo
+            // único): o feriado num dia de trabalho da escala é um dia comum, sem o adicional de domingos e feriados.
+            var tipo = r.Escala12x36 && dia.Tipo == TipoDia.Feriado && dia.MinutosPrevistos > 0 ? TipoDia.Util : dia.Tipo;
+            var previstos = tipo == TipoDia.Util ? dia.MinutosPrevistos : 0;
             var diferenca = trabalhados - previstos;
-            var extras = dia.Tipo != TipoDia.Util ? trabalhados : diferenca > Tolerancia ? diferenca : 0;
-            var falta = dia.Tipo == TipoDia.Util && previstos > 0 && trabalhados == 0;
-            var faltantes = dia.Tipo == TipoDia.Util && trabalhados > 0 && -diferenca > Tolerancia ? -diferenca : 0;
+            var extras = tipo != TipoDia.Util ? trabalhados : diferenca > Tolerancia ? diferenca : 0;
+            var falta = tipo == TipoDia.Util && previstos > 0 && trabalhados == 0;
+            var faltantes = tipo == TipoDia.Util && trabalhados > 0 && -diferenca > Tolerancia ? -diferenca : 0;
             var (noturnos, noturnosExtras) = Noturnos(periodos, extras, inicioNoite, fimNoite);
 
             var interjornada = 0;
@@ -70,11 +73,11 @@ public sealed class ApurarJornadaUseCase : IApurarJornadaUseCase
                 ultimaSaida = dia.Data.ToDateTime(TimeOnly.MinValue).AddMinutes(periodos[^1].Fim);
             }
 
-            dias.Add(new DiaJornadaDto(dia.Data, dia.Tipo, previstos, trabalhados, extras, noturnos, noturnosExtras, faltantes, falta, Intervalo(periodos, trabalhados), interjornada));
+            dias.Add(new DiaJornadaDto(dia.Data, tipo, previstos, trabalhados, extras, noturnos, noturnosExtras, faltantes, falta, Intervalo(periodos, trabalhados), interjornada));
         }
 
         var totais = Totalizar(dias);
-        return new SimulacaoJornadaDto(r.Competencia, r.Noturno, dias, totais, Criterios(nomeNoite, r.Noturno), Observacoes(totais, r.Noturno, r.Competencia, inicio, fim));
+        return new SimulacaoJornadaDto(r.Competencia, r.Noturno, dias, totais, Criterios(nomeNoite, r.Noturno), Observacoes(totais, r.Noturno, r.Competencia, inicio, fim, r.Escala12x36));
     }
 
     /// <summary>Períodos do dia em minutos desde a meia-noite, em ordem; o que passa da meia-noite soma 24 horas.</summary>
@@ -187,9 +190,11 @@ public sealed class ApurarJornadaUseCase : IApurarJornadaUseCase
         "Intervalo entre jornadas: pelo menos 11 horas entre a última saída de um dia e a primeira entrada do seguinte (CLT, art. 66)."
     ];
 
-    private static IReadOnlyList<string> Observacoes(TotaisJornadaDto totais, TrabalhoNoturno noturno, DateOnly competencia, DateOnly inicio, DateOnly fim)
+    private static IReadOnlyList<string> Observacoes(TotaisJornadaDto totais, TrabalhoNoturno noturno, DateOnly competencia, DateOnly inicio, DateOnly fim, bool escala12x36)
     {
         var observacoes = new List<string>();
+        if (escala12x36)
+            observacoes.Add("Escala 12x36 (CLT, art. 59-A): a remuneração mensal abrange o descanso semanal e os feriados, que são considerados compensados; por isso o feriado num dia de trabalho da escala foi apurado como dia comum. A lei também considera compensadas as prorrogações do trabalho noturno, mas o alcance dessa regra é discutido: a apuração mostra as horas noturnas da prorrogação (Súmula 60, II, do TST); confira a convenção coletiva e o entendimento aplicável. A escala exige acordo individual escrito, convenção ou acordo coletivo.");
         var mes = new DateOnly(competencia.Year, competencia.Month, 1);
         if (inicio != mes || fim != mes.AddMonths(1).AddDays(-1))
             observacoes.Add($"O ponto vai de {inicio:dd/MM/yyyy} a {fim:dd/MM/yyyy}, e as horas apuradas entram na folha de {competencia:MM/yyyy}. " +

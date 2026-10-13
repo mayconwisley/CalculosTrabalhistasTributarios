@@ -13,7 +13,10 @@ namespace CalculosTrabalhistasTributarios.Application.DTOs;
 /// <param name="Filhos">Filhos ou equiparados para o salário-família.</param>
 /// <param name="CustoValeTransporte">Custo das passagens do mês; o empregado paga até 6% do salário-base.</param>
 /// <param name="Adiantamento">Adiantamento salarial (vale) pago no mês.</param>
-/// <param name="OutrosDescontos">Consignado, plano de saúde e outros descontos que não reduzem o INSS, o IRRF nem o FGTS.</param>
+/// <param name="OutrosDescontos">Consignado, mensalidades e outros descontos que não reduzem o INSS, o IRRF nem o FGTS.</param>
+/// <param name="PlanoSaude">Mensalidade do plano de saúde descontada do empregado; sai só do líquido.</param>
+/// <param name="CoparticipacaoSaude">Coparticipação em consultas e exames do plano de saúde; sai só do líquido.</param>
+/// <param name="ValeAlimentacao">Participação do empregado no vale-refeição ou no vale-alimentação; sai só do líquido.</param>
 /// <param name="Premios">Prêmios por desempenho (CLT, art. 457, § 4º): têm IRRF, mas não têm INSS nem FGTS.</param>
 /// <param name="ProventosNaoTributaveis">Ajuda de custo, diárias de viagem e reembolsos: sem INSS, IRRF nem FGTS, só somam no líquido.</param>
 /// <param name="PrevidenciaComplementar">Contribuição do trabalhador à previdência complementar ou ao Fapi, deduzida da base do IRRF.</param>
@@ -52,4 +55,7 @@ public sealed record SimularHoleriteRequest(
     decimal PisoGarantidoComissoes = 0m,
     decimal HorasIntervaloIntrajornada = 0m,
     decimal HorasIntervaloInterjornada = 0m,
-    QuitacaoBancoHoras? QuitacaoBancoHoras = null);
+    QuitacaoBancoHoras? QuitacaoBancoHoras = null,
+    decimal PlanoSaude = 0m,
+    decimal CoparticipacaoSaude = 0m,
+    decimal ValeAlimentacao = 0m);

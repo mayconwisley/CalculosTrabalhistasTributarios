@@ -46,6 +46,15 @@ internal static class MatematicaCredito
         return (parcela, ultima, total, jurosTotal);
     }
 
+    /// <summary>Saldo devedor depois de <paramref name="pagas"/> parcelas, com os juros arredondados por mês como no fluxo.</summary>
+    public static decimal SaldoAposPagamentos(decimal principal, decimal taxa, decimal parcela, int pagas)
+    {
+        var saldo = principal;
+        for (var i = 1; i <= pagas; i++)
+            saldo = saldo + CalculadoraTributacao.Arredondar(saldo * taxa) - parcela;
+        return saldo;
+    }
+
     public static decimal Potencia(decimal valor, int expoente)
     {
         var resultado = 1m;

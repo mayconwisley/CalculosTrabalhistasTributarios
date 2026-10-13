@@ -9,6 +9,8 @@ namespace CalculosTrabalhistasTributarios.Domain.Trabalhista;
 /// <param name="PagoPelaPrevidencia">Benefício dos dias a cargo da Previdência.</param>
 /// <param name="DepositoFgts">FGTS de todo o período: na doença comum, só dos dias pagos pela empresa.</param>
 /// <param name="FimEstabilidade">Fim da garantia de emprego, quando houver.</param>
+/// <param name="DiasEmpresaAnteriores">Dias já pagos pela empresa no afastamento anterior pelo mesmo motivo, descontados dos 15.</param>
+/// <param name="ProrrogaBeneficio">O novo afastamento prorroga o benefício anterior, cessado há até 60 dias.</param>
 public sealed record Afastamento(
     TipoAfastamento Tipo,
     DateOnly Inicio,
@@ -20,7 +22,9 @@ public sealed record Afastamento(
     decimal BeneficioMensal,
     decimal PagoPelaPrevidencia,
     decimal DepositoFgts,
-    DateOnly? FimEstabilidade)
+    DateOnly? FimEstabilidade,
+    int DiasEmpresaAnteriores = 0,
+    bool ProrrogaBeneficio = false)
 {
     public DateOnly Retorno => Fim.AddDays(1);
 

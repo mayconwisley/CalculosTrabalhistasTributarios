@@ -37,6 +37,8 @@ public sealed class JornadaViewModel : ViewModelBase, ICalculoSalvavel
     private string _entrada2 = "13:00";
     private string _saida2 = "17:00";
     private OpcaoCampo _noturnoSelecionado;
+    private OpcaoCampo _escalaSelecionada;
+    private string _inicioEscala = string.Empty;
     private SimulacaoJornadaDto? _ultimaApuracao;
     private bool _temResultado;
     private IReadOnlyList<IndicadorResumoViewModel> _indicadores = [];
@@ -52,6 +54,7 @@ public sealed class JornadaViewModel : ViewModelBase, ICalculoSalvavel
         _arquivoDialog = arquivoDialog;
         _navegador = navegador;
         _noturnoSelecionado = OpcoesNoturno[0];
+        _escalaSelecionada = OpcoesEscala[0];
         var mes = contexto.Atual.Competencia ?? DateOnly.FromDateTime(DateTime.Today);
         _competencia = mes.ToString("MM/yyyy", Cultura);
         _ultimaCompetencia = new DateOnly(mes.Year, mes.Month, 1);
@@ -107,6 +110,35 @@ public sealed class JornadaViewModel : ViewModelBase, ICalculoSalvavel
     ];
     public OpcaoCampo NoturnoSelecionado { get => _noturnoSelecionado; set { if (SetProperty(ref _noturnoSelecionado, value)) Desatualizar(); } }
 
+    public IReadOnlyList<OpcaoCampo> OpcoesEscala { get; } =
+    [
+        new("Semanal: seg. a sex. e sábado", EscalaJornada.Semanal),
+        new("6x1: seis dias de trabalho e uma folga", EscalaJornada.SeisPorUm),
+        new("12x36: um dia de trabalho e um de descanso", EscalaJornada.DozePorTrintaESeis)
+    ];
+
+    /// <summary>Define os dias de trabalho e de descanso ao gerar os dias; na 12x36, também os feriados compensados.</summary>
+    public OpcaoCampo EscalaSelecionada
+    {
+        get => _escalaSelecionada;
+        set
+        {
+            if (value is null || !SetProperty(ref _escalaSelecionada, value)) return;
+            OnPropertyChanged(nameof(EscalaPorCiclo));
+            OnPropertyChanged(nameof(RotuloJornada));
+            Desatualizar();
+        }
+    }
+
+    private EscalaJornada Escala => (EscalaJornada)EscalaSelecionada.Valor;
+
+    /// <summary>Nas escalas 6x1 e 12x36, os dias seguem um ciclo a partir do primeiro dia de trabalho, e não o dia da semana.</summary>
+    public bool EscalaPorCiclo => Escala != EscalaJornada.Semanal;
+    public string RotuloJornada => EscalaPorCiclo ? "Jornada do dia de trabalho" : "Jornada de seg. a sex.";
+
+    /// <summary>Primeiro dia de trabalho do ciclo da escala (dd/mm/aaaa); vazio usa o início do período do ponto.</summary>
+    public string InicioEscala { get => _inicioEscala; set => SetProperty(ref _inicioEscala, value); }
+
     public ObservableCollection<DiaJornadaViewModel> Dias { get; } = [];
     public bool TemDias => Dias.Count > 0;
     public bool TemResultado { get => _temResultado; private set => SetProperty(ref _temResultado, value); }
@@ -137,7 +169,9 @@ public sealed class JornadaViewModel : ViewModelBase, ICalculoSalvavel
             [nameof(Saida1)] = Saida1,
             [nameof(Entrada2)] = Entrada2,
             [nameof(Saida2)] = Saida2,
-            [nameof(NoturnoSelecionado)] = NoturnoSelecionado.Texto
+            [nameof(NoturnoSelecionado)] = NoturnoSelecionado.Texto,
+            [nameof(EscalaSelecionada)] = EscalaSelecionada.Texto,
+            [nameof(InicioEscala)] = InicioEscala
         },
         Dias.Select(dia => new Dictionary<string, string>
         {
@@ -164,6 +198,9 @@ public sealed class JornadaViewModel : ViewModelBase, ICalculoSalvavel
         Entrada2 = dados.Valor(nameof(Entrada2), Entrada2);
         Saida2 = dados.Valor(nameof(Saida2), Saida2);
         NoturnoSelecionado = OpcoesNoturno.FirstOrDefault(opcao => opcao.Texto == dados.Valor(nameof(NoturnoSelecionado))) ?? NoturnoSelecionado;
+        // Os cálculos salvos antes das escalas eram semanais.
+        EscalaSelecionada = OpcoesEscala.FirstOrDefault(opcao => opcao.Texto == dados.Valor(nameof(EscalaSelecionada))) ?? OpcoesEscala[0];
+        InicioEscala = dados.Valor(nameof(InicioEscala));
         Dias.Clear();
         foreach (var linha in dados.Linhas ?? [])
         {
@@ -187,6 +224,13 @@ public sealed class JornadaViewModel : ViewModelBase, ICalculoSalvavel
     {
         if (!TentarLerCompetencia(out _) || !TentarLerPeriodo(out var inicio, out var fim))
             return;
+        var inicioCiclo = inicio;
+        if (EscalaPorCiclo && InicioEscala.Trim().Length > 0
+            && !DateOnly.TryParseExact(InicioEscala.Trim(), "dd/MM/yyyy", Cultura, DateTimeStyles.None, out inicioCiclo))
+        {
+            _notificador.MostrarAviso("Informe o primeiro dia de trabalho da escala no formato dd/mm/aaaa, ou deixe em branco para começar no início do período.");
+            return;
+        }
         if (!LeituraDeHoras.TentarLerDuracao(JornadaSemana, out var semana) || !LeituraDeHoras.TentarLerDuracao(JornadaSabado, out var sabado))
         {
             _notificador.MostrarAviso("Informe as jornadas de segunda a sexta e de sábado em horas, como 8:00 e 4:00.");
@@ -199,15 +243,22 @@ public sealed class JornadaViewModel : ViewModelBase, ICalculoSalvavel
         Dias.Clear();
         for (var data = inicio; data <= fim; data = data.AddDays(1))
         {
-            var (tipo, minutos) = data.DayOfWeek switch
+            var (tipo, minutos) = Escala switch
             {
-                DayOfWeek.Sunday => (TipoDia.Descanso, 0),
-                DayOfWeek.Saturday => (TipoDia.Util, sabado),
-                _ => (TipoDia.Util, semana)
+                // Seis dias de trabalho e o sétimo de folga, contados do primeiro dia de trabalho do ciclo.
+                EscalaJornada.SeisPorUm => Posicao(data, inicioCiclo, 7) < 6 ? (TipoDia.Util, semana) : (TipoDia.Descanso, 0),
+                // Um dia de trabalho e o seguinte de descanso: as 36 horas ininterruptas (CLT, art. 59-A).
+                EscalaJornada.DozePorTrintaESeis => Posicao(data, inicioCiclo, 2) == 0 ? (TipoDia.Util, semana) : (TipoDia.Descanso, 0),
+                _ => data.DayOfWeek switch
+                {
+                    DayOfWeek.Sunday => (TipoDia.Descanso, 0),
+                    DayOfWeek.Saturday => (TipoDia.Util, sabado),
+                    _ => (TipoDia.Util, semana)
+                }
             };
             // Os dias úteis com jornada já vêm com o horário padrão; no sábado, só o primeiro período.
             var (e1, s1, e2, s2) = minutos == 0 ? ("", "", "", "")
-                : data.DayOfWeek == DayOfWeek.Saturday ? (Entrada1, Saida1, "", "")
+                : !EscalaPorCiclo && data.DayOfWeek == DayOfWeek.Saturday ? (Entrada1, Saida1, "", "")
                 : (Entrada1, Saida1, Entrada2, Saida2);
             Dias.Add(new DiaJornadaViewModel(data, tipo, DiaJornadaViewModel.Horas(minutos), e1, s1, e2, s2, Desatualizar));
         }
@@ -233,7 +284,7 @@ public sealed class JornadaViewModel : ViewModelBase, ICalculoSalvavel
 
         try
         {
-            var apuracao = _apuracao.Apurar(new ApurarJornadaRequest(mes, (TrabalhoNoturno)NoturnoSelecionado.Valor, marcacoes));
+            var apuracao = _apuracao.Apurar(new ApurarJornadaRequest(mes, (TrabalhoNoturno)NoturnoSelecionado.Valor, marcacoes, Escala == EscalaJornada.DozePorTrintaESeis));
             if (apuracao.Falhou)
                 _notificador.MostrarFalha(apuracao.Erro, "Não foi possível apurar a jornada.");
             else
@@ -338,6 +389,9 @@ public sealed class JornadaViewModel : ViewModelBase, ICalculoSalvavel
         }
         return true;
     }
+
+    /// <summary>Posição do dia no ciclo da escala, inclusive antes do primeiro dia de trabalho informado.</summary>
+    private static int Posicao(DateOnly data, DateOnly inicioCiclo, int tamanho) => ((data.DayNumber - inicioCiclo.DayNumber) % tamanho + tamanho) % tamanho;
 
     private static DateOnly? LerCompetencia(string texto) =>
         DateTime.TryParseExact(texto.Trim(), "MM/yyyy", Cultura, DateTimeStyles.None, out var data) ? DateOnly.FromDateTime(data) : null;

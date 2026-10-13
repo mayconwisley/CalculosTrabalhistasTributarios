@@ -58,7 +58,10 @@ public sealed class CalculadoraHolerite : CalculadoraBase
     private readonly CampoTextoViewModel _previdencia = Moeda("Previdência complementar", "Contribuição do trabalhador ao PGBL, ao fundo de pensão ou ao Fapi descontada no mês: deduzida por inteiro da base do IRRF nas deduções legais. A parte paga pela empresa não entra aqui.");
     private readonly CampoTextoViewModel _valeTransporte = Moeda("Custo do vale-transporte", "Custo das passagens do mês; o desconto é de até 6% do salário-base. Deixe 0,00 se não houver.");
     private readonly CampoTextoViewModel _adiantamento = Moeda("Adiantamento (vale)", "Adiantamento salarial pago no mês, descontado no holerite.");
-    private readonly CampoTextoViewModel _outrosDescontos = Moeda("Descontos sem incidência", "Consignado, plano de saúde, mensalidades e outros descontos que saem do líquido sem reduzir o INSS, o IRRF nem o FGTS.");
+    private readonly CampoTextoViewModel _planoSaude = Moeda("Plano de saúde", "Mensalidade do plano de saúde descontada do empregado: sai do líquido, sem reduzir o INSS, o IRRF nem o FGTS.");
+    private readonly CampoTextoViewModel _coparticipacao = Moeda("Coparticipação do plano", "Coparticipação em consultas e exames descontada no mês: sai do líquido, sem reduzir o INSS, o IRRF nem o FGTS.");
+    private readonly CampoTextoViewModel _valeAlimentacao = Moeda("Vale-refeição/alimentação", "Participação do empregado no vale-refeição ou no vale-alimentação: sai do líquido, sem reduzir o INSS, o IRRF nem o FGTS.");
+    private readonly CampoTextoViewModel _outrosDescontos = Moeda("Descontos sem incidência", "Consignado, mensalidades e outros descontos que saem do líquido sem reduzir o INSS, o IRRF nem o FGTS.");
 
     public override string Titulo => "Holerite do mês";
     public override string Descricao => "Monte o holerite com salário, adicionais, horas extras, faltas, vale-transporte, pensão e salário-família.";
@@ -67,7 +70,7 @@ public sealed class CalculadoraHolerite : CalculadoraBase
         [_competencia, _salario, _insalubridade, _periculosidade, _divisor, _horas1, _percentual1, _horas2, _percentual2, _quitacaoBancoHoras, _trabalho, _horasNoturnas, _percentualNoturno,
          _horasExtrasNoturnas, _feriados, _faltas, _descansos, _atrasos, _intervaloIntra, _intervaloInter, _comissoes, _comissoesIncluemDsr, _diasComissoesManuais,
          _diasUteisComissoes, _diasDescansoComissoes, _pisoComissoes, _outrosProventos, _premios, _proventosNaoTributaveis, _dependentes, .. _pensao.Campos, _previdencia, _filhos,
-         _valeTransporte, _adiantamento, _outrosDescontos];
+         _valeTransporte, _adiantamento, _planoSaude, _coparticipacao, _valeAlimentacao, _outrosDescontos];
     public override string NomeArquivoPdf => $"holerite-{_competencia.Valor.Replace('/', '-')}.pdf";
 
     protected override CampoTextoViewModel CampoCompetencia => _competencia;
@@ -109,7 +112,8 @@ public sealed class CalculadoraHolerite : CalculadoraBase
             leitor.Moeda(_comissoes), _comissoesIncluemDsr.Valor<bool>(),
             _diasComissoesManuais.Valor<bool>() ? leitor.Inteiro(_diasUteisComissoes) : null,
             _diasComissoesManuais.Valor<bool>() ? leitor.Inteiro(_diasDescansoComissoes) : null,
-            leitor.Moeda(_pisoComissoes), leitor.Horas(_intervaloIntra), leitor.Horas(_intervaloInter), quitacao.Valor), cancellationToken);
+            leitor.Moeda(_pisoComissoes), leitor.Horas(_intervaloIntra), leitor.Horas(_intervaloInter), quitacao.Valor,
+            leitor.Moeda(_planoSaude), leitor.Moeda(_coparticipacao), leitor.Moeda(_valeAlimentacao)), cancellationToken);
     }
 
     private void AtualizarCamposComissoes()

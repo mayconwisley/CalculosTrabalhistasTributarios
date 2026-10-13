@@ -29,6 +29,13 @@ public sealed class SimularCreditoTrabalhadorUseCase(ITributacaoConsulta consult
         var resultado = CalculadoraCreditoTrabalhador.Calcular(entrada);
         if (resultado.Falhou) return resultado.Erro;
         var a = resultado.Valor;
+        QuitacaoAntecipadaCredito? quitacao = null;
+        if (r.ParcelasPagasParaQuitacao != 0)
+        {
+            var simulada = CalculadoraCreditoTrabalhador.Quitacao(a, entrada.JurosMensais, entrada.NumeroParcelas, r.ParcelasPagasParaQuitacao);
+            if (simulada.Falhou) return simulada.Erro;
+            quitacao = simulada.Valor;
+        }
         var observacoes = new List<string>
         {
             "Simulação de consignado para trabalhador com vínculo formal elegível. A margem estimada é 35% da remuneração habitual disponível; verbas variáveis não foram incluídas. A margem e a elegibilidade finais são confirmadas na CTPS Digital/Dataprev e pelo banco.",
@@ -43,6 +50,8 @@ public sealed class SimularCreditoTrabalhadorUseCase(ITributacaoConsulta consult
         };
         if (!a.CabeNaMargem) observacoes.Insert(0, "A maior prestação supera a margem livre informada/estimada. A proposta não cabe nessa margem; reduza o crédito ou reveja prazo e custos.");
         if (entrada.MargemLivreOficial is not null) observacoes.Insert(0, "Foi usada a margem livre oficial informada, já após os contratos existentes; esses contratos não foram descontados novamente desse valor.");
+        if (quitacao is not null)
+            observacoes.Add("A quitação antecipada usa o valor presente das parcelas restantes pela taxa de juros do contrato (Resolução CMN 5.004/2022, art. 7º), sem tarifa (Resolução CMN 3.516/2007, art. 1º), na data de vencimento da última parcela paga. Em outra data, o banco desconta os dias proporcionais; o IOF cobrado na contratação não é recalculado. Peça ao banco o valor exato para quitar e confira a portabilidade, se for o caso.");
         var cet = a.CustoEfetivoMensalEstimado;
         var cetAnual = cet is { } c ? (CalculadoraCreditoTrabalhador.Potencia(1m + c / 100m, 12) - 1m) * 100m : (decimal?)null;
         return new DemonstrativoDto("Crédito do Trabalhador", $"Competência {r.Competencia:MM/yyyy} • {entrada.NumeroParcelas} parcelas mensais",
@@ -51,7 +60,8 @@ public sealed class SimularCreditoTrabalhadorUseCase(ITributacaoConsulta consult
              new("Crédito líquido", Formato.Moeda(a.CreditoLiquido), "Após custos da liberação"),
              new("Total das prestações", Formato.Moeda(a.TotalPago), $"Juros: {Formato.Moeda(a.TotalJuros)}"),
              new("Custo efetivo estimado", cet is { } m ? $"{m.ToString("N4", Formato.Cultura)}% a.m." : "Não calculado", cetAnual is { } an ? $"{an.ToString("N4", Formato.Cultura)}% a.a.; intervalos mensais" : "Fluxo fora do limite de apuração"),
-             new("Renda após descontos", Formato.Moeda(disponivel - entrada.ParcelasExistentes - a.Parcela), "Só remuneração e descontos informados")],
+             new("Renda após descontos", Formato.Moeda(disponivel - entrada.ParcelasExistentes - a.Parcela), "Só remuneração e descontos informados"),
+             .. (quitacao is { } q ? new[] { new DestaqueDto($"Quitação após {q.ParcelasPagas} parcelas", Formato.Moeda(q.SaldoParaQuitar), $"Juros abatidos: {Formato.Moeda(q.JurosAbatidos)}") } : [])],
             [new("Crédito antes dos custos da liberação", "Valor simulado", a.ValorCredito)],
             entrada.CustosDescontadosNaLiberacao > 0m ? [new("Custos descontados na liberação", "Conforme proposta", entrada.CustosDescontadosNaLiberacao)] : [],
             [new("Principal financiado", "Crédito + IOF + custos financiados", a.PrincipalFinanciado),
@@ -65,6 +75,10 @@ public sealed class SimularCreditoTrabalhadorUseCase(ITributacaoConsulta consult
                 new("Remuneração disponível", $"{Formato.Moeda(r.RemuneracaoHabitual)} - descontos previdenciários {Formato.Moeda(r.DescontosPrevidenciarios)} - INSS {Formato.Moeda(inss.Valor)} - IRRF {Formato.Moeda(ir.Imposto)} - pensão {Formato.Moeda(r.Pensao)} - compulsórios {Formato.Moeda(r.OutrosDescontosCompulsorios)} = {Formato.Moeda(disponivel)}"),
                 new("Margem estimada", $"{Formato.Moeda(disponivel)} × 35% = {Formato.Moeda(a.MargemTotal)}; truncada em centavos para não exceder o limite"),
                 new("Margem livre usada", entrada.MargemLivreOficial is null ? $"Máximo de zero e ({Formato.Moeda(a.MargemTotal)} - contratos existentes {Formato.Moeda(entrada.ParcelasExistentes)}) = {Formato.Moeda(a.MargemLivre)}" : $"Margem livre oficial informada: {Formato.Moeda(a.MargemLivre)}; substitui a estimativa")]),
+             .. (quitacao is { } qm ? new[] { new GrupoMemoriaDto("Quitação antecipada", $"Saldo: {Formato.Moeda(qm.SaldoParaQuitar)}", [
+                new("Parcelas", $"{qm.ParcelasPagas} pagas e {qm.ParcelasRestantes} restantes, que somariam {Formato.Moeda(qm.ValorDasRestantes)} no prazo"),
+                new("Saldo para quitar", $"Saldo devedor da tabela Price depois de {qm.ParcelasPagas} parcelas, com os juros de {entrada.JurosMensais.ToString("N6", Formato.Cultura)}% a.m. arredondados por mês: {Formato.Moeda(qm.SaldoParaQuitar)}. É o valor presente das parcelas restantes pela taxa do contrato"),
+                new("Juros abatidos", $"{Formato.Moeda(qm.ValorDasRestantes)} - {Formato.Moeda(qm.SaldoParaQuitar)} = {Formato.Moeda(qm.JurosAbatidos)}")]) } : []),
              new GrupoMemoriaDto("Financiamento e custos", $"Total pago: {Formato.Moeda(a.TotalPago)}", [
                 new("Principal", $"{Formato.Moeda(a.ValorCredito)} + IOF {Formato.Moeda(a.IofFinanciado)} + outros custos {Formato.Moeda(entrada.OutrosCustosFinanciados)} = {Formato.Moeda(a.PrincipalFinanciado)}"),
                 new("IOF", entrada.IofAutomatico

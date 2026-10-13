@@ -28,7 +28,8 @@ public sealed class SimularHoleriteUseCase(ITributacaoConsulta tributacaoConsult
         if (r.Salario == 0m && r.Comissoes == 0m)
             return Erro.Validacao("Informe o salário ou as comissões do mês.");
         if (r.OutrosProventos < 0m || r.Comissoes < 0m || r.PisoGarantidoComissoes < 0m || r.Premios < 0m || r.ProventosNaoTributaveis < 0m || r.HorasAtraso < 0m || r.Faltas < 0 || r.DescansosPerdidos < 0 || r.Dependentes < 0 || r.Filhos < 0
-            || r.CustoValeTransporte < 0m || r.Adiantamento < 0m || r.OutrosDescontos < 0m || r.PrevidenciaComplementar < 0m)
+            || r.CustoValeTransporte < 0m || r.Adiantamento < 0m || r.OutrosDescontos < 0m || r.PrevidenciaComplementar < 0m
+            || r.PlanoSaude < 0m || r.CoparticipacaoSaude < 0m || r.ValeAlimentacao < 0m)
             return Erro.Validacao("Os valores, as horas, as faltas e as quantidades não podem ser negativos.");
         if (r.HorasIntervaloIntrajornada < 0m || r.HorasIntervaloInterjornada < 0m
             || r.HorasIntervaloIntrajornada > 744m || r.HorasIntervaloInterjornada > 744m)
@@ -178,6 +179,9 @@ public sealed class SimularHoleriteUseCase(ITributacaoConsulta tributacaoConsult
         if (r.PrevidenciaComplementar > 0m) descontos.Add(new("Previdência complementar", "", r.PrevidenciaComplementar));
         if (valeTransporte > 0m) descontos.Add(new("Vale-transporte", valeTransporte == seisPorCento ? "6%" : "", valeTransporte));
         if (r.Adiantamento > 0m) descontos.Add(new("Adiantamento salarial", "", r.Adiantamento));
+        if (r.PlanoSaude > 0m) descontos.Add(new("Plano de saúde", "", r.PlanoSaude));
+        if (r.CoparticipacaoSaude > 0m) descontos.Add(new("Coparticipação do plano de saúde", "", r.CoparticipacaoSaude));
+        if (r.ValeAlimentacao > 0m) descontos.Add(new("Vale-refeição/alimentação", "", r.ValeAlimentacao));
         if (r.OutrosDescontos > 0m) descontos.Add(new("Outros descontos", "", r.OutrosDescontos));
 
         var totalProventos = proventos.Sum(verba => verba.Valor);
@@ -260,6 +264,10 @@ public sealed class SimularHoleriteUseCase(ITributacaoConsulta tributacaoConsult
             observacoes.Add("O vale-transporte é descontado em até 6% do salário-base, sem os adicionais, e não entra no INSS, no IRRF nem no FGTS.");
         if (r.Adiantamento > 0m || r.OutrosDescontos > 0m)
             observacoes.Add("O adiantamento e os descontos sem incidência saem do líquido, sem reduzir o INSS, o IRRF nem o FGTS.");
+        if (r.PlanoSaude + r.CoparticipacaoSaude > 0m)
+            observacoes.Add("O plano de saúde e a coparticipação saem do líquido, sem reduzir o INSS, o IRRF nem o FGTS do mês; o que o empregado paga pode ser deduzido como despesa médica na declaração anual, com o comprovante do empregador.");
+        if (r.ValeAlimentacao > 0m)
+            observacoes.Add("A participação no vale-refeição ou no vale-alimentação sai do líquido. O benefício em si não é salário quando segue o Programa de Alimentação do Trabalhador; confira o limite da participação na regra do programa e na convenção coletiva.");
         if (r.Filhos > 0)
             observacoes.Add("O salário-família considera a remuneração do mês e uma cota por filho de até 14 anos ou inválido; nos meses de admissão e desligamento, use a calculadora de salário-família, que faz a cota proporcional.");
         observacoes.Add("O IRRF e o INSS são os da folha mensal; férias e 13º pagos no mês têm cálculo próprio, nas calculadoras de férias e de 13º.");

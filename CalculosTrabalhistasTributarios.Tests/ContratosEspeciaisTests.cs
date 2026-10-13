@@ -25,6 +25,18 @@ public class ContratosEspeciaisTests
             .ExecutarAsync(new SimularEstagioRequest(new DateOnly(2026, 9, 1), 1_500m, 200m, DateOnly.Parse(inicio), DateOnly.Parse(fim), gozados, 0), default).Sucesso();
 
     [Fact]
+    public async Task Bolsa_do_mes_incompleto_e_proporcional_aos_dias()
+    {
+        // 1.500,00 ÷ 30 x 10 = 500,00; com o auxílio de 200,00 e sem IRRF nessa faixa, líquido de 700,00.
+        var resultado = await new SimularEstagioUseCase(await Ambiente.ConsultaAsync())
+            .ExecutarAsync(new SimularEstagioRequest(new DateOnly(2026, 9, 1), 1_500m, 200m, new DateOnly(2025, 10, 1), new DateOnly(2026, 9, 30), 10m, 0, DiasNoMes: 10), default).Sucesso();
+
+        Assert.Equal(500m, Valor(resultado.Proventos, "Bolsa de estágio proporcional"));
+        Assert.Equal("R$ 700,00", Texto.Normalizar(resultado.Destaques[0].Valor));
+        Assert.Equal(1_000.00m, Valor(resultado.Informativos, "Recesso"));
+    }
+
+    [Fact]
     public async Task Estagio_de_um_ano_tem_30_dias_de_recesso_sem_inss()
     {
         var resultado = await EstagioAsync("2025-10-01", "2026-09-30", 10m);

@@ -75,6 +75,13 @@ public class AtualizacaoMonetariaTests
         Assert.Equal(125.12m, Verba(resultado, "Juros"));
         Assert.Equal(20.85m, Verba(resultado, "Multa"));
         Assert.Equal(1_188.61m, resultado.Resultado);
+
+        // A evolução refaz o fator mês a mês e termina no valor corrigido.
+        var evolucao = resultado.Comparativo!.Linhas;
+        Assert.Equal(12, evolucao.Count);
+        Assert.Equal(("01/2025", "12/2025"), (evolucao[0].Descricao, evolucao[^1].Descricao));
+        Assert.Equal(["1,042644", "R$ 1.042,64"], evolucao[^1].Valores.Skip(1).Select(Texto.Normalizar));
+        Assert.True(evolucao[^1].Destaque);
     }
 
     [Fact]

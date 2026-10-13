@@ -20,14 +20,14 @@ public sealed class SimularAfastamentoUseCase(ITributacaoConsulta tributacaoCons
         if (salarioMinimo.Falhou)
             return salarioMinimo.Erro;
 
-        var calculo = CalculadoraAfastamento.Calcular(r.Tipo, r.Inicio, r.Dias, r.Remuneracao, r.Media, r.EmpresaCidada, salarioMinimo.Valor, tabelas.TetoInss);
+        var calculo = CalculadoraAfastamento.Calcular(r.Tipo, r.Inicio, r.Dias, r.Remuneracao, r.Media, r.EmpresaCidada, salarioMinimo.Valor, tabelas.TetoInss, r.Anterior);
         if (calculo.Falhou)
             return calculo.Erro;
         var a = calculo.Valor;
 
         var proventos = new List<VerbaDto>();
         if (a.PagoPelaEmpresa > 0m)
-            proventos.Add(new(RotuloEmpresa(a.Tipo), Formato.Dias(a.DiasEmpresa), a.PagoPelaEmpresa));
+            proventos.Add(new(RotuloEmpresa(a), Formato.Dias(a.DiasEmpresa), a.PagoPelaEmpresa));
         if (a.PagoPelaPrevidencia > 0m)
             proventos.Add(new(RotuloPrevidencia(a.Tipo), Formato.Dias(a.DiasPrevidencia), a.PagoPelaPrevidencia));
         var informativos = new List<VerbaDto> { new(a.Tipo == TipoAfastamento.Doenca ? "FGTS dos dias pagos pela empresa" : "FGTS do período", "8%", a.DepositoFgts) };
@@ -46,7 +46,7 @@ public sealed class SimularAfastamentoUseCase(ITributacaoConsulta tributacaoCons
             [],
             informativos,
             [new GrupoMemoriaDto(Titulo(a.Tipo), $"Total: {Formato.Moeda(a.PagoPelaEmpresa + a.PagoPelaPrevidencia)}", Formulas(a, r))],
-            Observacoes(a),
+            Observacoes(a, r.Anterior),
             RotuloProventos: "Valores do período (brutos)",
             RotuloResultado: "Total do período");
     }
@@ -58,11 +58,17 @@ public sealed class SimularAfastamentoUseCase(ITributacaoConsulta tributacaoCons
         switch (a.Tipo)
         {
             case TipoAfastamento.Doenca or TipoAfastamento.AcidenteDeTrabalho:
-                formulas.Add(new("15 primeiros dias", $"{diaria} x {Formato.Dias(a.DiasEmpresa)} = {Formato.Moeda(a.PagoPelaEmpresa)}, pagos pela empresa (Lei 8.213/1991, art. 60, § 3º)"));
+                if (r.Anterior is { } anterior && (a.ProrrogaBeneficio || a.DiasEmpresaAnteriores > 0))
+                    formulas.Add(new("Afastamento anterior pelo mesmo motivo", a.ProrrogaBeneficio
+                        ? $"Benefício do INSS cessado em {Formato.Data(anterior.Fim)}, a {Formato.Dias(a.Inicio.DayNumber - anterior.Fim.DayNumber)} do novo afastamento: até 60 dias, o benefício é prorrogado e a empresa não paga de novo os 15 dias (Decreto 3.048/1999, art. 75, § 3º)"
+                        : $"Retorno em {Formato.Data(anterior.Fim.AddDays(1))}, a {Formato.Dias(a.Inicio.DayNumber - anterior.Fim.AddDays(1).DayNumber)} do novo afastamento: até 60 dias, os {Formato.Dias(a.DiasEmpresaAnteriores)} já pagos se somam, e a empresa completa 15 - {a.DiasEmpresaAnteriores} = {Formato.Dias(CalculadoraAfastamento.DiasPagosPelaEmpresa - a.DiasEmpresaAnteriores)} (art. 75, §§ 4º e 5º)"));
+                formulas.Add(new("Dias pagos pela empresa", a.DiasEmpresa > 0
+                    ? $"{diaria} x {Formato.Dias(a.DiasEmpresa)} = {Formato.Moeda(a.PagoPelaEmpresa)}, pagos pela empresa (Lei 8.213/1991, art. 60, § 3º)"
+                    : "Nenhum: os 15 primeiros dias já foram pagos no afastamento anterior pelo mesmo motivo"));
                 if (a.DiasPrevidencia > 0)
                 {
                     formulas.Add(new("Benefício mensal estimado", $"{Formato.Moeda(r.Media > 0m ? r.Media : r.Remuneracao)} x 91% = {Formato.Moeda(a.BeneficioMensal)}, entre o salário mínimo e o teto do INSS (art. 61)"));
-                    formulas.Add(new("A partir do 16º dia", $"{Formato.Moeda(a.BeneficioMensal)} ÷ 30 x {Formato.Dias(a.DiasPrevidencia)} = {Formato.Moeda(a.PagoPelaPrevidencia)}, pagos pelo INSS"));
+                    formulas.Add(new(a.DiasEmpresa == 0 ? "Desde o primeiro dia" : "Depois dos dias da empresa", $"{Formato.Moeda(a.BeneficioMensal)} ÷ 30 x {Formato.Dias(a.DiasPrevidencia)} = {Formato.Moeda(a.PagoPelaPrevidencia)}, pagos pelo INSS"));
                 }
                 break;
             case TipoAfastamento.Maternidade:
@@ -80,9 +86,13 @@ public sealed class SimularAfastamentoUseCase(ITributacaoConsulta tributacaoCons
         return formulas;
     }
 
-    private static List<string> Observacoes(Afastamento a)
+    private static List<string> Observacoes(Afastamento a, AfastamentoAnterior? anterior)
     {
         var observacoes = new List<string>();
+        if (a.Tipo is TipoAfastamento.Doenca or TipoAfastamento.AcidenteDeTrabalho && anterior is not null)
+            observacoes.Add(a.ProrrogaBeneficio || a.DiasEmpresaAnteriores > 0
+                ? "A soma com o afastamento anterior vale só para o mesmo motivo da incapacidade, informado como premissa; a decisão é do INSS (Decreto 3.048/1999, art. 75, §§ 3º a 5º)."
+                : "O afastamento anterior terminou há mais de 60 dias: ele não se soma, e a empresa paga de novo os 15 primeiros dias (Decreto 3.048/1999, art. 75).");
         switch (a.Tipo)
         {
             case TipoAfastamento.Doenca or TipoAfastamento.AcidenteDeTrabalho:
@@ -115,8 +125,9 @@ public sealed class SimularAfastamentoUseCase(ITributacaoConsulta tributacaoCons
         _ => "Licença-paternidade"
     };
 
-    private static string RotuloEmpresa(TipoAfastamento tipo) => tipo switch
+    private static string RotuloEmpresa(Afastamento a) => a.Tipo switch
     {
+        TipoAfastamento.Doenca or TipoAfastamento.AcidenteDeTrabalho when a.DiasEmpresaAnteriores > 0 => "Dias que completam os 15 (empresa)",
         TipoAfastamento.Maternidade => "Prorrogação da Empresa Cidadã (empresa)",
         TipoAfastamento.Paternidade => "Licença-paternidade (empresa)",
         _ => "15 primeiros dias (empresa)"

@@ -22,18 +22,23 @@ public sealed class SimularEstagioUseCase(ITributacaoConsulta tributacaoConsulta
             return Erro.Validacao("Os valores, os dias de recesso e os dependentes não podem ser negativos.");
         if (r.Fim < r.Inicio)
             return Erro.Validacao("O fim do estágio não pode ser anterior ao início.");
+        if (r.DiasNoMes is < 0 or > 30)
+            return Erro.Validacao("Os dias de estágio no mês vão de 1 a 30; deixe 0 para o mês inteiro.");
+        // A lei não define a bolsa de um mês incompleto: a proporção usa 30 dias por mês, um critério usual de premissa.
+        var proporcional = r.DiasNoMes is > 0 and < 30;
+        var bolsaDoMes = proporcional ? CalculadoraTributacao.Arredondar(r.Bolsa / 30m * r.DiasNoMes) : r.Bolsa;
 
         var consultaTabelas = await tributacaoConsulta.ObterTabelasAsync(r.Competencia, cancellationToken);
         if (consultaTabelas.Falhou)
             return consultaTabelas.Erro;
-        var irrf = consultaTabelas.Valor.CalcularIrrf(r.Bolsa, 0m, r.Dependentes);
+        var irrf = consultaTabelas.Valor.CalcularIrrf(bolsaDoMes, 0m, r.Dependentes);
 
         var meses = RegrasTrabalhistas.AvosFerias(r.Inicio, r.Fim);
         var direito = RegrasEstagio.DiasDeRecesso(meses);
         var saldo = Math.Max(0m, direito - r.DiasRecessoGozados);
         var valorRecesso = CalculadoraTributacao.Arredondar(r.Bolsa / 30m * saldo);
 
-        var proventos = new List<VerbaDto> { new("Bolsa de estágio", "", r.Bolsa) };
+        var proventos = new List<VerbaDto> { new(proporcional ? "Bolsa de estágio proporcional" : "Bolsa de estágio", proporcional ? Formato.Dias(r.DiasNoMes) : "", bolsaDoMes) };
         if (r.AuxilioTransporte > 0m) proventos.Add(new("Auxílio-transporte", "", r.AuxilioTransporte));
         var descontos = new List<VerbaDto> { new(MemoriaTributaria.DescricaoIrrf("IRRF sobre a bolsa", irrf), MemoriaTributaria.ReferenciaIrrf(irrf), irrf.Imposto) };
 
@@ -45,6 +50,8 @@ public sealed class SimularEstagioUseCase(ITributacaoConsulta tributacaoConsulta
         };
         if (meses > RegrasEstagio.MesesMaximos)
             observacoes.Insert(0, "O estágio passou de 2 anos na mesma empresa, o máximo da lei, exceto para o estagiário com deficiência (art. 11). Sem essa exceção, o vínculo pode ser reconhecido como de emprego.");
+        if (proporcional)
+            observacoes.Add($"A bolsa do mês foi proporcional a {Formato.Dias(r.DiasNoMes)} de estágio, com 30 dias por mês: {Formato.Moeda(r.Bolsa)} ÷ 30 x {r.DiasNoMes} = {Formato.Moeda(bolsaDoMes)}. A lei não define o critério; confira o termo de compromisso. Informe o auxílio-transporte já proporcional aos dias.");
         if (r.AuxilioTransporte > 0m)
             observacoes.Add("O auxílio-transporte ficou fora da base do IRRF, como ressarcimento de despesa; se a empresa o tratar como parte da bolsa, ele entra no rendimento.");
 
@@ -52,7 +59,7 @@ public sealed class SimularEstagioUseCase(ITributacaoConsulta tributacaoConsulta
             "Estágio",
             $"Competência {Formato.Competencia(r.Competencia)} • estágio desde {Formato.Data(r.Inicio)}",
             [
-                new("Líquido do estagiário", Formato.Moeda(r.Bolsa + r.AuxilioTransporte - irrf.Imposto), "Bolsa e auxílio menos o IRRF"),
+                new("Líquido do estagiário", Formato.Moeda(bolsaDoMes + r.AuxilioTransporte - irrf.Imposto), proporcional ? $"Bolsa de {Formato.Dias(r.DiasNoMes)} e auxílio menos o IRRF" : "Bolsa e auxílio menos o IRRF"),
                 new("Recesso a usufruir", $"{Formato.Numero(saldo)} dias", $"{Formato.Numero(direito)} de direito em {meses} meses"),
                 new("Valor do recesso", Formato.Moeda(valorRecesso), "Pago com a bolsa nos dias de descanso"),
                 new("Tempo de estágio", meses == 1 ? "1 mês" : $"{meses} meses", meses > RegrasEstagio.MesesMaximos ? "Acima do limite de 2 anos" : "Limite: 24 meses")

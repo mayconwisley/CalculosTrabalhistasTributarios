@@ -207,4 +207,18 @@ public class HoleriteTests
         await ResultadoAsync(Pedido(naoTributaveis: -1m)).Falha();
         await ResultadoAsync(Pedido(previdencia: -1m)).Falha();
     }
+
+    [Fact]
+    public async Task Plano_de_saude_coparticipacao_e_vale_alimentacao_saem_so_do_liquido()
+    {
+        var sem = await CalcularAsync(Pedido());
+        var com = await CalcularAsync(Pedido() with { PlanoSaude = 200m, CoparticipacaoSaude = 50m, ValeAlimentacao = 100m });
+
+        Assert.Equal(sem.Resultado - 350m, com.Resultado);
+        Assert.Equal(Valor(sem.Descontos, "INSS"), Valor(com.Descontos, "INSS"));
+        Assert.Equal(Valor(sem.Descontos, "IRRF"), Valor(com.Descontos, "IRRF"));
+        Assert.Equal(sem.Informativos.Single(verba => verba.Descricao.StartsWith("FGTS")).Valor, com.Informativos.Single(verba => verba.Descricao.StartsWith("FGTS")).Valor);
+        Assert.Equal([200m, 50m, 100m], new[] { "Plano de saúde", "Coparticipação do plano de saúde", "Vale-refeição/alimentação" }.Select(nome => Valor(com.Descontos, nome)));
+        await ResultadoAsync(Pedido() with { PlanoSaude = -1m }).Falha();
+    }
 }

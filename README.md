@@ -66,27 +66,27 @@ Todas usam a mesma janela, com resumo, demonstrativo no formato de holerite, val
 
 | Calculadora | O que calcula |
 | --- | --- |
-| Holerite do mês | Salário, insalubridade ou periculosidade, horas extras, comissões com DSR automático, adicional noturno, faltas com o DSR perdido, atrasos, INSS, IRRF, pensão, vale-transporte (até 6%) e salário-família em um só demonstrativo. |
+| Holerite do mês | Salário, insalubridade ou periculosidade, horas extras, comissões com DSR automático, adicional noturno, faltas com o DSR perdido, atrasos, INSS, IRRF, pensão, vale-transporte (até 6%), plano de saúde, coparticipação, vale-refeição/alimentação e salário-família em um só demonstrativo. |
 | Comissões e DSR | Comissões, repousos remunerados e complemento da garantia mínima, com INSS, IRRF, FGTS e impacto líquido; aceita valor que já inclua DSR e contagem de dias informada para períodos especiais. |
 | Diferenças de reajuste retroativo | Comparação mensal do salário pago com o devido após reajuste, com antecipações e promoções editáveis, lançamentos de 13º e férias gozadas e FGTS estimado. |
 | Média de verbas variáveis | Grade mensal de comissões, DSR, horas extras, adicionais e outras verbas salariais, com divisor informado e memória por competência. |
 | Banco de horas | Lançamentos de crédito e compensação por data, saldo em minutos, limites do regime e estimativa de quitação no fechamento ou na rescisão. |
 | INSS em múltiplos vínculos | Desconto do segurado por vínculo, na ordem informada, com teto mensal compartilhado; considera empregos, trabalho doméstico, avulso e prestação de serviço como contribuinte individual. |
-| Jornada pelo ponto | Apuração das marcações de entrada e saída do período do ponto (o mês da competência ou um fechamento entre dois meses, como de 16/09 a 15/10): horas extras, noturnas (com a prorrogação da Súmula 60), faltas, atrasos e intervalos suprimidos (arts. 66 e 71), levadas à calculadora de horas extras ou ao holerite. |
+| Jornada pelo ponto | Apuração das marcações de entrada e saída do período do ponto (o mês da competência ou um fechamento entre dois meses, como de 16/09 a 15/10), com escalas semanal, 6x1 e 12x36 (feriados compensados do art. 59-A): horas extras, noturnas (com a prorrogação da Súmula 60), faltas, atrasos e intervalos suprimidos (arts. 66 e 71), levadas à calculadora de horas extras ou ao holerite. |
 | Salário bruto a partir do líquido | O salário bruto que, descontados INSS e IRRF, resulta no líquido desejado. |
 | Horas extras e adicionais | Horas extras em duas faixas, adicional noturno urbano com a hora reduzida ou rural de 25% sem redução e o reflexo no DSR, com o líquido do mês. |
 | Insalubridade e periculosidade | Insalubridade de 10%, 20% ou 40% sobre o salário mínimo (ou outra base de convenção) e periculosidade de 30%, aplicando o maior quando os dois se aplicam. |
 | Salário-família | Direito e valor pela remuneração e pelos filhos, com as duas faixas anteriores a 2020 e a cota proporcional na admissão e no desligamento. |
 | 13º salário | 1ª e 2ª parcelas, com médias, avos e INSS e IRRF de tributação exclusiva; complemento das médias de variáveis pago até 10 de janeiro, com o IRRF como RRA de um mês ou pelo recálculo do 13º. |
-| Férias | Férias com 1/3, dias de direito conforme as faltas, venda de 1/3 (abono, isento) e adiantamento do 13º. |
+| Férias | Férias com 1/3, dias de direito conforme as faltas, venda de 1/3 (abono, isento), adiantamento do 13º, divisão em até três períodos conferida (art. 134, § 1º) e dobra dos dias gozados depois do período concessivo (art. 137). |
 | PLR | IRRF pela tabela anual exclusiva da Lei 10.101/2000, recalculado sobre o total do ano, com a dedução da pensão alimentícia e sem INSS e FGTS. |
 | Rescisão | Verbas por motivo de desligamento, inclusive a rescisão antecipada do contrato a prazo (arts. 479 e 480), aviso prévio proporcional com projeção, férias vencidas (em dobro) e proporcionais, indenização adicional da data-base, multa por atraso (art. 477), DSR perdido, verbas indenizatórias e outros descontos (limitados pelo art. 477, § 5º), FGTS, multa, saque e o seguro-desemprego estimado; para o doméstico, a indenização compensatória de 3,2% no lugar da multa, e para o aprendiz, FGTS de 2%. |
 | Seguro-desemprego | Valor da parcela pela média dos últimos salários e quantidade de parcelas pelos meses trabalhados e pela solicitação (Lei 7.998/1990); para o doméstico, um salário mínimo em até 3 parcelas (LC 150/2015). |
 | Custo do funcionário | Encargos por regime tributário (Lucro Real ou Presumido, Simples Nacional e empregador doméstico), FGTS de 2% do aprendiz, provisões de 13º e férias e benefícios. |
 | Empregado doméstico (DAE) | Salário líquido do doméstico e o DAE do mês: 8% patronal, 0,8% de GILRAT, 8% de FGTS, 3,2% de indenização compensatória, INSS e IRRF do empregado (LC 150/2015). |
-| Estágio | Bolsa líquida com o IRRF, sem INSS e FGTS, e o recesso remunerado proporcional (Lei 11.788/2008). |
+| Estágio | Bolsa líquida com o IRRF, sem INSS e FGTS, bolsa proporcional no mês de início ou de fim e o recesso remunerado proporcional (Lei 11.788/2008). |
 | Trabalho intermitente | Pagamento de cada convocação: horas, DSR, férias proporcionais com 1/3, 13º proporcional e FGTS (CLT, art. 452-A). |
-| Afastamentos e licenças | Doença e acidente de trabalho (15 dias da empresa e o auxílio estimado do INSS), licença-maternidade (120 ou 180 dias) e paternidade (LC 229/2026), com FGTS e estabilidade. |
+| Afastamentos e licenças | Doença e acidente de trabalho (15 dias da empresa e o auxílio estimado do INSS), licença-maternidade (120 ou 180 dias) e paternidade (LC 229/2026), com FGTS, estabilidade e a soma de afastamentos pelo mesmo motivo em até 60 dias (Decreto 3.048/1999, art. 75). |
 | Saque-aniversário do FGTS | Composição automática do saldo, exclusão da multa incluída, desconto da parcela cedida e análise dos impedimentos informados para nova antecipação. |
 | Conferência do FGTS | Devido e depositado por competência (8%, 2% do aprendiz, 8% + 3,2% do doméstico), diferenças mensais e rescisórias, vencimentos do dia 7 e do dia 20 do FGTS Digital, reflexo na multa e envio dos depósitos devidos à rescisão. |
 | Abono salarial (PIS/Pasep) | Direito e valor do abono, com o limite de renda da EC 135/2024. |
@@ -98,11 +98,11 @@ Todas usam a mesma janela, com resumo, demonstrativo no formato de holerite, val
 | Carnê-leão | IR mensal de honorários, aluguéis e outros rendimentos recebidos de pessoas físicas e do exterior, com livro-caixa, desconto simplificado e a redução mensal. |
 | RRA (rendimentos acumulados) | IRRF de pagamentos atrasados: anos anteriores pela tabela acumulada (NM), com 13º, correção, juros não tributáveis e despesas rateadas; ano do pagamento com os rendimentos normais do mês ou 3% da Justiça Federal; recebe as diferenças do reajuste retroativo. |
 | Trabalho no exterior | Para residente fiscal no Brasil: salário ou serviços como pessoa física, país selecionável, atualização online do dólar fiscal e referência PTAX, conversão bancária, taxas, juros, imposto exterior e carnê-leão. |
-| Crédito do Trabalhador | Consignado por valor desejado ou margem livre, INSS/IRRF estimados, parcelas mensais, IOF automático por datas ou informado pelo banco, custos, juros, crédito líquido e custo efetivo estimado. |
+| Crédito do Trabalhador | Consignado por valor desejado ou margem livre, INSS/IRRF estimados, parcelas mensais, IOF automático por datas ou informado pelo banco, custos, juros, crédito líquido, custo efetivo estimado e quitação antecipada pela taxa do contrato (Resolução CMN 5.004/2022). |
 | Empréstimo pessoal | Price mensal PF sem carência, IOF automático ou informado, financiado ou retido, seguro, custos, crédito líquido e custo efetivo estimado. |
 | Ganho de capital | IR na venda de imóveis e outros bens: isenções de pequeno valor, do único imóvel e do reinvestimento, redução dos imóveis até 1988, fatores FR1 e FR2 e alíquotas de 15% a 22,5%. |
 | Tributo em atraso | Multa de 0,33% ao dia (até 20%) e juros pela Selic mais 1% de DARF, DAS, DAE ou GPS pago depois do vencimento (Lei 9.430/1996, art. 61). |
-| Correção de valores | Valor atualizado por IPCA, INPC, IPCA-E, Selic, TR ou taxa legal, com juros simples e multa opcionais. |
+| Correção de valores | Valor atualizado por IPCA, INPC, IPCA-E, Selic, TR ou taxa legal, com juros simples e multa opcionais e a evolução mês a mês do fator e do valor corrigido. |
 
 As regras da CLT ficam em `CalculosTrabalhistasTributarios.Domain/Trabalhista` (com a rescisão em `Trabalhista/Rescisao`), e a apuração de INSS e IRRF comum a todas as calculadoras, em `CalculosTrabalhistasTributarios.Domain/Tributacao/TabelasDaCompetencia`.
 

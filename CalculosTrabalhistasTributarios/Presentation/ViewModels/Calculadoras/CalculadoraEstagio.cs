@@ -13,11 +13,12 @@ public sealed class CalculadoraEstagio(ISimularDemonstrativoUseCase<SimularEstag
     private readonly CampoTextoViewModel _fim = new("Fim do estágio", TipoCampo.Data, DateTime.Today.ToString("dd/MM/yyyy", Cultura), "Fim do estágio, ou a data até a qual o recesso é contado (dd/mm/aaaa).");
     private readonly CampoTextoViewModel _gozados = new("Recesso já usufruído (dias)", TipoCampo.Numero, "0", "Dias de recesso que o estagiário já tirou.");
     private readonly CampoTextoViewModel _dependentes = Inteiro("Dependentes", 0, "Dependentes para a dedução do IRRF.");
+    private readonly CampoTextoViewModel _diasNoMes = Inteiro("Dias no mês (opcional)", 0, "No mês de início ou de fim: os dias de estágio na competência, para a bolsa proporcional com 30 dias por mês. Deixe 0 para o mês inteiro.");
 
     public override string Titulo => "Estágio";
     public override string Descricao => "Calcule o líquido da bolsa de estágio, com o IRRF, e o recesso remunerado proporcional.";
     public override string InstrucaoInicial => "Informe a bolsa, o auxílio e as datas do estágio e selecione Calcular.";
-    public override IReadOnlyList<CampoViewModel> Campos => [_competencia, _bolsa, _auxilio, _inicio, _fim, _gozados, _dependentes];
+    public override IReadOnlyList<CampoViewModel> Campos => [_competencia, _bolsa, _auxilio, _diasNoMes, _inicio, _fim, _gozados, _dependentes];
     public override string NomeArquivoPdf => $"estagio-{_competencia.Valor.Replace('/', '-')}.pdf";
 
     protected override CampoTextoViewModel CampoCompetencia => _competencia;
@@ -25,5 +26,5 @@ public sealed class CalculadoraEstagio(ISimularDemonstrativoUseCase<SimularEstag
 
     public override Task<Result<DemonstrativoDto>> CalcularAsync(CancellationToken cancellationToken) =>
         LerECalcularAsync(simulador, leitor => new SimularEstagioRequest(leitor.Competencia(_competencia), leitor.Moeda(_bolsa), leitor.Moeda(_auxilio),
-            leitor.Data(_inicio), leitor.Data(_fim), leitor.Numero(_gozados), leitor.Inteiro(_dependentes)), cancellationToken);
+            leitor.Data(_inicio), leitor.Data(_fim), leitor.Numero(_gozados), leitor.Inteiro(_dependentes), leitor.Inteiro(_diasNoMes)), cancellationToken);
 }

@@ -500,7 +500,9 @@ Para quem recebe horas extras, comissões ou adicionais, a 2ª parcela usa a mé
 | Início do gozo (opcional) | Data em **dd/MM/aaaa**. Ao informá-la, o aplicativo distribui os dias de descanso, as férias e o terço pelas competências de gozo e calcula o INSS de cada folha com a tabela desse mês. Deixe em branco para manter a simulação antiga de uma só competência. |
 | Salário e Médias de variáveis | Salário na data das férias e a média de variáveis do período aquisitivo. |
 | Faltas injustificadas | Faltas no período aquisitivo, que definem os dias de direito (tabela abaixo). |
-| Dias de descanso | Deixe 0 para usar todos os dias de direito que não forem vendidos; informe menos para dividir as férias (mínimo de 5 dias). |
+| Concessão até (opcional) | O fim do período concessivo: o último dia dos 12 meses seguintes ao período aquisitivo para conceder as férias. Com o início do gozo, os dias gozados depois dele são pagos em dobro. |
+| Dias de descanso | Deixe 0 para usar todos os dias de direito que não forem vendidos; informe menos para dividir as férias em até três períodos. |
+| Dias do 2º e do 3º período (opcional) | Os dias dos demais períodos do mesmo período aquisitivo, para o aplicativo conferir a divisão. Deixe 0 quando ainda não estiverem definidos. |
 | Vender 1/3 (abono) | Converte 1/3 dos dias em dinheiro, por exemplo 10 de 30 dias. |
 | Adiantar 13º (1ª parcela) | Paga metade do 13º junto com as férias. |
 | Previdência complementar | A contribuição do trabalhador ao PGBL, ao fundo de pensão ou ao Fapi sobre as férias. |
@@ -517,6 +519,11 @@ Para quem recebe horas extras, comissões ou adicionais, a 2ª parcela usa a mé
 
 - **Férias:** (salário + médias) ÷ 30 × dias de descanso, mais o terço constitucional.
 - **Abono pecuniário:** os dias vendidos, também com 1/3. Não tem INSS, IRRF nem FGTS.
+- **Divisão em períodos:** as férias podem ter até três períodos, cada um com pelo menos 5 dias corridos e um deles com pelo menos 14 (CLT, art. 134, § 1º). O aplicativo confere a divisão informada e, sem os demais períodos, se os dias que sobram ainda formam um período válido: 27 dias de descanso deixariam 3, que não formam período. A memória mostra a divisão, como "períodos de 10 + 14 + 6 = 30 dias".
+- **Férias em dobro:** os dias gozados depois do período concessivo são pagos em dobro, com o terço (CLT, art. 137; Súmula 81 do TST). A dobra não tem INSS nem FGTS (Lei 8.212/1991, art. 28, § 9º, "d"; Lei 8.036/1990, art. 15, § 6º), mas entra no IRRF das férias. Pagar com atraso férias gozadas no prazo não gera dobra: o STF declarou inconstitucional a Súmula 450 do TST (ADPF 501).
+- **Início do gozo:** as férias não podem começar nos dois dias que antecedem feriado ou o repouso semanal (art. 134, § 3º). Com o repouso no domingo, o aplicativo avisa quando o início cai numa sexta ou num sábado; confira também os feriados.
+
+![Gozo de 20/10 a 29/10 com o período concessivo até 24/10: 5 dias em dobro, e a divisão em 10 + 14 + 6 dias](imagens/99-ferias-dobra.png)
 - O INSS e o IRRF incidem sobre as férias + 1/3. O IRRF do recibo é calculado à parte dos demais rendimentos no **mês do pagamento**. Com início do gozo informado, o INSS do recibo soma a provisão calculada sobre a parcela das férias de cada competência; cada folha mostra o INSS da sua base reunida e o saldo após essa provisão. O rateio preserva os centavos totais do recibo no último mês. O líquido do recibo não inclui o salário dos meses de gozo.
 - A distribuição por competência segue o critério de férias gozadas no mês descrito no [Manual do Empregador Doméstico do eSocial](https://www.gov.br/esocial/pt-br/documentacao-tecnica/manuais/manual-do-esocial-empregador-domestico-versao-27-03-2026.pdf). Esta simulação não altera automaticamente o holerite existente: informe nas bases externas as demais verbas sujeitas ao INSS em cada folha, conferindo os adiantamentos efetivamente pagos.
 - **Previdência complementar:** deduzida por inteiro da base do IRRF das férias, só nas deduções legais, como no salário do mês (IN RFB 1.500/2014, art. 52, IV e V). As férias entram na declaração anual, onde se aplica o limite de 12%.
@@ -773,7 +780,8 @@ Abra pelo cartão **Holerite do mês**, no grupo **Remuneração e custos**. Ele
 | Previdência complementar | A contribuição do trabalhador ao PGBL, ao fundo de pensão ou ao Fapi descontada no mês. É deduzida por inteiro da base do IRRF nas deduções legais (IN RFB 1.500/2014, art. 52, IV e V): o limite de 12% dos rendimentos só é aplicado na declaração anual. Não reduz o INSS, o FGTS nem a base da pensão. |
 | Filhos (salário-família) | Os filhos de até 14 anos, ou inválidos, para o salário-família. |
 | Custo do vale-transporte | Custo das passagens do mês. O desconto é de até 6% do salário-base, sem os adicionais; a empresa paga o restante (Lei 7.418/1985, art. 4º). |
-| Adiantamento (vale) e Descontos sem incidência | Valores que saem do líquido sem reduzir o INSS, o IRRF nem o FGTS, como o vale, o consignado e o plano de saúde. |
+| Plano de saúde, Coparticipação do plano e Vale-refeição/alimentação | A mensalidade do plano, a coparticipação em consultas e exames e a participação do empregado no vale-refeição ou no vale-alimentação, cada uma numa linha do demonstrativo. Saem do líquido sem reduzir o INSS, o IRRF nem o FGTS do mês; o que o empregado paga ao plano pode ser deduzido como despesa médica na declaração anual. |
+| Adiantamento (vale) e Descontos sem incidência | Valores que saem do líquido sem reduzir o INSS, o IRRF nem o FGTS, como o vale, o consignado e mensalidades. |
 
 - **Remuneração do mês:** salário, adicional, comissões, DSR das comissões, eventual complemento da garantia mínima, demais proventos tributáveis, horas extras, adicional noturno e DSR das horas, menos as faltas, os descansos perdidos e os atrasos. Os intervalos suprimidos são parcelas separadas. Ambos integram a base do INSS e do IRRF; neste cenário, só o intervalo entre jornadas integra o FGTS. As bases aparecem separadas nos informativos quando diferem.
 - **Rendimentos do IRRF:** a remuneração do mês, os intervalos e os prêmios. Deles saem o INSS, os dependentes, a pensão e a previdência complementar (deduções legais) ou o desconto simplificado, o que resultar em imposto menor. A base do IRRF aplicada aparece nos informativos. Critério dos intervalos: CLT, art. 71, § 4º, e [Solução de Consulta Cosit 64/2024](https://normas.receita.fazenda.gov.br/sijut2consulta/anexoOutros.action?idArquivoBinario=73232).
@@ -793,6 +801,12 @@ Abra pelo cartão **Jornada pelo ponto**, no grupo **Remuneração e custos**. A
 3. Na grade, ajuste o **tipo** de cada dia (**Útil**, **Descanso** ou **Feriado**) e as marcações que forem diferentes. Deixe as marcações em branco nos dias de falta. Horários depois da meia-noite continuam no mesmo dia.
 4. Clique em **Apurar**. Os cartões mostram os totais, e a grade, o resultado de cada dia; os dias com falta ou intervalo suprimido ficam destacados.
 5. Clique em **Usar nas horas extras** ou em **Usar no holerite**: a calculadora abre com as horas, os feriados e, no holerite, as faltas, os descansos perdidos e os atrasos. Informe o salário e calcule.
+
+**Escala:** **Semanal** gera seg. a sex. com a jornada informada, o sábado com a jornada de sábado e o domingo de descanso. **6x1** gera seis dias de trabalho e um de folga, e **12x36** um dia de trabalho e um de descanso, a partir do **1º dia de trabalho** (em branco, o início do ponto). Nessas duas, a jornada informada vale para cada dia de trabalho, sem o intervalo: numa 12x36 das 7h às 19h com 1 hora de intervalo, 11:00.
+
+Na **12x36** (CLT, art. 59-A), a remuneração mensal já paga o descanso semanal e os feriados, que são considerados compensados: um feriado marcado num dia de trabalho da escala é apurado como dia comum, sem o adicional da faixa 2. A lei também considera compensadas as prorrogações do trabalho noturno, mas o alcance dessa regra é discutido; a apuração continua mostrando as horas noturnas da prorrogação, e as observações pedem para conferir a convenção coletiva. A escala exige acordo individual escrito, convenção ou acordo coletivo.
+
+![Escala 12x36 das 7h às 19h, com 16 dias de trabalho em outubro de 2026](imagens/100-jornada-12x36.png)
 
 **Período do ponto:** a **competência** é o mês da folha em que as horas são pagas; o período do ponto são os dias do cartão. Por padrão, o período é o mês inteiro da competência e acompanha a competência quando ela muda. Quando a empresa fecha o ponto entre dois meses, informe as datas, por exemplo de `16/09/2026` a `15/10/2026` para a folha de 10/2026. O período pode ter até 62 dias, e um período escolhido não muda ao alterar a competência. Os cálculos salvos antes deste campo reabrem com o mês inteiro da competência.
 
@@ -892,6 +906,10 @@ Abra pelo cartão **Correção de valores**, no grupo **Pensão e débitos judic
 | Juros ao mês (%) | Juros simples por mês cheio, sobre o valor corrigido, como 1% ao mês de um contrato; 0 para só corrigir. |
 | Multa (%) | Multa sobre o valor corrigido, como os 2% de uma conta em atraso; 0 quando não há. |
 
+A tabela **Evolução mês a mês** mostra a variação de cada mês, o fator acumulado até ele e o valor corrigido naquele ponto. A última linha é o valor corrigido do resultado. Clique num valor para copiá-lo; a planilha do Excel e o PDF trazem a mesma tabela.
+
+![Evolução mês a mês do IPCA de 01/2025 a 12/2025](imagens/101-correcao-evolucao.png)
+
 Para débitos de processos, use [Débitos judiciais](#6-pensão-alimentícia-e-débitos-judiciais), que segue as fases definidas pelo STF e pela Lei 14.905/2024; para tributos federais, use [Tributo em atraso](#818-tributo-em-atraso).
 
 ### 8.20 Empregado doméstico (DAE)
@@ -925,6 +943,7 @@ Abra pelo cartão **Estágio**, no grupo **Remuneração e custos**. Ele calcula
 - O **recesso** é de 30 dias por ano de estágio, proporcional nos períodos menores (a fração de 15 dias conta como mês), remunerado com a bolsa. Informe os dias já usufruídos para ver o saldo.
 - O estágio não pode passar de 2 anos na mesma empresa, exceto para a pessoa com deficiência; o aplicativo avisa quando passa.
 - O auxílio-transporte fica fora da base do IRRF, como ressarcimento de despesa.
+- **Dias no mês (opcional):** no mês de início ou de fim do estágio, informe os dias de estágio na competência. A bolsa do mês fica proporcional, com 30 dias por mês, e o IRRF incide sobre ela; a lei não define o critério, então confira o termo de compromisso. Informe o auxílio-transporte já proporcional.
 
 ### 8.22 Trabalho intermitente
 
@@ -1012,6 +1031,8 @@ As parcelas usam o sistema Price, com juros arredondados por mês e ajuste na ú
 
 O resumo mostra parcela, última parcela, margem livre, crédito líquido, total pago, juros e renda após os descontos informados. Uma prestação acima da margem gera aviso; não é reduzida silenciosamente. O **custo efetivo estimado** considera o crédito líquido e pagamentos em intervalos mensais iguais, incluindo custos. Ele não substitui o **CET contratual**, que depende das datas e de todos os encargos da proposta. O resultado principal é o crédito líquido na liberação, não o salário líquido nem o total das prestações.
 
+**Quitação: parcelas pagas** simula a quitação antecipada depois desse número de parcelas. O saldo para quitar é o valor presente das parcelas restantes pela taxa de juros do contrato (Resolução CMN 5.004/2022, art. 7º), que na tabela Price é o saldo devedor, e a quitação não tem tarifa (Resolução CMN 3.516/2007, art. 1º). O resumo mostra o saldo e os juros abatidos; a memória, a conta. O cálculo considera a quitação na data de vencimento da última parcela paga: em outra data, o banco desconta os dias proporcionais. Peça ao banco o valor exato.
+
 FGTS não é somado ao empréstimo nem garante aprovação. Garantias facultativas, elegibilidade, contratos existentes, portabilidade, refinanciamento, carência contratual e efeitos da perda do vínculo devem ser conferidos com a instituição. As condições variam por banco; compare as ofertas na CTPS Digital. Fundamentação: [orientações do MTE](https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/credito-do-trabalhador/perguntas-frequentes/perguntas-frequentes), [manual de margem do empregador](https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/credito-do-trabalhador/empregador/manual-operacional-do-empregador-credito-do-trabalhador-v2-16-05-25.pdf) e [Resolução CMN 4.881/2020 sobre CET](https://www.bcb.gov.br/estabilidadefinanceira/exibenormativo?numero=4881&tipo=Resolu%C3%A7%C3%A3o+CMN).
 
 ![Crédito do Trabalhador](imagens/70-credito-trabalhador.png)
@@ -1073,6 +1094,8 @@ Abra pelo cartão **Afastamentos e licenças**, no grupo **FGTS, afastamentos e 
 | Acidente de trabalho | Como na doença, mas o FGTS continua durante todo o afastamento e, depois do auxílio do INSS, há 12 meses de estabilidade a partir do retorno. |
 | Licença-maternidade | 120 dias de salário-maternidade, igual à remuneração, pago pela empresa e compensado nas contribuições; a Empresa Cidadã prorroga por 60 dias. Estabilidade até 5 meses após o parto. |
 | Licença-paternidade | 5 dias até 2026, 10 em 2027, 15 em 2028 e 20 a partir de 2029 (LC 229/2026); a Empresa Cidadã acrescenta 15 dias. Garantia de emprego até um mês depois da licença. |
+
+**Afastamento anterior:** na doença e no acidente, informe se houve um afastamento anterior **pelo mesmo motivo**, o fim dele e, quando pago pela empresa, os dias que ela pagou. Com o novo afastamento em até 60 dias do retorno, os dias se somam e a empresa só completa os 15 (Decreto 3.048/1999, art. 75, §§ 4º e 5º): 10 dias pagos antes deixam 5 para a empresa. Com um benefício do INSS cessado há até 60 dias, ele é prorrogado e a empresa não paga de novo (§ 3º). Depois de 60 dias, o afastamento anterior não conta. Que o motivo é o mesmo é uma premissa sua; quem decide é o INSS.
 
 O auxílio do INSS é uma estimativa: o valor exato sai da média de todos os salários de contribuição. Afastamento por doença de mais de 6 meses no período aquisitivo tira o direito às férias desse período (CLT, art. 133).
 

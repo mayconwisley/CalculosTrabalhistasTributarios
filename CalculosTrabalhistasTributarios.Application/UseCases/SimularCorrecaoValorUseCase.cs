@@ -40,6 +40,18 @@ public sealed class SimularCorrecaoValorUseCase(IIndicesEconomicos indices) : IS
         var total = corrigido + juros + multa;
         var variacao = (fator - 1m) * 100m;
 
+        // A evolução refaz o mesmo produto mês a mês: a última linha é o valor corrigido acima.
+        var evolucao = new List<LinhaComparativaDto>();
+        var fatorDoMes = 1m;
+        for (var mes = r.MesInicial; mes <= ultimoMes; mes = mes.AddMonths(1))
+        {
+            var variacaoDoMes = serie[mes];
+            fatorDoMes *= 1m + variacaoDoMes / 100m;
+            evolucao.Add(new(Formato.Competencia(mes),
+                [Formato.Percentual(variacaoDoMes), Math.Round(fatorDoMes, 6).ToString("0.000000", Formato.Cultura), Formato.Moeda(CalculadoraTributacao.Arredondar(r.Valor * fatorDoMes))],
+                mes == ultimoMes));
+        }
+
         var formulas = new List<FormulaDto>
         {
             new("Período", $"{nome} de {Formato.Competencia(r.MesInicial)} a {Formato.Competencia(ultimoMes)}: {meses} {(meses == 1 ? "mês" : "meses")}"),
@@ -78,7 +90,8 @@ public sealed class SimularCorrecaoValorUseCase(IIndicesEconomicos indices) : IS
             [new GrupoMemoriaDto("Atualização", $"Total: {Formato.Moeda(total)}", formulas)],
             observacoes,
             RotuloProventos: "Composição",
-            RotuloResultado: "Valor atualizado");
+            RotuloResultado: "Valor atualizado",
+            Comparativo: new TabelaComparativaDto($"Evolução mês a mês pelo {nome}", ["Variação do mês", "Fator acumulado", "Valor corrigido"], evolucao));
     }
 
     public static string NomeIndice(IndiceEconomico indice) => indice switch

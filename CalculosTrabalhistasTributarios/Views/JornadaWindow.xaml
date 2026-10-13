@@ -69,10 +69,17 @@
                         </StackPanel>
 
                         <StackPanel Grid.Row="1" Margin="0,0,12,14">
-                            <TextBlock Text="Jornada de seg. a sex." Style="{StaticResource Rotulo}" />
-                            <TextBox Text="{Binding JornadaSemana, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" AutomationProperties.Name="Jornada de segunda a sexta" ToolTip="Horas previstas por dia de segunda a sexta, como 8:00 ou 8:48." />
+                            <TextBlock Text="{Binding RotuloJornada}" Style="{StaticResource Rotulo}" />
+                            <TextBox Text="{Binding JornadaSemana, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" AutomationProperties.Name="{Binding RotuloJornada}" ToolTip="Horas previstas por dia, como 8:00 ou 8:48. Nas escalas 6x1 e 12x36, a jornada de cada dia de trabalho, sem o intervalo: 11:00 numa 12x36 das 7h às 19h com 1 hora de intervalo." />
                         </StackPanel>
                         <StackPanel Grid.Row="1" Grid.Column="1" Margin="0,0,12,14">
+                            <StackPanel.Style>
+                                <Style TargetType="StackPanel">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding EscalaPorCiclo}" Value="True"><Setter Property="IsEnabled" Value="False" /><Setter Property="Opacity" Value="0.55" /></DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </StackPanel.Style>
                             <TextBlock Text="Jornada de sábado" Style="{StaticResource Rotulo}" />
                             <TextBox Text="{Binding JornadaSabado, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" AutomationProperties.Name="Jornada de sábado" ToolTip="Horas previstas no sábado; 0:00 quando o sábado é compensado durante a semana." />
                         </StackPanel>
@@ -92,8 +99,18 @@
                             <TextBlock Text="Saída" Style="{StaticResource Rotulo}" />
                             <TextBox Text="{Binding Saida2, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" AutomationProperties.Name="Saída padrão" />
                         </StackPanel>
-                        <StackPanel Grid.Row="2" Grid.ColumnSpan="6" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,0,14">
-                            <Button Content="Gerar dias" Margin="0,0,8,0" MinWidth="118" Command="{Binding GerarDiasCommand}" ToolTip="Monta os dias do período do ponto com o horário padrão nos dias úteis e o domingo como descanso; marque os feriados e ajuste as marcações na grade." />
+                        <StackPanel Grid.Row="2" Grid.ColumnSpan="2" Margin="0,0,12,14" ToolTip="Semanal: seg. a sex. com a jornada informada, sábado com a jornada de sábado e domingo de descanso. 6x1: seis dias de trabalho e um de folga. 12x36: um dia de trabalho e um de descanso, com os feriados da escala compensados (CLT, art. 59-A).">
+                            <TextBlock Text="Escala" Style="{StaticResource Rotulo}" />
+                            <ComboBox ItemsSource="{Binding OpcoesEscala}" SelectedItem="{Binding EscalaSelecionada, Mode=TwoWay}" MinHeight="54" AutomationProperties.Name="Escala de trabalho">
+                                <ComboBox.ItemTemplate><DataTemplate><TextBlock Text="{Binding Texto}" /></DataTemplate></ComboBox.ItemTemplate>
+                            </ComboBox>
+                        </StackPanel>
+                        <StackPanel Grid.Row="2" Grid.Column="2" Margin="0,0,12,14" Visibility="{Binding EscalaPorCiclo, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <TextBlock Text="1º dia de trabalho" Style="{StaticResource Rotulo}" />
+                            <TextBox Text="{Binding InicioEscala, UpdateSourceTrigger=PropertyChanged}" behaviors:MascaraData.Tipo="Data" TextAlignment="Center" AutomationProperties.Name="Primeiro dia de trabalho da escala" ToolTip="Um dia de trabalho que inicia o ciclo da escala (dd/mm/aaaa). Em branco, o ciclo começa no início do ponto." />
+                        </StackPanel>
+                        <StackPanel Grid.Row="2" Grid.Column="3" Grid.ColumnSpan="3" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,0,14">
+                            <Button Content="Gerar dias" Margin="0,0,8,0" MinWidth="118" Command="{Binding GerarDiasCommand}" ToolTip="Monta os dias do período do ponto pela escala, com o horário padrão nos dias de trabalho; marque os feriados e ajuste as marcações na grade." />
                             <Button Style="{StaticResource PrimaryButton}" Content="Apurar" MinWidth="118" Command="{Binding ApurarCommand}" IsDefault="True" />
                         </StackPanel>
                     </Grid>

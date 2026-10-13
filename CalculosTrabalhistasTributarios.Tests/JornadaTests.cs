@@ -232,6 +232,54 @@ public class JornadaTests
         Assert.Equal("16/09/2026", tela.ExportarDados().Campos["InicioPeriodo"]);
     }
 
+    [Theory]
+    [InlineData(2, "", 16)]            // 12x36 a partir de quinta 01/10: dias ímpares, 16 dias de trabalho
+    [InlineData(2, "02/10/2026", 15)]  // a partir de 02/10: dias pares, 15 dias
+    [InlineData(1, "", 27)]            // 6x1 a partir de 01/10: folgas em 07, 14, 21 e 28
+    public void Gera_os_dias_pela_escala(int escala, string inicioEscala, int diasDeTrabalho)
+    {
+        var tela = Tela(new NotificadorFalso());
+        tela.Competencia = "10/2026";
+        tela.EscalaSelecionada = tela.OpcoesEscala[escala];
+        tela.InicioEscala = inicioEscala;
+        tela.JornadaSemana = "11:00";
+        tela.GerarDiasCommand.Execute(null);
+
+        Assert.Equal(31, tela.Dias.Count);
+        Assert.Equal(diasDeTrabalho, tela.Dias.Count(dia => (TipoDia)dia.TipoSelecionado.Valor == TipoDia.Util));
+        Assert.All(tela.Dias.Where(dia => (TipoDia)dia.TipoSelecionado.Valor == TipoDia.Util), dia => Assert.Equal("11:00", dia.Previsto));
+        if (escala == 1)
+            Assert.Equal([7, 14, 21, 28], tela.Dias.Where(dia => (TipoDia)dia.TipoSelecionado.Valor == TipoDia.Descanso).Select(dia => dia.Data.Day));
+    }
+
+    [Fact]
+    public void Feriado_trabalhado_na_12x36_e_compensado()
+    {
+        // 11 horas de trabalho num feriado da escala: dia comum na 12x36; sem a escala, todas são extras da faixa 2.
+        var feriado = Dia(12, "07:00-12:00 13:00-19:00", 11 * 60, TipoDia.Feriado);
+        var escala = new ApurarJornadaUseCase().Apurar(new ApurarJornadaRequest(Outubro, TrabalhoNoturno.Urbano, [feriado], Escala12x36: true)).Sucesso();
+        var semEscala = Apurar(TrabalhoNoturno.Urbano, feriado);
+
+        Assert.Equal((0, 0), (escala.Totais.ExtrasFaixa2, escala.Totais.Feriados));
+        Assert.Equal(11 * 60, semEscala.Totais.ExtrasFaixa2);
+        Assert.Contains(escala.Observacoes, observacao => observacao.StartsWith("Escala 12x36 (CLT, art. 59-A)"));
+    }
+
+    [Fact]
+    public void Historico_sem_escala_reabre_semanal_e_a_escala_volta_igual()
+    {
+        var tela = Tela(new NotificadorFalso());
+        tela.ImportarDados(new(new() { ["Competencia"] = "10/2026" }));
+        Assert.False(tela.EscalaPorCiclo);
+
+        tela.EscalaSelecionada = tela.OpcoesEscala[2];
+        tela.InicioEscala = "02/10/2026";
+        var reaberta = Tela(new NotificadorFalso());
+        reaberta.ImportarDados(tela.ExportarDados());
+        Assert.Equal(("12x36: um dia de trabalho e um de descanso", "02/10/2026"), (reaberta.EscalaSelecionada.Texto, reaberta.InicioEscala));
+        Assert.Equal("Jornada do dia de trabalho", reaberta.RotuloJornada);
+    }
+
     private static JornadaViewModel Tela(NotificadorFalso notificador) =>
         new(new ApurarJornadaUseCase(), notificador, null!, null!, null!, new ContextoCompartilhado(), new HistoricoDaJanelaFactory(null!, null!, notificador));
 

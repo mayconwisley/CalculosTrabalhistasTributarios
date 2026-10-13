@@ -16,10 +16,23 @@ public static class CalculadoraAfastamento
     public const int ProrrogacaoMaternidade = 60;
     public const int ProrrogacaoPaternidade = 15;
 
+    /// <summary>Prazo em que um novo afastamento pelo mesmo motivo se soma ao anterior (Decreto 3.048/1999, art. 75, §§ 3º e 4º).</summary>
+    public const int PrazoAfastamentoSucessivo = 60;
+
     /// <param name="dias">Dias de afastamento na doença e no acidente; nas licenças, a duração vem da lei.</param>
     /// <param name="media">Média dos salários de contribuição, base do auxílio; na falta dela, a remuneração.</param>
-    public static Result<Afastamento> Calcular(TipoAfastamento tipo, DateOnly inicio, int dias, decimal remuneracao, decimal media, bool empresaCidada, decimal salarioMinimo, decimal tetoInss)
+    /// <param name="anterior">Afastamento anterior pelo mesmo motivo, na doença e no acidente; nulo quando não houve.</param>
+    public static Result<Afastamento> Calcular(TipoAfastamento tipo, DateOnly inicio, int dias, decimal remuneracao, decimal media, bool empresaCidada, decimal salarioMinimo, decimal tetoInss,
+        AfastamentoAnterior? anterior = null)
     {
+        var incapacidade = tipo is TipoAfastamento.Doenca or TipoAfastamento.AcidenteDeTrabalho;
+        if (incapacidade && anterior is not null)
+        {
+            if (anterior.Fim >= inicio)
+                return Erro.Validacao("O afastamento anterior deve terminar antes do início do novo afastamento.");
+            if (anterior.Origem == OrigemAfastamentoAnterior.Empresa && anterior.DiasPagosPelaEmpresa is < 1 or > DiasPagosPelaEmpresa)
+                return Erro.Validacao("Informe de 1 a 15 dias pagos pela empresa no afastamento anterior.");
+        }
         if (remuneracao <= 0m)
             return Erro.Validacao("Informe a remuneração mensal.");
         if (tipo is TipoAfastamento.Doenca or TipoAfastamento.AcidenteDeTrabalho && dias < 1)
@@ -32,16 +45,18 @@ public static class CalculadoraAfastamento
         {
             TipoAfastamento.Maternidade => Maternidade(inicio, remuneracao, diaria, empresaCidada),
             TipoAfastamento.Paternidade => Paternidade(inicio, diaria, empresaCidada),
-            _ => Incapacidade(tipo, inicio, dias, remuneracao, media > 0m ? media : remuneracao, diaria, salarioMinimo, tetoInss)
+            _ => Incapacidade(tipo, inicio, dias, remuneracao, media > 0m ? media : remuneracao, diaria, salarioMinimo, tetoInss, anterior)
         };
     }
 
     /// <summary>Licença-paternidade pela LC 229/2026: 5 dias até 2026, 10 em 2027, 15 em 2028 e 20 a partir de 2029.</summary>
     public static int DiasPaternidade(int ano) => ano switch { <= 2026 => 5, 2027 => 10, 2028 => 15, _ => 20 };
 
-    private static Afastamento Incapacidade(TipoAfastamento tipo, DateOnly inicio, int dias, decimal remuneracao, decimal media, decimal diaria, decimal salarioMinimo, decimal tetoInss)
+    private static Afastamento Incapacidade(TipoAfastamento tipo, DateOnly inicio, int dias, decimal remuneracao, decimal media, decimal diaria, decimal salarioMinimo, decimal tetoInss,
+        AfastamentoAnterior? anterior)
     {
-        var diasEmpresa = Math.Min(DiasPagosPelaEmpresa, dias);
+        var (jaPagos, prorroga) = Anteriores(inicio, anterior);
+        var diasEmpresa = Math.Min(DiasPagosPelaEmpresa - jaPagos, dias);
         var diasInss = dias - diasEmpresa;
         var pagoPelaEmpresa = Arredondar(diaria * diasEmpresa);
         // 91% do salário de benefício, nunca abaixo do mínimo nem acima do teto; a média informada estima o salário de benefício.
@@ -52,8 +67,20 @@ public static class CalculadoraAfastamento
         var fim = inicio.AddDays(dias - 1);
         // Depois do auxílio por acidente de trabalho, 12 meses de estabilidade a partir do retorno (Lei 8.213/1991, art. 118).
         DateOnly? estabilidade = tipo == TipoAfastamento.AcidenteDeTrabalho && diasInss > 0 ? fim.AddDays(1).AddMonths(12).AddDays(-1) : null;
-        return new Afastamento(tipo, inicio, fim, dias, diasEmpresa, diasInss, pagoPelaEmpresa, beneficio, pagoPeloInss, Arredondar(baseFgts * .08m), estabilidade);
+        return new Afastamento(tipo, inicio, fim, dias, diasEmpresa, diasInss, pagoPelaEmpresa, beneficio, pagoPeloInss, Arredondar(baseFgts * .08m), estabilidade, jaPagos, prorroga);
     }
+
+    /// <summary>
+    /// Dias dos 15 já pagos pela empresa por causa do afastamento anterior pelo mesmo motivo. Benefício do INSS cessado há
+    /// até 60 dias: o novo afastamento o prorroga, e a empresa não paga de novo (Decreto 3.048/1999, art. 75, § 3º).
+    /// Afastamento pago pela empresa com retorno há até 60 dias: os dias se somam, e a empresa só completa os 15 (§§ 4º e 5º).
+    /// </summary>
+    private static (int JaPagos, bool Prorroga) Anteriores(DateOnly inicio, AfastamentoAnterior? anterior) => anterior switch
+    {
+        { Origem: OrigemAfastamentoAnterior.BeneficioInss } beneficio when inicio.DayNumber - beneficio.Fim.DayNumber <= PrazoAfastamentoSucessivo => (DiasPagosPelaEmpresa, true),
+        { Origem: OrigemAfastamentoAnterior.Empresa } empresa when inicio.DayNumber - empresa.Fim.AddDays(1).DayNumber <= PrazoAfastamentoSucessivo => (empresa.DiasPagosPelaEmpresa, false),
+        _ => (0, false)
+    };
 
     private static Afastamento Maternidade(DateOnly inicio, decimal remuneracao, decimal diaria, bool empresaCidada)
     {

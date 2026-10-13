@@ -77,4 +77,18 @@ public static class CalculadoraCreditoTrabalhador
     }
 
     public static decimal Potencia(decimal valor, int expoente) => MatematicaCredito.Potencia(valor, expoente);
+
+    /// <summary>
+    /// Quitação antecipada depois de <paramref name="pagas"/> parcelas. O valor presente das parcelas restantes usa a taxa de
+    /// juros pactuada (Resolução CMN 5.004/2022, art. 7º), o que, na tabela Price com juros mensais, é o saldo devedor; a
+    /// quitação não tem tarifa (Resolução CMN 3.516/2007, art. 1º).
+    /// </summary>
+    public static Result<QuitacaoAntecipadaCredito> Quitacao(ApuracaoCreditoTrabalhador a, decimal jurosMensais, int numeroParcelas, int pagas)
+    {
+        if (pagas < 1 || pagas >= numeroParcelas)
+            return Erro.Validacao($"Para simular a quitação, informe de 1 a {numeroParcelas - 1} parcelas já pagas.");
+        var restantes = numeroParcelas - pagas;
+        var saldo = MatematicaCredito.SaldoAposPagamentos(a.PrincipalFinanciado, jurosMensais / 100m, a.Parcela, pagas);
+        return new QuitacaoAntecipadaCredito(pagas, restantes, a.Parcela * (restantes - 1) + a.UltimaParcela, saldo);
+    }
 }

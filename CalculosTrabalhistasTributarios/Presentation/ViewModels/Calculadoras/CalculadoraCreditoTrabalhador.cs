@@ -20,6 +20,7 @@ public sealed class CalculadoraCreditoTrabalhador : CalculadoraBase
     private readonly CampoOpcaoViewModel _objetivo = new("Objetivo", [new("Valor desejado", ObjetivoCreditoTrabalhador.ValorDesejado), new("Valor pela margem", ObjetivoCreditoTrabalhador.LimitePelaMargem)], "Simular uma proposta ou estimar o crédito que cabe na margem. Não representa aprovação pelo banco.");
     private readonly CampoTextoViewModel _valor = Moeda("Crédito desejado (R$)", "Valor antes dos custos descontados na liberação. IOF e outros custos financiados serão adicionados ao principal.");
     private readonly CampoTextoViewModel _prazo = Inteiro("Parcelas (meses)", 24, "De 1 a 120 meses, sem carência. Limite técnico da simulação; confirme o prazo disponível na proposta.");
+    private readonly CampoTextoViewModel _pagasParaQuitar = Inteiro("Quitação: parcelas pagas", 0, "Para simular a quitação antecipada: quantas parcelas já foram pagas. O saldo usa a taxa de juros do contrato e abate os juros futuros (Resolução CMN 5.004/2022, art. 7º). Deixe 0 para não simular.");
     private readonly CampoTextoViewModel _juros = new("Juros (% ao mês)", TipoCampo.Numero, "0", "Taxa mensal da proposta, de 0 a 20%, com até seis casas decimais. Não confunda com CET nem taxa anual. Zero simula ausência de juros.")
     { MostrarDica = true, DicaEmLinha = "Informe a taxa mensal da proposta; não use taxa anual nem CET." };
     private readonly CampoOpcaoViewModel _modoIof = new("Cálculo do IOF", [new("Automático (estimado)", true), new("Informado pelo banco", false)]);
@@ -55,7 +56,7 @@ public sealed class CalculadoraCreditoTrabalhador : CalculadoraBase
     public override string Descricao => "Simule consignado com parcelas mensais, juros e custos da proposta. A margem de referência é 35% da remuneração habitual disponível; informe a margem livre oficial, se conhecida. Valores e custo efetivo são estimados e dependem da análise do banco.";
     public override string InstrucaoInicial => "No modo automático, IOF financiado: 0,38% + 0,0082% ao dia por amortização, limitado a 365 dias. Confira as datas sugeridas; vencimentos seguintes no mesmo dia mensal, sem ajuste por feriados. Datas usadas apenas no IOF; juros e custo efetivo seguem períodos mensais iguais. Custos opcionais: zero; margem oficial: vazio para estimar.";
     public override IReadOnlyList<CampoViewModel> Campos => [_competencia, _salario, _descontosCp, _dependentes, _pensao, _compulsorios,
-        _existentes, _margem, _objetivo, _valor, _prazo, _juros, _modoIof, _dataLiberacao, _primeiroVencimento, _iof, _outros, _liberacao];
+        _existentes, _margem, _objetivo, _valor, _prazo, _juros, _modoIof, _dataLiberacao, _primeiroVencimento, _iof, _outros, _liberacao, _pagasParaQuitar];
     public override string NomeArquivoPdf => $"credito-trabalhador-{_competencia.Valor.Replace('/', '-')}.pdf";
     protected override CampoTextoViewModel CampoCompetencia => _competencia;
     protected override CampoTextoViewModel CampoSalario => _salario;
@@ -68,5 +69,5 @@ public sealed class CalculadoraCreditoTrabalhador : CalculadoraBase
                 leitor.Inteiro(_prazo), leitor.Numero(_juros), _iof.Visivel ? leitor.Moeda(_iof) : 0m, leitor.Moeda(_outros), leitor.Moeda(_liberacao),
                 0m, leitor.Moeda(_existentes), string.IsNullOrWhiteSpace(_margem.Valor) ? null : leitor.Moeda(_margem),
                 _modoIof.Valor<bool>(), _dataLiberacao.Visivel ? leitor.Data(_dataLiberacao) : null,
-                _primeiroVencimento.Visivel ? leitor.Data(_primeiroVencimento) : null)), cancellationToken);
+                _primeiroVencimento.Visivel ? leitor.Data(_primeiroVencimento) : null), leitor.Inteiro(_pagasParaQuitar)), cancellationToken);
 }

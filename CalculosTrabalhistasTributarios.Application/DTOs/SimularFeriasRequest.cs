@@ -7,6 +7,8 @@ namespace CalculosTrabalhistasTributarios.Application.DTOs;
 /// <param name="Pensao">Pensão alimentícia sobre as férias + 1/3; nula quando não há.</param>
 /// <param name="PrevidenciaComplementar">Contribuição do trabalhador à previdência complementar sobre as férias, deduzida por inteiro do IRRF.</param>
 /// <param name="InicioGozo">Data de início do descanso; nula preserva a apuração antiga de uma competência.</param>
+/// <param name="OutrosPeriodos">Dias dos demais períodos do mesmo período aquisitivo, para conferir o fracionamento (CLT, art. 134, § 1º).</param>
+/// <param name="FimPeriodoConcessivo">Último dia para conceder as férias; os dias gozados depois dele são pagos em dobro (CLT, art. 137).</param>
 /// <param name="BaseSalarialForaFeriasNoMes">Base fora das férias no primeiro mês de gozo quando a data foi informada.</param>
 public sealed record SimularFeriasRequest(
     DateOnly Competencia,
@@ -22,4 +24,6 @@ public sealed record SimularFeriasRequest(
     decimal BaseSalarialForaFeriasNoMes = 0m,
     DateOnly? InicioGozo = null,
     decimal BaseForaFeriasMesSeguinte = 0m,
-    decimal BaseForaFeriasTerceiroMes = 0m);
+    decimal BaseForaFeriasTerceiroMes = 0m,
+    IReadOnlyList<int>? OutrosPeriodos = null,
+    DateOnly? FimPeriodoConcessivo = null);
