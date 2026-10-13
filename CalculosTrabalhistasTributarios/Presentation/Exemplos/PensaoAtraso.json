@@ -1,0 +1,143 @@
+{
+  "Campos": {
+    "BaseSelecionada": "Valor fixo",
+    "ValorPensao": "1.000,00",
+    "Percentual": "0,00",
+    "DiaVencimento": "10",
+    "PrimeiraParcela": "01/2025",
+    "UltimaParcela": "09/2026",
+    "DataCalculo": "03/10/2026",
+    "DataAjuizamento": "",
+    "CorrecaoSelecionada": "INPC",
+    "JurosSelecionado": "1% ao mês até 29/08/2024; depois, taxa legal",
+    "AcrescimosSelecionados": "Não incluir"
+  },
+  "Linhas": [
+    {
+      "Mes": "01/2025",
+      "DataVencimento": "10/01/2025",
+      "Devido": "1.000,00",
+      "Pago": "0,00"
+    },
+    {
+      "Mes": "02/2025",
+      "DataVencimento": "10/02/2025",
+      "Devido": "1.000,00",
+      "Pago": "0,00"
+    },
+    {
+      "Mes": "03/2025",
+      "DataVencimento": "10/03/2025",
+      "Devido": "1.000,00",
+      "Pago": "500,00"
+    },
+    {
+      "Mes": "04/2025",
+      "DataVencimento": "10/04/2025",
+      "Devido": "1.000,00",
+      "Pago": "0,00"
+    },
+    {
+      "Mes": "05/2025",
+      "DataVencimento": "10/05/2025",
+      "Devido": "1.000,00",
+      "Pago": "0,00"
+    },
+    {
+      "Mes": "06/2025",
+      "DataVencimento": "10/06/2025",
+      "Devido": "1.000,00",
+      "Pago": "0,00"
+    },
+    {
+      "Mes": "07/2025",
+      "DataVencimento": "10/07/2025",
+      "Devido": "1.000,00",
+      "Pago": "0,00"
+    },
+    {
+      "Mes": "08/2025",
+      "DataVencimento": "10/08/2025",
+      "Devido": "1.000,00",
+      "Pago": "0,00"
+    },
+    {
+      "Mes": "09/2025",
+      "DataVencimento": "10/09/2025",
+      "Devido": "1.000,00",
+      "Pago": "0,00"
+    },
+    {
+      "Mes": "10/2025",
+      "DataVencimento": "10/10/2025",
+      "Devido": "1.000,00",
+      "Pago": "0,00"
+    },
+    {
+      "Mes": "11/2025",
+      "DataVencimento": "10/11/2025",
+      "Devido": "1.000,00",
+      "Pago": "0,00"
+    },
+    {
+      "Mes": "12/2025",
+      "DataVencimento": "10/12/2025",
+      "Devido": "1.000,00",
+      "Pago": "0,00"
+    },
+    {
+      "Mes": "01/2026",
+      "DataVencimento": "10/01/2026",
+      "Devido": "1.000,00",
+      "Pago": "0,00"
+    },
+    {
+      "Mes": "02/2026",
+      "DataVencimento": "10/02/2026",
+      "Devido": "1.000,00",
+      "Pago": "0,00"
+    },
+    {
+      "Mes": "03/2026",
+      "DataVencimento": "10/03/2026",
+      "Devido": "1.000,00",
+      "Pago": "0,00"
+    },
+    {
+      "Mes": "04/2026",
+      "DataVencimento": "10/04/2026",
+      "Devido": "1.000,00",
+      "Pago": "0,00"
+    },
+    {
+      "Mes": "05/2026",
+      "DataVencimento": "10/05/2026",
+      "Devido": "1.000,00",
+      "Pago": "0,00"
+    },
+    {
+      "Mes": "06/2026",
+      "DataVencimento": "10/06/2026",
+      "Devido": "1.000,00",
+      "Pago": "0,00"
+    },
+    {
+      "Mes": "07/2026",
+      "DataVencimento": "10/07/2026",
+      "Devido": "1.000,00",
+      "Pago": "0,00"
+    },
+    {
+      "Mes": "08/2026",
+      "DataVencimento": "10/08/2026",
+      "Devido": "1.000,00",
+      "Pago": "0,00"
+    },
+    {
+      "Mes": "09/2026",
+      "DataVencimento": "10/09/2026",
+      "Devido": "1.000,00",
+      "Pago": "0,00"
+    }
+  ]
+}

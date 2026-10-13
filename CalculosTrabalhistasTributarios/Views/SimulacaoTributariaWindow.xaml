@@ -20,7 +20,7 @@
                 </Grid.RowDefinitions>
 
                 <StackPanel>
-                    <TextBlock Text="Simulação tributária" FontSize="24" FontWeight="SemiBold" />
+                    <StackPanel Orientation="Horizontal"><TextBlock Text="Simulação tributária" FontSize="24" FontWeight="SemiBold" VerticalAlignment="Center" /><Button Style="{StaticResource BotaoAjuda}" /><Button Content="Preencher exemplo" Style="{StaticResource LinkButton}" Command="{Binding Historico.PreencherExemploCommand}" Margin="16,2,0,0" VerticalAlignment="Center" Visibility="{Binding Historico.TemExemplo, Converter={StaticResource BooleanToVisibilityConverter}}" ToolTip="Preenche o formulário com os dados fictícios do exemplo do manual e calcula, para conhecer os campos." /></StackPanel>
                     <TextBlock Text="IRRF nas modalidades normal e simplificada, INSS por faixas, salário líquido e FGTS." Foreground="{DynamicResource MutedTextBrush}" Margin="0,5,0,0" />
                 </StackPanel>
 

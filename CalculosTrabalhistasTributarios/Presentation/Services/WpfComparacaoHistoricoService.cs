@@ -6,11 +6,15 @@ using System.Windows;
 
 namespace CalculosTrabalhistasTributarios.Presentation.Services;
 
-public sealed class WpfComparacaoHistoricoService : IComparacaoHistoricoService
+public sealed class WpfComparacaoHistoricoService(IRecalculoHistorico recalculo) : IComparacaoHistoricoService
 {
-    public void Mostrar(CalculoSalvoDto primeiro, CalculoSalvoDto segundo)
+    public async Task MostrarAsync(CalculoSalvoDto primeiro, CalculoSalvoDto segundo)
     {
-        var janela = new ComparacaoHistoricoWindow(new ComparacaoHistoricoViewModel(primeiro, segundo));
+        var viewModel = recalculo.Suporta(primeiro) && recalculo.Suporta(segundo)
+            ? new ComparacaoHistoricoViewModel(primeiro, segundo,
+                await recalculo.RecalcularAsync(primeiro, CancellationToken.None), await recalculo.RecalcularAsync(segundo, CancellationToken.None))
+            : new ComparacaoHistoricoViewModel(primeiro, segundo);
+        var janela = new ComparacaoHistoricoWindow(viewModel);
         var aplicativo = System.Windows.Application.Current;
         janela.Owner = aplicativo.Windows.OfType<Window>().FirstOrDefault(aberta => aberta.IsActive) ?? aplicativo.MainWindow;
         janela.ShowDialog();

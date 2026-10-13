@@ -1,0 +1,29 @@
+{
+  "Campos": {
+    "Vínculo": "Empregado (CLT)",
+    "Data de admissão": "01/01/2026",
+    "Data de desligamento": "15/04/2026",
+    "Motivo": "Dispensa sem justa causa",
+    "Aviso prévio": "Trabalhado ou dispensado",
+    "Fim previsto do contrato": "",
+    "Salário": "3.000,00",
+    "Médias de variáveis": "0,00",
+    "Outros proventos do mês": "0,00",
+    "Quitação do banco de horas": "",
+    "Verbas indenizatórias": "0,00",
+    "Faltas no mês": "0",
+    "Semanas com falta no mês": "0",
+    "Férias vencidas": "Nenhuma",
+    "Faltas no período atual": "0",
+    "Saldo do FGTS": "0,00",
+    "Depósitos históricos do FGTS": "[{\"Competencia\":\"01/2026\",\"Valor\":\"200,00\"},{\"Competencia\":\"02/2026\",\"Valor\":\"250,00\"},{\"Competencia\":\"03/2026\",\"Valor\":\"300,00\"}]",
+    "13º já adiantado": "0,00",
+    "Outros descontos": "0,00",
+    "Dependentes": "0",
+    "Data do pagamento": "",
+    "Data-base da categoria": "Não informar",
+    "Pensão alimentícia": "Não há",
+    "Percentual da pensão": "0",
+    "Valor da pensão": "0,00"
+  }
+}

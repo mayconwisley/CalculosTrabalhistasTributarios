@@ -200,6 +200,7 @@ Siga o fluxo existente e use uma calculadora próxima como referência, verifica
 10. Implemente a exportação/importação dos campos para o histórico, incluindo linhas, ordem, seleções e valores opcionais.
 11. Cubra cálculos e validações com testes de referência e verifique histórico e exportação quando afetados.
 12. Confira a tela renderizada e atualize manual, PDF do manual e README quando a funcionalidade ou seu uso mudar.
+13. Crie o exemplo do botão "Preencher exemplo" em `Presentation/Exemplos/<chave do histórico>.json`, com os dados fictícios da imagem do manual, e mapeie a seção do manual em `Presentation/SecoesDoManual.cs` para o botão "?" e o F1. `ExemplosTests` e `UsabilidadeTests` cobram os dois; inclua em `ExemplosTests` os destaques que a imagem mostra.
 
 Não considere uma calculadora pronta se ela aparece na tela inicial, mas não reabre corretamente pelo histórico ou apresenta um demonstrativo ambíguo.
 

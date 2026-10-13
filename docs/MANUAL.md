@@ -78,7 +78,7 @@ Para remover, use **Configurações do Windows > Aplicativos > Aplicativos insta
 | Nº | Área | Para que serve |
 | --- | --- | --- |
 | 1 | Cabeçalho | Identifica a Central de cálculos. Ao lado ficam o seletor de **Tema** e o botão do manual. |
-| 2 | Manual do usuário | Abre este manual. Também pode ser aberto com a tecla **F1** em qualquer janela. |
+| 2 | Manual do usuário | Abre este manual. Também pode ser aberto com a tecla **F1** em qualquer janela; numa calculadora, ele abre na seção dela. |
 | 3 | Calculadoras | Aba com as calculadoras, em cinco grupos: **Impostos e salário**, **Pensão e débitos judiciais**, **Remuneração e custos**, **Férias, 13º e desligamento** e **FGTS, afastamentos e benefícios**. |
 | 4 | Tabelas | Aba com as tabelas de INSS, IRRF, PLR, salário-família, salário mínimo, seguro-desemprego, os parâmetros usados nos cálculos e os índices INPC, IPCA, IPCA-E, taxa legal, Selic e TR. Veja a seção [Tabelas e parâmetros](#9-tabelas-e-parâmetros). |
 | 5 | Procurar | Busca pelo nome e pela descrição dos cartões da aba aberta, sem diferenciar maiúsculas e acentos. Atalho **Ctrl+F**; **Esc** ou **×** limpa a busca. |
@@ -91,6 +91,10 @@ Para remover, use **Configurações do Windows > Aplicativos > Aplicativos insta
 A tela principal só reúne os atalhos: cada cálculo, inclusive a simulação tributária, é feito na sua própria janela. Ao fechar a janela, você volta para a tela principal.
 
 **Favoritas:** clique na estrela (☆) de um cartão para levá-lo à seção **Favoritas**, no alto da aba; a estrela fica preenchida (★). O cartão sai do grupo de origem, que mostra um aviso quando todos os seus cartões estão nas favoritas. Para desfazer, clique de novo na estrela. As favoritas valem para as abas **Calculadoras** e **Tabelas** e ficam gravadas neste computador, nas preferências do usuário, de uma abertura para outra.
+
+**Recentes:** no alto da aba **Calculadoras**, os cinco últimos cálculos salvos no histórico, do alterado mais recentemente para o mais antigo, com a calculadora e quando foram alterados. Clique em um para reabri-lo já calculado, como pelo botão **Abrir** do histórico; **Ver o histórico** abre a aba **Histórico**. A seção só aparece quando há cálculos salvos e fica oculta durante a busca.
+
+![Seção Recentes com dois cálculos salvos](imagens/97-recentes.png)
 
 **Procurar:** digite parte do nome ou da descrição, como `fgts`, `pensao` ou `13`. A busca não diferencia maiúsculas e acentos e, com várias palavras, mostra os cartões que têm todas. As favoritas e os grupos mostram só os cartões encontrados; um grupo sem resultado avisa **Nenhum cartão encontrado neste grupo**, e as colunas continuam no lugar. Na aba **Histórico**, a busca própria procura nos cálculos salvos.
 
@@ -387,11 +391,12 @@ O botão **Gerar PDF** cria um demonstrativo com as verbas, os dados considerado
 
 Além da simulação tributária, da pensão, dos débitos judiciais, da estabilidade e da jornada pelo ponto, a aba **Calculadoras** reúne cálculos para o dia a dia do departamento pessoal e do imposto de renda. As calculadoras deste capítulo usam a mesma janela:
 
+- **? e Preencher exemplo:** ao lado do título. O **?** (ou **F1**) abre este manual na seção da calculadora. **Preencher exemplo** substitui o formulário pelos dados fictícios do exemplo deste manual, depois de confirmar, e calcula: é uma forma de conhecer os campos antes de digitar o seu caso.
 - **Formulário:** os campos do cálculo. Passe o mouse sobre um campo para ver uma dica do que informar. Orientações essenciais também aparecem abaixo de alguns campos de rescisão, crédito e empréstimo. Ao abrir uma calculadora, a competência, o salário e os dependentes do último cálculo já vêm preenchidos. Alguns campos só aparecem quando a opção escolhida em outro campo exige.
 - **Calcular:** faz o cálculo. A tecla **Enter** também calcula. Feito o cálculo, a janela rola até o **Resultado** quando ele está fora da vista.
 - **Resumo executivo:** os valores mais importantes.
 - **Entradas utilizadas neste resultado:** seção expansível para conferir os valores do formulário no momento do cálculo. Nas listas, abra o formulário para conferir cada linha.
-- **Demonstrativo:** proventos, descontos e o resultado, como em um holerite.
+- **Demonstrativo:** proventos, descontos e o resultado, como em um holerite. Clique em um valor do resumo, do demonstrativo, do comparativo ou dos informativos para copiá-lo, sem o "R$", e colar na folha ou numa planilha; uma dica confirma o valor copiado. Pelo teclado, selecione o valor com **Tab** e pressione **Enter**.
 - **Valores informativos:** valores que não entram nos totais nem no resultado, como o FGTS depositado pelo empregador, bases de cálculo e outras referências.
 - **Memória de cálculo:** a fórmula de cada valor, inclusive o INSS faixa a faixa e o IRRF nas duas modalidades.
 - **Observações:** as premissas e os limites do cálculo.
@@ -1455,7 +1460,11 @@ Em qualquer calculadora, o botão **Salvar no histórico** guarda os valores do 
 
 A aba **Histórico** da tela principal lista os cálculos salvos, do alterado mais recentemente para o mais antigo. O campo **Procurar** filtra pelo nome ou pela calculadora, sem diferenciar maiúsculas e acentos. Também é possível filtrar por calculadora e pela data da última alteração e ordenar por data ou nome.
 
-Marque dois cálculos da mesma calculadora e selecione **Comparar entradas** para ver os dados salvos lado a lado. **Mostrar apenas diferenças** oculta os campos iguais. A comparação mostra entradas, inclusive linhas salvas, e não totais anteriores: o histórico não guarda uma cópia do resultado calculado. Para conferir os totais, abra cada cálculo e recalcule com as tabelas atuais.
+Marque dois cálculos da mesma calculadora e selecione **Comparar**. Nas calculadoras da janela padrão (capítulo 8), a comparação refaz os dois cálculos com as tabelas atuais e mostra os **Resultados** lado a lado: os valores do resumo, cada provento e desconto, os totais e os informativos, com a **Diferença** do segundo para o primeiro. Abaixo vêm os **Dados informados**, inclusive as linhas salvas. **Mostrar apenas diferenças** oculta o que é igual. Para comparar cenários, por exemplo uma rescisão com e sem aviso indenizado, salve o cálculo, use **Duplicar**, abra a cópia, mude o dado e salve; depois marque os dois e compare. Nas janelas próprias, como a pensão, a jornada e os débitos judiciais, a comparação mostra só os dados informados: abra cada cálculo para ver o resultado. Se um dos cálculos não puder ser refeito, por exemplo por falta de tabela, a comparação explica o motivo e mostra só os dados.
+
+![Comparação de dois holerites salvos: o salário passou de R$ 4.200,00 para R$ 5.000,00](imagens/98-comparacao-resultados.png)
+
+O cálculo salvo primeiro fica na primeira coluna, e a diferença mostra o efeito da mudança no cenário novo. Quando a mudança troca a modalidade do IRRF, as linhas "IRRF (deduções legais)" e "IRRF (desconto simplificado)" aparecem separadas, cada uma com "—" no cálculo em que não se aplica.
 
 | Ação | O que faz |
 | --- | --- |
@@ -1478,6 +1487,10 @@ No canto superior direito da tela principal, escolha o **Tema**:
 ![Tema escuro](imagens/16-tema-escuro.png)
 
 A escolha é salva automaticamente e restaurada na próxima abertura. As configurações ficam no arquivo `%LOCALAPPDATA%\CalculoIRRF\settings.json`.
+
+**Tamanho e posição das janelas:** cada calculadora, cada tabela, a tela principal e a comparação do histórico reabrem com o tamanho e a posição que tinham ao fechar, inclusive maximizadas. Se o monitor onde a janela estava não estiver mais conectado, ela abre na tela principal.
+
+**Escala do Windows:** com escala de 125% ou 150%, ou numa tela pequena, as janelas nunca ficam maiores que a área livre do monitor (sem a barra de tarefas): o tamanho mínimo é reduzido ao que cabe e a página da calculadora rola. As bordas e as linhas das grades são alinhadas aos pixels da tela, para ficarem nítidas também nas escalas fracionárias.
 
 **Avisar sobre novas versões:** no rodapé da tela principal. Marcada, a abertura consulta no GitHub se há uma versão mais nova, sem enviar nenhum dado dos cálculos; desmarcada, o aplicativo não acessa a internet ao abrir. O aviso das tabelas do ano não usa a internet e continua aparecendo.
 
@@ -1573,7 +1586,7 @@ Use **Atualizar pela internet**, quando disponível, ou corrija os valores manua
 
 | Tecla | Ação |
 | --- | --- |
-| **F1** | Abre este manual, em qualquer janela do aplicativo. |
+| **F1** | Abre este manual, em qualquer janela do aplicativo; numa calculadora ou tabela, na seção correspondente. |
 | **Tab** / **Shift + Tab** | Avança ou volta entre os campos e, na tela principal, entre os cartões. |
 | **Espaço** ou **Enter** com um botão ou cartão selecionado | Aciona o botão ou abre a calculadora do cartão. |
 | **Enter** na simulação tributária e nas calculadoras trabalhistas | Calcula, a partir de qualquer campo do formulário. |

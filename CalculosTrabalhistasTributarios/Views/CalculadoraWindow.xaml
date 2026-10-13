@@ -429,6 +429,34 @@
             <Setter Property="HorizontalAlignment" Value="Right" />
             <Setter Property="VerticalAlignment" Value="Center" />
         </Style>
+        <!-- Valor do resultado que se copia com um clique (ou Enter): parece texto e realça ao passar o mouse ou receber o foco. -->
+        <Style x:Key="ValorCopiavel" TargetType="Button">
+            <Setter Property="behaviors:CopiaDeValor.Ativa" Value="True" />
+            <Setter Property="HorizontalAlignment" Value="Right" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+            <Setter Property="ToolTip" Value="Clique para copiar o valor" />
+            <Setter Property="AutomationProperties.HelpText" Value="Copia o valor para a área de transferência" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Fundo" Background="Transparent" BorderBrush="Transparent" BorderThickness="1" CornerRadius="4" Padding="4,1" Margin="-5,-2,-5,-2">
+                            <ContentPresenter RecognizesAccessKey="False" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Fundo" Property="Background" Value="{DynamicResource ButtonHoverBrush}" /></Trigger>
+                            <Trigger Property="IsKeyboardFocused" Value="True"><Setter TargetName="Fundo" Property="BorderBrush" Value="{DynamicResource AccentBrush}" /></Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="Content" Value=""><Setter Property="Visibility" Value="Collapsed" /></Trigger>
+                <Trigger Property="Content" Value="{x:Null}"><Setter Property="Visibility" Value="Collapsed" /></Trigger>
+            </Style.Triggers>
+        </Style>
     </Window.Resources>
     <!-- A janela inteira rola quando falta altura, por exemplo numa tela menor ou com um resultado longo, para o resultado
          não ficar espremido abaixo do formulário. -->
@@ -445,7 +473,7 @@
                 </Grid.RowDefinitions>
 
                 <StackPanel>
-                    <TextBlock Text="{Binding Titulo}" FontSize="24" FontWeight="SemiBold" />
+                    <StackPanel Orientation="Horizontal"><TextBlock Text="{Binding Titulo}" FontSize="24" FontWeight="SemiBold" VerticalAlignment="Center" /><Button Style="{StaticResource BotaoAjuda}" /><Button Content="Preencher exemplo" Style="{StaticResource LinkButton}" Command="{Binding Historico.PreencherExemploCommand}" Margin="16,2,0,0" VerticalAlignment="Center" Visibility="{Binding Historico.TemExemplo, Converter={StaticResource BooleanToVisibilityConverter}}" ToolTip="Preenche o formulário com os dados fictícios do exemplo do manual e calcula, para conhecer os campos." /></StackPanel>
                     <TextBlock Text="{Binding Descricao}" Foreground="{DynamicResource MutedTextBrush}" Margin="0,5,0,0" TextWrapping="Wrap" />
                 </StackPanel>
 
@@ -562,7 +590,7 @@
                                         <Border Width="230" Margin="0,0,10,10" Padding="14" Background="{DynamicResource ResultBackgroundBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="10">
                                             <StackPanel>
                                                 <TextBlock Text="{Binding Rotulo}" Foreground="{DynamicResource MutedTextBrush}" FontSize="12" />
-                                                <TextBlock Text="{Binding Valor}" FontSize="18" FontWeight="SemiBold" Margin="0,4,0,0" />
+                                                <Button Content="{Binding Valor}" Style="{StaticResource ValorCopiavel}" HorizontalAlignment="Left" FontSize="18" FontWeight="SemiBold" Margin="0,4,0,0" />
                                                 <TextBlock Text="{Binding Complemento}" Foreground="{DynamicResource MutedTextBrush}" FontSize="11" Margin="0,4,0,0" TextWrapping="Wrap" />
                                             </StackPanel>
                                         </Border>
@@ -591,7 +619,7 @@
                                                         <TextBlock x:Name="Descricao" Text="{Binding Descricao}" TextWrapping="Wrap" Margin="0,0,12,0" />
                                                         <ItemsControl x:Name="Valores" Grid.Column="1" ItemsSource="{Binding Valores}" Focusable="False">
                                                             <ItemsControl.ItemsPanel><ItemsPanelTemplate><UniformGrid Rows="1" /></ItemsPanelTemplate></ItemsControl.ItemsPanel>
-                                                            <ItemsControl.ItemTemplate><DataTemplate><TextBlock Text="{Binding}" Style="{StaticResource Valor}" TextAlignment="Right" TextWrapping="Wrap" Margin="12,0,0,0" /></DataTemplate></ItemsControl.ItemTemplate>
+                                                            <ItemsControl.ItemTemplate><DataTemplate><Button Content="{Binding}" Style="{StaticResource ValorCopiavel}" Margin="12,0,0,0" /></DataTemplate></ItemsControl.ItemTemplate>
                                                         </ItemsControl>
                                                     </Grid>
                                                 </Border>
@@ -626,8 +654,8 @@
                                                         <Grid.ColumnDefinitions><ColumnDefinition Width="3*" /><ColumnDefinition Width="1.1*" /><ColumnDefinition Width="1.3*" /><ColumnDefinition Width="1.3*" /></Grid.ColumnDefinitions>
                                                         <TextBlock Text="{Binding Descricao}" TextWrapping="Wrap" Margin="0,0,12,0" />
                                                         <TextBlock Grid.Column="1" Text="{Binding Referencia}" Foreground="{DynamicResource MutedTextBrush}" />
-                                                        <TextBlock Grid.Column="2" Text="{Binding Provento}" Style="{StaticResource Valor}" />
-                                                        <TextBlock Grid.Column="3" Text="{Binding Desconto}" Style="{StaticResource Valor}" />
+                                                        <Button Grid.Column="2" Content="{Binding Provento}" Style="{StaticResource ValorCopiavel}" />
+                                                        <Button Grid.Column="3" Content="{Binding Desconto}" Style="{StaticResource ValorCopiavel}" />
                                                     </Grid>
                                                 </Border>
                                             </DataTemplate>
@@ -636,14 +664,14 @@
                                     <Grid Margin="0,10,0,0">
                                         <Grid.ColumnDefinitions><ColumnDefinition Width="3*" /><ColumnDefinition Width="1.1*" /><ColumnDefinition Width="1.3*" /><ColumnDefinition Width="1.3*" /></Grid.ColumnDefinitions>
                                         <TextBlock Text="Totais" FontWeight="SemiBold" />
-                                        <TextBlock Grid.Column="2" Text="{Binding TotalProventos}" FontWeight="SemiBold" Style="{StaticResource Valor}" />
-                                        <TextBlock Grid.Column="3" Text="{Binding TotalDescontos}" FontWeight="SemiBold" Style="{StaticResource Valor}" />
+                                        <Button Grid.Column="2" Content="{Binding TotalProventos}" FontWeight="SemiBold" Style="{StaticResource ValorCopiavel}" />
+                                        <Button Grid.Column="3" Content="{Binding TotalDescontos}" FontWeight="SemiBold" Style="{StaticResource ValorCopiavel}" />
                                     </Grid>
                                     <Border Margin="0,12,0,0" Padding="12,10" Background="{DynamicResource AdvantageBackgroundBrush}" BorderBrush="{DynamicResource AdvantageBorderBrush}" BorderThickness="1" CornerRadius="8">
                                         <Grid>
                                             <Grid.ColumnDefinitions><ColumnDefinition /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
                                             <TextBlock Text="{Binding RotuloResultado}" FontSize="15" FontWeight="SemiBold" Foreground="{DynamicResource AdvantageTextBrush}" VerticalAlignment="Center" />
-                                            <TextBlock Grid.Column="1" Text="{Binding Resultado}" FontSize="18" FontWeight="SemiBold" Foreground="{DynamicResource AdvantageTextBrush}" />
+                                            <Button Grid.Column="1" Content="{Binding Resultado}" Style="{StaticResource ValorCopiavel}" FontSize="18" FontWeight="SemiBold" Foreground="{DynamicResource AdvantageTextBrush}" />
                                         </Grid>
                                     </Border>
                                 </StackPanel>
@@ -662,7 +690,7 @@
                                                         <Grid.ColumnDefinitions><ColumnDefinition Width="3*" /><ColumnDefinition Width="1.1*" /><ColumnDefinition Width="2.6*" /></Grid.ColumnDefinitions>
                                                         <TextBlock Text="{Binding Descricao}" TextWrapping="Wrap" Margin="0,0,12,0" />
                                                         <TextBlock Grid.Column="1" Text="{Binding Referencia}" Foreground="{DynamicResource MutedTextBrush}" />
-                                                        <TextBlock Grid.Column="2" Text="{Binding Provento}" Style="{StaticResource Valor}" />
+                                                        <Button Grid.Column="2" Content="{Binding Provento}" Style="{StaticResource ValorCopiavel}" />
                                                     </Grid>
                                                 </Border>
                                             </DataTemplate>

@@ -1,0 +1,5 @@
+{
+  "Campos": {
+    "Ciclo e lançamentos": "{\"Inicio\":\"01/10/2026\",\"Fim\":\"31/10/2026\",\"Regime\":0,\"Situacao\":1,\"Salario\":\"3.000,00\",\"Divisor\":\"220\",\"Adicional\":\"50,00\",\"Lancamentos\":[{\"Data\":\"05/10/2026\",\"Tipo\":0,\"Horas\":\"2:00\",\"Descricao\":\"Horas extras\",\"Adicional\":\"\"},{\"Data\":\"15/10/2026\",\"Tipo\":1,\"Horas\":\"0:30\",\"Descricao\":\"Saída antecipada\",\"Adicional\":\"\"}]}"
+  }
+}

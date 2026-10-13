@@ -1,45 +1,86 @@
 <Window x:Class="CalculosTrabalhistasTributarios.Views.ComparacaoHistoricoWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="{Binding Titulo}" Width="1040" Height="720" MinWidth="720" MinHeight="480"
+        xmlns:behaviors="clr-namespace:CalculosTrabalhistasTributarios.Presentation.Behaviors"
+        Title="{Binding Titulo}" Width="1100" Height="760" MinWidth="760" MinHeight="480"
         WindowStartupLocation="CenterOwner" Background="{DynamicResource ApplicationBackgroundBrush}"
         Foreground="{DynamicResource TextBrush}">
+    <Window.Resources>
+        <!-- Linha com valor diferente nos dois cálculos: a diferença aparece em destaque. -->
+        <Style x:Key="CelulaDiferenca" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource MutedTextBrush}" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Diferente}" Value="True">
+                    <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
+                    <Setter Property="FontWeight" Value="SemiBold" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
     <Grid Margin="22">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <TextBlock Text="Comparação dos dados informados" FontSize="20" FontWeight="SemiBold" />
-        <TextBlock Grid.Row="1" Margin="0,8,0,15" TextWrapping="Wrap" Foreground="{DynamicResource MutedTextBrush}"
-                   Text="O histórico guarda o formulário, não o resultado calculado. Abra cada cálculo para recalcular e conferir os totais com as tabelas atuais." />
-        <CheckBox Grid.Row="2" Content="Mostrar apenas diferenças" IsChecked="{Binding SomenteDiferencas}" Margin="0,0,0,12" Foreground="{DynamicResource TextBrush}"
-                  AutomationProperties.Name="Mostrar apenas diferenças entre os formulários" />
-        <Grid Grid.Row="3">
-            <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="*" /></Grid.RowDefinitions>
-            <Grid Background="{DynamicResource ResultBackgroundBrush}" Margin="0,0,0,5">
-                <Grid.ColumnDefinitions><ColumnDefinition Width="1.2*" /><ColumnDefinition Width="*" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
-                <TextBlock Text="Campo" FontWeight="SemiBold" Margin="10" />
-                <TextBlock Grid.Column="1" Text="{Binding NomePrimeiro}" FontWeight="SemiBold" TextWrapping="Wrap" Margin="10" />
-                <TextBlock Grid.Column="2" Text="{Binding NomeSegundo}" FontWeight="SemiBold" TextWrapping="Wrap" Margin="10" />
-            </Grid>
-            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-                <ItemsControl ItemsSource="{Binding Linhas}">
+        <StackPanel Orientation="Horizontal">
+            <TextBlock Text="Comparação de cálculos salvos" FontSize="20" FontWeight="SemiBold" VerticalAlignment="Center" />
+            <Button Style="{StaticResource BotaoAjuda}" />
+        </StackPanel>
+        <CheckBox Grid.Row="1" Content="Mostrar apenas diferenças" IsChecked="{Binding SomenteDiferencas}" Margin="0,12,0,12" Foreground="{DynamicResource TextBrush}"
+                  AutomationProperties.Name="Mostrar apenas as diferenças entre os cálculos" />
+        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Focusable="False" behaviors:RolagemDaTela.Ativa="True">
+            <StackPanel Margin="0,0,8,0">
+                <TextBlock Text="Resultados" FontSize="15" FontWeight="SemiBold" />
+                <TextBlock Text="{Binding MensagemResultados}" Margin="0,4,0,10" TextWrapping="Wrap" Foreground="{DynamicResource MutedTextBrush}" />
+                <StackPanel Margin="0,0,0,22" Visibility="{Binding TemResultados, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <Grid Background="{DynamicResource ResultBackgroundBrush}" Margin="0,0,0,5">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="0.8*" /><ColumnDefinition Width="1.6*" /><ColumnDefinition Width="*" /><ColumnDefinition Width="*" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                        <TextBlock Text="Grupo" FontWeight="SemiBold" Margin="10" />
+                        <TextBlock Grid.Column="1" Text="Item" FontWeight="SemiBold" Margin="10" />
+                        <TextBlock Grid.Column="2" Text="{Binding NomePrimeiro}" FontWeight="SemiBold" TextWrapping="Wrap" TextAlignment="Right" Margin="10" />
+                        <TextBlock Grid.Column="3" Text="{Binding NomeSegundo}" FontWeight="SemiBold" TextWrapping="Wrap" TextAlignment="Right" Margin="10" />
+                        <TextBlock Grid.Column="4" Text="Diferença" FontWeight="SemiBold" TextAlignment="Right" Margin="10" />
+                    </Grid>
+                    <ItemsControl ItemsSource="{Binding LinhasResultado}" Focusable="False">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="0,0,0,2" Background="{DynamicResource ResultBackgroundBrush}">
+                                    <Grid.ColumnDefinitions><ColumnDefinition Width="0.8*" /><ColumnDefinition Width="1.6*" /><ColumnDefinition Width="*" /><ColumnDefinition Width="*" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                                    <TextBlock Text="{Binding Grupo}" Foreground="{DynamicResource MutedTextBrush}" TextWrapping="Wrap" Margin="10,8" />
+                                    <TextBlock Grid.Column="1" Text="{Binding Item}" TextWrapping="Wrap" Margin="10,8" />
+                                    <TextBlock Grid.Column="2" Text="{Binding Primeiro}" TextWrapping="Wrap" TextAlignment="Right" Margin="10,8" />
+                                    <TextBlock Grid.Column="3" Text="{Binding Segundo}" TextWrapping="Wrap" TextAlignment="Right" Margin="10,8" />
+                                    <TextBlock Grid.Column="4" Text="{Binding Diferenca}" Style="{StaticResource CelulaDiferenca}" TextWrapping="Wrap" TextAlignment="Right" Margin="10,8" />
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+
+                <TextBlock Text="Dados informados" FontSize="15" FontWeight="SemiBold" />
+                <TextBlock Text="Os valores do formulário de cada cálculo, como foram salvos." Margin="0,4,0,10" TextWrapping="Wrap" Foreground="{DynamicResource MutedTextBrush}" />
+                <Grid Background="{DynamicResource ResultBackgroundBrush}" Margin="0,0,0,5">
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="1.2*" /><ColumnDefinition Width="*" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                    <TextBlock Text="Campo" FontWeight="SemiBold" Margin="10" />
+                    <TextBlock Grid.Column="1" Text="{Binding NomePrimeiro}" FontWeight="SemiBold" TextWrapping="Wrap" Margin="10" />
+                    <TextBlock Grid.Column="2" Text="{Binding NomeSegundo}" FontWeight="SemiBold" TextWrapping="Wrap" Margin="10" />
+                </Grid>
+                <ItemsControl ItemsSource="{Binding Linhas}" Focusable="False">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <Grid Margin="0,0,0,2" Background="{DynamicResource ResultBackgroundBrush}">
                                 <Grid.ColumnDefinitions><ColumnDefinition Width="1.2*" /><ColumnDefinition Width="*" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
-                                <TextBlock Text="{Binding Campo}" TextWrapping="Wrap" Margin="10" />
-                                <TextBlock Grid.Column="1" Text="{Binding Primeiro}" TextWrapping="Wrap" Margin="10" />
-                                <TextBlock Grid.Column="2" Text="{Binding Segundo}" TextWrapping="Wrap" Margin="10" />
+                                <TextBlock Text="{Binding Campo}" TextWrapping="Wrap" Margin="10,8" />
+                                <TextBlock Grid.Column="1" Text="{Binding Primeiro}" TextWrapping="Wrap" Margin="10,8" />
+                                <TextBlock Grid.Column="2" Text="{Binding Segundo}" TextWrapping="Wrap" Margin="10,8" />
                             </Grid>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
-            </ScrollViewer>
-        </Grid>
-        <Button Grid.Row="4" Content="Fechar" IsCancel="True" HorizontalAlignment="Right" Margin="0,12,0,0" MinWidth="100" AutomationProperties.Name="Fechar comparação" />
+            </StackPanel>
+        </ScrollViewer>
+        <Button Grid.Row="3" Content="Fechar" IsCancel="True" HorizontalAlignment="Right" Margin="0,12,0,0" MinWidth="100" AutomationProperties.Name="Fechar comparação" />
     </Grid>
 </Window>

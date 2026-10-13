@@ -27,9 +27,14 @@ public sealed class HistoricoDaJanela : ViewModelBase
         _notificador = notificador;
         _calculo = calculo;
         SalvarCommand = new AsyncRelayCommand(SalvarAsync);
+        PreencherExemploCommand = new AsyncRelayCommand(PreencherExemploAsync);
     }
 
     public ICommand SalvarCommand { get; }
+
+    /// <summary>Preenche o formulário com o exemplo do manual e calcula, para quem abre a calculadora pela primeira vez.</summary>
+    public ICommand PreencherExemploCommand { get; }
+    public bool TemExemplo => ExemplosDoManual.Existe(_calculo.TipoHistorico);
 
     /// <summary>O formulário passou a corresponder ao histórico: foi aberto dele ou acabou de ser salvo.</summary>
     public event Action? Sincronizado;
@@ -53,6 +58,20 @@ public sealed class HistoricoDaJanela : ViewModelBase
         _nome = salvo.Nome;
         Sincronizado?.Invoke();
         Situacao = $"Aberto do histórico: “{salvo.Nome}”, salvo em {salvo.AlteradoEm:dd/MM/yyyy} às {salvo.AlteradoEm:HH:mm}.";
+        await _calculo.RecalcularAsync();
+    }
+
+    private async Task PreencherExemploAsync()
+    {
+        if (ExemplosDoManual.Obter(_calculo.TipoHistorico) is not { } exemplo
+            || !_notificador.Confirmar("Preencher o formulário com o exemplo do manual?\n\nOs dados do formulário serão substituídos por valores fictícios.", "Preencher exemplo"))
+            return;
+        _calculo.ImportarDados(exemplo);
+        // O exemplo não é um cálculo do histórico: salvar cria um novo, e fechar a janela não pede confirmação.
+        _id = null;
+        _nome = null;
+        Sincronizado?.Invoke();
+        Situacao = "Exemplo do manual, com dados fictícios. Altere os campos para o seu caso e calcule de novo.";
         await _calculo.RecalcularAsync();
     }
 

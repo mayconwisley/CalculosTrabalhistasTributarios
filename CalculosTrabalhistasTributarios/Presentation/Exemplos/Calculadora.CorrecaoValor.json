@@ -1,0 +1,10 @@
+{
+  "Campos": {
+    "Valor": "1.000,00",
+    "Mês em que era devido": "01/2025",
+    "Mês da atualização": "01/2026",
+    "Índice": "IPCA (inflação oficial)",
+    "Juros ao mês (%)": "1",
+    "Multa (%)": "2"
+  }
+}

@@ -4,5 +4,6 @@ namespace CalculosTrabalhistasTributarios.Presentation.Interfaces;
 
 public interface IComparacaoHistoricoService
 {
-    void Mostrar(CalculoSalvoDto primeiro, CalculoSalvoDto segundo);
+    /// <summary>Recalcula os dois cálculos, quando a calculadora permite, e mostra a comparação.</summary>
+    Task MostrarAsync(CalculoSalvoDto primeiro, CalculoSalvoDto segundo);
 }

@@ -1,3 +1,4 @@
+using CalculosTrabalhistasTributarios.Presentation.Behaviors;
 using CalculosTrabalhistasTributarios.Presentation.ViewModels;
 using System.Collections.Specialized;
 using System.Windows;
@@ -11,6 +12,7 @@ public partial class PensaoWindow : Window
     {
         InitializeComponent();
         DataContext = viewModel;
+        JanelaLembrada.SetChave(this, viewModel.TipoHistorico);
         // Com a lista rolando, o beneficiário incluído fica à vista.
         viewModel.Beneficiarios.CollectionChanged += (_, argumentos) =>
         {

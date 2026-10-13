@@ -1,0 +1,13 @@
+{
+  "Campos": {
+    "Período de apuração": "10/2026",
+    "Atividade": "Serviços sujeitos ao fator r (Anexo III ou V)",
+    "Início das atividades (opcional)": "",
+    "Receita bruta do mês": "20.000,00",
+    "Folha do mês com encargos": "0,00",
+    "Receita e folha dos meses anteriores": "{\"ReceitaMensal\":\"20.000,00\",\"FolhaMensal\":\"5.000,00\",\"Meses\":[{\"Competencia\":\"10/2025\",\"Receita\":\"20.000,00\",\"Folha\":\"5.000,00\"},{\"Competencia\":\"11/2025\",\"Receita\":\"20.000,00\",\"Folha\":\"5.000,00\"},{\"Competencia\":\"12/2025\",\"Receita\":\"20.000,00\",\"Folha\":\"5.000,00\"},{\"Competencia\":\"01/2026\",\"Receita\":\"20.000,00\",\"Folha\":\"5.000,00\"},{\"Competencia\":\"02/2026\",\"Receita\":\"20.000,00\",\"Folha\":\"5.000,00\"},{\"Competencia\":\"03/2026\",\"Receita\":\"20.000,00\",\"Folha\":\"5.000,00\"},{\"Competencia\":\"04/2026\",\"Receita\":\"20.000,00\",\"Folha\":\"5.000,00\"},{\"Competencia\":\"05/2026\",\"Receita\":\"20.000,00\",\"Folha\":\"5.000,00\"},{\"Competencia\":\"06/2026\",\"Receita\":\"20.000,00\",\"Folha\":\"5.000,00\"},{\"Competencia\":\"07/2026\",\"Receita\":\"20.000,00\",\"Folha\":\"5.000,00\"},{\"Competencia\":\"08/2026\",\"Receita\":\"20.000,00\",\"Folha\":\"5.000,00\"},{\"Competencia\":\"09/2026\",\"Receita\":\"20.000,00\",\"Folha\":\"5.000,00\"}]}",
+    "Pró-labore mensal atual": "3.000,00",
+    "Dependentes do sócio": "0",
+    "Salários e pró-labore do mês": "0,00"
+  }
+}

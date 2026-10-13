@@ -1,0 +1,19 @@
+{
+  "Campos": {
+    "Competencia": "10/2026",
+    "ValorBruto": "8.500,00",
+    "BaseInss": "8.500,00",
+    "Dependentes": "2",
+    "OutrosDescontos": "0,00",
+    "OrdemSelecionada": "Todas sobre a mesma base",
+    "Detalhado": "Não"
+  },
+  "Linhas": [
+    {
+      "Nome": "Beneficiário 1",
+      "BaseSelecionada": "% dos rendimentos líquidos",
+      "Percentual": "30,00",
+      "ValorPensao": "0,00"
+    }
+  ]
+}

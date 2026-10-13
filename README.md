@@ -137,6 +137,9 @@ As regras da CLT ficam em `CalculosTrabalhistasTributarios.Domain/Trabalhista` (
 
 - Tela inicial em cartões, com as calculadoras agrupadas por assunto e as tabelas em uma aba própria; cada cálculo abre na sua janela. Cartões favoritos ficam numa seção no alto, e a busca (Ctrl+F) procura no nome e na descrição, sem diferenciar maiúsculas e acentos.
 - Nas calculadoras, os campos a corrigir ficam destacados no próprio formulário, a janela rola até o resultado após o cálculo e avisa quando o formulário muda depois dele; exportações recalculam antes de salvar, e uma seção expansível permite conferir as entradas utilizadas. Atalhos Ctrl+S, Ctrl+P, Ctrl+E e Esc.
+- A seção Recentes da tela inicial reabre os últimos cálculos salvos; a comparação do histórico refaz dois cálculos e mostra a diferença de cada verba e dos totais, além dos dados informados.
+- Cada calculadora tem "Preencher exemplo", com os dados fictícios do manual, e o botão "?" (ou F1), que abre o manual em PDF na página da sua seção; um clique copia um valor do demonstrativo, pronto para colar.
+- As janelas reabrem com o tamanho e a posição anteriores e se ajustam à área útil do monitor com escala de 125% a 150%; os contrastes dos dois temas atendem a 4,5:1 nos textos.
 - Avisos ao abrir: versão nova publicada no GitHub (a consulta pode ser desligada) e tabelas do ano ainda não cadastradas; na primeira abertura, o lembrete de que os resultados são simulações.
 - Erros inesperados não fecham o aplicativo em silêncio: a mensagem aparece, e os detalhes vão para um arquivo de log mensal em `%LOCALAPPDATA%\CalculoIRRF\logs`, para o suporte.
 - Cada calculadora abre preenchida com a competência, o salário e os dependentes do último cálculo.

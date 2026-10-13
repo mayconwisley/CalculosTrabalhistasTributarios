@@ -16,5 +16,9 @@ public sealed class Configuracoes
     /// <summary>Chaves dos cartões favoritos da tela inicial, na ordem em que foram marcados.</summary>
     public List<string> Favoritos { get => _favoritos; set => _favoritos = value ?? []; }
 
+    /// <summary>Último tamanho e posição de cada janela, pela chave da calculadora, como "Calculadora.Rescisao".</summary>
+    public Dictionary<string, PosicaoJanela> Janelas { get => _janelas; set => _janelas = value ?? []; }
+
     private List<string> _favoritos = [];
+    private Dictionary<string, PosicaoJanela> _janelas = [];
 }

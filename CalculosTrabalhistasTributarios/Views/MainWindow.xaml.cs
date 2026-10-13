@@ -1,3 +1,4 @@
+using CalculosTrabalhistasTributarios.Presentation.Behaviors;
 using CalculosTrabalhistasTributarios.Presentation.ViewModels;
 using System.Diagnostics;
 using System.Runtime.Versioning;
@@ -16,8 +17,11 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
         DataContext = _viewModel = viewModel;
+        JanelaLembrada.SetChave(this, "Principal");
         // Depois de exibida: a consulta da versão no GitHub não atrasa a abertura.
         ContentRendered += async (_, _) => await viewModel.CarregarAvisosAsync();
+        // Também ao voltar de uma calculadora, que pode ter salvo um cálculo no histórico.
+        Activated += async (_, _) => await viewModel.AtualizarRecentesAsync();
     }
 
     // Ctrl+F leva à busca de cartões (saindo do Histórico, que tem a sua); Esc na busca a limpa.

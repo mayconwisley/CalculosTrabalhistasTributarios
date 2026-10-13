@@ -1,0 +1,7 @@
+{
+  "Campos": {
+    "Categoria": "Empregado (8%)",
+    "Desligamento (opcional)": "15/04/2024",
+    "Competências do FGTS": "{\"Inicio\":\"01/2024\",\"Fim\":\"03/2024\",\"RemuneracaoMensal\":\"3.000,00\",\"DepositoMensal\":\"240,00\",\"Linhas\":[{\"Competencia\":\"01/2024\",\"Tipo\":0,\"Remuneracao\":\"3.000,00\",\"Deposito\":\"240,00\"},{\"Competencia\":\"02/2024\",\"Tipo\":0,\"Remuneracao\":\"3.000,00\",\"Deposito\":\"240,00\"},{\"Competencia\":\"03/2024\",\"Tipo\":0,\"Remuneracao\":\"3.000,00\",\"Deposito\":\"200,00\"},{\"Competencia\":\"04/2024\",\"Tipo\":1,\"Remuneracao\":\"5.000,00\",\"Deposito\":\"0,00\"}]}"
+  }
+}

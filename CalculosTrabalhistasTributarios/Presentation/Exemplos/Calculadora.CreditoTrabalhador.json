@@ -1,0 +1,22 @@
+{
+  "Campos": {
+    "Competência": "10/2026",
+    "Remuneração habitual": "1.000,00",
+    "Descontos previdenciários": "0,00",
+    "Dependentes": "0",
+    "Pensão alimentícia (R$)": "0,00",
+    "Outros compulsórios (R$)": "0,00",
+    "Consignados atuais (R$)": "0,00",
+    "Margem livre oficial (R$)": "",
+    "Objetivo": "Valor desejado",
+    "Crédito desejado (R$)": "1.000,00",
+    "Parcelas (meses)": "12",
+    "Juros (% ao mês)": "1,5",
+    "Cálculo do IOF": "Automático (estimado)",
+    "Data de liberação": "07/10/2026",
+    "Primeiro vencimento": "07/11/2026",
+    "IOF financiado (R$)": "0,00",
+    "Custos financiados (R$)": "0,00",
+    "Custos na liberação (R$)": "0,00"
+  }
+}

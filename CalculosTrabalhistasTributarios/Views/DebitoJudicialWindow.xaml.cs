@@ -1,3 +1,4 @@
+using CalculosTrabalhistasTributarios.Presentation.Behaviors;
 using CalculosTrabalhistasTributarios.Presentation.ViewModels;
 using System.Windows;
 
@@ -9,5 +10,6 @@ public partial class DebitoJudicialWindow : Window
     {
         InitializeComponent();
         DataContext = viewModel;
+        JanelaLembrada.SetChave(this, viewModel.TipoHistorico);
     }
 }

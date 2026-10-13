@@ -13,9 +13,12 @@
         <SolidColorBrush x:Key="ResultBackgroundBrush" Color="#F8FAFC" />
         <SolidColorBrush x:Key="BorderBrush" Color="#E2E8F0" />
         <SolidColorBrush x:Key="TextBrush" Color="#101828" />
-        <SolidColorBrush x:Key="MutedTextBrush" Color="#667085" />
-        <SolidColorBrush x:Key="AccentBrush" Color="#1570EF" />
-        <SolidColorBrush x:Key="AccentHoverBrush" Color="#175CD3" />
+        <SolidColorBrush x:Key="MutedTextBrush" Color="#5D6679" />
+        <SolidColorBrush x:Key="AccentBrush" Color="#175CD3" />
+        <SolidColorBrush x:Key="AccentHoverBrush" Color="#1849A9" />
+        <!-- Fundo dos botões principais, com o texto branco por cima; no tema escuro é mais escuro que o azul dos textos. -->
+        <SolidColorBrush x:Key="AccentFillBrush" Color="#175CD3" />
+        <SolidColorBrush x:Key="AccentFillHoverBrush" Color="#1849A9" />
         <SolidColorBrush x:Key="AccentForegroundBrush" Color="#FFFFFF" />
         <SolidColorBrush x:Key="AdvantageBackgroundBrush" Color="#ECFDF3" />
         <SolidColorBrush x:Key="AdvantageBorderBrush" Color="#86EFAC" />
@@ -106,11 +109,27 @@
         </Style>
         <Style x:Key="PrimaryButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
             <Setter Property="Foreground" Value="{DynamicResource AccentForegroundBrush}" />
-            <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+            <Setter Property="Background" Value="{DynamicResource AccentFillBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource AccentFillBrush}" />
             <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True"><Setter Property="Background" Value="{DynamicResource AccentHoverBrush}" /><Setter Property="BorderBrush" Value="{DynamicResource AccentHoverBrush}" /></Trigger>
+                <Trigger Property="IsMouseOver" Value="True"><Setter Property="Background" Value="{DynamicResource AccentFillHoverBrush}" /><Setter Property="BorderBrush" Value="{DynamicResource AccentFillHoverBrush}" /></Trigger>
             </Style.Triggers>
+        </Style>
+        <!-- "?" ao lado do título de uma calculadora: abre o manual na seção dela, como o F1. -->
+        <Style x:Key="BotaoAjuda" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+            <Setter Property="Command" Value="ApplicationCommands.Help" />
+            <Setter Property="Content" Value="?" />
+            <Setter Property="Width" Value="30" />
+            <Setter Property="Height" Value="30" />
+            <Setter Property="MinWidth" Value="0" />
+            <Setter Property="MinHeight" Value="0" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Margin" Value="12,2,0,0" />
+            <Setter Property="ToolTip" Value="Abre o manual na seção desta calculadora (F1)" />
+            <Setter Property="AutomationProperties.Name" Value="Ajuda: abrir o manual na seção desta calculadora" />
         </Style>
         <!-- Cartão clicável da tela inicial, com título e descrição, que abre uma calculadora ou uma tabela. -->
         <Style x:Key="Atalho" TargetType="Button">
@@ -153,7 +172,7 @@
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Fundo" Property="Background" Value="{DynamicResource ButtonHoverBrush}" /></Trigger>
                             <Trigger Property="IsChecked" Value="True">
-                                <Setter TargetName="Fundo" Property="Background" Value="{DynamicResource AccentBrush}" />
+                                <Setter TargetName="Fundo" Property="Background" Value="{DynamicResource AccentFillBrush}" />
                                 <Setter Property="Foreground" Value="{DynamicResource AccentForegroundBrush}" />
                             </Trigger>
                             <Trigger Property="IsKeyboardFocused" Value="True"><Setter TargetName="Fundo" Property="BorderBrush" Value="{DynamicResource AccentBrush}" /><Setter TargetName="Fundo" Property="BorderThickness" Value="1" /></Trigger>

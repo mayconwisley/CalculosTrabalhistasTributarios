@@ -1,0 +1,5 @@
+{
+  "Campos": {
+    "Competências e reflexos": "{\"Inicio\":\"07/2026\",\"Fim\":\"09/2026\",\"SalarioAnterior\":\"3.000,00\",\"Percentual\":\"10\",\"Meses\":[{\"Tipo\":0,\"Competencia\":\"07/2026\",\"BasePaga\":\"3.000,00\",\"BaseDevida\":\"3.300,00\",\"Quantidade\":\"1\"},{\"Tipo\":0,\"Competencia\":\"08/2026\",\"BasePaga\":\"3.100,00\",\"BaseDevida\":\"3.300,00\",\"Quantidade\":\"1\"},{\"Tipo\":0,\"Competencia\":\"09/2026\",\"BasePaga\":\"3.200,00\",\"BaseDevida\":\"3.300,00\",\"Quantidade\":\"1\"}],\"Reflexos\":[{\"Tipo\":1,\"Competencia\":\"09/2026\",\"BasePaga\":\"3.000,00\",\"BaseDevida\":\"3.300,00\",\"Quantidade\":\"3\"}]}"
+  }
+}

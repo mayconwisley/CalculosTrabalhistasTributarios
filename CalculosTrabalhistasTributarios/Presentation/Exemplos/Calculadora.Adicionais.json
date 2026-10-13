@@ -1,0 +1,11 @@
+{
+  "Campos": {
+    "Competência": "10/2026",
+    "Salário": "3.000,00",
+    "Insalubridade": "Grau máximo (40%)",
+    "Base da insalubridade": "Salário mínimo",
+    "Valor da base": "0,00",
+    "Periculosidade (30%)": "Sim",
+    "Dependentes": "0"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "Campos": {
+    "Recebimento": "15/10/2026",
+    "País de origem": "Estados Unidos",
+    "Outro país (nome)": "",
+    "Moeda (ISO)": "USD",
+    "Vínculo": "Emprego assalariado",
+    "Remuneração (moeda)": "10.000,00",
+    "Juros recebidos (moeda)": "50,00",
+    "IR exterior retido (moeda)": "2.000,00",
+    "USD por unidade": "1",
+    "Dólar compra fiscal": "5,00",
+    "Câmbio efetivo": "4,80",
+    "Cotações online": "",
+    "Taxa bancária (moeda)": "10,00",
+    "Juros bancários (moeda)": "5,00",
+    "Taxa bancária (R$)": "20,00",
+    "Compensar IR exterior": "Elegibilidade confirmada",
+    "Previdência Brasil (R$)": "0,00",
+    "Dependentes": "0",
+    "Pensão paga (R$)": "0,00",
+    "Livro-caixa (R$)": "0,00"
+  }
+}

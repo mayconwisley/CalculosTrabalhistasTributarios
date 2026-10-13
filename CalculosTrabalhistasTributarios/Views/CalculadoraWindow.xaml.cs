@@ -1,3 +1,4 @@
+using CalculosTrabalhistasTributarios.Presentation.Behaviors;
 using CalculosTrabalhistasTributarios.Presentation.ViewModels.Calculadoras;
 using System.Windows;
 using System.Windows.Controls;
@@ -24,6 +25,7 @@ public partial class CalculadoraWindow : Window
         }
         if (viewModel.Campos.Any(campo => campo is CampoMediaVerbasVariaveisViewModel or CampoBancoHorasViewModel))
             MinWidth = 1100;
+        JanelaLembrada.SetChave(this, viewModel.TipoHistorico);
 
         viewModel.ResultadoApresentado += MostrarResultado;
         viewModel.CampoComErro += FocarCampo;

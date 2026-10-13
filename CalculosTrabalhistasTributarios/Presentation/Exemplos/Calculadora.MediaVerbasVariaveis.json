@@ -1,0 +1,5 @@
+{
+  "Campos": {
+    "Valores por competência": "{\"Inicio\":\"07/2026\",\"Fim\":\"09/2026\",\"Divisor\":\"3\",\"Meses\":[{\"Competencia\":\"07/2026\",\"Comissoes\":\"800,00\",\"Dsr\":\"120,00\",\"HorasExtras\":\"0,00\",\"Adicionais\":\"0,00\",\"Outras\":\"0,00\"},{\"Competencia\":\"08/2026\",\"Comissoes\":\"1.000,00\",\"Dsr\":\"150,00\",\"HorasExtras\":\"100,00\",\"Adicionais\":\"0,00\",\"Outras\":\"0,00\"},{\"Competencia\":\"09/2026\",\"Comissoes\":\"1.200,00\",\"Dsr\":\"180,00\",\"HorasExtras\":\"0,00\",\"Adicionais\":\"60,00\",\"Outras\":\"0,00\"}]}"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "Campos": {
+    "Competência": "10/2026",
+    "Salário": "2.640,00",
+    "Adicionais salariais": "0,00",
+    "Divisor de horas": "220",
+    "Horas extras (faixa 1)": "12:30",
+    "Adicional da faixa 1 (%)": "50",
+    "Horas extras (faixa 2)": "4:00",
+    "Adicional da faixa 2 (%)": "100",
+    "Trabalho noturno": "Urbano (22h às 5h)",
+    "Horas noturnas (relógio)": "14:00",
+    "Adicional noturno (%)": "20",
+    "Horas extras noturnas (relógio)": "2:00",
+    "Feriados no mês": "1",
+    "Dependentes": "0"
+  }
+}

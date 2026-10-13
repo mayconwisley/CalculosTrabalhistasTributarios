@@ -4,6 +4,7 @@ using CalculosTrabalhistasTributarios.Infrastructure;
 using CalculosTrabalhistasTributarios.Infrastructure.Diagnostico;
 using CalculosTrabalhistasTributarios.Infrastructure.Interfaces;
 using CalculosTrabalhistasTributarios.Presentation;
+using CalculosTrabalhistasTributarios.Presentation.Behaviors;
 using CalculosTrabalhistasTributarios.Presentation.Interfaces;
 using CalculosTrabalhistasTributarios.Views;
 using Microsoft.Extensions.DependencyInjection;
@@ -39,9 +40,11 @@ public partial class App : System.Windows.Application
         try
         {
             _serviceProvider = ConfigureServices();
-            // ApplicationCommands.Help já responde ao F1; registrado em Window, vale para todas as janelas e para o botão "Manual".
+            // ApplicationCommands.Help já responde ao F1; registrado em Window, vale para todas as janelas, para o botão "Manual"
+            // e para o "?" das calculadoras. Cada janela abre o manual na sua seção, pela chave com que guarda a posição.
             var manual = _serviceProvider.GetRequiredService<IManualUsuarioService>();
-            CommandManager.RegisterClassCommandBinding(typeof(Window), new CommandBinding(ApplicationCommands.Help, (_, _) => manual.Abrir()));
+            CommandManager.RegisterClassCommandBinding(typeof(Window), new CommandBinding(ApplicationCommands.Help,
+                (janela, _) => manual.Abrir(JanelaLembrada.GetChave((DependencyObject)janela))));
             _applicationScope = _serviceProvider.CreateScope();
             _applicationScope.ServiceProvider.GetRequiredService<IInicializadorBancoTributario>()
                 .InicializarAsync(CancellationToken.None).GetAwaiter().GetResult();

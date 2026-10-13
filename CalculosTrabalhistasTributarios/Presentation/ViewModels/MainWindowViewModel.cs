@@ -134,6 +134,30 @@ public sealed class MainWindowViewModel : ViewModelBase
 
         Calculadoras = new PainelAtalhosViewModel(calculadoras, favoritos, "calculadora");
         Tabelas = new PainelAtalhosViewModel(tabelas, favoritos, "tabela");
+        VerHistoricoCommand = new RelayCommand(_ => HistoricoAberto = true);
+        historico.PropertyChanged += (_, argumentos) =>
+        {
+            if (argumentos.PropertyName == nameof(HistoricoViewModel.TemRecentes))
+                OnPropertyChanged(nameof(MostrarRecentes));
+        };
+    }
+
+    /// <summary>A seção Recentes some durante a busca, que procura só nos cartões.</summary>
+    public bool MostrarRecentes => Historico.TemRecentes && Busca.Trim().Length == 0;
+    public System.Windows.Input.ICommand VerHistoricoCommand { get; }
+
+    /// <summary>Chamado ao abrir e sempre que a tela inicial volta a ficar ativa, como ao fechar uma calculadora.</summary>
+    public async Task AtualizarRecentesAsync()
+    {
+        try
+        {
+            await Historico.AtualizarRecentesAsync();
+        }
+        catch (Exception exception)
+        {
+            // A seção é um atalho; sem ela, o histórico continua na própria aba, que mostra o erro ao abrir.
+            _registroDeErros.Registrar(exception, "Leitura dos cálculos recentes");
+        }
     }
 
     public PainelAtalhosViewModel Calculadoras { get; }
@@ -148,6 +172,7 @@ public sealed class MainWindowViewModel : ViewModelBase
         {
             if (!SetProperty(ref _busca, value ?? string.Empty)) return;
             Calculadoras.Filtro = Tabelas.Filtro = _busca;
+            OnPropertyChanged(nameof(MostrarRecentes));
         }
     }
 

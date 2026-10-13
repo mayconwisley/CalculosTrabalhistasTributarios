@@ -211,7 +211,9 @@ public sealed class ManualDocument
         switch (bloco)
         {
             case HeadingBlock titulo:
-                container.PaddingTop(8).Text(TextoSimples(titulo.Inline)).FontSize(titulo.Level == 3 ? 13.5f : 12f).Bold();
+                // As subseções também são destinos: os links internos e o botão "?" das calculadoras abrem nelas.
+                var nomeTitulo = TextoSimples(titulo.Inline);
+                container.Section(Ancora(nomeTitulo)).PaddingTop(8).Text(nomeTitulo).FontSize(titulo.Level == 3 ? 13.5f : 12f).Bold();
                 break;
             case ParagraphBlock paragrafo when ImagemUnica(paragrafo) is { } imagem:
                 Imagem(container, imagem);

@@ -42,7 +42,14 @@ public sealed class HistoricoViewModel : ViewModelBase
         CompararCommand = new AsyncRelayCommand(CompararAsync, PodeComparar);
     }
 
+    /// <summary>Quantos cálculos a seção Recentes da tela inicial mostra.</summary>
+    public const int QuantidadeRecentes = 5;
+
     public ObservableCollection<ItemHistoricoViewModel> Itens { get; } = [];
+
+    /// <summary>Os últimos cálculos alterados, para reabrir da tela inicial o que se estava fazendo.</summary>
+    public ObservableCollection<ItemHistoricoViewModel> Recentes { get; } = [];
+    public bool TemRecentes => Recentes.Count > 0;
     public ICommand AtualizarCommand { get; }
     public ICommand AbrirCommand { get; }
     public ICommand DuplicarCommand { get; }
@@ -71,9 +78,9 @@ public sealed class HistoricoViewModel : ViewModelBase
     }
     public string SituacaoComparacao => _itens.Count(item => item.Selecionado) switch
     {
-        0 => "Selecione dois cálculos da mesma calculadora para comparar as entradas.",
+        0 => "Selecione dois cálculos da mesma calculadora para comparar os resultados e os dados informados.",
         1 => "Selecione mais um cálculo da mesma calculadora.",
-        2 when PodeComparar() => "Dois cálculos selecionados. A comparação mostra os dados informados.",
+        2 when PodeComparar() => "Dois cálculos selecionados. A comparação refaz os dois e mostra as diferenças.",
         2 => "Selecione cálculos da mesma calculadora.",
         _ => "Selecione apenas dois cálculos."
     };
@@ -115,6 +122,7 @@ public sealed class HistoricoViewModel : ViewModelBase
             _todos = [];
         }
         _itens = _todos.Select(calculo => new ItemHistoricoViewModel(calculo)).ToArray();
+        MostrarRecentes(_todos);
         foreach (var item in _itens)
             item.PropertyChanged += (_, argumentos) => { if (argumentos.PropertyName == nameof(ItemHistoricoViewModel.Selecionado)) AtualizarComparacao(); };
         var tipos = _todos.Select(calculo => calculo.Calculadora).Distinct(StringComparer.CurrentCultureIgnoreCase).OrderBy(nome => nome).ToArray();
@@ -125,6 +133,20 @@ public sealed class HistoricoViewModel : ViewModelBase
         if (!CalculadorasDisponiveis.Contains(CalculadoraSelecionada))
             CalculadoraSelecionada = "Todas as calculadoras";
         Filtrar();
+    }
+
+    /// <summary>Lê só os recentes, sem mexer na lista, nos filtros e nas seleções da aba Histórico.</summary>
+    public async Task AtualizarRecentesAsync() => MostrarRecentes(await _historico.ListarAsync(CancellationToken.None));
+
+    private void MostrarRecentes(IReadOnlyList<CalculoSalvoDto> calculos)
+    {
+        var recentes = calculos.OrderByDescending(calculo => calculo.AlteradoEm).Take(QuantidadeRecentes).ToArray();
+        if (recentes.Select(calculo => (calculo.Id, calculo.AlteradoEm, calculo.Nome)).SequenceEqual(Recentes.Select(item => (item.Calculo.Id, item.Calculo.AlteradoEm, item.Calculo.Nome))))
+            return;
+        Recentes.Clear();
+        foreach (var calculo in recentes)
+            Recentes.Add(new ItemHistoricoViewModel(calculo));
+        OnPropertyChanged(nameof(TemRecentes));
     }
 
     private void Filtrar()
@@ -170,7 +192,8 @@ public sealed class HistoricoViewModel : ViewModelBase
 
     private async Task CompararAsync()
     {
-        var selecionados = _itens.Where(item => item.Selecionado).Select(item => item.Calculo).ToArray();
+        // O mais antigo primeiro: ao duplicar e mudar um dado, a diferença mostra o efeito da mudança no cenário novo.
+        var selecionados = _itens.Where(item => item.Selecionado).Select(item => item.Calculo).OrderBy(calculo => calculo.CriadoEm).ThenBy(calculo => calculo.Id).ToArray();
         if (selecionados.Length != 2 || selecionados[0].Tipo != selecionados[1].Tipo)
             return;
         try
@@ -187,7 +210,7 @@ public sealed class HistoricoViewModel : ViewModelBase
                 _notificador.MostrarAviso("Os cálculos selecionados não pertencem mais à mesma calculadora. Atualize a lista.", "Histórico");
                 return;
             }
-            _comparacao.Mostrar(primeiro, segundo);
+            await _comparacao.MostrarAsync(primeiro, segundo);
         }
         catch (Exception exception)
         {

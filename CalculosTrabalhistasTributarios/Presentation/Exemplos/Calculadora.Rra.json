@@ -1,0 +1,19 @@
+{
+  "Campos": {
+    "Data do pagamento": "20/05/2026",
+    "Quem paga": "Fonte pagadora ou Justiça do Trabalho",
+    "Redução de 2026 (Lei 15.270)": "Aplicar, proporcional aos meses",
+    "Parcelas do RRA": "{\"Inicio\":\"12/2025\",\"Fim\":\"02/2026\",\"ValorMensal\":\"4.000,00\",\"Parcelas\":[{\"Competencia\":\"12/2025\",\"Tipo\":0,\"Valor\":\"4.000,00\"},{\"Competencia\":\"01/2026\",\"Tipo\":0,\"Valor\":\"4.000,00\"},{\"Competencia\":\"02/2026\",\"Tipo\":0,\"Valor\":\"4.000,00\"},{\"Competencia\":\"12/2025\",\"Tipo\":1,\"Valor\":\"4.000,00\"}]}",
+    "Correção monetária": "1.000,00",
+    "Juros de mora (não tributáveis)": "2.000,00",
+    "Despesas com a ação": "1.900,00",
+    "INSS dos anos anteriores": "0,00",
+    "Pensão dos anos anteriores": "0,00",
+    "INSS do ano do pagamento": "0,00",
+    "Pensão do ano do pagamento": "0,00",
+    "Total parcelado (opcional)": "0,00",
+    "Rendimentos normais do mês": "5.000,00",
+    "INSS dos rendimentos normais": "500,00",
+    "Dependentes": "0"
+  }
+}
