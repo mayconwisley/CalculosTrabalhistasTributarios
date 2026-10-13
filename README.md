@@ -104,7 +104,7 @@ Todas usam a mesma janela, com resumo, demonstrativo no formato de holerite, val
 | Tributo em atraso | Multa de 0,33% ao dia (até 20%) e juros pela Selic mais 1% de DARF, DAS, DAE ou GPS pago depois do vencimento (Lei 9.430/1996, art. 61). |
 | Correção de valores | Valor atualizado por IPCA, INPC, IPCA-E, Selic, TR ou taxa legal, com juros simples e multa opcionais e a evolução mês a mês do fator e do valor corrigido. |
 
-As regras da CLT ficam em `CalculosTrabalhistasTributarios.Domain/Trabalhista` (com a rescisão em `Trabalhista/Rescisao`), e a apuração de INSS e IRRF comum a todas as calculadoras, em `CalculosTrabalhistasTributarios.Domain/Tributacao/TabelasDaCompetencia`.
+As regras da CLT ficam em `CalculosTrabalhistasTributarios.Domain/Trabalhista` (com a rescisão em `Trabalhista/Rescisao` e o motor de reflexos em DSR, 13º, férias, aviso e FGTS em `Trabalhista/Reflexos`), e a apuração de INSS e IRRF comum a todas as calculadoras, em `CalculosTrabalhistasTributarios.Domain/Tributacao/TabelasDaCompetencia`.
 
 ### Pensão alimentícia e documentos
 
@@ -176,7 +176,7 @@ A solução segue a Clean Architecture com DDD: cada camada é um projeto, e as 
 CalculosTrabalhistasTributarios.Domain/          Regras de negócio, sem dependências externas
 ├── Comum/             Result, Result<T> e Erro (Result Pattern)
 ├── Tributacao/        INSS, IRRF, PLR, Simples Nacional e as tabelas da competência
-├── Trabalhista/       CLT, horas extras, seguro-desemprego e, em Rescisao/, as verbas rescisórias
+├── Trabalhista/       CLT, horas extras, seguro-desemprego, em Rescisao/ as verbas rescisórias e em Reflexos/ o motor de reflexos
 ├── Pensao/            Regra da pensão e o cálculo sobre o líquido
 ├── Judicial/          Índices, correção e juros dos débitos judiciais e da pensão em atraso
 └── Estabilidade/      Indenização do período de estabilidade

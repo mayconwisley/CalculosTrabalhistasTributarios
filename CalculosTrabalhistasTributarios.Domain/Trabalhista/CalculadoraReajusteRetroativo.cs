@@ -1,4 +1,5 @@
 using CalculosTrabalhistasTributarios.Domain.Comum;
+using CalculosTrabalhistasTributarios.Domain.Trabalhista.Reflexos;
 
 namespace CalculosTrabalhistasTributarios.Domain.Trabalhista;
 
@@ -32,7 +33,7 @@ public static class CalculadoraReajusteRetroativo
             if (devido < pago)
                 return Erro.Validacao($"Em {parcela.Competencia:MM/yyyy}, o valor devido não pode ser menor que o já pago.");
             var diferenca = devido - pago;
-            apuradas.Add(new(parcela, pago, devido, diferenca, Arredondar(diferenca * .08m)));
+            apuradas.Add(new(parcela, pago, devido, diferenca, FormulasReflexos.Fgts(diferenca)));
         }
         if (meses.Count > 120 || parcelas.Count - meses.Count > 10)
             return Erro.Validacao("O demonstrativo aceita até 120 meses de salário e 10 lançamentos de 13º ou férias.");
@@ -42,17 +43,16 @@ public static class CalculadoraReajusteRetroativo
     private static decimal Valor(ParcelaReajusteRetroativo parcela, decimal baseSalarial) => parcela.Tipo switch
     {
         TipoParcelaReajuste.Salario => baseSalarial,
-        TipoParcelaReajuste.DecimoTerceiro => Arredondar(baseSalarial * parcela.Quantidade / 12m),
+        TipoParcelaReajuste.DecimoTerceiro => FormulasReflexos.DecimoTerceiro(baseSalarial, parcela.Quantidade),
         TipoParcelaReajuste.FeriasGozadas => Ferias(baseSalarial, parcela.Quantidade),
         _ => 0m
     };
 
     private static decimal Ferias(decimal baseSalarial, int dias)
     {
-        var remuneracao = Arredondar(baseSalarial * dias / 30m);
-        return remuneracao + Arredondar(remuneracao / 3m);
+        var (ferias, terco) = FormulasReflexos.FeriasComTerco(baseSalarial, dias);
+        return ferias + terco;
     }
 
     private static bool Centavos(decimal valor) => decimal.Round(valor, 2) == valor;
-    private static decimal Arredondar(decimal valor) => decimal.Round(valor, 2, MidpointRounding.AwayFromZero);
 }

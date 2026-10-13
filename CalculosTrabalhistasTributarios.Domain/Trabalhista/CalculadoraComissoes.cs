@@ -1,4 +1,5 @@
 using CalculosTrabalhistasTributarios.Domain.Comum;
+using CalculosTrabalhistasTributarios.Domain.Trabalhista.Reflexos;
 using CalculosTrabalhistasTributarios.Domain.Tributacao;
 
 namespace CalculosTrabalhistasTributarios.Domain.Trabalhista;
@@ -50,7 +51,7 @@ public static class CalculadoraComissoes
         else
         {
             comissoes = entrada.Valor;
-            dsr = CalculadoraTributacao.Arredondar(comissoes * descansosPagos / diasUteis);
+            dsr = FormulasReflexos.Dsr(comissoes, descansosPagos, diasUteis);
         }
 
         return new ComissoesApuradas(entrada.Valor, comissoes, dsr, diasUteis, diasDescanso,

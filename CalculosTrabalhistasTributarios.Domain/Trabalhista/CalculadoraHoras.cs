@@ -1,4 +1,5 @@
 using CalculosTrabalhistasTributarios.Domain.Comum;
+using CalculosTrabalhistasTributarios.Domain.Trabalhista.Reflexos;
 using CalculosTrabalhistasTributarios.Domain.Tributacao;
 
 namespace CalculosTrabalhistasTributarios.Domain.Trabalhista;
@@ -50,7 +51,7 @@ public static class CalculadoraHoras
         var adicionalNoturno = CalculadoraTributacao.Arredondar(baseHora * h.PercentualNoturno * h.HorasNoturnas * horasPagas / (divisor * 100m * horasDeRelogio));
         // A hora extra noturna leva o adicional noturno na base do adicional de hora extra (OJ 97 da SDI-1).
         var extrasNoturnas = CalculadoraTributacao.Arredondar(baseHora * (100m + h.PercentualNoturno) * (100m + h.PercentualFaixa1) * h.HorasExtrasNoturnas * horasPagas / (divisor * 10_000m * horasDeRelogio));
-        var dsr = CalculadoraTributacao.Arredondar((faixa1 + faixa2 + adicionalNoturno + extrasNoturnas) * diasDescanso / diasUteis);
+        var dsr = FormulasReflexos.Dsr(faixa1 + faixa2 + adicionalNoturno + extrasNoturnas, diasDescanso, diasUteis);
         return new HorasDoMes(h, baseHora, divisor, faixa1, faixa2, adicionalNoturno, extrasNoturnas, dsr, diasUteis, diasDescanso);
     }
 }
