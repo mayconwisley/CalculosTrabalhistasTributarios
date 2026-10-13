@@ -54,5 +54,7 @@ public static class DependencyInjection
         .AddScoped<ISimularDemonstrativoUseCase<SimularComplementoDecimoTerceiroRequest>, SimularComplementoDecimoTerceiroUseCase>()
         .AddScoped<ISimularDemonstrativoUseCase<SimularConferenciaFgtsRequest>, SimularConferenciaFgtsUseCase>()
         .AddScoped<ISimularDemonstrativoUseCase<SimularSobreavisoRequest>, SimularSobreavisoUseCase>()
+        .AddScoped<ISimularDemonstrativoUseCase<SimularTransferenciaRequest>, SimularTransferenciaUseCase>()
+        .AddScoped<ISimularDemonstrativoUseCase<SimularGorjetasRequest>, SimularGorjetasUseCase>()
         .AddScoped<IVerificarAtualizacoesUseCase, VerificarAtualizacoesUseCase>();
 }

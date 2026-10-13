@@ -1,0 +1,8 @@
+{
+  "Campos": {
+    "Regime da empresa": "Simples Nacional (até 20%)",
+    "Retenção da empresa (%)": "20",
+    "Situação do contrato": "Contrato ativo",
+    "Gorjetas por competência": "{\"Inicio\":\"05/2026\",\"Fim\":\"10/2026\",\"ValorMensal\":\"2.000,00\",\"Linhas\":[{\"Competencia\":\"05/2026\",\"Valor\":\"2.000,00\"},{\"Competencia\":\"06/2026\",\"Valor\":\"2.000,00\"},{\"Competencia\":\"07/2026\",\"Valor\":\"2.000,00\"},{\"Competencia\":\"08/2026\",\"Valor\":\"2.000,00\"},{\"Competencia\":\"09/2026\",\"Valor\":\"2.000,00\"},{\"Competencia\":\"10/2026\",\"Valor\":\"2.000,00\"}]}"
+  }
+}

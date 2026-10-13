@@ -1,0 +1,9 @@
+{
+  "Campos": {
+    "Percentual do adicional (%)": "25",
+    "Situação do contrato": "Contrato ativo",
+    "Dias de aviso prévio": "30",
+    "Despesas (opcional)": "1.500,00",
+    "Competências da transferência": "{\"Inicio\":\"03/2026\",\"Fim\":\"08/2026\",\"SalarioMensal\":\"4.000,00\",\"Linhas\":[{\"Competencia\":\"03/2026\",\"Salario\":\"4.000,00\",\"Dias\":\"15\"},{\"Competencia\":\"04/2026\",\"Salario\":\"4.000,00\",\"Dias\":\"30\"},{\"Competencia\":\"05/2026\",\"Salario\":\"4.000,00\",\"Dias\":\"30\"},{\"Competencia\":\"06/2026\",\"Salario\":\"4.000,00\",\"Dias\":\"30\"},{\"Competencia\":\"07/2026\",\"Salario\":\"4.000,00\",\"Dias\":\"30\"},{\"Competencia\":\"08/2026\",\"Salario\":\"4.000,00\",\"Dias\":\"30\"}]}"
+  }
+}

@@ -257,6 +257,70 @@
                 </ScrollViewer>
             </StackPanel>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type calculadoras:CampoTransferenciaViewModel}">
+            <StackPanel Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ItemsControl}}" Margin="0,0,0,14" Visibility="{Binding Visivel, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <TextBlock Text="Competências da transferência" FontWeight="SemiBold" Margin="0,0,0,5" />
+                <TextBlock Text="Informe, em cada competência da transferência provisória, o salário que o empregado recebia na localidade de origem e os dias em que esteve transferido: 30 é o mês inteiro, inclusive nos meses de 31 dias. No mês de ida ou de volta, informe só os dias fora da origem." FontSize="12" Foreground="{DynamicResource MutedTextBrush}" TextWrapping="Wrap" Margin="0,0,0,9" />
+                <WrapPanel Margin="0,0,0,2">
+                    <StackPanel Width="120" Margin="0,0,8,8"><TextBlock Text="Início (MM/AAAA)" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" /><TextBox Text="{Binding Inicio, UpdateSourceTrigger=PropertyChanged}" behaviors:MascaraData.Tipo="Competencia" TextAlignment="Center" AutomationProperties.Name="Início da transferência" /></StackPanel>
+                    <StackPanel Width="120" Margin="0,0,8,8"><TextBlock Text="Fim (MM/AAAA)" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" /><TextBox Text="{Binding Fim, UpdateSourceTrigger=PropertyChanged}" behaviors:MascaraData.Tipo="Competencia" TextAlignment="Center" AutomationProperties.Name="Fim da transferência" /></StackPanel>
+                    <StackPanel Width="170" Margin="0,0,8,8"><TextBlock Text="Salário por mês (R$)" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" /><TextBox Text="{Binding SalarioMensal, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" behaviors:FormatacaoNumerica.Formato="N2" AutomationProperties.Name="Salário da origem sugerido para os meses gerados" /></StackPanel>
+                    <Button Content="Gerar meses" Command="{Binding GerarCommand}" Padding="12,6" Margin="0,0,8,8" VerticalAlignment="Bottom" ToolTip="Gera as competências do período com o salário sugerido e 30 dias, e preserva os valores já digitados" AutomationProperties.Name="Gerar competências da transferência" />
+                    <Button Content="+ Mês" Command="{Binding AdicionarCommand}" Padding="10,6" Margin="0,0,8,8" VerticalAlignment="Bottom" AutomationProperties.Name="Adicionar competência da transferência" />
+                </WrapPanel>
+                <TextBlock Text="{Binding Mensagem}" Foreground="{DynamicResource AccentBrush}" TextWrapping="Wrap" Margin="0,0,0,6" />
+                <Grid Margin="8,0,8,5"><Grid.ColumnDefinitions><ColumnDefinition Width="150" /><ColumnDefinition Width="*" /><ColumnDefinition Width="160" /><ColumnDefinition Width="50" /></Grid.ColumnDefinitions>
+                    <TextBlock Text="Competência" FontSize="11" Foreground="{DynamicResource MutedTextBrush}" />
+                    <TextBlock Grid.Column="1" Text="Salário na origem (R$)" FontSize="11" Foreground="{DynamicResource MutedTextBrush}" />
+                    <TextBlock Grid.Column="2" Text="Dias transferido (0 a 30)" FontSize="11" Foreground="{DynamicResource MutedTextBrush}" />
+                </Grid>
+                <ScrollViewer MaxHeight="330" VerticalScrollBarVisibility="Auto">
+                    <ItemsControl ItemsSource="{Binding Linhas}" Focusable="False">
+                        <ItemsControl.ItemTemplate><DataTemplate>
+                            <Border Background="{DynamicResource ResultBackgroundBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="8" Margin="0,0,0,6">
+                                <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="150" /><ColumnDefinition Width="*" /><ColumnDefinition Width="160" /><ColumnDefinition Width="50" /></Grid.ColumnDefinitions>
+                                    <TextBox Text="{Binding Competencia, UpdateSourceTrigger=PropertyChanged}" behaviors:MascaraData.Tipo="Competencia" TextAlignment="Center" Margin="0,0,8,0" AutomationProperties.Name="Competência da transferência" />
+                                    <TextBox Grid.Column="1" Text="{Binding Salario, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" Margin="0,0,8,0" behaviors:FormatacaoNumerica.Formato="N2" AutomationProperties.Name="Salário na origem da competência" />
+                                    <TextBox Grid.Column="2" Text="{Binding Dias, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" Margin="0,0,8,0" behaviors:FormatacaoNumerica.ValorVazio="0" AutomationProperties.Name="Dias transferido na competência" />
+                                    <Button Grid.Column="3" Content="×" Padding="0" MinHeight="34" Command="{Binding DataContext.RemoverCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" CommandParameter="{Binding}" ToolTip="Remover competência" AutomationProperties.Name="Remover competência da transferência" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate></ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </StackPanel>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type calculadoras:CampoGorjetasViewModel}">
+            <StackPanel Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ItemsControl}}" Margin="0,0,0,14" Visibility="{Binding Visivel, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <TextBlock Text="Gorjetas por competência" FontWeight="SemiBold" Margin="0,0,0,5" />
+                <TextBlock Text="Informe, em cada competência, a parte do empregado no rateio das gorjetas, cobradas na nota ou dadas pelo cliente, antes da retenção da empresa. O rateio segue a convenção ou o acordo coletivo ou, na falta deles, a assembleia dos trabalhadores." FontSize="12" Foreground="{DynamicResource MutedTextBrush}" TextWrapping="Wrap" Margin="0,0,0,9" />
+                <WrapPanel Margin="0,0,0,2">
+                    <StackPanel Width="120" Margin="0,0,8,8"><TextBlock Text="Início (MM/AAAA)" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" /><TextBox Text="{Binding Inicio, UpdateSourceTrigger=PropertyChanged}" behaviors:MascaraData.Tipo="Competencia" TextAlignment="Center" AutomationProperties.Name="Início das competências de gorjetas" /></StackPanel>
+                    <StackPanel Width="120" Margin="0,0,8,8"><TextBlock Text="Fim (MM/AAAA)" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" /><TextBox Text="{Binding Fim, UpdateSourceTrigger=PropertyChanged}" behaviors:MascaraData.Tipo="Competencia" TextAlignment="Center" AutomationProperties.Name="Fim das competências de gorjetas" /></StackPanel>
+                    <StackPanel Width="170" Margin="0,0,8,8"><TextBlock Text="Gorjetas por mês (R$)" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" /><TextBox Text="{Binding ValorMensal, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" behaviors:FormatacaoNumerica.Formato="N2" AutomationProperties.Name="Gorjetas sugeridas para os meses gerados" /></StackPanel>
+                    <Button Content="Gerar meses" Command="{Binding GerarCommand}" Padding="12,6" Margin="0,0,8,8" VerticalAlignment="Bottom" ToolTip="Gera as competências do período com o valor sugerido e preserva os valores já digitados" AutomationProperties.Name="Gerar competências de gorjetas" />
+                    <Button Content="+ Mês" Command="{Binding AdicionarCommand}" Padding="10,6" Margin="0,0,8,8" VerticalAlignment="Bottom" AutomationProperties.Name="Adicionar competência de gorjetas" />
+                </WrapPanel>
+                <TextBlock Text="{Binding Mensagem}" Foreground="{DynamicResource AccentBrush}" TextWrapping="Wrap" Margin="0,0,0,6" />
+                <Grid Margin="8,0,8,5"><Grid.ColumnDefinitions><ColumnDefinition Width="150" /><ColumnDefinition Width="*" /><ColumnDefinition Width="50" /></Grid.ColumnDefinitions>
+                    <TextBlock Text="Competência" FontSize="11" Foreground="{DynamicResource MutedTextBrush}" />
+                    <TextBlock Grid.Column="1" Text="Parte do empregado nas gorjetas, antes da retenção (R$)" FontSize="11" Foreground="{DynamicResource MutedTextBrush}" />
+                </Grid>
+                <ScrollViewer MaxHeight="330" VerticalScrollBarVisibility="Auto">
+                    <ItemsControl ItemsSource="{Binding Linhas}" Focusable="False">
+                        <ItemsControl.ItemTemplate><DataTemplate>
+                            <Border Background="{DynamicResource ResultBackgroundBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="8" Margin="0,0,0,6">
+                                <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="150" /><ColumnDefinition Width="*" /><ColumnDefinition Width="50" /></Grid.ColumnDefinitions>
+                                    <TextBox Text="{Binding Competencia, UpdateSourceTrigger=PropertyChanged}" behaviors:MascaraData.Tipo="Competencia" TextAlignment="Center" Margin="0,0,8,0" AutomationProperties.Name="Competência das gorjetas" />
+                                    <TextBox Grid.Column="1" Text="{Binding Valor, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" Margin="0,0,8,0" behaviors:FormatacaoNumerica.Formato="N2" AutomationProperties.Name="Gorjetas do empregado na competência" />
+                                    <Button Grid.Column="2" Content="×" Padding="0" MinHeight="34" Command="{Binding DataContext.RemoverCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" CommandParameter="{Binding}" ToolTip="Remover competência" AutomationProperties.Name="Remover competência de gorjetas" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate></ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </StackPanel>
+        </DataTemplate>
         <DataTemplate DataType="{x:Type calculadoras:CampoConferenciaFgtsViewModel}">
             <StackPanel Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ItemsControl}}" Margin="0,0,0,14" Visibility="{Binding Visivel, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <TextBlock Text="Competências conferidas" FontWeight="SemiBold" Margin="0,0,0,5" />

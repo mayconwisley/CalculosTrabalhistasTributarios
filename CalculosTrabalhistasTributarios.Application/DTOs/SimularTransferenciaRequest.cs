@@ -1,0 +1,5 @@
+using CalculosTrabalhistasTributarios.Domain.Trabalhista.Transferencia;
+
+namespace CalculosTrabalhistasTributarios.Application.DTOs;
+
+public sealed record SimularTransferenciaRequest(EntradaTransferencia Entrada);

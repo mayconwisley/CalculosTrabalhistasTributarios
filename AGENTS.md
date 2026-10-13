@@ -162,6 +162,7 @@ A experiência visual faz parte do critério de aceite. Uma tela que compila, ma
 
 - Reutilize `CampoTextoViewModel`, `CampoOpcaoViewModel`, `LeitorFormulario` e `LeituraNumerica` em campos comuns.
 - Para listas de vínculos, meses, reflexos e movimentos, use campos estruturados com linhas editáveis. Não exija que o usuário digite uma linguagem com ponto e vírgula em uma caixa de texto.
+- Grades de competências geradas por um período (início, fim, Gerar meses, + Mês e remoção) derivam de `CampoCompetenciasViewModel<TLinha>`, com linhas derivadas de `LinhaCompetenciaViewModel`; a base preserva os meses digitados e confirma antes de remover competências.
 - Mantenha o padrão de `FormatacaoNumerica`: `0`, `0,00` e `0:00` são limpos ao receber foco quando configurados; vazio retorna ao zero apropriado ao sair. Moeda usa formatação `N2`.
 - Não aplique o comportamento numérico a datas, competência, identificação ou descrição.
 - Não crie um parser numérico alternativo que interprete `3.500` e `1.5` de forma diferente do projeto.

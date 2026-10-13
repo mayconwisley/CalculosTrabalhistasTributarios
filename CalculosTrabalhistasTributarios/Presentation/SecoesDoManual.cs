@@ -52,6 +52,8 @@ public static class SecoesDoManual
         ["Calculadora.SimplesNacional"] = "8.34",
         ["Calculadora.ConferenciaFgts"] = "8.35",
         ["Calculadora.Sobreaviso"] = "8.36",
+        ["Calculadora.Transferencia"] = "8.37",
+        ["Calculadora.Gorjetas"] = "8.38",
         ["ComparacaoHistorico"] = "10.3"
     };
 

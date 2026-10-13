@@ -1,6 +1,6 @@
 # Manual do Usuário — Cálculos Trabalhistas e Tributários
 
-Guia completo para utilizar **Cálculos Trabalhistas e Tributários**: simulação de IRRF, INSS e FGTS, salário líquido, holerite do mês, jornada pelas marcações de ponto, férias, 13º salário, horas extras, insalubridade e periculosidade, salário-família, PLR, rescisão, seguro-desemprego, custo do funcionário, comparação CLT x PJ, pró-labore, IRPF anual, dividendos, pensão alimentícia, débitos judiciais, indenização de estabilidade, empregado doméstico, estágio, trabalho intermitente, sobreaviso e prontidão, afastamentos e licenças, saque-aniversário do FGTS, abono salarial, carnê-leão, ganho de capital, tributos em atraso, correção de valores, histórico de cálculos, planilhas do Excel e manutenção das tabelas tributárias.
+Guia completo para utilizar **Cálculos Trabalhistas e Tributários**: simulação de IRRF, INSS e FGTS, salário líquido, holerite do mês, jornada pelas marcações de ponto, férias, 13º salário, horas extras, insalubridade e periculosidade, salário-família, PLR, rescisão, seguro-desemprego, custo do funcionário, comparação CLT x PJ, pró-labore, IRPF anual, dividendos, pensão alimentícia, débitos judiciais, indenização de estabilidade, empregado doméstico, estágio, trabalho intermitente, sobreaviso e prontidão, adicional de transferência, gorjetas, afastamentos e licenças, saque-aniversário do FGTS, abono salarial, carnê-leão, ganho de capital, tributos em atraso, correção de valores, histórico de cálculos, planilhas do Excel e manutenção das tabelas tributárias.
 
 > **Atenção:** os resultados têm caráter de **simulação**. Confira sempre os valores com a legislação vigente e com os dados reais do vínculo antes de utilizá-los em folha de pagamento, rescisões ou decisões legais.
 
@@ -1369,6 +1369,58 @@ Abra pelo cartão **Sobreaviso e prontidão**, no grupo **Remuneração e custos
 O resultado é bruto: INSS, IRRF, atualização monetária e juros não estão incluídos. Convenções coletivas podem prever outro percentual ou outra forma de pagamento; o limite de cada escala não é conferido, só o total de horas do mês.
 
 Fundamentos: [CLT, art. 244, §§ 2º e 3º](https://www.planalto.gov.br/ccivil_03/decreto-lei/del5452compilado.htm), aplicado por analogia; [Lei 605/1949, art. 7º](https://www.planalto.gov.br/ccivil_03/leis/l0605.htm); [Lei 8.036/1990, arts. 15 e 18](https://www.planalto.gov.br/ccivil_03/leis/l8036consol.htm); Súmulas 132, 229 e 428 e OJ 195 da SBDI-1 do TST.
+
+### 8.37 Adicional de transferência
+
+Abra pelo cartão **Adicional de transferência**, no grupo **Remuneração e custos**. Quando o empregador transfere o empregado provisoriamente para outra localidade, com mudança de domicílio, deve pagar um adicional de no mínimo **25%** dos salários que ele recebia na origem, enquanto durar a transferência (CLT, art. 469, § 3º). A calculadora apura esse adicional mês a mês e os reflexos no 13º, nas férias, no aviso prévio e no FGTS.
+
+- **Só a transferência provisória gera o adicional.** A definitiva não gera. O cargo de confiança ou uma cláusula de transferência no contrato não afastam o direito (OJ 113 da SBDI-1 do TST).
+
+![Formulário do adicional de transferência com seis competências](imagens/104-transferencia-formulario.png)
+
+1. Informe o **Percentual do adicional (%)**: 25, ou mais, se a norma coletiva ou o contrato previr.
+2. Em **Situação do contrato**, escolha **Contrato ativo** ou **Dispensa sem justa causa**. Na dispensa durante a transferência, entram o reflexo no aviso prévio indenizado, com os **Dias de aviso prévio** (30 a 90), e a multa de 40% do FGTS; o reflexo nas férias é tratado como indenizado e fica fora do FGTS.
+3. Em **Despesas (opcional)**, informe as despesas da mudança pagas pelo empregador, como transporte e frete (CLT, art. 470). São reembolso: somam ao total, mas não entram no FGTS nem nos reflexos.
+4. Informe o período e o salário sugeridos e clique em **Gerar meses**. Cada competência começa com 30 dias.
+5. Em cada competência, ajuste o **Salário na origem** e os **Dias transferido**: 30 é o mês inteiro, inclusive nos meses de 31 dias; no mês de ida ou de volta, informe só os dias fora da origem.
+6. Clique em **Calcular**.
+
+![Resultado do adicional de transferência com os reflexos e as despesas](imagens/105-transferencia-resultado.png)
+
+- **Adicional:** salário da origem × percentual × dias ÷ 30, arredondado nos centavos em cada mês.
+- **Sem DSR:** o adicional incide sobre o salário mensal, que já remunera o repouso.
+- **13º e férias + 1/3:** 1/12 do adicional de cada mês, o 13º separado por ano. As férias somam os meses informados, sem separar os períodos aquisitivos.
+- **Aviso prévio indenizado:** na dispensa, a média dos últimos 12 meses informados × dias ÷ 30.
+- **FGTS e multa:** 8% sobre o adicional e os reflexos (sem as férias indenizadas nem as despesas) e, na dispensa, a multa de 40%. Aparecem em **Valores informativos**.
+
+O resultado é bruto: INSS, IRRF, atualização monetária e juros não estão incluídos.
+
+Fundamentos: [CLT, arts. 469 e 470](https://www.planalto.gov.br/ccivil_03/decreto-lei/del5452compilado.htm); [Lei 8.036/1990, arts. 15 e 18](https://www.planalto.gov.br/ccivil_03/leis/l8036consol.htm); OJ 113 e OJ 195 da SBDI-1 do TST.
+
+### 8.38 Gorjetas
+
+Abra pelo cartão **Gorjetas**, no grupo **Remuneração e custos**. A gorjeta, cobrada na nota como taxa de serviço ou dada espontaneamente pelo cliente, não é receita da empresa: pertence aos empregados e integra a remuneração (CLT, art. 457, §§ 3º e 4º, incluídos pela Lei 13.419/2017). A calculadora apura o que foi repassado em cada mês, a retenção da empresa, a média de 12 meses e os reflexos.
+
+![Formulário de gorjetas com seis competências e retenção de 20%](imagens/106-gorjetas-formulario.png)
+
+1. Em **Regime da empresa**, escolha **Simples Nacional (até 20%)** ou **Demais regimes (até 33%)**.
+2. Em **Retenção da empresa (%)**, informe o percentual retido para custear os encargos sociais, previdenciários e trabalhistas. A retenção só vale com previsão em convenção ou acordo coletivo e tem o limite do regime (§ 6º). Use 0 sem retenção.
+3. Em **Situação do contrato**, escolha **Contrato ativo** ou **Dispensa sem justa causa**. A dispensa acrescenta a multa de 40% do FGTS, e o reflexo nas férias é tratado como indenizado, fora do FGTS.
+4. Informe o período e o valor sugeridos e clique em **Gerar meses**.
+5. Em cada competência, informe a **parte do empregado nas gorjetas**, antes da retenção, conforme o rateio da convenção ou do acordo coletivo ou, na falta deles, da assembleia dos trabalhadores (§ 5º).
+6. Clique em **Calcular**.
+
+![Resultado das gorjetas com a retenção, a média e os reflexos](imagens/107-gorjetas-resultado.png)
+
+- **Gorjetas repassadas:** o valor do mês menos a retenção, arredondada nos centavos. A retenção aparece em **Valores informativos**.
+- **13º e férias + 1/3:** 1/12 das gorjetas repassadas de cada mês, o 13º separado por ano.
+- **Sem aviso e sem DSR:** as gorjetas não são base do aviso prévio, do adicional noturno, das horas extras nem do repouso semanal remunerado (Súmula 354 do TST).
+- **FGTS e multa:** 8% sobre as gorjetas repassadas e os reflexos (sem as férias indenizadas) e, na dispensa, a multa de 40%.
+- **Média mensal:** a média das gorjetas repassadas nos últimos 12 meses informados. Se a empresa cobrava a gorjeta havia mais de 12 meses e deixa de cobrá-la, essa média é incorporada ao salário, salvo o que dispuser a norma coletiva (§ 9º).
+
+A CTPS e o contracheque devem trazer o salário fixo e o percentual ou o valor das gorjetas (§ 8º). O resultado é bruto: INSS, IRRF, atualização monetária e juros não estão incluídos.
+
+Fundamentos: [CLT, art. 457, §§ 3º a 11](https://www.planalto.gov.br/ccivil_03/decreto-lei/del5452compilado.htm), incluídos pela [Lei 13.419/2017](https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2017/lei/l13419.htm); [Lei 8.036/1990, arts. 15 e 18](https://www.planalto.gov.br/ccivil_03/leis/l8036consol.htm); Súmula 354 e OJ 195 da SBDI-1 do TST.
 
 ## 9. Tabelas e parâmetros
 
