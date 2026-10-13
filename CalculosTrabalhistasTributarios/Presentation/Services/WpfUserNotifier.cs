@@ -1,21 +1,21 @@
 using CalculosTrabalhistasTributarios.Application.Interfaces;
 using CalculosTrabalhistasTributarios.Domain.Comum;
 using CalculosTrabalhistasTributarios.Presentation.Interfaces;
-using System.Windows;
+using CalculosTrabalhistasTributarios.Views;
 
 namespace CalculosTrabalhistasTributarios.Presentation.Services;
 
-/// <summary>Mensagens em caixas de diálogo; os erros inesperados também vão para o registro, para o suporte.</summary>
+/// <summary>Mensagens na caixa do aplicativo, sem o som do sistema; os erros inesperados também vão para o registro, para o suporte.</summary>
 public sealed class WpfUserNotifier(IRegistroDeErros registroDeErros) : IUserNotifier
 {
     public void MostrarAviso(string mensagem, string titulo = "Dados inválidos") =>
-        MessageBox.Show(mensagem, titulo, MessageBoxButton.OK, MessageBoxImage.Warning);
+        CaixaMensagemWindow.Mostrar(mensagem, titulo, TipoCaixaMensagem.Aviso);
 
     public void MostrarErro(string mensagem, Exception exception)
     {
         registroDeErros.Registrar(exception, mensagem);
-        MessageBox.Show($"{mensagem}\n\n{MensagemUsuario.De(exception)}\n\nOs detalhes foram registrados em:\n{registroDeErros.Arquivo}",
-            "Cálculos Trabalhistas e Tributários", MessageBoxButton.OK, MessageBoxImage.Error);
+        CaixaMensagemWindow.Mostrar($"{mensagem}\n\n{MensagemUsuario.De(exception)}\n\nOs detalhes foram registrados em:\n{registroDeErros.Arquivo}",
+            "Cálculos Trabalhistas e Tributários", TipoCaixaMensagem.Erro);
     }
 
     public void MostrarFalha(Erro erro, string contexto)
@@ -23,10 +23,10 @@ public sealed class WpfUserNotifier(IRegistroDeErros registroDeErros) : IUserNot
         if (erro.Tipo == TipoErro.Validacao)
             MostrarAviso(erro.Mensagem);
         else
-            MessageBox.Show($"{contexto}\n\n{erro.Mensagem}", "Cálculos Trabalhistas e Tributários", MessageBoxButton.OK,
-                erro.Tipo == TipoErro.Indisponivel ? MessageBoxImage.Error : MessageBoxImage.Warning);
+            CaixaMensagemWindow.Mostrar($"{contexto}\n\n{erro.Mensagem}", "Cálculos Trabalhistas e Tributários",
+                erro.Tipo == TipoErro.Indisponivel ? TipoCaixaMensagem.Erro : TipoCaixaMensagem.Aviso);
     }
 
     public bool Confirmar(string mensagem, string titulo) =>
-        MessageBox.Show(mensagem, titulo, MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No) == MessageBoxResult.Yes;
+        CaixaMensagemWindow.Mostrar(mensagem, titulo, TipoCaixaMensagem.Pergunta);
 }

@@ -56,6 +56,8 @@ public static class SecoesDoManual
         ["Calculadora.Gorjetas"] = "8.38",
         ["Calculadora.ContribuicaoSegurado"] = "8.39",
         ["Calculadora.ResgatePrevidencia"] = "8.40",
+        ["Calculadora.Aposentadoria"] = "8.41",
+        ["Calculadora.PensaoMorte"] = "8.42",
         ["ComparacaoHistorico"] = "10.3"
     };
 

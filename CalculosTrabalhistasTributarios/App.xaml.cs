@@ -56,10 +56,10 @@ public partial class App : System.Windows.Application
         {
             // Sem o banco ou os serviços não há o que mostrar: o usuário precisa saber o motivo, e não ver o app sumir.
             _registroDeErros.Registrar(exception, "Falha ao abrir o aplicativo");
-            MessageBox.Show(
+            CaixaMensagemWindow.Mostrar(
                 $"Não foi possível abrir o aplicativo.\n\n{exception.Message}\n\nOs detalhes foram registrados em:\n{_registroDeErros.Arquivo}\n\n" +
                 "Se o problema continuar, reinstale o aplicativo: as tabelas cadastradas ficam preservadas na pasta BancoDados.",
-                Titulo, MessageBoxButton.OK, MessageBoxImage.Error);
+                Titulo, TipoCaixaMensagem.Erro);
             Shutdown(1);
         }
     }
@@ -88,9 +88,9 @@ public partial class App : System.Windows.Application
         DispatcherUnhandledException += (_, evento) =>
         {
             _registroDeErros.Registrar(evento.Exception, "Erro inesperado na interface");
-            MessageBox.Show(
+            CaixaMensagemWindow.Mostrar(
                 $"Ocorreu um erro inesperado, e a última ação pode não ter sido concluída.\n\n{evento.Exception.Message}\n\nOs detalhes foram registrados em:\n{_registroDeErros.Arquivo}",
-                Titulo, MessageBoxButton.OK, MessageBoxImage.Error);
+                Titulo, TipoCaixaMensagem.Erro);
             evento.Handled = true;
         };
         AppDomain.CurrentDomain.UnhandledException += (_, evento) =>
@@ -110,12 +110,12 @@ public partial class App : System.Windows.Application
     {
         if (ConfiguracoesUsuario.Atuais.AvisoSimulacaoLido)
             return;
-        MessageBox.Show(janela,
+        CaixaMensagemWindow.Mostrar(
             "Os resultados deste aplicativo são simulações feitas com a legislação e as tabelas cadastradas.\n\n" +
             "Antes de usá-los num pagamento, numa rescisão ou num processo, confira a competência, as tabelas e a convenção coletiva " +
             "da categoria. Procure um profissional especializado no cálculo para apurar e validar os valores aplicáveis ao seu caso.\n\n" +
             "O manual do usuário abre pelo botão Manual do usuário ou pela tecla F1.",
-            "Antes de começar", MessageBoxButton.OK, MessageBoxImage.Information);
+            "Antes de começar", TipoCaixaMensagem.Informacao, janela);
         ConfiguracoesUsuario.Alterar(configuracoes => configuracoes.AvisoSimulacaoLido = true);
     }
 }

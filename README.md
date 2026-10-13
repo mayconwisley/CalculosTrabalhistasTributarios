@@ -89,6 +89,8 @@ Todas usam a mesma janela, com resumo, demonstrativo no formato de holerite, val
 | Empregado doméstico (DAE) | Salário líquido do doméstico e o DAE do mês: 8% patronal, 0,8% de GILRAT, 8% de FGTS, 3,2% de indenização compensatória, INSS e IRRF do empregado (LC 150/2015). |
 | Estágio | Bolsa líquida com o IRRF, sem INSS e FGTS, bolsa proporcional no mês de início ou de fim e o recesso remunerado proporcional (Lei 11.788/2008). |
 | Trabalho intermitente | Pagamento de cada convocação: horas, DSR, férias proporcionais com 1/3, 13º proporcional e FGTS (CLT, art. 452-A). |
+| Simulação de aposentadoria | Projeção mensal de cada regra do RGPS da EC 103/2019 (pontos, idade mínima progressiva, pedágios de 50% e 100%, transição por idade e permanente), com a data em que se cumpre, o coeficiente ou o fator previdenciário e o benefício estimado entre o mínimo e o teto. |
+| Pensão por morte | Cota familiar de 50% mais 10% por dependente (EC 103/2019, art. 23), base pela aposentadoria ou pela incapacidade permanente, valor por dependente, duração da cota do cônjuge pela idade (Lei 8.213/1991, art. 77) e redutor da acumulação (art. 24). |
 | Afastamentos e licenças | Doença e acidente de trabalho (15 dias da empresa e o auxílio estimado do INSS), licença-maternidade (120 ou 180 dias) e paternidade (LC 229/2026), com FGTS, estabilidade e a soma de afastamentos pelo mesmo motivo em até 60 dias (Decreto 3.048/1999, art. 75). |
 | Saque-aniversário do FGTS | Composição automática do saldo, exclusão da multa incluída, desconto da parcela cedida e análise dos impedimentos informados para nova antecipação. |
 | Conferência do FGTS | Devido e depositado por competência (8%, 2% do aprendiz, 8% + 3,2% do doméstico), diferenças mensais e rescisórias, vencimentos do dia 7 e do dia 20 do FGTS Digital, reflexo na multa e envio dos depósitos devidos à rescisão. |
@@ -183,7 +185,7 @@ CalculosTrabalhistasTributarios.Domain/          Regras de negócio, sem depend�
 ├── Tributacao/        INSS, IRRF, PLR, Simples Nacional e as tabelas da competência
 ├── Trabalhista/       CLT, horas extras, seguro-desemprego, em Rescisao/ as verbas rescisórias e em Reflexos/ o motor de reflexos
 ├── Pensao/            Regra da pensão e o cálculo sobre o líquido
-├── Previdencia/       Contribuição do autônomo e do facultativo; em Complementar/ o IR do resgate de PGBL e VGBL
+├── Previdencia/       Contribuição do autônomo e do facultativo, Aposentadoria/ (regras da EC 103), PensaoMorte/ e, em Complementar/, o IR do resgate de PGBL e VGBL
 ├── Judicial/          Índices, correção e juros dos débitos judiciais e da pensão em atraso
 └── Estabilidade/      Indenização do período de estabilidade
 CalculosTrabalhistasTributarios.Application/     Casos de uso: orquestram o domínio e montam os demonstrativos

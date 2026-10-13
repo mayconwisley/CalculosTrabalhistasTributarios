@@ -53,6 +53,8 @@ public class ExemplosTests
         ["Calculadora.Gorjetas"] = [("Total ao empregado", "R$ 11.466,67"), ("Gorjetas repassadas", "R$ 9.600,00"), ("Média mensal", "R$ 1.600,00"), ("FGTS", "R$ 917,33")],
         ["Calculadora.ContribuicaoSegurado"] = [("Valor da GPS", "R$ 178,31"), ("Código da GPS", "1473"), ("Vencimento", "16/11/2026"), ("Complementação até 20%", "R$ 145,89")],
         ["Calculadora.ResgatePrevidencia"] = [("Valor líquido", "R$ 38.200,00"), ("IR retido", "R$ 9.800,00"), ("Base do IR", "R$ 48.000,00"), ("IR no progressivo", "R$ 7.200,00")],
+        ["Calculadora.Aposentadoria"] = [("Primeira aposentadoria", "04/2029"), ("Benefício na primeira", "R$ 4.500,00"), ("Maior benefício", "R$ 5.000,00"), ("Tempo de contribuição hoje", "33 anos")],
+        ["Calculadora.PensaoMorte"] = [("Pensão mensal", "R$ 3.360,00"), ("Cota familiar", "70%"), ("Por dependente", "R$ 1.680,00"), ("Duração para o cônjuge", "15 anos")],
         ["Calculadora.Sobreaviso"] = [("Total bruto ao empregado", "R$ 1.432,75"), ("Sobreaviso e prontidão", "R$ 1.040,00"), ("DSR e reflexos", "R$ 392,75"), ("FGTS", "R$ 114,62")],
         ["Calculadora.Plr"] = [("Líquido da PLR", "R$ 5.560,25"), ("IRRF desta parcela", "R$ 439,75"), ("PLR no ano", "R$ 12.000,00"), ("Isenção anual", "R$ 8.214,40")],
     };

@@ -1,6 +1,6 @@
 # Manual do Usuário — Cálculos Trabalhistas e Tributários
 
-Guia completo para utilizar **Cálculos Trabalhistas e Tributários**: simulação de IRRF, INSS e FGTS, salário líquido, holerite do mês, jornada pelas marcações de ponto, férias, 13º salário, horas extras, insalubridade e periculosidade, salário-família, PLR, rescisão, seguro-desemprego, custo do funcionário, comparação CLT x PJ, pró-labore, IRPF anual, dividendos, pensão alimentícia, débitos judiciais, indenização de estabilidade, empregado doméstico, estágio, trabalho intermitente, sobreaviso e prontidão, adicional de transferência, gorjetas, contribuição do autônomo e do facultativo, resgate de previdência privada, afastamentos e licenças, saque-aniversário do FGTS, abono salarial, carnê-leão, ganho de capital, tributos em atraso, correção de valores, histórico de cálculos, planilhas do Excel e manutenção das tabelas tributárias.
+Guia completo para utilizar **Cálculos Trabalhistas e Tributários**: simulação de IRRF, INSS e FGTS, salário líquido, holerite do mês, jornada pelas marcações de ponto, férias, 13º salário, horas extras, insalubridade e periculosidade, salário-família, PLR, rescisão, seguro-desemprego, custo do funcionário, comparação CLT x PJ, pró-labore, IRPF anual, dividendos, pensão alimentícia, débitos judiciais, indenização de estabilidade, empregado doméstico, estágio, trabalho intermitente, sobreaviso e prontidão, adicional de transferência, gorjetas, contribuição do autônomo e do facultativo, resgate de previdência privada, simulação de aposentadoria, pensão por morte, afastamentos e licenças, saque-aniversário do FGTS, abono salarial, carnê-leão, ganho de capital, tributos em atraso, correção de valores, histórico de cálculos, planilhas do Excel e manutenção das tabelas tributárias.
 
 > **Atenção:** os resultados têm caráter de **simulação**. Confira sempre os valores com a legislação vigente e com os dados reais do vínculo antes de utilizá-los em folha de pagamento, rescisões ou decisões legais.
 
@@ -1479,6 +1479,65 @@ Abra pelo cartão **Resgate de previdência privada**, no grupo **Impostos e sal
 O saldo estimado pela rentabilidade torna o IR também estimado. Aposentados com moléstia grave podem ter isenção (Lei 7.713/1988, art. 6º, XIV), que não é aplicada. Taxas do plano e a portabilidade entre planos, que não é resgate, não estão incluídas.
 
 Fundamentos: [Lei 11.053/2004, arts. 1º e 3º](https://www.planalto.gov.br/ccivil_03/_ato2004-2006/2004/lei/l11053.htm), com a redação da [Lei 14.803/2024](https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2024/lei/l14803.htm).
+
+### 8.41 Simulação de aposentadoria
+
+Abra pelo cartão **Simulação de aposentadoria**, no grupo **FGTS, afastamentos e benefícios**. Ela projeta, mês a mês, quando você cumpre cada regra de aposentadoria do INSS da reforma de 2019 (EC 103/2019) e estima o benefício em cada uma, para comparar a primeira aposentadoria possível com a de maior valor.
+
+![Formulário da simulação de aposentadoria de um homem com 33 anos de contribuição](imagens/112-aposentadoria-formulario.png)
+
+1. Informe o **Sexo**, a **Data de nascimento** e a **Data da simulação**: a projeção começa nela, com o salário mínimo e o teto do mês.
+2. Informe o tempo de contribuição até a data da simulação, em **anos** e **meses (0 a 11)**, como no CNIS.
+3. Informe o tempo de contribuição **em 13/11/2019**, data da reforma. Use 0 se começou a contribuir depois dela: nesse caso, só vale a regra permanente.
+4. Informe a **Média dos salários**: a média de todos os salários de contribuição desde 07/1994, corrigidos, como no simulador do Meu INSS.
+5. Em **Continua contribuindo?**, escolha **Sim** para que o tempo cresça um mês a cada mês da projeção, ou **Não** para que só a idade avance.
+6. Opcional: informe a **Sobrevida do IBGE**, a expectativa de sobrevida na idade da aposentadoria, para calcular o fator previdenciário do pedágio de 50%.
+7. Clique em **Calcular**.
+
+![Resultado com a primeira aposentadoria, o maior benefício e as regras lado a lado](imagens/113-aposentadoria-resultado.png)
+
+| Regra | Requisitos | Benefício |
+| --- | --- | --- |
+| Pontos (art. 15) | 35 anos de contribuição (homem) ou 30 (mulher) e idade + tempo de 96 ou 86 pontos em 2019, mais 1 por ano até 105 ou 100 | 60% da média mais 2 pontos por ano acima de 20 anos (homem) ou 15 (mulher) |
+| Idade mínima progressiva (art. 16) | 35 ou 30 anos de contribuição e idade de 61 ou 56 anos em 2019, mais 6 meses por ano até 65 ou 62 | Igual à de pontos |
+| Pedágio de 50% (art. 17) | Só para quem tinha mais de 33 (homem) ou 28 anos (mulher) em 13/11/2019: o tempo que faltava mais a metade, sem idade mínima | Média × fator previdenciário |
+| Pedágio de 100% (art. 20) | 60 ou 57 anos de idade e o tempo que faltava em 13/11/2019 em dobro | 100% da média |
+| Transição por idade (art. 18) | 65 anos (homem) ou 62 (mulher, desde 2023) e 15 anos de contribuição | Igual à de pontos |
+| Permanente (art. 19) | Para quem se filiou depois da reforma: 65 ou 62 anos e 20 ou 15 anos de contribuição | Igual à de pontos |
+
+- **Primeira aposentadoria:** a regra cumprida mais cedo; **Já cumpre** quando os requisitos já estão cumpridos na data da simulação.
+- **Maior benefício:** a regra de maior valor estimado, com o mês em que se cumpre. Esperar pode aumentar o coeficiente.
+- **Regras de aposentadoria:** cada regra com o mês, a idade, o tempo e o benefício; **Não se aplica** quando a regra não vale para você e **Não alcança** quando os requisitos não se cumprem em 50 anos de projeção.
+- O benefício fica entre o salário mínimo e o teto do INSS. Os valores estão em moeda de hoje: a média, o mínimo e o teto não são corrigidos no futuro.
+
+A simulação não considera a carência de 180 contribuições, o tempo especial, o professor, a pessoa com deficiência nem a aposentadoria por incapacidade. Confira o tempo e a média no CNIS e no simulador do Meu INSS antes de decidir.
+
+Fundamentos: [EC 103/2019, arts. 15 a 20 e 26](https://www.planalto.gov.br/ccivil_03/constituicao/emendas/emc/emc103.htm); [Lei 8.213/1991, art. 29](https://www.planalto.gov.br/ccivil_03/leis/l8213cons.htm), para o fator previdenciário.
+
+### 8.42 Pensão por morte
+
+Abra pelo cartão **Pensão por morte**, no grupo **FGTS, afastamentos e benefícios**. Ela calcula a pensão por morte do INSS para óbitos desde 13/11/2019: o valor, a cota de cada dependente, a duração para o cônjuge e o efeito do redutor quando o cônjuge já recebe outro benefício.
+
+![Formulário da pensão por morte de um segurado não aposentado, com cônjuge e um filho](imagens/114-pensao-morte-formulario.png)
+
+1. Informe a **Data do óbito**: ela define o salário mínimo, o teto e a tabela de duração.
+2. Em **Situação do segurado**, escolha **Aposentado** e informe a **Aposentadoria recebida**, ou **Não aposentado** e informe a **Média dos salários**, o **Sexo do segurado** e o tempo de contribuição dele.
+3. Escolha a **Causa do óbito**. O acidente de qualquer natureza dispensa as 18 contribuições e os 2 anos de união; o acidente do trabalho e a doença profissional também levam a base a 100% da média.
+4. Em **Deixou cônjuge?**, informe se há cônjuge ou companheiro. Com **Sim**, informe a **Idade do cônjuge no óbito**, se a **União de 2 anos ou mais?** se cumpre e, opcionalmente, o **Benefício do cônjuge**, a aposentadoria ou pensão que ele já recebe.
+5. Informe os **Outros dependentes**, como filhos até 21 anos, e se há **Dependente inválido?**, inválido ou com deficiência intelectual, mental ou grave.
+6. Clique em **Calcular**.
+
+![Resultado da pensão com a cota familiar, o valor por dependente e o redutor da acumulação](imagens/115-pensao-morte-resultado.png)
+
+- **Base:** a aposentadoria que o segurado recebia ou, se não era aposentado, a aposentadoria por incapacidade permanente a que teria direito: 60% da média mais 2 pontos por ano acima de 20 anos (homem) ou 15 (mulher), ou 100% no acidente do trabalho.
+- **Cota familiar:** 50% mais 10 pontos por dependente, até 100%; com dependente inválido ou com deficiência, 100%. A pensão não fica abaixo do salário mínimo.
+- **Por dependente:** a pensão em partes iguais. Quando um dependente perde essa condição, a cota dele deixa de ser paga e não passa aos demais.
+- **Duração para o cônjuge:** 4 meses se o óbito ocorreu antes de 18 contribuições ou com menos de 2 anos de união, salvo acidente. Nos demais casos, pela idade no óbito: menos de 22 anos, 3 anos; de 22 a 27, 6; de 28 a 30, 10; de 31 a 41, 15; de 42 a 44, 20; 45 ou mais, vitalícia. Para óbitos antes de 2021, as idades são um ano menores.
+- **Redutor da acumulação:** com o benefício do cônjuge, o mais vantajoso é pago inteiro e o outro reduzido por faixas: inteiro até 1 salário mínimo, 60% da parte entre 1 e 2, 40% entre 2 e 3, 20% entre 3 e 4 e 10% acima de 4.
+
+A qualidade de segurado, a comprovação da dependência e a média são conferidas pelo INSS. Os filhos recebem até os 21 anos, salvo invalidez ou deficiência, e o cônjuge inválido recebe enquanto durar a condição.
+
+Fundamentos: [EC 103/2019, arts. 23, 24 e 26](https://www.planalto.gov.br/ccivil_03/constituicao/emendas/emc/emc103.htm); [Lei 8.213/1991, arts. 74 a 77](https://www.planalto.gov.br/ccivil_03/leis/l8213cons.htm); Portaria ME 424/2020, para as idades de duração desde 2021.
 
 ## 9. Tabelas e parâmetros
 

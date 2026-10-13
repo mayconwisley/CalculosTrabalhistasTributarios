@@ -1,0 +1,18 @@
+{
+  "Campos": {
+    "Data do óbito": "13/10/2026",
+    "Situação do segurado": "Não aposentado",
+    "Aposentadoria recebida": "0,00",
+    "Média dos salários": "6.000,00",
+    "Sexo do segurado": "Homem",
+    "Contribuição do segurado: anos": "30",
+    "Contribuição: meses (0 a 11)": "0",
+    "Causa do óbito": "Doença ou causa comum",
+    "Deixou cônjuge?": "Sim",
+    "Idade do cônjuge no óbito": "40",
+    "União de 2 anos ou mais?": "Sim",
+    "Benefício do cônjuge (opcional)": "3.000,00",
+    "Outros dependentes": "1",
+    "Dependente inválido?": "Não"
+  }
+}

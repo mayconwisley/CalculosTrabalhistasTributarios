@@ -98,6 +98,8 @@ public sealed class MainWindowViewModel : ViewModelBase
             ]),
             new("FGTS, afastamentos e benefícios",
             [
+                Calculadora("Simulação de aposentadoria", "Quando cada regra da reforma de 2019 se cumpre e o benefício estimado.", TipoCalculadora.Aposentadoria),
+                Calculadora("Pensão por morte", "Cota familiar, valor por dependente, duração e redutor da acumulação.", TipoCalculadora.PensaoMorte),
                 Calculadora("Afastamentos e licenças", "Doença, acidente de trabalho e licenças: quem paga, quanto e até quando.", TipoCalculadora.Afastamento),
                 Calculadora("Saque-aniversário do FGTS", "O valor que pode ser sacado no aniversário e o efeito numa dispensa.", TipoCalculadora.SaqueAniversario),
                 Calculadora("Conferência do FGTS", "Devido e depositado por competência, com diferenças mensais e rescisórias.", TipoCalculadora.ConferenciaFgts),
