@@ -79,5 +79,7 @@ public static class DependencyInjection
         .AddKeyedTransient<ICalculadora, CalculadoraConferenciaFgts>(TipoCalculadora.ConferenciaFgts)
         .AddKeyedTransient<ICalculadora, CalculadoraSobreaviso>(TipoCalculadora.Sobreaviso)
         .AddKeyedTransient<ICalculadora, CalculadoraTransferencia>(TipoCalculadora.Transferencia)
-        .AddKeyedTransient<ICalculadora, CalculadoraGorjetas>(TipoCalculadora.Gorjetas);
+        .AddKeyedTransient<ICalculadora, CalculadoraGorjetas>(TipoCalculadora.Gorjetas)
+        .AddKeyedTransient<ICalculadora, CalculadoraContribuicaoSegurado>(TipoCalculadora.ContribuicaoSegurado)
+        .AddKeyedTransient<ICalculadora, CalculadoraResgatePrevidencia>(TipoCalculadora.ResgatePrevidencia);
 }

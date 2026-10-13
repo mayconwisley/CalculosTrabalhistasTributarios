@@ -321,6 +321,40 @@
                 </ScrollViewer>
             </StackPanel>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type calculadoras:CampoAportesPrevidenciaViewModel}">
+            <StackPanel Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ItemsControl}}" Margin="0,0,0,14" Visibility="{Binding Visivel, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <TextBlock Text="Aportes do plano" FontWeight="SemiBold" Margin="0,0,0,5" />
+                <TextBlock Text="Informe cada aporte com a data, o valor aportado e o saldo atual dele, com os rendimentos, conforme o extrato. Sem o saldo por aporte, gere aportes mensais com uma rentabilidade ao mês para estimá-lo. O prazo de cada aporte até a data do resgate define a alíquota regressiva." FontSize="12" Foreground="{DynamicResource MutedTextBrush}" TextWrapping="Wrap" Margin="0,0,0,9" />
+                <WrapPanel Margin="0,0,0,2">
+                    <StackPanel Width="140" Margin="0,0,8,8"><TextBlock Text="Primeiro aporte" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" /><TextBox Text="{Binding PrimeiroAporte, UpdateSourceTrigger=PropertyChanged}" behaviors:MascaraData.Tipo="Data" TextAlignment="Center" AutomationProperties.Name="Data do primeiro aporte gerado" /></StackPanel>
+                    <StackPanel Width="110" Margin="0,0,8,8"><TextBlock Text="Aportes (meses)" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" /><TextBox Text="{Binding Quantidade, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" behaviors:FormatacaoNumerica.ValorVazio="0" AutomationProperties.Name="Quantidade de aportes mensais" /></StackPanel>
+                    <StackPanel Width="150" Margin="0,0,8,8"><TextBlock Text="Valor por aporte (R$)" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" /><TextBox Text="{Binding ValorAporte, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" behaviors:FormatacaoNumerica.Formato="N2" AutomationProperties.Name="Valor de cada aporte gerado" /></StackPanel>
+                    <StackPanel Width="150" Margin="0,0,8,8"><TextBlock Text="Rentabilidade ao mês (%)" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" /><TextBox Text="{Binding Rentabilidade, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" behaviors:FormatacaoNumerica.ValorVazio="0,00" AutomationProperties.Name="Rentabilidade mensal para estimar o saldo dos aportes" /></StackPanel>
+                    <Button Content="Gerar aportes" Command="{Binding GerarCommand}" Padding="12,6" Margin="0,0,8,8" VerticalAlignment="Bottom" ToolTip="Gera aportes mensais com o saldo estimado até a data do resgate e substitui a grade, depois de confirmar" AutomationProperties.Name="Gerar aportes do plano" />
+                    <Button Content="+ Aporte" Command="{Binding AdicionarCommand}" Padding="10,6" Margin="0,0,8,8" VerticalAlignment="Bottom" AutomationProperties.Name="Adicionar aporte ao plano" />
+                </WrapPanel>
+                <TextBlock Text="{Binding Mensagem}" Foreground="{DynamicResource AccentBrush}" TextWrapping="Wrap" Margin="0,0,0,6" />
+                <Grid Margin="8,0,8,5"><Grid.ColumnDefinitions><ColumnDefinition Width="150" /><ColumnDefinition Width="*" /><ColumnDefinition Width="*" /><ColumnDefinition Width="50" /></Grid.ColumnDefinitions>
+                    <TextBlock Text="Data do aporte" FontSize="11" Foreground="{DynamicResource MutedTextBrush}" />
+                    <TextBlock Grid.Column="1" Text="Valor aportado (R$)" FontSize="11" Foreground="{DynamicResource MutedTextBrush}" />
+                    <TextBlock Grid.Column="2" Text="Saldo atual do aporte (R$)" FontSize="11" Foreground="{DynamicResource MutedTextBrush}" />
+                </Grid>
+                <ScrollViewer MaxHeight="330" VerticalScrollBarVisibility="Auto">
+                    <ItemsControl ItemsSource="{Binding Linhas}" Focusable="False">
+                        <ItemsControl.ItemTemplate><DataTemplate>
+                            <Border Background="{DynamicResource ResultBackgroundBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="8" Margin="0,0,0,6">
+                                <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="150" /><ColumnDefinition Width="*" /><ColumnDefinition Width="*" /><ColumnDefinition Width="50" /></Grid.ColumnDefinitions>
+                                    <TextBox Text="{Binding Data, UpdateSourceTrigger=PropertyChanged}" behaviors:MascaraData.Tipo="Data" TextAlignment="Center" Margin="0,0,8,0" AutomationProperties.Name="Data do aporte" />
+                                    <TextBox Grid.Column="1" Text="{Binding Aportado, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" Margin="0,0,8,0" behaviors:FormatacaoNumerica.Formato="N2" AutomationProperties.Name="Valor aportado" />
+                                    <TextBox Grid.Column="2" Text="{Binding Saldo, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" Margin="0,0,8,0" behaviors:FormatacaoNumerica.Formato="N2" AutomationProperties.Name="Saldo atual do aporte" />
+                                    <Button Grid.Column="3" Content="×" Padding="0" MinHeight="34" Command="{Binding DataContext.RemoverCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" CommandParameter="{Binding}" ToolTip="Remover aporte" AutomationProperties.Name="Remover aporte do plano" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate></ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </StackPanel>
+        </DataTemplate>
         <DataTemplate DataType="{x:Type calculadoras:CampoConferenciaFgtsViewModel}">
             <StackPanel Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ItemsControl}}" Margin="0,0,0,14" Visibility="{Binding Visivel, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <TextBlock Text="Competências conferidas" FontWeight="SemiBold" Margin="0,0,0,5" />

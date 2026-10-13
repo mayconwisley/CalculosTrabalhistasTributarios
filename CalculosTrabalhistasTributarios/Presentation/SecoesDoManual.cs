@@ -54,6 +54,8 @@ public static class SecoesDoManual
         ["Calculadora.Sobreaviso"] = "8.36",
         ["Calculadora.Transferencia"] = "8.37",
         ["Calculadora.Gorjetas"] = "8.38",
+        ["Calculadora.ContribuicaoSegurado"] = "8.39",
+        ["Calculadora.ResgatePrevidencia"] = "8.40",
         ["ComparacaoHistorico"] = "10.3"
     };
 

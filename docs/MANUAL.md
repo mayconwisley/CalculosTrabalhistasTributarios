@@ -1,6 +1,6 @@
 # Manual do Usuário — Cálculos Trabalhistas e Tributários
 
-Guia completo para utilizar **Cálculos Trabalhistas e Tributários**: simulação de IRRF, INSS e FGTS, salário líquido, holerite do mês, jornada pelas marcações de ponto, férias, 13º salário, horas extras, insalubridade e periculosidade, salário-família, PLR, rescisão, seguro-desemprego, custo do funcionário, comparação CLT x PJ, pró-labore, IRPF anual, dividendos, pensão alimentícia, débitos judiciais, indenização de estabilidade, empregado doméstico, estágio, trabalho intermitente, sobreaviso e prontidão, adicional de transferência, gorjetas, afastamentos e licenças, saque-aniversário do FGTS, abono salarial, carnê-leão, ganho de capital, tributos em atraso, correção de valores, histórico de cálculos, planilhas do Excel e manutenção das tabelas tributárias.
+Guia completo para utilizar **Cálculos Trabalhistas e Tributários**: simulação de IRRF, INSS e FGTS, salário líquido, holerite do mês, jornada pelas marcações de ponto, férias, 13º salário, horas extras, insalubridade e periculosidade, salário-família, PLR, rescisão, seguro-desemprego, custo do funcionário, comparação CLT x PJ, pró-labore, IRPF anual, dividendos, pensão alimentícia, débitos judiciais, indenização de estabilidade, empregado doméstico, estágio, trabalho intermitente, sobreaviso e prontidão, adicional de transferência, gorjetas, contribuição do autônomo e do facultativo, resgate de previdência privada, afastamentos e licenças, saque-aniversário do FGTS, abono salarial, carnê-leão, ganho de capital, tributos em atraso, correção de valores, histórico de cálculos, planilhas do Excel e manutenção das tabelas tributárias.
 
 > **Atenção:** os resultados têm caráter de **simulação**. Confira sempre os valores com a legislação vigente e com os dados reais do vínculo antes de utilizá-los em folha de pagamento, rescisões ou decisões legais.
 
@@ -1421,6 +1421,64 @@ Abra pelo cartão **Gorjetas**, no grupo **Remuneração e custos**. A gorjeta, 
 A CTPS e o contracheque devem trazer o salário fixo e o percentual ou o valor das gorjetas (§ 8º). O resultado é bruto: INSS, IRRF, atualização monetária e juros não estão incluídos.
 
 Fundamentos: [CLT, art. 457, §§ 3º a 11](https://www.planalto.gov.br/ccivil_03/decreto-lei/del5452compilado.htm), incluídos pela [Lei 13.419/2017](https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2017/lei/l13419.htm); [Lei 8.036/1990, arts. 15 e 18](https://www.planalto.gov.br/ccivil_03/leis/l8036consol.htm); Súmula 354 e OJ 195 da SBDI-1 do TST.
+
+### 8.39 Contribuição do autônomo e do facultativo
+
+Abra pelo cartão **Contribuição do autônomo e do facultativo**, no grupo **Impostos e salário**. Ela calcula a GPS de quem recolhe a própria contribuição ao INSS: o valor, o código de pagamento, o vencimento e a complementação dos planos reduzidos, com os três planos lado a lado.
+
+- **Contribuinte individual:** quem trabalha por conta própria, como autônomo ou profissional liberal. Quem presta serviço a empresa tem 11% retidos por ela: use **Pró-labore e autônomo** (seção 8.7).
+- **Facultativo:** quem não tem atividade remunerada que o filie ao INSS, como estudante ou dona de casa, e quer contribuir.
+
+![Formulário da contribuição do facultativo no plano simplificado](imagens/108-contribuicao-formulario.png)
+
+1. Informe a **Competência** (MM/AAAA): ela define o salário mínimo e o teto do INSS. No trimestral, informe qualquer mês do trimestre civil.
+2. Escolha a **Categoria** e o **Plano**:
+   - **Normal (20%):** 20% de um **Salário de contribuição** entre o salário mínimo e o teto; acima do teto, a base é limitada a ele.
+   - **Simplificado (11% do mínimo):** para o facultativo e para o contribuinte individual que trabalha por conta própria, sem prestar serviço a empresa.
+   - **Baixa renda (5% do mínimo):** só para o facultativo sem renda própria, dedicado ao trabalho doméstico na própria casa, com a família inscrita no CadÚnico e renda mensal de até dois salários mínimos. O microempreendedor individual paga os 5% no DAS do MEI, não por esta guia.
+3. Em **Recolhimento**, escolha **Mensal** ou **Trimestral**. O trimestral só vale para quem contribui sobre o salário mínimo.
+4. Clique em **Calcular**.
+
+![Resultado com o valor, o código e o vencimento da GPS e os planos lado a lado](imagens/109-contribuicao-resultado.png)
+
+- **Valor da GPS:** a alíquota sobre a base de cada mês; no trimestral, a soma dos três meses.
+- **Código da GPS:** contribuinte individual 1007 (normal) e 1163 (simplificado); facultativo 1406 (normal), 1473 (simplificado) e 1929 (baixa renda). No trimestral, 1104, 1180, 1457, 1490 e 1937.
+- **Vencimento:** dia 15 do mês seguinte à competência ou ao trimestre. No sábado ou no domingo, passa para a segunda-feira; feriados não são considerados. Depois do vencimento, há juros e multa: use **Tributo em atraso** (seção 8.18).
+- **Complementação até 20%:** os planos de 11% e de 5% dão benefícios no valor do salário mínimo e não contam para a aposentadoria por tempo de contribuição das regras de transição nem para a certidão de tempo de contribuição. Para contá-los, paga-se a diferença: 9% do mínimo no simplificado (códigos 1295 e 1686, mensais) ou 15% no de baixa renda, pela guia do Meu INSS.
+- **Planos de contribuição:** os três planos na mesma competência, com o valor e o que cada um cobre.
+
+Confira o código e o valor no Meu INSS antes de pagar. As contribuições pagas pelo próprio segurado são dedutíveis no carnê-leão e na declaração anual.
+
+Fundamentos: [Lei 8.212/1991, arts. 21, 28 e 30](https://www.planalto.gov.br/ccivil_03/leis/l8212cons.htm); [Decreto 3.048/1999, art. 216](https://www.planalto.gov.br/ccivil_03/decreto/d3048.htm); [Lei 10.666/2003, art. 4º](https://www.planalto.gov.br/ccivil_03/leis/2003/l10.666.htm).
+
+### 8.40 Resgate de previdência privada
+
+Abra pelo cartão **Resgate de previdência privada**, no grupo **Impostos e salário**. Ela calcula o IR no resgate de um plano PGBL ou VGBL pelo prazo de cada aporte, no regime escolhido, e mostra o outro regime lado a lado.
+
+- **PGBL:** as contribuições são dedutíveis na declaração completa, até 12% da renda tributável; por isso o IR incide sobre **todo o valor resgatado**.
+- **VGBL:** não há dedução, e o IR incide **só sobre os rendimentos**.
+- **Regressivo:** IR definitivo pelo prazo de cada aporte: 35% até 2 anos, 30% até 4, 25% até 6, 20% até 8, 15% até 10 e 10% acima de 10 anos.
+- **Progressivo:** 15% retidos no resgate como antecipação. O valor entra na declaração anual, com o imposto da tabela progressiva (até 27,5%), e os 15% são compensados; para estimar o imposto final, use **IRPF anual** (seção 8.16).
+- Desde a Lei 14.803/2024, o regime pode ser escolhido até o primeiro resgate ou benefício; depois, a escolha é irretratável.
+
+![Formulário do resgate com três aportes de PGBL](imagens/110-resgate-formulario.png)
+
+1. Escolha o **Tipo de plano** e o **Regime de tributação**.
+2. Informe a **Data do resgate**: ela define o prazo de cada aporte.
+3. Em **Resgate**, escolha **Total** ou **Parcial**; no parcial, informe o **Valor do resgate parcial**, antes do IR.
+4. Em **Aportes do plano**, informe cada aporte com a **Data do aporte**, o **Valor aportado** e o **Saldo atual do aporte**, com os rendimentos, conforme o extrato. Sem o saldo por aporte, informe o primeiro aporte, a quantidade de aportes mensais, o valor e uma **Rentabilidade ao mês (%)** e clique em **Gerar aportes**: o saldo de cada aporte é estimado até a data do resgate. Se já houver aportes na grade, o primeiro clique avisa que serão substituídos, e o segundo confirma.
+5. Clique em **Calcular**.
+
+![Resultado do resgate com o IR regressivo e o progressivo lado a lado](imagens/111-resgate-resultado.png)
+
+- **Ordem do resgate:** o resgate consome primeiro os aportes mais antigos, que têm a menor alíquota no regressivo.
+- **Base do IR:** no PGBL, o valor resgatado de cada aporte; no VGBL, a parte dele proporcional aos rendimentos no saldo do aporte.
+- **IR retido e valor líquido:** pelo regime escolhido. O comparativo mostra o IR e o líquido nos dois regimes; no progressivo, o IR final só é conhecido na declaração.
+- **Memória de cálculo:** cada aporte resgatado, com o prazo, a alíquota e o IR, e o IR por faixa da tabela regressiva.
+
+O saldo estimado pela rentabilidade torna o IR também estimado. Aposentados com moléstia grave podem ter isenção (Lei 7.713/1988, art. 6º, XIV), que não é aplicada. Taxas do plano e a portabilidade entre planos, que não é resgate, não estão incluídas.
+
+Fundamentos: [Lei 11.053/2004, arts. 1º e 3º](https://www.planalto.gov.br/ccivil_03/_ato2004-2006/2004/lei/l11053.htm), com a redação da [Lei 14.803/2024](https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2024/lei/l14803.htm).
 
 ## 9. Tabelas e parâmetros
 

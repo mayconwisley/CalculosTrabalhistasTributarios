@@ -94,6 +94,8 @@ Todas usam a mesma janela, com resumo, demonstrativo no formato de holerite, val
 | Conferência do FGTS | Devido e depositado por competência (8%, 2% do aprendiz, 8% + 3,2% do doméstico), diferenças mensais e rescisórias, vencimentos do dia 7 e do dia 20 do FGTS Digital, reflexo na multa e envio dos depósitos devidos à rescisão. |
 | Abono salarial (PIS/Pasep) | Direito e valor do abono, com o limite de renda da EC 135/2024. |
 | Pró-labore e autônomo | INSS de 11% até o teto, IRRF, ISS do autônomo e o custo para a empresa. |
+| Contribuição do autônomo e do facultativo | GPS do contribuinte individual e do facultativo nos planos de 20%, 11% e 5% (Lei 8.212/1991, art. 21), com o salário mínimo e o teto da competência, código de pagamento, vencimento mensal ou trimestral, complementação até 20% e os três planos lado a lado. |
+| Resgate de previdência privada | IR no resgate total ou parcial de PGBL e VGBL, aporte a aporte dos mais antigos aos mais recentes, na tabela regressiva de 35% a 10% e no progressivo com 15% retidos (Lei 11.053/2004), com saldo estimado por rentabilidade quando o extrato não o traz. |
 | CLT x PJ | O ano do mesmo profissional como CLT e como PJ no Simples Nacional (anexos III e V, com o fator R): total para o profissional, custo para a empresa e o valor de PJ que iguala o CLT. |
 | Simples Nacional e fator r | DAS do período pela receita e pela folha com encargos dos 12 meses, nos Anexos I a V, com início de atividade, as regras de 2027 (Resolução CGSN 190/2026), comparação entre os Anexos III e V e o pró-labore que leva o fator r a 28%. |
 | IRPF anual | Declaração do ano-calendário 2026 em diante, com a tabela anual, a redução do art. 11-A, os modelos completo e simplificado e a tributação mínima das altas rendas com o redutor (Lei 15.270/2025). |
@@ -181,6 +183,7 @@ CalculosTrabalhistasTributarios.Domain/          Regras de negócio, sem depend�
 ├── Tributacao/        INSS, IRRF, PLR, Simples Nacional e as tabelas da competência
 ├── Trabalhista/       CLT, horas extras, seguro-desemprego, em Rescisao/ as verbas rescisórias e em Reflexos/ o motor de reflexos
 ├── Pensao/            Regra da pensão e o cálculo sobre o líquido
+├── Previdencia/       Contribuição do autônomo e do facultativo; em Complementar/ o IR do resgate de PGBL e VGBL
 ├── Judicial/          Índices, correção e juros dos débitos judiciais e da pensão em atraso
 └── Estabilidade/      Indenização do período de estabilidade
 CalculosTrabalhistasTributarios.Application/     Casos de uso: orquestram o domínio e montam os demonstrativos

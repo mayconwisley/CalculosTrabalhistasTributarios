@@ -47,6 +47,7 @@ public sealed class MainWindowViewModel : ViewModelBase
                 Calculadora("Salário bruto pelo líquido", "O salário bruto necessário para chegar a um líquido desejado.", TipoCalculadora.SalarioPeloLiquido),
                 Calculadora("PLR (participação nos lucros)", "IRRF pela tabela anual exclusiva, sem INSS e sem FGTS.", TipoCalculadora.Plr),
                 Calculadora("Pró-labore e autônomo", "Líquido do pró-labore ou do RPA e o custo para a empresa.", TipoCalculadora.ProLaboreAutonomo),
+                Calculadora("Contribuição do autônomo e do facultativo", "GPS de 20%, 11% ou 5%: valor, código, vencimento e complementação.", TipoCalculadora.ContribuicaoSegurado),
                 Calculadora("CLT x PJ", "O que sobra para o profissional e o custo para a empresa nos dois regimes.", TipoCalculadora.CltPj),
                 Calculadora("Simples Nacional e fator r", "DAS pela receita e folha de 12 meses, anexo aplicável e efeito do pró-labore.", TipoCalculadora.SimplesNacional),
                 Calculadora("IRPF anual", "Declaração completa ou simplificada, redução anual e tributação mínima.", TipoCalculadora.IrpfAnual),
@@ -56,6 +57,7 @@ public sealed class MainWindowViewModel : ViewModelBase
                 Calculadora("Crédito do Trabalhador", "Consignado: margem, parcelas, juros, custos e crédito líquido.", TipoCalculadora.CreditoTrabalhador),
                 Calculadora("Empréstimo pessoal", "Parcelas, IOF, seguro, custos e valor líquido recebido.", TipoCalculadora.EmprestimoPessoal),
                 Calculadora("Ganho de capital", "IR na venda de imóvel ou outro bem, com isenções e fatores de redução.", TipoCalculadora.GanhoCapital),
+                Calculadora("Resgate de previdência privada", "IR do PGBL ou VGBL por aporte, nos regimes regressivo e progressivo.", TipoCalculadora.ResgatePrevidencia),
                 Calculadora("Dividendos", "Retenção de 10% acima de R$ 50 mil no mês, desde 2026.", TipoCalculadora.Dividendos),
                 Calculadora("Tributo em atraso", "Multa e juros pela Selic de DARF, DAS, DAE ou GPS pago depois do vencimento.", TipoCalculadora.TributoAtraso)
             ]),

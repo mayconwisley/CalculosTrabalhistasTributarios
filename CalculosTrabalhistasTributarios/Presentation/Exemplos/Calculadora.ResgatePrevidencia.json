@@ -1,0 +1,10 @@
+{
+  "Campos": {
+    "Tipo de plano": "PGBL",
+    "Regime de tributação": "Regressivo (35% a 10%)",
+    "Data do resgate": "13/10/2026",
+    "Resgate": "Total",
+    "Valor do resgate parcial": "0,00",
+    "Aportes do plano": "{\"PrimeiroAporte\":\"10/01/2016\",\"Quantidade\":\"12\",\"ValorAporte\":\"10.000,00\",\"Rentabilidade\":\"0,00\",\"Linhas\":[{\"Data\":\"10/01/2016\",\"Aportado\":\"10.000,00\",\"Saldo\":\"22.000,00\"},{\"Data\":\"10/01/2021\",\"Aportado\":\"10.000,00\",\"Saldo\":\"15.000,00\"},{\"Data\":\"10/01/2025\",\"Aportado\":\"10.000,00\",\"Saldo\":\"11.000,00\"}]}"
+  }
+}

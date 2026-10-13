@@ -61,6 +61,7 @@ Pontos de entrada e extensão:
 - `Domain/Tributacao`: tributação compartilhada, especialmente `TabelasDaCompetencia` e `CalculadoraTributacao`.
 - `Domain/Trabalhista`: regras trabalhistas; rescisão possui o submódulo `Rescisao`. Os reflexos ficam no submódulo `Reflexos`: `FormulasReflexos` (DSR, avos do 13º, férias com o terço, FGTS e multa) e `MotorReflexos`, que aplica a uma verba mês a mês só as incidências informadas como premissa, com o marco de 20/03/2023 do DSR das horas extras. Use-os em vez de repetir essas fórmulas; `MemoriaReflexos`, na Application, monta as linhas e a memória.
 - `Domain/Pensao`, `Domain/Judicial` e `Domain/Estabilidade`: regras dos respectivos assuntos.
+- `Domain/Previdencia`: contribuição do contribuinte individual e do facultativo; o submódulo `Complementar` trata do IR no resgate de PGBL e VGBL.
 - `Application/UseCases`, `Application/DTOs` e `Application/Demonstrativos`: orquestração e resultados.
 - `Infrastructure/Persistence/Inicializacao`: esquema, sementes e correções do banco.
 - `Infrastructure/Tributacao`: consultas, fontes e atualização das tabelas.

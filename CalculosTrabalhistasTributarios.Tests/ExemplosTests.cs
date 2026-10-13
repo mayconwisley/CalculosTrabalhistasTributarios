@@ -51,6 +51,8 @@ public class ExemplosTests
         ["Calculadora.ConferenciaFgts"] = [("Falta depositar (mensal)", "R$ 40,00"), ("Falta depositar (rescisório)", "R$ 400,00"), ("FGTS devido", "R$ 1.120,00"), ("Reflexo na multa de 40%", "R$ 176,00")],
         ["Calculadora.Transferencia"] = [("Total ao empregado", "R$ 8.069,44"), ("Adicional de transferência", "R$ 5.500,00"), ("Reflexos", "R$ 1.069,44"), ("FGTS", "R$ 525,56")],
         ["Calculadora.Gorjetas"] = [("Total ao empregado", "R$ 11.466,67"), ("Gorjetas repassadas", "R$ 9.600,00"), ("Média mensal", "R$ 1.600,00"), ("FGTS", "R$ 917,33")],
+        ["Calculadora.ContribuicaoSegurado"] = [("Valor da GPS", "R$ 178,31"), ("Código da GPS", "1473"), ("Vencimento", "16/11/2026"), ("Complementação até 20%", "R$ 145,89")],
+        ["Calculadora.ResgatePrevidencia"] = [("Valor líquido", "R$ 38.200,00"), ("IR retido", "R$ 9.800,00"), ("Base do IR", "R$ 48.000,00"), ("IR no progressivo", "R$ 7.200,00")],
         ["Calculadora.Sobreaviso"] = [("Total bruto ao empregado", "R$ 1.432,75"), ("Sobreaviso e prontidão", "R$ 1.040,00"), ("DSR e reflexos", "R$ 392,75"), ("FGTS", "R$ 114,62")],
         ["Calculadora.Plr"] = [("Líquido da PLR", "R$ 5.560,25"), ("IRRF desta parcela", "R$ 439,75"), ("PLR no ano", "R$ 12.000,00"), ("Isenção anual", "R$ 8.214,40")],
     };

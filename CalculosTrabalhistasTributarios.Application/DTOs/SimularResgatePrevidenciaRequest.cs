@@ -1,0 +1,5 @@
+using CalculosTrabalhistasTributarios.Domain.Previdencia.Complementar;
+
+namespace CalculosTrabalhistasTributarios.Application.DTOs;
+
+public sealed record SimularResgatePrevidenciaRequest(EntradaResgatePrevidencia Entrada);
