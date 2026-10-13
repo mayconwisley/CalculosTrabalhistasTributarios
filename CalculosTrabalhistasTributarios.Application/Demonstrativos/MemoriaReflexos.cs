@@ -11,7 +11,7 @@ public static class MemoriaReflexos
     {
         var nome = a.Verba.Descricao;
         var verbas = new List<VerbaDto> { new(nome, Meses(a.Meses.Count), a.Principal) };
-        if (a.Dsr > 0m) verbas.Add(new($"DSR sobre {nome}", "", a.Dsr));
+        if (a.Dsr > 0m) verbas.Add(new($"DSR sobre {NoMeioDaFrase(nome)}", "", a.Dsr));
         foreach (var ano in a.DecimoTerceiro.Where(ano => ano.Valor > 0m))
             verbas.Add(new($"Reflexo no 13º de {ano.Ano}", Formato.Avos(ano.Meses), ano.Valor));
         if (a.Ferias > 0m)
@@ -50,8 +50,11 @@ public static class MemoriaReflexos
             formulas.Add(new("Aviso prévio", $"Média dos últimos {Meses(a.MesesAviso)} = {Formato.Moeda(a.MediaAviso)}; ÷ 30 x {Formato.Dias(a.Verba.DiasAvisoPrevio)} = {Formato.Moeda(a.AvisoPrevio)}"));
         if (a.Verba.Incidencias.HasFlag(IncidenciasReflexo.Fgts))
             formulas.Add(new("FGTS", $"{Formato.Moeda(a.BaseFgts)}{(a.Ferias > 0m && !a.Verba.FeriasGozadas ? " (sem as férias indenizadas)" : "")} x 8% = {Formato.Moeda(a.Fgts)}{(a.MultaFgts > 0m ? $"; multa de 40% = {Formato.Moeda(a.MultaFgts)}" : "")}"));
-        return new GrupoMemoriaDto($"Reflexos de {a.Verba.Descricao}", $"Ao empregado: {Formato.Moeda(a.TotalAoEmpregado)}", formulas);
+        return new GrupoMemoriaDto($"Reflexos de {NoMeioDaFrase(a.Verba.Descricao)}", $"Ao empregado: {Formato.Moeda(a.TotalAoEmpregado)}", formulas);
     }
+
+    /// <summary>A descrição da verba no meio de uma frase, como "DSR sobre horas extras".</summary>
+    private static string NoMeioDaFrase(string descricao) => descricao.Length == 0 ? descricao : char.ToLower(descricao[0], Formato.Cultura) + descricao[1..];
 
     private static string Meses(int quantidade) => quantidade == 1 ? "1 mês" : $"{quantidade} meses";
 }

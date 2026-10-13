@@ -1,6 +1,6 @@
 # Manual do Usuário — Cálculos Trabalhistas e Tributários
 
-Guia completo para utilizar **Cálculos Trabalhistas e Tributários**: simulação de IRRF, INSS e FGTS, salário líquido, holerite do mês, jornada pelas marcações de ponto, férias, 13º salário, horas extras, insalubridade e periculosidade, salário-família, PLR, rescisão, seguro-desemprego, custo do funcionário, comparação CLT x PJ, pró-labore, IRPF anual, dividendos, pensão alimentícia, débitos judiciais, indenização de estabilidade, empregado doméstico, estágio, trabalho intermitente, afastamentos e licenças, saque-aniversário do FGTS, abono salarial, carnê-leão, ganho de capital, tributos em atraso, correção de valores, histórico de cálculos, planilhas do Excel e manutenção das tabelas tributárias.
+Guia completo para utilizar **Cálculos Trabalhistas e Tributários**: simulação de IRRF, INSS e FGTS, salário líquido, holerite do mês, jornada pelas marcações de ponto, férias, 13º salário, horas extras, insalubridade e periculosidade, salário-família, PLR, rescisão, seguro-desemprego, custo do funcionário, comparação CLT x PJ, pró-labore, IRPF anual, dividendos, pensão alimentícia, débitos judiciais, indenização de estabilidade, empregado doméstico, estágio, trabalho intermitente, sobreaviso e prontidão, afastamentos e licenças, saque-aniversário do FGTS, abono salarial, carnê-leão, ganho de capital, tributos em atraso, correção de valores, histórico de cálculos, planilhas do Excel e manutenção das tabelas tributárias.
 
 > **Atenção:** os resultados têm caráter de **simulação**. Confira sempre os valores com a legislação vigente e com os dados reais do vínculo antes de utilizá-los em folha de pagamento, rescisões ou decisões legais.
 
@@ -1336,6 +1336,39 @@ Abra pelo cartão **Conferência do FGTS**, em **FGTS, afastamentos e benefício
 O FGTS Digital individualiza os débitos a partir das remunerações informadas no eSocial. Juros, multa e atualização de depósitos em atraso (Lei 8.036/1990, art. 22) são calculados por ele e não estão incluídos aqui.
 
 Fundamentos: [Lei 8.036/1990, arts. 15 e 22](https://www.planalto.gov.br/ccivil_03/leis/l8036consol.htm) e [LC 150/2015, arts. 22 e 34](https://www.planalto.gov.br/ccivil_03/leis/lcp/lcp150.htm).
+
+### 8.36 Sobreaviso e prontidão
+
+Abra pelo cartão **Sobreaviso e prontidão**, no grupo **Remuneração e custos**. Ela calcula, competência a competência, as horas em que o empregado aguardou ser chamado e os reflexos dessas horas no DSR, no 13º, nas férias, no aviso prévio e no FGTS.
+
+- **Sobreaviso:** o empregado fica fora da empresa, normalmente em casa, aguardando o chamado a qualquer momento, com a liberdade restringida pelo empregador, inclusive por celular ou outro meio telemático em escala de plantão. O simples uso do celular da empresa não caracteriza o sobreaviso (Súmula 428 do TST). Cada hora vale **1/3** do salário-hora normal, em escalas de até 24 horas.
+- **Prontidão:** o empregado aguarda ordens nas dependências da empresa. Cada hora vale **2/3** do salário-hora normal, em escalas de até 12 horas.
+
+![Formulário de sobreaviso e prontidão com quatro competências](imagens/102-sobreaviso-formulario.png)
+
+1. Informe o **Divisor do salário-hora**: 220 para 44 horas semanais, 200 para 40, 180 para 36.
+2. Em **Pagamento das horas**, escolha **Habitual (com reflexos)** quando as horas se repetem ao longo do contrato, ou **Eventual (só o FGTS)** para escalas esporádicas, que não integram a remuneração para o DSR, o 13º, as férias e o aviso.
+3. Em **Situação do contrato**, escolha **Contrato ativo** ou **Dispensa sem justa causa**. Na dispensa, entram o reflexo no aviso prévio indenizado, com os **Dias de aviso prévio** (30 a 90), e a multa de 40% do FGTS; o reflexo nas férias é tratado como indenizado e fica fora do FGTS.
+4. **DSR sobre as horas?** acrescenta o repouso semanal sobre as horas habituais: o valor do mês ÷ dias úteis × domingos e feriados. **DSR entra nos reflexos?** é uma premissa: com **Sim**, o DSR também entra na base do 13º, das férias e do aviso.
+5. Informe o período, o salário e as horas sugeridos e clique em **Gerar meses**. Gerar de novo preserva as competências que continuam; se alguma sair do período, o primeiro clique avisa e o segundo confirma. **+ Mês** acrescenta uma linha.
+6. Em cada competência, ajuste o **Salário normal**, as horas de **Sobreaviso** e de **Prontidão** (40:00 ou 40,5) e os **Feriados** em dias úteis, usados no DSR.
+7. Clique em **Calcular**.
+
+**Salário normal:** o salário do mês, base do salário-hora. O adicional de periculosidade não integra as horas de sobreaviso, porque nelas o empregado não está exposto ao risco (Súmula 132, II, do TST). Para os eletricitários, a base é a totalidade das parcelas de natureza salarial (Súmula 229 do TST): some-as no salário do mês.
+
+**Horas acionadas:** as horas em que o empregado foi chamado e trabalhou deixam de ser de sobreaviso. São horas de trabalho, normais ou extras: deixe-as fora destas linhas e calcule-as em **Horas extras e adicionais** (seção 8.2).
+
+![Resultado com as horas de sobreaviso e prontidão, o DSR e os reflexos](imagens/103-sobreaviso-resultado.png)
+
+- **Horas de sobreaviso (1/3) e de prontidão (2/3):** salário ÷ divisor × horas × 1/3 ou 2/3, arredondado nos centavos em cada mês.
+- **DSR:** sobre a soma do mês, conforme os domingos e os feriados informados.
+- **13º e férias + 1/3:** 1/12 das horas de cada mês, o 13º separado por ano. As férias somam os meses informados, sem separar os períodos aquisitivos.
+- **Aviso prévio indenizado:** na dispensa, a média dos últimos 12 meses informados × dias ÷ 30.
+- **FGTS e multa:** 8% sobre as horas, o DSR e os reflexos (sem as férias indenizadas) e, na dispensa, a multa de 40%. Aparecem em **Valores informativos**, porque são depositados pelo empregador.
+
+O resultado é bruto: INSS, IRRF, atualização monetária e juros não estão incluídos. Convenções coletivas podem prever outro percentual ou outra forma de pagamento; o limite de cada escala não é conferido, só o total de horas do mês.
+
+Fundamentos: [CLT, art. 244, §§ 2º e 3º](https://www.planalto.gov.br/ccivil_03/decreto-lei/del5452compilado.htm), aplicado por analogia; [Lei 605/1949, art. 7º](https://www.planalto.gov.br/ccivil_03/leis/l0605.htm); [Lei 8.036/1990, arts. 15 e 18](https://www.planalto.gov.br/ccivil_03/leis/l8036consol.htm); Súmulas 132, 229 e 428 e OJ 195 da SBDI-1 do TST.
 
 ## 9. Tabelas e parâmetros
 

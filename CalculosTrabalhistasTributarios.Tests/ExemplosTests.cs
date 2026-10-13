@@ -49,6 +49,7 @@ public class ExemplosTests
         ["Calculadora.Rra"] = [("IR de anos anteriores", "R$ 0,00"), ("IR da parte de 2026", "R$ 2.403,04"), ("IR estimado do pagamento", "R$ 2.403,04"), ("Total recebido", "R$ 19.000,00")],
         ["Calculadora.SimplesNacional"] = [("DAS do mês", "R$ 3.225,00"), ("Alíquota efetiva", "16,125%"), ("Receita de 12 meses (RBT12)", "R$ 240.000,00"), ("Fator r", "25,00%")],
         ["Calculadora.ConferenciaFgts"] = [("Falta depositar (mensal)", "R$ 40,00"), ("Falta depositar (rescisório)", "R$ 400,00"), ("FGTS devido", "R$ 1.120,00"), ("Reflexo na multa de 40%", "R$ 176,00")],
+        ["Calculadora.Sobreaviso"] = [("Total bruto ao empregado", "R$ 1.432,75"), ("Sobreaviso e prontidão", "R$ 1.040,00"), ("DSR e reflexos", "R$ 392,75"), ("FGTS", "R$ 114,62")],
         ["Calculadora.Plr"] = [("Líquido da PLR", "R$ 5.560,25"), ("IRRF desta parcela", "R$ 439,75"), ("PLR no ano", "R$ 12.000,00"), ("Isenção anual", "R$ 8.214,40")],
     };
 

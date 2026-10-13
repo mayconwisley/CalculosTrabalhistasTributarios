@@ -218,6 +218,45 @@
                 </ScrollViewer>
             </StackPanel>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type calculadoras:CampoSobreavisoViewModel}">
+            <StackPanel Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ItemsControl}}" Margin="0,0,0,14" Visibility="{Binding Visivel, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <TextBlock Text="Competências de sobreaviso e prontidão" FontWeight="SemiBold" Margin="0,0,0,5" />
+                <TextBlock Text="Informe, em cada competência, o salário normal do mês e as horas totais de cada regime. Sobreaviso: fora da empresa, aguardando o chamado (1/3 do salário-hora). Prontidão: na empresa, aguardando ordens (2/3). Deixe de fora as horas em que o empregado foi chamado e trabalhou: elas são horas de trabalho. Os feriados em dias úteis entram no DSR." FontSize="12" Foreground="{DynamicResource MutedTextBrush}" TextWrapping="Wrap" Margin="0,0,0,9" />
+                <WrapPanel Margin="0,0,0,2">
+                    <StackPanel Width="120" Margin="0,0,8,8"><TextBlock Text="Início (MM/AAAA)" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" /><TextBox Text="{Binding Inicio, UpdateSourceTrigger=PropertyChanged}" behaviors:MascaraData.Tipo="Competencia" TextAlignment="Center" AutomationProperties.Name="Início das competências de sobreaviso" /></StackPanel>
+                    <StackPanel Width="120" Margin="0,0,8,8"><TextBlock Text="Fim (MM/AAAA)" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" /><TextBox Text="{Binding Fim, UpdateSourceTrigger=PropertyChanged}" behaviors:MascaraData.Tipo="Competencia" TextAlignment="Center" AutomationProperties.Name="Fim das competências de sobreaviso" /></StackPanel>
+                    <StackPanel Width="150" Margin="0,0,8,8"><TextBlock Text="Salário por mês (R$)" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" /><TextBox Text="{Binding SalarioMensal, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" behaviors:FormatacaoNumerica.Formato="N2" AutomationProperties.Name="Salário sugerido para os meses gerados" /></StackPanel>
+                    <StackPanel Width="130" Margin="0,0,8,8"><TextBlock Text="Sobreaviso (h:mm)" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" /><TextBox Text="{Binding SobreavisoMensal, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" behaviors:FormatacaoNumerica.ValorVazio="0:00" AutomationProperties.Name="Horas de sobreaviso sugeridas para os meses gerados" /></StackPanel>
+                    <StackPanel Width="130" Margin="0,0,8,8"><TextBlock Text="Prontidão (h:mm)" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" /><TextBox Text="{Binding ProntidaoMensal, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" behaviors:FormatacaoNumerica.ValorVazio="0:00" AutomationProperties.Name="Horas de prontidão sugeridas para os meses gerados" /></StackPanel>
+                    <Button Content="Gerar meses" Command="{Binding GerarCommand}" Padding="12,6" Margin="0,0,8,8" VerticalAlignment="Bottom" ToolTip="Gera as competências do período com os valores sugeridos e preserva os valores já digitados" AutomationProperties.Name="Gerar competências de sobreaviso" />
+                    <Button Content="+ Mês" Command="{Binding AdicionarCommand}" Padding="10,6" Margin="0,0,8,8" VerticalAlignment="Bottom" AutomationProperties.Name="Adicionar competência de sobreaviso" />
+                </WrapPanel>
+                <TextBlock Text="{Binding Mensagem}" Foreground="{DynamicResource AccentBrush}" TextWrapping="Wrap" Margin="0,0,0,6" />
+                <Grid Margin="8,0,8,5"><Grid.ColumnDefinitions><ColumnDefinition Width="130" /><ColumnDefinition Width="*" /><ColumnDefinition Width="*" /><ColumnDefinition Width="*" /><ColumnDefinition Width="90" /><ColumnDefinition Width="50" /></Grid.ColumnDefinitions>
+                    <TextBlock Text="Competência" FontSize="11" Foreground="{DynamicResource MutedTextBrush}" />
+                    <TextBlock Grid.Column="1" Text="Salário normal (R$)" FontSize="11" Foreground="{DynamicResource MutedTextBrush}" />
+                    <TextBlock Grid.Column="2" Text="Sobreaviso (h:mm)" FontSize="11" Foreground="{DynamicResource MutedTextBrush}" />
+                    <TextBlock Grid.Column="3" Text="Prontidão (h:mm)" FontSize="11" Foreground="{DynamicResource MutedTextBrush}" />
+                    <TextBlock Grid.Column="4" Text="Feriados" FontSize="11" Foreground="{DynamicResource MutedTextBrush}" />
+                </Grid>
+                <ScrollViewer MaxHeight="330" VerticalScrollBarVisibility="Auto">
+                    <ItemsControl ItemsSource="{Binding Linhas}" Focusable="False">
+                        <ItemsControl.ItemTemplate><DataTemplate>
+                            <Border Background="{DynamicResource ResultBackgroundBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="8" Margin="0,0,0,6">
+                                <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="130" /><ColumnDefinition Width="*" /><ColumnDefinition Width="*" /><ColumnDefinition Width="*" /><ColumnDefinition Width="90" /><ColumnDefinition Width="50" /></Grid.ColumnDefinitions>
+                                    <TextBox Text="{Binding Competencia, UpdateSourceTrigger=PropertyChanged}" behaviors:MascaraData.Tipo="Competencia" TextAlignment="Center" Margin="0,0,8,0" AutomationProperties.Name="Competência do sobreaviso" />
+                                    <TextBox Grid.Column="1" Text="{Binding Salario, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" Margin="0,0,8,0" behaviors:FormatacaoNumerica.Formato="N2" AutomationProperties.Name="Salário normal da competência" />
+                                    <TextBox Grid.Column="2" Text="{Binding Sobreaviso, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" Margin="0,0,8,0" behaviors:FormatacaoNumerica.ValorVazio="0:00" AutomationProperties.Name="Horas de sobreaviso da competência" />
+                                    <TextBox Grid.Column="3" Text="{Binding Prontidao, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" Margin="0,0,8,0" behaviors:FormatacaoNumerica.ValorVazio="0:00" AutomationProperties.Name="Horas de prontidão da competência" />
+                                    <TextBox Grid.Column="4" Text="{Binding Feriados, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" Margin="0,0,8,0" behaviors:FormatacaoNumerica.ValorVazio="0" AutomationProperties.Name="Feriados em dias úteis da competência" />
+                                    <Button Grid.Column="5" Content="×" Padding="0" MinHeight="34" Command="{Binding DataContext.RemoverCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" CommandParameter="{Binding}" ToolTip="Remover competência" AutomationProperties.Name="Remover competência de sobreaviso" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate></ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </StackPanel>
+        </DataTemplate>
         <DataTemplate DataType="{x:Type calculadoras:CampoConferenciaFgtsViewModel}">
             <StackPanel Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ItemsControl}}" Margin="0,0,0,14" Visibility="{Binding Visivel, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <TextBlock Text="Competências conferidas" FontWeight="SemiBold" Margin="0,0,0,5" />

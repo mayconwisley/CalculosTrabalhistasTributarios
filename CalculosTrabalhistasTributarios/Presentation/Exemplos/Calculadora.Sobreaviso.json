@@ -1,0 +1,11 @@
+{
+  "Campos": {
+    "Divisor do salário-hora": "220",
+    "Pagamento das horas": "Habitual (com reflexos)",
+    "Situação do contrato": "Contrato ativo",
+    "DSR sobre as horas?": "Sim",
+    "DSR entra nos reflexos?": "Não",
+    "Dias de aviso prévio": "30",
+    "Competências de sobreaviso": "{\"Inicio\":\"07/2026\",\"Fim\":\"10/2026\",\"SalarioMensal\":\"3.300,00\",\"SobreavisoMensal\":\"40:00\",\"ProntidaoMensal\":\"6:00\",\"Linhas\":[{\"Competencia\":\"07/2026\",\"Salario\":\"3.300,00\",\"Sobreaviso\":\"40:00\",\"Prontidao\":\"6:00\",\"Feriados\":\"0\"},{\"Competencia\":\"08/2026\",\"Salario\":\"3.300,00\",\"Sobreaviso\":\"40:00\",\"Prontidao\":\"6:00\",\"Feriados\":\"0\"},{\"Competencia\":\"09/2026\",\"Salario\":\"3.300,00\",\"Sobreaviso\":\"40:00\",\"Prontidao\":\"6:00\",\"Feriados\":\"1\"},{\"Competencia\":\"10/2026\",\"Salario\":\"3.300,00\",\"Sobreaviso\":\"40:00\",\"Prontidao\":\"6:00\",\"Feriados\":\"1\"}]}"
+  }
+}

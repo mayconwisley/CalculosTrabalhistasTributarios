@@ -51,6 +51,7 @@ public static class SecoesDoManual
         ["Calculadora.Rra"] = "8.33",
         ["Calculadora.SimplesNacional"] = "8.34",
         ["Calculadora.ConferenciaFgts"] = "8.35",
+        ["Calculadora.Sobreaviso"] = "8.36",
         ["ComparacaoHistorico"] = "10.3"
     };
 

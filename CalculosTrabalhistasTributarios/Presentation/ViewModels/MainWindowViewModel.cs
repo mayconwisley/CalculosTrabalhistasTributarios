@@ -76,6 +76,7 @@ public sealed class MainWindowViewModel : ViewModelBase
                 Calculadora("Banco de horas", "Créditos, folgas, saldo e quitação estimada no fechamento ou na rescisão.", TipoCalculadora.BancoHoras),
                 Atalho("Jornada", "Jornada pelo ponto", "Horas extras, noturnas, faltas e intervalos pelas marcações do mês.", navegador.AbrirJornada),
                 Calculadora("Horas extras e adicionais", "Horas extras, adicional noturno e reflexo no DSR.", TipoCalculadora.HorasExtras),
+                Calculadora("Sobreaviso e prontidão", "Horas a 1/3 e a 2/3 do salário-hora por mês, com DSR, 13º, férias e FGTS.", TipoCalculadora.Sobreaviso),
                 Calculadora("Insalubridade e periculosidade", "Adicionais pelo grau de insalubridade ou pela periculosidade.", TipoCalculadora.Adicionais),
                 Calculadora("Salário-família", "Direito e valor das cotas pela remuneração e pelos filhos.", TipoCalculadora.SalarioFamilia),
                 Calculadora("Custo do funcionário", "Encargos, provisões e benefícios pagos pela empresa.", TipoCalculadora.CustoFuncionario),

@@ -80,7 +80,7 @@ public sealed class CalculadoraViewModel : ViewModelBase, ICalculoSalvavel
     public string InstrucaoInicial => _calculadora.InstrucaoInicial;
     public IReadOnlyList<CampoViewModel> Campos { get; }
     public bool UsaFormularioLarguraTotal => Campos.Count == 1 && Campos[0] is CampoBancoHorasViewModel;
-    public bool UsaBotaoAbaixoFormulario => UsaFormularioLarguraTotal || Campos.Any(campo => campo is CampoDepositosFgtsViewModel or CampoQuitacaoBancoHorasViewModel or CampoParcelasRraViewModel or CampoMesesSimplesViewModel or CampoConferenciaFgtsViewModel);
+    public bool UsaBotaoAbaixoFormulario => UsaFormularioLarguraTotal || Campos.Any(campo => campo is CampoDepositosFgtsViewModel or CampoQuitacaoBancoHorasViewModel or CampoParcelasRraViewModel or CampoMesesSimplesViewModel or CampoConferenciaFgtsViewModel or CampoSobreavisoViewModel);
     public ICommand CalcularCommand { get; }
     public ICommand ExportarPdfCommand { get; }
     public ICommand ExportarExcelCommand { get; }
