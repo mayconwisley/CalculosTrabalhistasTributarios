@@ -15,11 +15,13 @@ public sealed class CalculadoraSobreaviso : CalculadoraBase
         "Horas pagas com habitualidade integram a remuneração e refletem no DSR, no 13º, nas férias e no aviso; as eventuais têm só o FGTS do mês.") { Largura = 250 };
     private readonly CampoOpcaoViewModel _situacao = new("Situação do contrato",
         [new("Contrato ativo", false), new("Dispensa sem justa causa", true)],
-        "Na dispensa sem justa causa entram o reflexo no aviso prévio indenizado e a multa de 40% do FGTS; o reflexo nas férias fica fora do FGTS (OJ 195 do TST).") { Largura = 250 };
+        "Na dispensa sem justa causa entram o reflexo no aviso prévio indenizado e a multa de 40% do FGTS; as férias ainda não gozadas são indenizadas, sem FGTS (OJ 195 do TST).") { Largura = 250 };
     private readonly CampoOpcaoViewModel _dsr = CampoOpcaoViewModel.SimNao("DSR sobre as horas?", true,
         "Repouso semanal sobre as horas habituais: valor do mês ÷ dias úteis × domingos e feriados (Lei 605/1949, art. 7º).");
     private readonly CampoOpcaoViewModel _dsrNosReflexos = CampoOpcaoViewModel.SimNao("DSR entra nos reflexos?", false,
         "Premissa: se o DSR das horas entra na base do 13º, das férias e do aviso. O marco de 20/03/2023 do TST (Tema 9) trata das horas extras.");
+    private readonly CampoTextoViewModel _admissao = new("Admissão (opcional)", TipoCampo.Data, string.Empty,
+        "Data de admissão (dd/mm/aaaa): separa as férias por período aquisitivo. Sem ela, todos os meses formam um só período.", permiteVazio: true);
     private readonly CampoTextoViewModel _diasAviso = Inteiro("Dias de aviso prévio", 30, "De 30 a 90 dias: 30 mais 3 por ano completo de serviço (Lei 12.506/2011).");
     private readonly CampoSobreavisoViewModel _meses = new();
 
@@ -33,7 +35,7 @@ public sealed class CalculadoraSobreaviso : CalculadoraBase
     public override string Titulo => "Sobreaviso e prontidão";
     public override string Descricao => "Calcule as horas de sobreaviso (1/3) e de prontidão (2/3) por competência, com DSR, 13º, férias, aviso e FGTS.";
     public override string InstrucaoInicial => "Escolha as premissas, gere os meses, informe o salário e as horas de cada competência e selecione Calcular.";
-    public override IReadOnlyList<CampoViewModel> Campos => [_divisor, _habitualidade, _situacao, _dsr, _dsrNosReflexos, _diasAviso, _meses];
+    public override IReadOnlyList<CampoViewModel> Campos => [_divisor, _habitualidade, _situacao, _admissao, _dsr, _dsrNosReflexos, _diasAviso, _meses];
     public override string NomeArquivoPdf => "sobreaviso-prontidao.pdf";
 
     public override Dictionary<string, string> ExportarCampos()
@@ -67,13 +69,13 @@ public sealed class CalculadoraSobreaviso : CalculadoraBase
             meses.Valor, leitor.Inteiro(_divisor), habitual, incidencias,
             dsr && _dsrNosReflexos.Valor<bool>(),
             habitual && dispensa ? leitor.Inteiro(_diasAviso) : 0,
-            FeriasGozadas: !dispensa)), cancellationToken);
+            FeriasGozadas: !dispensa, Admissao: habitual ? leitor.DataOpcional(_admissao) : null)), cancellationToken);
     }
 
     private void AtualizarCampos()
     {
         var habitual = _habitualidade.Valor<bool>();
-        _dsr.Visivel = habitual;
+        _dsr.Visivel = _admissao.Visivel = habitual;
         _dsrNosReflexos.Visivel = habitual && _dsr.Valor<bool>();
         _diasAviso.Visivel = habitual && _situacao.Valor<bool>();
     }

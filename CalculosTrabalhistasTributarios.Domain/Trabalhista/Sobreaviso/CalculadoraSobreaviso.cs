@@ -44,7 +44,7 @@ public static class CalculadoraSobreaviso
 
         var verba = new VerbaReflexa(Descricao(meses), NaturezaVerbaReflexa.Outra, entrada.Habitual, entrada.Incidencias,
             meses.Select(mes => new MesVerbaReflexa(mes.Mes.Competencia, mes.Total, mes.Mes.Feriados)).ToArray(),
-            entrada.DsrRepercuteNasOutras, entrada.DiasAvisoPrevio, entrada.FeriasGozadas);
+            entrada.DsrRepercuteNasOutras, entrada.DiasAvisoPrevio, entrada.FeriasGozadas, entrada.Admissao);
         var reflexos = MotorReflexos.Calcular(verba);
         return reflexos.Falhou ? reflexos.Erro : new ApuracaoSobreaviso(entrada, meses, reflexos.Valor);
     }

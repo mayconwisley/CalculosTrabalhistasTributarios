@@ -59,6 +59,67 @@ public class MotorReflexosTests
         Assert.Equal(114.81m, a.BaseFgts);                          // sem as férias indenizadas
     }
 
+    // 500,00 por mês de 01/2024 a 06/2026, com admissão em 10/03/2023: o período de 10/03/2023 tem 2 meses (01 e 02/2024), os de
+    // 10/03/2024 e 10/03/2025 têm 12 cada, e o de 10/03/2026 está em curso, com 4 meses (03 a 06/2026). Referência: 30/06/2026.
+    private static VerbaReflexa VerbaComAdmissao(bool contratoAtivo) => new("Adicional", NaturezaVerbaReflexa.Outra, true,
+        IncidenciasReflexo.Ferias | IncidenciasReflexo.Fgts, Meses(2024, 1, 30, 500m), FeriasGozadas: contratoAtivo, Admissao: new DateOnly(2023, 3, 10));
+
+    [Fact]
+    public void Contrato_ativo_nao_deve_as_ferias_do_periodo_em_curso()
+    {
+        var a = MotorReflexos.Calcular(VerbaComAdmissao(contratoAtivo: true)).Sucesso();
+
+        // 1.000 ÷ 12 = 83,33 (terço 27,78); 6.000 ÷ 12 = 500 (166,67) duas vezes; o período em curso, 2.000 ÷ 12 = 166,67 (55,56), não é devido.
+        Assert.Equal([(83.33m, 27.78m, SituacaoFeriasReflexo.Gozadas), (500m, 166.67m, SituacaoFeriasReflexo.Gozadas), (500m, 166.67m, SituacaoFeriasReflexo.Gozadas), (166.67m, 55.56m, SituacaoFeriasReflexo.NaoDevidas)],
+            a.PeriodosFerias.Select(p => (p.Valor, p.Terco, p.Situacao)));
+        Assert.Equal([new DateOnly(2023, 3, 10), new DateOnly(2024, 3, 10), new DateOnly(2025, 3, 10), new DateOnly(2026, 3, 10)], a.PeriodosFerias.Select(p => p.Inicio));
+        // Período em curso: de 10/03 a 30/06/2026, 3 meses completos e 21 dias: 4/12.
+        Assert.Equal(4, a.PeriodosFerias[^1].Avos);
+        Assert.Equal((1083.33m, 361.12m), (a.Ferias, a.TercoFerias));
+        // FGTS: 15.000 + férias gozadas 1.444,45 = 16.444,45 x 8% = 1.315,56.
+        Assert.Equal((16444.45m, 1315.56m), (a.BaseFgts, a.Fgts));
+    }
+
+    [Fact]
+    public void Dispensa_indeniza_vencidas_e_proporcionais_e_mantem_o_fgts_das_gozadas()
+    {
+        var a = MotorReflexos.Calcular(VerbaComAdmissao(contratoAtivo: false)).Sucesso();
+
+        // O período de 10/03/2025 terminou em 09/03/2026 e ainda estava no prazo de concessão (até 09/03/2027): vencidas.
+        // O de 10/03/2024 teve o prazo encerrado em 09/03/2026: presumem-se gozadas. O em curso: proporcionais.
+        Assert.Equal([SituacaoFeriasReflexo.Gozadas, SituacaoFeriasReflexo.Gozadas, SituacaoFeriasReflexo.Indenizadas, SituacaoFeriasReflexo.Indenizadas], a.PeriodosFerias.Select(p => p.Situacao));
+        Assert.Equal((1250m, 416.68m), (a.Ferias, a.TercoFerias));
+        // FGTS: 15.000 + as gozadas (83,33 + 27,78 + 500 + 166,67 = 777,78) = 15.777,78 x 8% = 1.262,22; antes, sem as férias: 1.200,00.
+        Assert.Equal((15777.78m, 1262.22m), (a.BaseFgts, a.Fgts));
+    }
+
+    [Fact]
+    public void Demonstrativo_mostra_cada_periodo_e_o_em_curso_como_informativo()
+    {
+        var a = MotorReflexos.Calcular(VerbaComAdmissao(contratoAtivo: true)).Sucesso();
+
+        Assert.Contains(MemoriaReflexos.Proventos(a), v => v.Descricao == "Reflexo nas férias gozadas" && Texto.Normalizar(v.Referencia) == "Desde 10/03/2024" && v.Valor == 500m);
+        Assert.DoesNotContain(MemoriaReflexos.Proventos(a), v => v.Descricao.Contains("em aquisição"));
+        Assert.Contains(MemoriaReflexos.Informativos(a), v => v.Descricao.StartsWith("Férias + 1/3 do período em curso") && v.Valor == 222.23m);
+        Assert.Contains("período em curso (4/12)", Texto.Normalizar(MemoriaReflexos.Grupo(a).Formulas.Single(f => f.Titulo == "Férias de 10/03/2026 a 09/03/2027").Formula));
+        Assert.StartsWith("Férias por período aquisitivo", MemoriaReflexos.ObservacaoFerias(a));
+    }
+
+    [Fact]
+    public void Sem_admissao_mantem_um_so_periodo_e_avisa()
+    {
+        var a = MotorReflexos.Calcular(VerbaComAdmissao(contratoAtivo: true) with { Admissao = null }).Sucesso();
+        Assert.Equal((1250m, 416.67m, false), (a.Ferias, a.TercoFerias, a.PeriodosFerias.Single().Separado));   // 15.000 ÷ 12
+        Assert.StartsWith("Sem a data de admissão", MemoriaReflexos.ObservacaoFerias(a));
+    }
+
+    [Fact]
+    public void Verba_antes_da_admissao_e_recusada()
+    {
+        var verba = VerbaComAdmissao(contratoAtivo: true) with { Admissao = new DateOnly(2024, 2, 10) };
+        Assert.Contains("começa antes da admissão em 10/02/2024", MotorReflexos.Calcular(verba).Erro.Mensagem);
+    }
+
     [Theory]
     [InlineData(false, IncidenciasReflexo.DecimoTerceiro, 0, "exigem que a verba")]
     [InlineData(true, IncidenciasReflexo.AvisoPrevio, 0, "de 30 a 90 dias")]

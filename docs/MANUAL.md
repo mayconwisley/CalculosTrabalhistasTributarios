@@ -1348,7 +1348,7 @@ Abra pelo cartão **Sobreaviso e prontidão**, no grupo **Remuneração e custos
 
 1. Informe o **Divisor do salário-hora**: 220 para 44 horas semanais, 200 para 40, 180 para 36.
 2. Em **Pagamento das horas**, escolha **Habitual (com reflexos)** quando as horas se repetem ao longo do contrato, ou **Eventual (só o FGTS)** para escalas esporádicas, que não integram a remuneração para o DSR, o 13º, as férias e o aviso.
-3. Em **Situação do contrato**, escolha **Contrato ativo** ou **Dispensa sem justa causa**. Na dispensa, entram o reflexo no aviso prévio indenizado, com os **Dias de aviso prévio** (30 a 90), e a multa de 40% do FGTS; o reflexo nas férias é tratado como indenizado e fica fora do FGTS.
+3. Em **Situação do contrato**, escolha **Contrato ativo** ou **Dispensa sem justa causa**. Na dispensa, entram o reflexo no aviso prévio indenizado, com os **Dias de aviso prévio** (30 a 90), e a multa de 40% do FGTS; as férias ainda não gozadas são indenizadas, sem FGTS. Informe também a **Admissão (opcional)**: ela separa as férias por período aquisitivo.
 4. **DSR sobre as horas?** acrescenta o repouso semanal sobre as horas habituais: o valor do mês ÷ dias úteis × domingos e feriados. **DSR entra nos reflexos?** é uma premissa: com **Sim**, o DSR também entra na base do 13º, das férias e do aviso.
 5. Informe o período, o salário e as horas sugeridos e clique em **Gerar meses**. Gerar de novo preserva as competências que continuam; se alguma sair do período, o primeiro clique avisa e o segundo confirma. **+ Mês** acrescenta uma linha.
 6. Em cada competência, ajuste o **Salário normal**, as horas de **Sobreaviso** e de **Prontidão** (40:00 ou 40,5) e os **Feriados** em dias úteis, usados no DSR.
@@ -1362,7 +1362,8 @@ Abra pelo cartão **Sobreaviso e prontidão**, no grupo **Remuneração e custos
 
 - **Horas de sobreaviso (1/3) e de prontidão (2/3):** salário ÷ divisor × horas × 1/3 ou 2/3, arredondado nos centavos em cada mês.
 - **DSR:** sobre a soma do mês, conforme os domingos e os feriados informados.
-- **13º e férias + 1/3:** 1/12 das horas de cada mês, o 13º separado por ano. As férias somam os meses informados, sem separar os períodos aquisitivos.
+- **13º e férias + 1/3:** 1/12 das horas de cada mês, o 13º separado por ano e as férias por período aquisitivo.
+- **Férias por período aquisitivo:** com a **Admissão**, os meses são separados em períodos de 12 meses contados dela, até o fim da última competência informada. No contrato ativo, as férias dos períodos completos são gozadas, com FGTS, e as do período em curso ainda não são devidas: aparecem em **Valores informativos**. Na dispensa, o período completo ainda no prazo de concessão é pago como férias vencidas e o incompleto como proporcionais, ambos indenizados e sem FGTS; os anteriores se presumem gozados. Sem a admissão, todos os meses formam um só período. Férias em dobro e a redução dos dias por faltas não são simuladas.
 - **Aviso prévio indenizado:** na dispensa, a média dos últimos 12 meses informados × dias ÷ 30.
 - **FGTS e multa:** 8% sobre as horas, o DSR e os reflexos (sem as férias indenizadas) e, na dispensa, a multa de 40%. Aparecem em **Valores informativos**, porque são depositados pelo empregador.
 
@@ -1379,7 +1380,7 @@ Abra pelo cartão **Adicional de transferência**, no grupo **Remuneração e cu
 ![Formulário do adicional de transferência com seis competências](imagens/104-transferencia-formulario.png)
 
 1. Informe o **Percentual do adicional (%)**: 25, ou mais, se a norma coletiva ou o contrato previr.
-2. Em **Situação do contrato**, escolha **Contrato ativo** ou **Dispensa sem justa causa**. Na dispensa durante a transferência, entram o reflexo no aviso prévio indenizado, com os **Dias de aviso prévio** (30 a 90), e a multa de 40% do FGTS; o reflexo nas férias é tratado como indenizado e fica fora do FGTS.
+2. Em **Situação do contrato**, escolha **Contrato ativo** ou **Dispensa sem justa causa**. Na dispensa durante a transferência, entram o reflexo no aviso prévio indenizado, com os **Dias de aviso prévio** (30 a 90), e a multa de 40% do FGTS; as férias ainda não gozadas são indenizadas, sem FGTS. Informe também a **Admissão (opcional)**: ela separa as férias por período aquisitivo.
 3. Em **Despesas (opcional)**, informe as despesas da mudança pagas pelo empregador, como transporte e frete (CLT, art. 470). São reembolso: somam ao total, mas não entram no FGTS nem nos reflexos.
 4. Informe o período e o salário sugeridos e clique em **Gerar meses**. Cada competência começa com 30 dias.
 5. Em cada competência, ajuste o **Salário na origem** e os **Dias transferido**: 30 é o mês inteiro, inclusive nos meses de 31 dias; no mês de ida ou de volta, informe só os dias fora da origem.
@@ -1389,7 +1390,7 @@ Abra pelo cartão **Adicional de transferência**, no grupo **Remuneração e cu
 
 - **Adicional:** salário da origem × percentual × dias ÷ 30, arredondado nos centavos em cada mês.
 - **Sem DSR:** o adicional incide sobre o salário mensal, que já remunera o repouso.
-- **13º e férias + 1/3:** 1/12 do adicional de cada mês, o 13º separado por ano. As férias somam os meses informados, sem separar os períodos aquisitivos.
+- **13º e férias + 1/3:** 1/12 do adicional de cada mês, o 13º separado por ano e as férias por período aquisitivo, com a **Admissão**, como na seção 8.36.
 - **Aviso prévio indenizado:** na dispensa, a média dos últimos 12 meses informados × dias ÷ 30.
 - **FGTS e multa:** 8% sobre o adicional e os reflexos (sem as férias indenizadas nem as despesas) e, na dispensa, a multa de 40%. Aparecem em **Valores informativos**.
 
@@ -1405,7 +1406,7 @@ Abra pelo cartão **Gorjetas**, no grupo **Remuneração e custos**. A gorjeta, 
 
 1. Em **Regime da empresa**, escolha **Simples Nacional (até 20%)** ou **Demais regimes (até 33%)**.
 2. Em **Retenção da empresa (%)**, informe o percentual retido para custear os encargos sociais, previdenciários e trabalhistas. A retenção só vale com previsão em convenção ou acordo coletivo e tem o limite do regime (§ 6º). Use 0 sem retenção.
-3. Em **Situação do contrato**, escolha **Contrato ativo** ou **Dispensa sem justa causa**. A dispensa acrescenta a multa de 40% do FGTS, e o reflexo nas férias é tratado como indenizado, fora do FGTS.
+3. Em **Situação do contrato**, escolha **Contrato ativo** ou **Dispensa sem justa causa**. A dispensa acrescenta a multa de 40% do FGTS, e as férias ainda não gozadas são indenizadas, sem FGTS. Informe também a **Admissão (opcional)**: ela separa as férias por período aquisitivo.
 4. Informe o período e o valor sugeridos e clique em **Gerar meses**.
 5. Em cada competência, informe a **parte do empregado nas gorjetas**, antes da retenção, conforme o rateio da convenção ou do acordo coletivo ou, na falta deles, da assembleia dos trabalhadores (§ 5º).
 6. Clique em **Calcular**.
@@ -1413,7 +1414,7 @@ Abra pelo cartão **Gorjetas**, no grupo **Remuneração e custos**. A gorjeta, 
 ![Resultado das gorjetas com a retenção, a média e os reflexos](imagens/107-gorjetas-resultado.png)
 
 - **Gorjetas repassadas:** o valor do mês menos a retenção, arredondada nos centavos. A retenção aparece em **Valores informativos**.
-- **13º e férias + 1/3:** 1/12 das gorjetas repassadas de cada mês, o 13º separado por ano.
+- **13º e férias + 1/3:** 1/12 das gorjetas repassadas de cada mês, o 13º separado por ano e as férias por período aquisitivo, com a **Admissão**, como na seção 8.36.
 - **Sem aviso e sem DSR:** as gorjetas não são base do aviso prévio, do adicional noturno, das horas extras nem do repouso semanal remunerado (Súmula 354 do TST).
 - **FGTS e multa:** 8% sobre as gorjetas repassadas e os reflexos (sem as férias indenizadas) e, na dispensa, a multa de 40%.
 - **Média mensal:** a média das gorjetas repassadas nos últimos 12 meses informados. Se a empresa cobrava a gorjeta havia mais de 12 meses e deixa de cobrá-la, essa média é incorporada ao salário, salvo o que dispuser a norma coletiva (§ 9º).

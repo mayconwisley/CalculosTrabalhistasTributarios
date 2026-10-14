@@ -59,8 +59,8 @@ public sealed class SimularGorjetasUseCase : ISimularDemonstrativoUseCase<Simula
             "A CTPS e o contracheque devem trazer o salário fixo e o percentual ou o valor das gorjetas (§ 8º).",
             "Demonstrativo bruto: INSS, IRRF, atualização monetária e juros não estão incluídos. O FGTS e a multa são depositados pelo empregador e não somam ao total."
         };
-        if (!entrada.FeriasGozadas)
-            observacoes.Add("Na dispensa, o reflexo nas férias é tratado como indenizado e fica fora do FGTS (OJ 195 da SBDI-1 do TST). As gorjetas não entram no aviso prévio indenizado.");
+        if (MemoriaReflexos.ObservacaoFerias(r) is { } ferias)
+            observacoes.Add(ferias);
 
         var periodo = g.Meses.Count == 1 ? Formato.Competencia(g.Meses[0].Mes.Competencia) : $"{Formato.Competencia(g.Meses[0].Mes.Competencia)} a {Formato.Competencia(g.Meses[^1].Mes.Competencia)}";
         return new DemonstrativoDto("Gorjetas", $"Competências {periodo} • retenção de {retencao}",

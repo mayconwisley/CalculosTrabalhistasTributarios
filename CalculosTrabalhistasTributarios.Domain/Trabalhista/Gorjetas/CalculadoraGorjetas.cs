@@ -41,7 +41,7 @@ public static class CalculadoraGorjetas
             return Erro.Validacao("Informe as gorjetas de pelo menos uma competência.");
 
         var verba = new VerbaReflexa("Gorjetas", NaturezaVerbaReflexa.Outra, true, entrada.Incidencias,
-            meses.Select(mes => new MesVerbaReflexa(mes.Mes.Competencia, mes.Repasse)).ToArray(), FeriasGozadas: entrada.FeriasGozadas);
+            meses.Select(mes => new MesVerbaReflexa(mes.Mes.Competencia, mes.Repasse)).ToArray(), FeriasGozadas: entrada.FeriasGozadas, Admissao: entrada.Admissao);
         var reflexos = MotorReflexos.Calcular(verba);
         if (reflexos.Falhou)
             return reflexos.Erro;

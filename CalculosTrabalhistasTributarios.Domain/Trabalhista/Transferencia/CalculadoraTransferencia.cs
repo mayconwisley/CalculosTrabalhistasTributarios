@@ -42,7 +42,7 @@ public static class CalculadoraTransferencia
 
         var verba = new VerbaReflexa("Adicional de transferência", NaturezaVerbaReflexa.Outra, true, entrada.Incidencias,
             meses.Select(mes => new MesVerbaReflexa(mes.Mes.Competencia, mes.Valor)).ToArray(),
-            DiasAvisoPrevio: entrada.DiasAvisoPrevio, FeriasGozadas: entrada.FeriasGozadas);
+            DiasAvisoPrevio: entrada.DiasAvisoPrevio, FeriasGozadas: entrada.FeriasGozadas, Admissao: entrada.Admissao);
         var reflexos = MotorReflexos.Calcular(verba);
         return reflexos.Falhou ? reflexos.Erro : new ApuracaoTransferencia(entrada, meses, reflexos.Valor);
     }

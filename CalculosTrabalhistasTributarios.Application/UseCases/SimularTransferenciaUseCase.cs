@@ -55,8 +55,8 @@ public sealed class SimularTransferenciaUseCase : ISimularDemonstrativoUseCase<S
             "As despesas da mudança correm por conta do empregador (CLT, art. 470). São reembolso, sem natureza salarial: não entram no FGTS nem nos reflexos.",
             "Demonstrativo bruto: INSS, IRRF, atualização monetária e juros não estão incluídos. O FGTS e a multa são depositados pelo empregador e não somam ao total."
         };
-        if (!entrada.FeriasGozadas)
-            observacoes.Add("Na dispensa, o reflexo nas férias é tratado como indenizado e fica fora do FGTS (OJ 195 da SBDI-1 do TST).");
+        if (MemoriaReflexos.ObservacaoFerias(r) is { } ferias)
+            observacoes.Add(ferias);
 
         var periodo = t.Meses.Count == 1 ? Formato.Competencia(t.Meses[0].Mes.Competencia) : $"{Formato.Competencia(t.Meses[0].Mes.Competencia)} a {Formato.Competencia(t.Meses[^1].Mes.Competencia)}";
         return new DemonstrativoDto("Adicional de transferência", $"Competências {periodo} • adicional de {percentual}",

@@ -49,6 +49,15 @@ public class SobreavisoTests
     }
 
     [Fact]
+    public void Com_admissao_as_ferias_do_periodo_em_curso_nao_sao_devidas()
+    {
+        // Admissão em 01/07/2025: os meses de 07 a 10/2026 são do período aquisitivo em curso, de 01/07/2026 a 30/06/2027.
+        // Total sem as férias: 1.040 + 190,52 + 86,67 = 1.317,19.
+        var s = CalculadoraSobreaviso.Calcular(new EntradaSobreaviso(Meses(), 220m, true, Ativo, Admissao: new DateOnly(2025, 7, 1))).Sucesso();
+        Assert.Equal((0m, 1317.19m, SituacaoFeriasReflexo.NaoDevidas), (s.Reflexos.Ferias, s.Reflexos.TotalAoEmpregado, s.Reflexos.PeriodosFerias.Single().Situacao));
+    }
+
+    [Fact]
     public void Dsr_nos_reflexos_por_premissa()
     {
         var s = CalculadoraSobreaviso.Calcular(new EntradaSobreaviso(Meses(), 220m, true, Ativo, DsrRepercuteNasOutras: true)).Sucesso();

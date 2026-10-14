@@ -57,8 +57,8 @@ public sealed class SimularSobreavisoUseCase : ISimularDemonstrativoUseCase<Simu
                 : "Horas eventuais não integram a remuneração para o DSR, o 13º, as férias e o aviso; o FGTS incide sobre o valor pago no mês.",
             "Demonstrativo bruto: INSS, IRRF, atualização monetária e juros não estão incluídos. O FGTS e a multa são depositados pelo empregador e não somam ao total."
         };
-        if (entrada.Habitual && !entrada.FeriasGozadas)
-            observacoes.Add("Na dispensa, o reflexo nas férias é tratado como indenizado e fica fora do FGTS (OJ 195 da SBDI-1 do TST).");
+        if (MemoriaReflexos.ObservacaoFerias(r) is { } ferias)
+            observacoes.Add(ferias);
 
         var periodo = s.Meses.Count == 1 ? Formato.Competencia(s.Meses[0].Mes.Competencia) : $"{Formato.Competencia(s.Meses[0].Mes.Competencia)} a {Formato.Competencia(s.Meses[^1].Mes.Competencia)}";
         return new DemonstrativoDto("Sobreaviso e prontidão", $"Competências {periodo} • divisor {Formato.Numero(entrada.Divisor)}",
