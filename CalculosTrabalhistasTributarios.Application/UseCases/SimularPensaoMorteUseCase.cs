@@ -3,12 +3,16 @@ using CalculosTrabalhistasTributarios.Application.DTOs;
 using CalculosTrabalhistasTributarios.Application.Extensoes;
 using CalculosTrabalhistasTributarios.Application.Interfaces;
 using CalculosTrabalhistasTributarios.Domain.Comum;
+using CalculosTrabalhistasTributarios.Domain.Previdencia;
 using CalculosTrabalhistasTributarios.Domain.Previdencia.PensaoMorte;
 
 namespace CalculosTrabalhistasTributarios.Application.UseCases;
 
-/// <summary>Pensão por morte do RGPS: valor, cota por dependente, duração para o cônjuge e o redutor da acumulação.</summary>
-public sealed class SimularPensaoMorteUseCase(ITributacaoConsulta tributacaoConsulta) : ISimularDemonstrativoUseCase<SimularPensaoMorteRequest>
+/// <summary>
+/// Pensão por morte do RGPS: valor, cota por dependente, duração para o cônjuge e o redutor da acumulação. Para o segurado não
+/// aposentado, a média vem pronta ou é calculada dos salários de contribuição, corrigidos pelo INPC até o mês anterior ao do óbito.
+/// </summary>
+public sealed class SimularPensaoMorteUseCase(ITributacaoConsulta tributacaoConsulta, IIndicesEconomicos indices) : ISimularDemonstrativoUseCase<SimularPensaoMorteRequest>
 {
     public async Task<Result<DemonstrativoDto>> ExecutarAsync(SimularPensaoMorteRequest r, CancellationToken cancellationToken)
     {
@@ -19,15 +23,24 @@ public sealed class SimularPensaoMorteUseCase(ITributacaoConsulta tributacaoCons
         if (minimo.Falhou)
             return minimo.Erro;
 
-        var resultado = CalculadoraPensaoMorte.Calcular(new EntradaPensaoMorte(r.DataObito, r.Situacao, r.ValorAposentadoria, r.Media, r.SexoInstituidor,
+        ApuracaoMediaSalarios? media = null;
+        if (r.Salarios is not null && r.Situacao == SituacaoInstituidor.NaoAposentado)
+        {
+            var calculada = await MemoriaMediaSalarios.CalcularAsync(indices, r.Salarios, r.DataObito, r.MesesContribuicao, cancellationToken);
+            if (calculada.Falhou)
+                return calculada.Erro;
+            media = calculada.Valor;
+        }
+
+        var resultado = CalculadoraPensaoMorte.Calcular(new EntradaPensaoMorte(r.DataObito, r.Situacao, r.ValorAposentadoria, media?.Media ?? r.Media, r.SexoInstituidor,
             r.MesesContribuicao, r.Causa, r.HaConjuge, r.IdadeConjuge, r.UniaoDoisAnos, r.OutrosDependentes, r.DependenteInvalido, r.BeneficioConjuge,
             minimo.Valor, tabelas.Valor.TetoInss));
         if (resultado.Falhou)
             return resultado.Erro;
-        return Montar(resultado.Valor);
+        return Montar(resultado.Valor, media);
     }
 
-    private static DemonstrativoDto Montar(ApuracaoPensaoMorte p)
+    private static DemonstrativoDto Montar(ApuracaoPensaoMorte p, ApuracaoMediaSalarios? media)
     {
         var e = p.Entrada;
         var aposentado = e.Situacao == SituacaoInstituidor.Aposentado;
@@ -79,9 +92,16 @@ public sealed class SimularPensaoMorteUseCase(ITributacaoConsulta tributacaoCons
             "Acumulação de pensão com aposentadoria própria ou outra pensão de outro regime: o benefício mais vantajoso é pago inteiro e o outro com o redutor por faixas de salário mínimo (EC 103/2019, art. 24, § 2º). Não há redutor quando os dois direitos foram adquiridos antes da reforma.",
             "Simulação com o salário mínimo e o teto da data do óbito. A qualidade de segurado, a comprovação da dependência e a média dos salários são conferidas pelo INSS."
         };
+        if (media is not null)
+        {
+            observacoes.Insert(1, MemoriaMediaSalarios.Observacao(media));
+            if (MemoriaMediaSalarios.AvisoInpc(media) is { } aviso)
+                observacoes.Insert(2, aviso);
+        }
+        GrupoMemoriaDto pensao = new("Pensão por morte", Formato.Moeda(p.Pensao), formulas);
 
         return new DemonstrativoDto("Pensão por morte", $"Óbito em {Formato.Data(e.DataObito)} • {dependentes}",
-            destaques, proventos, [], informativos, [new GrupoMemoriaDto("Pensão por morte", Formato.Moeda(p.Pensao), formulas)], observacoes,
+            destaques, proventos, [], informativos, media is null ? [pensao] : [MemoriaMediaSalarios.Memoria(media), pensao], observacoes,
             RotuloProventos: "Pensão", RotuloResultado: "Pensão mensal");
     }
 

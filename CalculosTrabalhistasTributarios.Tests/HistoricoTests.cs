@@ -130,22 +130,26 @@ public class HistoricoTests
         Assert.Equal(2, holerite.Contexto.Dependentes);
     }
 
-    [Fact]
-    public void Aposentadoria_salva_com_a_media_digitada_reabre_com_a_media_informada()
+    [Theory]
+    [InlineData(typeof(CalculadoraAposentadoria), "Sexo", "Mulher")]
+    [InlineData(typeof(CalculadoraPensaoMorte), "Situação do segurado", "Não aposentado")]
+    public void Media_digitada_no_historico_antigo_reabre_como_media_informada(Type tipo, string outroCampo, string outroValor)
     {
         // Antes do cálculo pelos salários, "Média dos salários" guardava o valor digitado da média.
-        var antiga = Criar(typeof(CalculadoraAposentadoria));
-        antiga.ImportarCampos(new Dictionary<string, string> { ["Sexo"] = "Mulher", ["Média dos salários"] = "5.000,00" });
+        var antiga = Criar(tipo);
+        antiga.ImportarCampos(new Dictionary<string, string> { [outroCampo] = outroValor, ["Média dos salários"] = "5.000,00" });
 
         var campos = antiga.ExportarCampos();
         Assert.Equal(("Informar a média pronta", "5.000,00", "[]"), (campos["Média dos salários"], campos["Média informada"], campos["Salários de contribuição"]));
-        Assert.Equal("Mulher", campos["Sexo"]);
+        Assert.Equal(outroValor, campos[outroCampo]);
     }
 
-    [Fact]
-    public void Aposentadoria_reabre_os_periodos_de_salario_na_ordem()
+    [Theory]
+    [InlineData(typeof(CalculadoraAposentadoria))]
+    [InlineData(typeof(CalculadoraPensaoMorte))]
+    public void Periodos_de_salario_reabrem_na_ordem(Type tipo)
     {
-        var original = Criar(typeof(CalculadoraAposentadoria));
+        var original = Criar(tipo);
         var salarios = original.Campos.OfType<CampoSalariosContribuicaoViewModel>().Single();
         salarios.AdicionarCommand.Execute(null);
         salarios.Linhas[0].Fim = "12/1999";
@@ -155,7 +159,7 @@ public class HistoricoTests
         salarios.Linhas[1].Fim = "09/2026";
         salarios.Linhas[1].Salario = "3.500,00";
 
-        var reaberto = Criar(typeof(CalculadoraAposentadoria));
+        var reaberto = Criar(tipo);
         reaberto.ImportarCampos(DadosFormulario.DeJson(new DadosFormulario(original.ExportarCampos()).ParaJson()).Campos);
         var linhas = reaberto.Campos.OfType<CampoSalariosContribuicaoViewModel>().Single().Linhas;
         Assert.Equal([("07/1994", "12/1999", "800,00"), ("01/2000", "09/2026", "3.500,00")], linhas.Select(linha => (linha.Inicio, linha.Fim, linha.Salario)));

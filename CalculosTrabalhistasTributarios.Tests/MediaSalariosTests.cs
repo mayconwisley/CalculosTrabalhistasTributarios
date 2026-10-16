@@ -2,6 +2,7 @@ using CalculosTrabalhistasTributarios.Application.DTOs;
 using CalculosTrabalhistasTributarios.Application.UseCases;
 using CalculosTrabalhistasTributarios.Domain.Judicial;
 using CalculosTrabalhistasTributarios.Domain.Previdencia;
+using CalculosTrabalhistasTributarios.Domain.Previdencia.PensaoMorte;
 using Xunit;
 
 namespace CalculosTrabalhistasTributarios.Tests;
@@ -96,5 +97,24 @@ public class MediaSalariosTests
 
         var excesso = await caso.ExecutarAsync(pedido with { MesesContribuicao = 2 }, default);
         Assert.Contains("mais que o tempo de contribuição informado", excesso.Erro.Mensagem);
+    }
+
+    [Fact]
+    public async Task Pensao_do_nao_aposentado_usa_a_media_calculada_ate_o_obito()
+    {
+        // Mesmos salários e INPC do caso anterior, com óbito em 13/10/2026: média de 2.991,60. Homem com 30 anos de
+        // contribuição: 60% + 2 x 10 = 80%; base 2.991,60 x 80% = 2.393,28.
+        var caso = new SimularPensaoMorteUseCase(await Ambiente.ConsultaAsync(), await Ambiente.IndicesAsync());
+        var pedido = new SimularPensaoMorteRequest(new DateOnly(2026, 10, 13), SituacaoInstituidor.NaoAposentado, 0m, 0m, SexoSegurado.Masculino, 360,
+            CausaObito.Comum, true, 40, true, 1, false, 0m, [new(Mes(2026, 6), Mes(2026, 8), 3000m)]);
+        var d = (await caso.ExecutarAsync(pedido, default)).Sucesso();
+
+        Assert.Equal(("Média dos salários de contribuição", "R$ 2.991,60"), (d.Memoria[0].Titulo, Texto.Normalizar(d.Memoria[0].Destaque)));
+        Assert.Equal(2393.28m, d.Informativos[0].Valor);
+        Assert.Contains(d.Observacoes, texto => texto.Contains("09/2026 em diante"));
+
+        // Do aposentado, a pensão parte da aposentadoria recebida e os salários são ignorados.
+        var aposentado = (await caso.ExecutarAsync(pedido with { Situacao = SituacaoInstituidor.Aposentado, ValorAposentadoria = 4000m }, default)).Sucesso();
+        Assert.Equal(("Pensão por morte", 4000m), (aposentado.Memoria[0].Titulo, aposentado.Informativos[0].Valor));
     }
 }

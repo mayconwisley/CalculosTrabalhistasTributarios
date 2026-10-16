@@ -3,7 +3,6 @@
     "Data do óbito": "13/10/2026",
     "Situação do segurado": "Não aposentado",
     "Aposentadoria recebida": "0,00",
-    "Média dos salários": "6.000,00",
     "Sexo do segurado": "Homem",
     "Contribuição do segurado: anos": "30",
     "Contribuição: meses (0 a 11)": "0",
@@ -13,6 +12,9 @@
     "União de 2 anos ou mais?": "Sim",
     "Benefício do cônjuge (opcional)": "3.000,00",
     "Outros dependentes": "1",
-    "Dependente inválido?": "Não"
+    "Dependente inválido?": "Não",
+    "Média dos salários": "Calcular pelos salários",
+    "Média informada": "0,00",
+    "Salários de contribuição": "[{\"Inicio\":\"01/1997\",\"Fim\":\"12/2006\",\"Salario\":\"1.500,00\"},{\"Inicio\":\"01/2007\",\"Fim\":\"12/2016\",\"Salario\":\"3.500,00\"},{\"Inicio\":\"01/2017\",\"Fim\":\"09/2026\",\"Salario\":\"6.500,00\"}]"
   }
 }

@@ -17,14 +17,18 @@ public sealed class CampoSalariosContribuicaoViewModel : CampoViewModel
     private static readonly CultureInfo Cultura = CultureInfo.GetCultureInfo("pt-BR");
     private readonly RelayCommand _adicionarCommand;
 
-    public CampoSalariosContribuicaoViewModel()
+    /// <param name="referencia">Até quando os salários são corrigidos, como "a data da simulação" ou "o óbito".</param>
+    public CampoSalariosContribuicaoViewModel(string referencia = "a data da simulação")
         : base("Salários de contribuição", "Períodos com o mesmo salário de contribuição, desde 07/1994, como no CNIS.")
     {
+        Explicacao = "Informe os salários de contribuição desde 07/1994, como no extrato do CNIS: uma linha para cada sequência de meses com o mesmo salário, ou um mês por linha, repetindo a competência em De e Até. Some os vínculos do mesmo mês numa só linha. "
+            + $"Cada mês é corrigido pelo INPC até {referencia}, e a média é a soma dos salários corrigidos dividida pela quantidade de meses.";
         _adicionarCommand = new RelayCommand(_ => Adicionar(), _ => Linhas.Count < CalculadoraMediaSalarios.LimitePeriodos);
         RemoverCommand = new RelayCommand(item => { if (item is LinhaSalarioContribuicaoViewModel linha) Linhas.Remove(linha); });
         Linhas.CollectionChanged += (_, _) => _adicionarCommand.RaiseCanExecuteChanged();
     }
 
+    public string Explicacao { get; }
     public ObservableCollection<LinhaSalarioContribuicaoViewModel> Linhas { get; } = [];
     public ICommand AdicionarCommand => _adicionarCommand;
     public ICommand RemoverCommand { get; }

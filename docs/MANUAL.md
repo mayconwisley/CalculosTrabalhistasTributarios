@@ -1523,15 +1523,16 @@ Abra pelo cartão **Pensão por morte**, no grupo **FGTS, afastamentos e benefí
 ![Formulário da pensão por morte de um segurado não aposentado, com cônjuge e um filho](imagens/114-pensao-morte-formulario.png)
 
 1. Informe a **Data do óbito**: ela define o salário mínimo, o teto e a tabela de duração.
-2. Em **Situação do segurado**, escolha **Aposentado** e informe a **Aposentadoria recebida**, ou **Não aposentado** e informe a **Média dos salários**, o **Sexo do segurado** e o tempo de contribuição dele.
+2. Em **Situação do segurado**, escolha **Aposentado** e informe a **Aposentadoria recebida**, ou **Não aposentado** e informe o **Sexo do segurado** e o tempo de contribuição dele.
 3. Escolha a **Causa do óbito**. O acidente de qualquer natureza dispensa as 18 contribuições e os 2 anos de união; o acidente do trabalho e a doença profissional também levam a base a 100% da média.
 4. Em **Deixou cônjuge?**, informe se há cônjuge ou companheiro. Com **Sim**, informe a **Idade do cônjuge no óbito**, se a **União de 2 anos ou mais?** se cumpre e, opcionalmente, o **Benefício do cônjuge**, a aposentadoria ou pensão que ele já recebe.
 5. Informe os **Outros dependentes**, como filhos até 21 anos, e se há **Dependente inválido?**, inválido ou com deficiência intelectual, mental ou grave.
-6. Clique em **Calcular**.
+6. Para o segurado não aposentado, em **Média dos salários**, escolha **Calcular pelos salários** e preencha a grade **Salários de contribuição** como na simulação de aposentadoria (seção 8.41): cada mês é corrigido pelo INPC até o mês anterior ao do óbito. Se já tem a média apurada, escolha **Informar a média pronta** e preencha a **Média informada**.
+7. Clique em **Calcular**.
 
 ![Resultado da pensão com a cota familiar, o valor por dependente e o redutor da acumulação](imagens/115-pensao-morte-resultado.png)
 
-- **Base:** a aposentadoria que o segurado recebia ou, se não era aposentado, a aposentadoria por incapacidade permanente a que teria direito: 60% da média mais 2 pontos por ano acima de 20 anos (homem) ou 15 (mulher), ou 100% no acidente do trabalho.
+- **Base:** a aposentadoria que o segurado recebia ou, se não era aposentado, a aposentadoria por incapacidade permanente a que teria direito: 60% da média mais 2 pontos por ano acima de 20 anos (homem) ou 15 (mulher), ou 100% no acidente do trabalho. Com a média calculada pelos salários, a memória de cálculo mostra cada período corrigido, como na simulação de aposentadoria.
 - **Cota familiar:** 50% mais 10 pontos por dependente, até 100%; com dependente inválido ou com deficiência, 100%. A pensão não fica abaixo do salário mínimo.
 - **Por dependente:** a pensão em partes iguais. Quando um dependente perde essa condição, a cota dele deixa de ser paga e não passa aos demais.
 - **Duração para o cônjuge:** 4 meses se o óbito ocorreu antes de 18 contribuições ou com menos de 2 anos de união, salvo acidente. Nos demais casos, pela idade no óbito: menos de 22 anos, 3 anos; de 22 a 27, 6; de 28 a 30, 10; de 31 a 41, 15; de 42 a 44, 20; 45 ou mais, vitalícia. Para óbitos antes de 2021, as idades são um ano menores.

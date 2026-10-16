@@ -324,7 +324,7 @@
         <DataTemplate DataType="{x:Type calculadoras:CampoSalariosContribuicaoViewModel}">
             <StackPanel Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ItemsControl}}" Margin="0,0,0,14" Visibility="{Binding Visivel, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <TextBlock Text="Salários de contribuição" FontWeight="SemiBold" Margin="0,0,0,5" />
-                <TextBlock Text="Informe os salários de contribuição desde 07/1994, como no extrato do CNIS: uma linha para cada sequência de meses com o mesmo salário, ou um mês por linha, repetindo a competência em De e Até. Some os vínculos do mesmo mês numa só linha. Cada mês é corrigido pelo INPC até a data da simulação, e a média é a soma dos salários corrigidos dividida pela quantidade de meses." FontSize="12" Foreground="{DynamicResource MutedTextBrush}" TextWrapping="Wrap" Margin="0,0,0,9" />
+                <TextBlock Text="{Binding Explicacao}" FontSize="12" Foreground="{DynamicResource MutedTextBrush}" TextWrapping="Wrap" Margin="0,0,0,9" />
                 <WrapPanel Margin="0,0,0,2">
                     <Button Content="+ Período" Command="{Binding AdicionarCommand}" Padding="10,6" Margin="0,0,8,8" ToolTip="Adiciona um período que começa no mês seguinte ao fim do anterior" AutomationProperties.Name="Adicionar período de salário de contribuição" />
                 </WrapPanel>

@@ -18,7 +18,8 @@ public sealed class CalculadoraPensaoMorte : CalculadoraBase
         [new("Aposentado", SituacaoInstituidor.Aposentado), new("Não aposentado", SituacaoInstituidor.NaoAposentado)],
         "Aposentado: a pensão parte da aposentadoria que recebia. Não aposentado: da aposentadoria por incapacidade permanente a que teria direito.") { Largura = 250 };
     private readonly CampoTextoViewModel _aposentadoria = Moeda("Aposentadoria recebida", "Valor mensal da aposentadoria do segurado na data do óbito.");
-    private readonly CampoTextoViewModel _media = Moeda("Média dos salários", "Média de todos os salários de contribuição desde 07/1994, corrigidos.");
+    private readonly CamposMediaSalarios _media = new("o mês anterior ao do óbito",
+        "Calcular: informe os salários de contribuição do segurado desde 07/1994, que são corrigidos pelo INPC até o óbito. Informar: use a média já apurada.");
     private readonly CampoOpcaoViewModel _sexo = new("Sexo do segurado", [new("Homem", SexoSegurado.Masculino), new("Mulher", SexoSegurado.Feminino)],
         "Define o tempo a partir do qual o coeficiente da aposentadoria por incapacidade cresce: 20 anos para o homem e 15 para a mulher.");
     private readonly CampoTextoViewModel _anos = Inteiro("Contribuição do segurado: anos", 0, "Tempo de contribuição do segurado na data do óbito, em anos completos.");
@@ -40,15 +41,29 @@ public sealed class CalculadoraPensaoMorte : CalculadoraBase
     public CalculadoraPensaoMorte(ISimularDemonstrativoUseCase<SimularPensaoMorteRequest> simulador)
     {
         _simulador = simulador;
-        _situacao.AoAlterar = _conjuge.AoAlterar = AtualizarCampos;
+        _situacao.AoAlterar = _conjuge.AoAlterar = _media.Origem.AoAlterar = AtualizarCampos;
         AtualizarCampos();
     }
 
     public override string Titulo => "Pensão por morte";
     public override string Descricao => "Calcule a pensão por morte do INSS: cota familiar, valor por dependente, duração para o cônjuge e o redutor da acumulação.";
-    public override string InstrucaoInicial => "Informe o óbito, o segurado e os dependentes e selecione Calcular.";
+    public override string InstrucaoInicial => "Informe o óbito, o segurado, os salários de contribuição ou a média, se não era aposentado, e os dependentes e selecione Calcular.";
     public override IReadOnlyList<CampoViewModel> Campos =>
-        [_dataObito, _situacao, _aposentadoria, _media, _sexo, _anos, _meses, _causa, _conjuge, _idadeConjuge, _uniao, _beneficioConjuge, _outros, _invalido];
+        [_dataObito, _situacao, _aposentadoria, _sexo, _anos, _meses, _causa, _conjuge, _idadeConjuge, _uniao, _beneficioConjuge, _outros, _invalido, .. _media.Campos];
+
+    public override Dictionary<string, string> ExportarCampos()
+    {
+        var campos = base.ExportarCampos();
+        _media.Exportar(campos);
+        return campos;
+    }
+
+    public override void ImportarCampos(IReadOnlyDictionary<string, string> valores)
+    {
+        var atualizados = _media.Migrar(valores);
+        base.ImportarCampos(atualizados);
+        _media.ImportarSalarios(atualizados);
+    }
     public override string NomeArquivoPdf => "pensao-por-morte.pdf";
 
     public override Task<Result<DemonstrativoDto>> CalcularAsync(CancellationToken cancellationToken)
@@ -60,19 +75,23 @@ public sealed class CalculadoraPensaoMorte : CalculadoraBase
             _meses.MensagemErro = "Use de 0 a 11 meses.";
             return Task.FromResult<Result<DemonstrativoDto>>(Erro.Validacao($"O campo \"{_meses.Rotulo}\" aceita de 0 a 11 meses; some os anos completos no campo de anos."));
         }
+        var salarios = aposentado ? Result.Ok<IReadOnlyList<PeriodoSalarioContribuicao>?>(null) : _media.LerSalarios();
+        if (salarios.Falhou)
+            return Task.FromResult<Result<DemonstrativoDto>>(salarios.Erro);
         return LerECalcularAsync(_simulador, leitor => new SimularPensaoMorteRequest(
             leitor.Data(_dataObito), _situacao.Valor<SituacaoInstituidor>(),
-            aposentado ? leitor.Moeda(_aposentadoria) : 0m, aposentado ? 0m : leitor.Moeda(_media), _sexo.Valor<SexoSegurado>(),
+            aposentado ? leitor.Moeda(_aposentadoria) : 0m, aposentado || _media.Calcular ? 0m : leitor.Moeda(_media.Media), _sexo.Valor<SexoSegurado>(),
             aposentado ? ContribuicoesDoAposentado : leitor.Inteiro(_anos) * 12 + leitor.Inteiro(_meses), _causa.Valor<CausaObito>(),
             conjuge, conjuge ? leitor.Inteiro(_idadeConjuge) : 0, conjuge && _uniao.Valor<bool>(), leitor.Inteiro(_outros), _invalido.Valor<bool>(),
-            conjuge ? leitor.Moeda(_beneficioConjuge) : 0m), cancellationToken);
+            conjuge ? leitor.Moeda(_beneficioConjuge) : 0m, salarios.Valor), cancellationToken);
     }
 
     private void AtualizarCampos()
     {
         var aposentado = _situacao.Valor<SituacaoInstituidor>() == SituacaoInstituidor.Aposentado;
         _aposentadoria.Visivel = aposentado;
-        _media.Visivel = _sexo.Visivel = _anos.Visivel = _meses.Visivel = !aposentado;
+        _sexo.Visivel = _anos.Visivel = _meses.Visivel = !aposentado;
+        _media.AtualizarVisibilidade(!aposentado);
         _idadeConjuge.Visivel = _uniao.Visivel = _beneficioConjuge.Visivel = _conjuge.Valor<bool>();
     }
 }
