@@ -9,6 +9,10 @@ public sealed class CalculadoraIrpfAnual(ISimularDemonstrativoUseCase<SimularIrp
 {
     private readonly CampoTextoViewModel _ano = Inteiro("Ano-calendário", Math.Max(2026, DateTime.Today.Year), "Ano dos rendimentos; a declaração é entregue no ano seguinte. Disponível desde 2026, com a Lei 15.270/2025.");
     private readonly CampoTextoViewModel _tributaveis = Moeda("Rendimentos tributáveis", "Salários, pró-labore, aluguéis e outros rendimentos tributáveis no ajuste do ano, sem o 13º e a PLR.");
+    private readonly CampoTextoViewModel _aposentadoria = Moeda("Aposentadoria após 65 anos",
+        "Opcional. Aposentadoria e pensão recebidas a partir do mês dos 65 anos, sem o 13º, somando a parcela isenta e a tributável do informe. Não as inclua nos rendimentos tributáveis.");
+    private readonly CampoTextoViewModel _mesesSessentaECinco = Inteiro("Meses com 65 anos ou mais", 0,
+        "Do mês do aniversário de 65 anos a dezembro, de 0 a 12; 12 se o titular já tinha 65 anos em janeiro. Cada mês isenta até R$ 1.903,98.");
     private readonly CampoTextoViewModel _previdencia = Moeda("Previdência oficial", "INSS ou regime próprio descontado no ano.");
     private readonly CampoTextoViewModel _dependentes = Inteiro("Dependentes", 0, "R$ 2.275,08 por dependente no modelo completo.");
     private readonly CampoTextoViewModel _medicas = Moeda("Despesas médicas", "Dedutíveis sem limite no modelo completo, descontados os reembolsos.");
@@ -32,7 +36,7 @@ public sealed class CalculadoraIrpfAnual(ISimularDemonstrativoUseCase<SimularIrp
     public override string Descricao => "Declaração do ano com a redução anual, os modelos completo e simplificado e a tributação mínima das altas rendas (Lei 15.270/2025).";
     public override string InstrucaoInicial => "Informe os rendimentos, as deduções e o imposto já pago no ano e selecione Calcular.";
     public override IReadOnlyList<CampoViewModel> Campos =>
-        [_ano, _tributaveis, _previdencia, _dependentes, _medicas, _instrucao, _pgbl, _pensao, _impostoPago, _dividendos, _irrfDividendos, _outros, _impostoExclusivo, _aliquotaEmpresa, _tipoEmpresa];
+        [_ano, _tributaveis, _aposentadoria, _mesesSessentaECinco, _previdencia, _dependentes, _medicas, _instrucao, _pgbl, _pensao, _impostoPago, _dividendos, _irrfDividendos, _outros, _impostoExclusivo, _aliquotaEmpresa, _tipoEmpresa];
     public override string NomeArquivoPdf => $"irpf-{_ano.Valor.Trim()}.pdf";
 
     protected override CampoTextoViewModel CampoDependentes => _dependentes;
@@ -41,5 +45,5 @@ public sealed class CalculadoraIrpfAnual(ISimularDemonstrativoUseCase<SimularIrp
         LerECalcularAsync(simulador, leitor => new SimularIrpfAnualRequest(
             leitor.Inteiro(_ano), leitor.Moeda(_tributaveis), leitor.Moeda(_previdencia), leitor.Inteiro(_dependentes), leitor.Moeda(_medicas), leitor.Moeda(_instrucao), leitor.Moeda(_pgbl), leitor.Moeda(_pensao),
             leitor.Moeda(_impostoPago), leitor.Moeda(_dividendos), leitor.Moeda(_irrfDividendos), leitor.Moeda(_outros), leitor.Moeda(_impostoExclusivo), leitor.Numero(_aliquotaEmpresa),
-            _tipoEmpresa.Valor<AliquotaNominalEmpresa>()), cancellationToken);
+            _tipoEmpresa.Valor<AliquotaNominalEmpresa>(), leitor.Moeda(_aposentadoria), leitor.Inteiro(_mesesSessentaECinco)), cancellationToken);
 }

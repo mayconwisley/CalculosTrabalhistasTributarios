@@ -25,7 +25,7 @@ Guia completo para utilizar **Cálculos Trabalhistas e Tributários**: simulaç�
 
 O aplicativo Cálculos Trabalhistas e Tributários reúne, em um único lugar para Windows, os cálculos trabalhistas e tributários mais comuns do dia a dia:
 
-- **Simulação tributária:** IRRF com deduções legais e com desconto simplificado, INSS por faixas, salário líquido e FGTS do tipo de vínculo (8% para o empregado, 2% para o aprendiz e 8% mais 3,2% para o doméstico), com indicação da modalidade de IRRF aplicada.
+- **Simulação tributária:** IRRF com deduções legais e com desconto simplificado, INSS por faixas, salário líquido e FGTS do tipo de vínculo (8% para o empregado, 2% para o aprendiz e 8% mais 3,2% para o doméstico), com indicação da modalidade de IRRF aplicada. Também simula o IRRF da aposentadoria ou pensão, com a parcela isenta de quem tem 65 anos ou mais.
 - **Calculadoras trabalhistas:** holerite do mês, comissões e DSR, diferenças de reajuste retroativo, média de verbas variáveis, banco de horas, INSS em múltiplos vínculos, jornada pelas marcações de ponto, salário bruto a partir do líquido, horas extras com adicional noturno e DSR, insalubridade e periculosidade, salário-família, 13º salário, férias com abono, PLR, rescisão por motivo de desligamento, seguro-desemprego, custo do funcionário para a empresa, comparação entre CLT e PJ, pró-labore ou pagamento a autônomo (RPA), empregado doméstico com o DAE, estágio e trabalho intermitente.
 - **FGTS, afastamentos e benefícios:** afastamento por doença ou acidente e licenças-maternidade e paternidade, saque-aniversário do FGTS e abono salarial do PIS/Pasep.
 - **Imposto de renda anual:** a declaração do ano com a redução anual da Lei 15.270/2025, a comparação entre os modelos completo e simplificado e a tributação mínima das altas rendas; a retenção de 10% sobre dividendos acima de R$ 50 mil no mês; o carnê-leão de honorários e aluguéis; o ganho de capital na venda de imóveis e outros bens; e a multa e os juros de tributos pagos em atraso.
@@ -135,7 +135,9 @@ Abra pelo cartão **Simulação tributária**, no grupo **Impostos e salário** 
 | Valor bruto | Total de rendimentos tributáveis do mês, base do IRRF. |
 | Base de INSS | Acompanha o valor bruto ao digitá-lo. Altere só quando parte do valor não tiver incidência de INSS. É também a base do FGTS. |
 | Dependentes | Quantidade de dependentes para a dedução do IRRF, de 0 a 99. |
-| Tipo de vínculo | **Empregado** (FGTS de 8%), **Aprendiz** (FGTS de 2%) ou **Doméstico** (FGTS de 8% e mais 3,2% de indenização compensatória). O INSS e o IRRF são os mesmos nos três. |
+| Tipo de vínculo | **Empregado** (FGTS de 8%), **Aprendiz** (FGTS de 2%) ou **Doméstico** (FGTS de 8% e mais 3,2% de indenização compensatória). O INSS e o IRRF são os mesmos nos três. **Aposentadoria ou pensão**, paga pelo INSS ou pela previdência complementar, não tem INSS nem FGTS: o campo **Base de INSS** some, e o valor bruto é o benefício do mês ou o 13º, conforme o **Rendimento**. |
+| Rendimento | Só na aposentadoria ou pensão: **Benefício do mês** ou **13º (abono anual)**. O 13º é tributado à parte do benefício do mês, exclusivamente na fonte. |
+| 65 anos ou mais | Só na aposentadoria ou pensão. Escolha **Sim** a partir do mês em que o beneficiário completa 65 anos, para excluir a parcela isenta do IRRF. |
 
 Clique em **Calcular** ou pressione **Enter**. Na primeira simulação, a competência vem com o mês atual. Depois, os campos já abrem com os dados do último cálculo (veja a seção [Conhecendo a tela principal](#3-conhecendo-a-tela-principal)).
 
@@ -168,12 +170,13 @@ Em seguida, aparece o IRRF **faixa a faixa** de cada modalidade, para conferir o
 | IRRF com deduções legais | Base = valor bruto − INSS − (dependentes × dedução por dependente). |
 | IRRF com desconto simplificado | Base = valor bruto − desconto simplificado. Disponível a partir de 05/2023. |
 | Redução mensal | Quando cadastrada para a competência, reduz o imposto apurado conforme a faixa de rendimentos (por exemplo, as regras vigentes a partir de 01/2026). |
-| Alíquota efetiva | IRRF da modalidade ÷ valor bruto. |
+| Alíquota efetiva | IRRF da modalidade ÷ valor bruto. Na aposentadoria ou pensão, ÷ rendimento tributável, já sem a parcela isenta. |
 | Dispensa de retenção | O IRRF calculado de até R$ 10,00 (tabela **Desconto mínimo**) não é retido nem passa para o mês seguinte (Lei 9.430/1996, art. 67). O desconto fica em R$ 0,00, e a memória de cálculo mostra o valor calculado. Não vale para o 13º nem para a PLR, que têm tributação exclusiva. |
 | Salário líquido | Valor bruto − INSS − IRRF da modalidade de menor imposto, que é a aplicada pela fonte pagadora, ou zero quando a retenção é dispensada. |
+| Aposentadoria ou pensão | Sem INSS e sem FGTS. Aos 65 anos ou mais, até R$ 1.903,98 por mês são isentos, além da faixa isenta da tabela (Lei 7.713/1988, art. 6º, XV), e só o restante é rendimento tributável. A parcela isenta sai da base nas duas modalidades, porque o desconto simplificado substitui só as demais deduções (Solução de Consulta Cosit 99.004/2026), e a redução mensal se mede pelo rendimento tributável. O resultado mostra o **benefício líquido**, a parcela isenta e o rendimento tributável. O valor da parcela é o mesmo desde 04/2015, embora a faixa isenta da tabela tenha subido. O 13º tem parcela isenta própria, de até R$ 1.903,98, e tributação exclusiva: nele, o IRRF de até R$ 10,00 é retido, sem a dispensa do benefício do mês. |
 | FGTS | Sobre toda a base de INSS informada, sem teto: 8% para o empregado (Lei 8.036/1990, art. 15), 2% para o aprendiz (art. 15, § 7º) e, no doméstico, 8% e mais 3,2% de indenização compensatória da perda do emprego, que o trabalhador saca na dispensa sem justa causa (LC 150/2015, arts. 22 e 34). Não reduz o salário líquido. Os encargos do empregador doméstico estão na calculadora **Empregado doméstico (DAE)**. |
 
-A simulação não considera pensão alimentícia, previdência complementar, outros descontos nem outros rendimentos do mês. Para isso, use o **Holerite do mês** (seção 8.14).
+A simulação não considera pensão alimentícia, previdência complementar, outros descontos nem outros rendimentos do mês. Para isso, use o **Holerite do mês** (seção 8.14). Na aposentadoria, a isenção por moléstia grave também não é simulada.
 
 > **Importante:** o aplicativo utiliza, para cada tabela, o registro mais recente cuja competência seja **igual ou anterior** à competência informada. Por exemplo, uma simulação de 10/2026 usa as faixas de INSS de 01/2026, se essa for a tabela mais recente até essa data.
 
@@ -839,12 +842,14 @@ Abra pelo cartão **IRPF anual**, no grupo **Impostos e salário**. Ele simula a
 | Campo | O que informar |
 | --- | --- |
 | Rendimentos tributáveis | Salários, pró-labore, aluguéis e outros rendimentos tributáveis do ano. O 13º e a PLR têm tributação exclusiva e ficam de fora. |
+| Aposentadoria após 65 anos e Meses com 65 anos ou mais | Opcionais. A aposentadoria e a pensão recebidas a partir do mês em que o titular completou 65 anos, sem o 13º, somando a parte isenta e a tributável do informe de rendimentos; não as repita nos rendimentos tributáveis. Nos meses, conte do mês do aniversário de 65 anos até dezembro (12 se o titular já tinha 65 anos em janeiro). |
 | Previdência oficial, Dependentes, Despesas médicas, Instrução, Previdência privada (PGBL) e Pensão alimentícia paga | As deduções do modelo completo. A instrução vai até R$ 3.561,50 por pessoa e o PGBL, até 12% dos rendimentos tributáveis; cada dependente deduz R$ 2.275,08. |
 | Imposto retido ou pago | O IRRF dos rendimentos tributáveis, o carnê-leão e os pagamentos complementares do ano. |
 | Dividendos recebidos e IRRF sobre dividendos | Os lucros e dividendos do ano e a retenção de 10% feita sobre eles. |
 | Outros rendimentos e Imposto exclusivo pago | Rendimentos isentos ou de tributação exclusiva que entram na tributação mínima, como 13º, PLR, JCP e aplicações, e o imposto pago sobre eles. |
 | Alíquota da empresa e Tipo da empresa | A alíquota efetiva de IRPJ e CSLL da empresa que pagou os dividendos e a sua alíquota nominal (34%, 40% ou 45%), para o redutor da tributação mínima. Deixe 0 para não calcular o redutor. |
 
+- **Parcela isenta dos 65 anos (Lei 7.713/1988, art. 6º, XV):** até R$ 1.903,98 por mês com 65 anos ou mais, ou seja, até R$ 22.847,76 no ano inteiro. O limite é um só, mesmo com mais de uma fonte pagadora. O que passar dele entra nos rendimentos tributáveis, e a parcela isenta continua nos rendimentos da tributação mínima, porque não está entre as exclusões da lei (Lei 9.250/1995, art. 16-A, § 1º). O 13º da aposentadoria tem parcela isenta própria e vai nos outros rendimentos, com o imposto em **Imposto exclusivo pago**; para estimar esse imposto, use a **Simulação tributária** com o rendimento **13º (abono anual)**.
 - **Modelos:** o completo deduz as despesas informadas; o simplificado desconta 20% dos rendimentos tributáveis, até R$ 17.640,00. O aplicativo calcula os dois e escolhe o de menor imposto.
 - **Tabela anual:** isento até R$ 29.145,60; 7,5%, 15%, 22,5% e 27,5% nas faixas seguintes, com as parcelas a deduzir da Receita Federal.
 - **Redução anual (Lei 9.250/1995, art. 11-A):** com rendimentos tributáveis de até R$ 60.000,00, o imposto é zerado, até R$ 2.694,15; até R$ 88.200,00, a redução é de R$ 8.429,73 − 0,095575 × rendimentos. Ela vale nos dois modelos e nunca passa do imposto.

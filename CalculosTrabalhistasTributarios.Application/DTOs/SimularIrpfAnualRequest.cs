@@ -12,6 +12,11 @@ namespace CalculosTrabalhistasTributarios.Application.DTOs;
 /// <param name="OutrosRendimentos">Rendimentos isentos ou de tributação exclusiva que entram na tributação mínima, como 13º, PLR, JCP e aplicações.</param>
 /// <param name="ImpostoExclusivo">Imposto exclusivo ou definitivo pago sobre esses outros rendimentos.</param>
 /// <param name="AliquotaEfetivaEmpresa">IRPJ e CSLL devidos pela empresa sobre o lucro, em %; zero para não calcular o redutor.</param>
+/// <param name="AposentadoriaSessentaECinco">
+/// Aposentadoria e pensão recebidas a partir do mês em que o titular completou 65 anos, sem o 13º, fora dos rendimentos
+/// tributáveis: a parcela isenta sai dela, e o restante entra nos tributáveis do ajuste.
+/// </param>
+/// <param name="MesesSessentaECinco">Meses do ano com 65 anos ou mais, do mês do aniversário a dezembro: de 0 a 12.</param>
 public sealed record SimularIrpfAnualRequest(
     int Ano,
     decimal RendimentosTributaveis,
@@ -27,4 +32,6 @@ public sealed record SimularIrpfAnualRequest(
     decimal OutrosRendimentos,
     decimal ImpostoExclusivo,
     decimal AliquotaEfetivaEmpresa,
-    AliquotaNominalEmpresa AliquotaNominal);
+    AliquotaNominalEmpresa AliquotaNominal,
+    decimal AposentadoriaSessentaECinco = 0m,
+    int MesesSessentaECinco = 0);

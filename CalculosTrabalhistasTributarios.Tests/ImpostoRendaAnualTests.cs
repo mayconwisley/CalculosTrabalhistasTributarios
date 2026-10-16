@@ -1,5 +1,6 @@
 using CalculosTrabalhistasTributarios.Application.DTOs;
 using CalculosTrabalhistasTributarios.Application.UseCases;
+using CalculosTrabalhistasTributarios.Domain.Comum;
 using CalculosTrabalhistasTributarios.Domain.Tributacao;
 using Xunit;
 
@@ -11,6 +12,10 @@ public class ImpostoRendaAnualTests
         decimal dividendos = 0m, decimal irrfDividendos = 0m, decimal aliquotaEmpresa = 0m) =>
         new SimularIrpfAnualUseCase().ExecutarAsync(new SimularIrpfAnualRequest(2026, tributaveis, previdencia, 0, medicas, 0m, 0m, 0m, impostoPago,
             dividendos, irrfDividendos, 0m, 0m, aliquotaEmpresa, AliquotaNominalEmpresa.Geral), default).Sucesso();
+
+    private static Task<Result<DemonstrativoDto>> AposentadoAsync(decimal tributaveis, decimal aposentadoria, int meses, decimal outros = 0m) =>
+        new SimularIrpfAnualUseCase().ExecutarAsync(new SimularIrpfAnualRequest(2026, tributaveis, 0m, 0, 0m, 0m, 0m, 0m, 0m, 0m, 0m, outros, 0m, 0m, AliquotaNominalEmpresa.Geral,
+            aposentadoria, meses), default);
 
     private static decimal Informativo(DemonstrativoDto d, string inicio) => d.Informativos.Single(verba => verba.Descricao.StartsWith(inicio)).Valor;
 
@@ -88,5 +93,47 @@ public class ImpostoRendaAnualTests
         Assert.Equal(6_000m, resultado.TotalDescontos);
         var transicao = await new SimularDividendosUseCase().ExecutarAsync(new SimularDividendosRequest(new DateOnly(2026, 10, 1), 60_000m, 20_000m, 0m, false), default).Sucesso();
         Assert.Equal(0m, transicao.TotalDescontos);
+    }
+
+    // 120 mil de aposentadoria com 65 anos o ano todo: 12 x R$ 1.903,98 = R$ 22.847,76 isentos e R$ 97.152,24 tributáveis,
+    // sem redução anual (acima de R$ 88.200,00). Simplificada: desconto no limite de R$ 17.640,00, base de R$ 79.512,24,
+    // x 27,5% - R$ 10.904,66 = R$ 10.961,21; completa sem deduções: R$ 97.152,24 x 27,5% - R$ 10.904,66 = R$ 15.812,21.
+    // No ano dos 65, com 6 meses: R$ 60.000,00 + R$ 60.000,00 - R$ 11.423,88 = R$ 108.576,12 tributáveis; simplificada
+    // com base de R$ 90.936,12: R$ 14.102,77. Sem a parcela, os R$ 120.000,00 dão R$ 17.244,34.
+    [Theory]
+    [InlineData(0, 120_000, 12, "R$ 10.961,21", 22_847.76, "R$ 97.152,24")]
+    [InlineData(60_000, 60_000, 6, "R$ 14.102,77", 11_423.88, "R$ 108.576,12")]
+    public async Task Aposentadoria_com_65_anos_exclui_a_parcela_isenta_do_ajuste(decimal tributaveis, decimal aposentadoria, int meses, string devido, decimal isenta, string tributaveisAjuste)
+    {
+        var resultado = (await AposentadoAsync(tributaveis, aposentadoria, meses)).Sucesso();
+        var semParcela = await CalcularAsync(tributaveis + aposentadoria);
+
+        Assert.Equal(devido, resultado.Destaques[0].Valor);
+        Assert.Equal("R$ 17.244,34", semParcela.Destaques[0].Valor);
+        Assert.Equal(isenta, Informativo(resultado, "Parcela isenta da aposentadoria"));
+        Assert.Equal(tributaveisAjuste, resultado.Comparativo!.Linhas[0].Valores[0]);
+    }
+
+    [Fact]
+    public async Task Parcela_isenta_limita_se_a_aposentadoria_e_continua_na_tributacao_minima()
+    {
+        // R$ 10.000,00 cabem no limite de 12 meses: tudo isento, e os R$ 50.000,00 tributáveis ficam abaixo de 60 mil.
+        var pequena = (await AposentadoAsync(50_000m, 10_000m, 12)).Sucesso();
+        Assert.Equal(10_000m, Informativo(pequena, "Parcela isenta da aposentadoria"));
+        Assert.Equal("R$ 50.000,00", pequena.Comparativo!.Linhas[0].Valores[0]);
+
+        // A parcela isenta não está nas exclusões do art. 16-A, § 1º: os 700 mil inteiros contam na tributação mínima.
+        var alta = (await AposentadoAsync(0m, 700_000m, 12)).Sucesso();
+        Assert.Equal(700_000m, Informativo(alta, "Rendimentos para a tributação mínima"));
+        Assert.Equal("R$ 677.152,24", alta.Comparativo!.Linhas[0].Valores[0]);
+    }
+
+    [Theory]
+    [InlineData(1_000, 13, "Meses com 65 anos ou mais:")]
+    [InlineData(1_000, 0, "Meses com 65 anos ou mais:")]
+    public async Task Aposentadoria_com_65_anos_valida_os_meses(decimal aposentadoria, int meses, string campo)
+    {
+        var resultado = await AposentadoAsync(0m, aposentadoria, meses);
+        Assert.StartsWith(campo, resultado.Erro.Mensagem, StringComparison.Ordinal);
     }
 }

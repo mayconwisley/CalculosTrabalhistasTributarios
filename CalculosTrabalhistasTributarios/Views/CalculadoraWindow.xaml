@@ -713,7 +713,7 @@
                             <Grid.ColumnDefinitions><ColumnDefinition /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
                             <StackPanel>
                                 <TextBlock Text="Resultado" FontSize="16" FontWeight="SemiBold" />
-                                <TextBlock Text="{Binding Referencia}" Foreground="{DynamicResource AccentBrush}" FontWeight="SemiBold" Margin="0,5,0,0" />
+                                <TextBlock Text="{Binding Referencia}" Foreground="{DynamicResource AccentBrush}" FontWeight="SemiBold" TextWrapping="Wrap" Margin="0,5,0,0" />
                                 <TextBlock Text="{Binding Historico.Situacao}" Foreground="{DynamicResource MutedTextBrush}" FontSize="12" TextWrapping="Wrap" Margin="0,5,0,0" Visibility="{Binding Historico.TemSituacao, Converter={StaticResource BooleanToVisibilityConverter}}" />
                                 <Border Padding="10,6" Margin="0,8,16,0" CornerRadius="6" BorderThickness="1" HorizontalAlignment="Left"
                                         Background="{DynamicResource WarningBackgroundBrush}" BorderBrush="{DynamicResource WarningBorderBrush}"

@@ -56,6 +56,7 @@ dotnet run --project .\tools\GeradorManual
 - Considera dependentes, desconto simplificado e redução mensal do IRRF quando aplicável, e não retém o IRRF de até R$ 10,00 (desconto mínimo, Lei 9.430/1996, art. 67).
 - Calcula **INSS** por faixas: alíquota única nas competências anteriores a março de 2020 e modelo progressivo nas posteriores, com o valor de cada faixa truncado nos centavos, como no eSocial.
 - Calcula o **FGTS do tipo de vínculo**: 8% para o empregado, 2% para o aprendiz e, no doméstico, 8% mais 3,2% de indenização compensatória, como valor informativo que não reduz o líquido.
+- Simula o IRRF da **aposentadoria ou pensão**, sem INSS e sem FGTS, com a parcela isenta de R$ 1.903,98 de quem tem 65 anos ou mais (Lei 7.713/1988, art. 6º, XV), no benefício do mês e no 13º, que tem parcela isenta própria e tributação exclusiva.
 - Compara as modalidades de IRRF e destaca a aplicada, a de menor imposto.
 - Mostra o salário líquido, descontando o INSS e o IRRF da modalidade aplicada.
 - Usa a janela comum das calculadoras: resumo, demonstrativo, memória de cálculo com as faixas do INSS e do IRRF e cada dedução da base identificada, observações, PDF, Excel e histórico, com o aviso de cada campo a corrigir.
@@ -100,7 +101,7 @@ Todas usam a mesma janela, com resumo, demonstrativo no formato de holerite, val
 | Resgate de previdência privada | IR no resgate total ou parcial de PGBL e VGBL, aporte a aporte dos mais antigos aos mais recentes, na tabela regressiva de 35% a 10% e no progressivo com 15% retidos (Lei 11.053/2004), com saldo estimado por rentabilidade quando o extrato não o traz. |
 | CLT x PJ | O ano do mesmo profissional como CLT e como PJ no Simples Nacional (anexos III e V, com o fator R): total para o profissional, custo para a empresa e o valor de PJ que iguala o CLT. |
 | Simples Nacional e fator r | DAS do período pela receita e pela folha com encargos dos 12 meses, nos Anexos I a V, com início de atividade, as regras de 2027 (Resolução CGSN 190/2026), comparação entre os Anexos III e V e o pró-labore que leva o fator r a 28%. |
-| IRPF anual | Declaração do ano-calendário 2026 em diante, com a tabela anual, a redução do art. 11-A, os modelos completo e simplificado e a tributação mínima das altas rendas com o redutor (Lei 15.270/2025). |
+| IRPF anual | Declaração do ano-calendário 2026 em diante, com a tabela anual, a redução do art. 11-A, os modelos completo e simplificado, a parcela isenta da aposentadoria de quem tem 65 anos ou mais e a tributação mínima das altas rendas com o redutor (Lei 15.270/2025). |
 | Dividendos | Retenção de 10% sobre lucros e dividendos acima de R$ 50 mil no mês da mesma empresa, ou sobre qualquer valor para residentes no exterior. |
 | Carnê-leão | IR mensal de honorários, aluguéis e outros rendimentos recebidos de pessoas físicas e do exterior, com livro-caixa, desconto simplificado e a redução mensal. |
 | RRA (rendimentos acumulados) | IRRF de pagamentos atrasados: anos anteriores pela tabela acumulada (NM), com 13º, correção, juros não tributáveis e despesas rateadas; ano do pagamento com os rendimentos normais do mês ou 3% da Justiça Federal; recebe as diferenças do reajuste retroativo. |

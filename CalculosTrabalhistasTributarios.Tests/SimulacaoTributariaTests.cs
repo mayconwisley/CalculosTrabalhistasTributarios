@@ -1,7 +1,6 @@
 using CalculosTrabalhistasTributarios.Application.DTOs;
 using CalculosTrabalhistasTributarios.Application.UseCases;
 using CalculosTrabalhistasTributarios.Domain.Comum;
-using CalculosTrabalhistasTributarios.Domain.Trabalhista.Fgts;
 using CalculosTrabalhistasTributarios.Infrastructure.Persistence;
 using CalculosTrabalhistasTributarios.Presentation.ViewModels.Calculadoras;
 using CalculosTrabalhistasTributarios.Presentation.ViewModels.Historico;
@@ -17,7 +16,7 @@ public class SimulacaoTributariaTests
     private static async Task<Result<DemonstrativoDto>> SimularAsync(SimularImpostoRequest request) =>
         await new SimularImpostoUseCase(await Ambiente.ConsultaAsync()).ExecutarAsync(request, default);
 
-    private static Task<Result<DemonstrativoDto>> SimularAsync(string mes, decimal bruto, int dependentes = 0, CategoriaFgts vinculo = CategoriaFgts.Empregado) =>
+    private static Task<Result<DemonstrativoDto>> SimularAsync(string mes, decimal bruto, int dependentes = 0, VinculoSimulacao vinculo = VinculoSimulacao.Empregado) =>
         SimularAsync(new SimularImpostoRequest(DateOnly.ParseExact(mes + "-01", "yyyy-MM-dd"), bruto, bruto, dependentes, vinculo));
 
     private static decimal Inss(DemonstrativoDto demonstrativo) => demonstrativo.Descontos.Single(verba => verba.Descricao == "INSS").Valor;
@@ -116,10 +115,10 @@ public class SimulacaoTributariaTests
     }
 
     [Theory]
-    [InlineData(CategoriaFgts.Empregado, "FGTS (8%)", "R$ 400,00", 400.00, null)]
-    [InlineData(CategoriaFgts.Aprendiz, "FGTS (2%)", "R$ 100,00", 100.00, null)]
-    [InlineData(CategoriaFgts.Domestico, "FGTS e indenização", "R$ 560,00", 400.00, 160.00)]
-    public async Task Fgts_segue_o_tipo_de_vinculo_e_nao_reduz_o_liquido(CategoriaFgts vinculo, string rotulo, string destaque, decimal fgts, double? compensatoria)
+    [InlineData(VinculoSimulacao.Empregado, "FGTS (8%)", "R$ 400,00", 400.00, null)]
+    [InlineData(VinculoSimulacao.Aprendiz, "FGTS (2%)", "R$ 100,00", 100.00, null)]
+    [InlineData(VinculoSimulacao.Domestico, "FGTS e indenização", "R$ 560,00", 400.00, 160.00)]
+    public async Task Fgts_segue_o_tipo_de_vinculo_e_nao_reduz_o_liquido(VinculoSimulacao vinculo, string rotulo, string destaque, decimal fgts, double? compensatoria)
     {
         // R$ 5.000,00 x 8% = R$ 400,00; x 2% = R$ 100,00; no doméstico, mais R$ 5.000,00 x 3,2% = R$ 160,00.
         var simulacao = await SimularAsync("2026-10", 5000m, vinculo: vinculo).Sucesso();
@@ -169,8 +168,117 @@ public class SimulacaoTributariaTests
     [Fact]
     public async Task Vinculo_invalido_e_recusado()
     {
-        var resultado = await SimularAsync(new SimularImpostoRequest(new DateOnly(2026, 10, 1), 1000m, 1000m, 0, (CategoriaFgts)9));
+        var resultado = await SimularAsync(new SimularImpostoRequest(new DateOnly(2026, 10, 1), 1000m, 1000m, 0, (VinculoSimulacao)9));
         Assert.StartsWith("Tipo de vínculo:", resultado.Erro.Mensagem, StringComparison.Ordinal);
+    }
+
+    // Tabela de 10/2026: faixa de 27,5% com parcela a deduzir de R$ 908,73, desconto simplificado de R$ 607,20 e redução de
+    // R$ 978,62 - 0,133145 x rendimentos tributáveis entre R$ 5.000,01 e R$ 7.350,00. Aos 65 anos, R$ 8.000,00 - R$ 1.903,98 =
+    // R$ 6.096,02 tributáveis, redução de R$ 166,97; simplificado: R$ 5.488,82 x 27,5% - R$ 908,73 = R$ 600,70, menos a
+    // redução, R$ 433,73; deduções legais: R$ 767,68 - R$ 166,97 = R$ 600,71. Antes dos 65, os R$ 8.000,00 não têm redução:
+    // R$ 7.392,80 x 27,5% - R$ 908,73 = R$ 1.124,29.
+    [Theory]
+    [InlineData(true, "R$ 433,73", "R$ 7.566,27", "R$ 1.903,98", "R$ 6.096,02", "R$ 600,71")]
+    [InlineData(false, "R$ 1.124,29", "R$ 6.875,71", "R$ 0,00", "R$ 8.000,00", "R$ 1.291,27")]
+    public async Task Aposentadoria_exclui_a_parcela_isenta_dos_65_anos_nas_duas_modalidades(bool sessentaECinco, string irrf, string liquido, string isenta, string tributavel, string deducoesLegais)
+    {
+        var resultado = (await SimularAsync(new SimularImpostoRequest(new DateOnly(2026, 10, 1), 8000m, 0m, 0, VinculoSimulacao.Aposentadoria, sessentaECinco))).Valor;
+
+        Assert.Equal(irrf, Destaque(resultado, "IRRF"));
+        Assert.Equal(liquido, Destaque(resultado, "Benefício líquido"));
+        Assert.Equal(isenta, Destaque(resultado, "Parcela isenta"));
+        Assert.Equal(tributavel, Destaque(resultado, "Rendimento tributável"));
+        Assert.Equal(deducoesLegais, ImpostoDaModalidade(resultado, 0));
+        Assert.Equal(irrf, ImpostoDaModalidade(resultado, 1));
+        // Sem INSS nem FGTS: o único desconto é o IRRF, e o líquido é o bruto menos ele.
+        Assert.Equal(Irrf(resultado), Assert.Single(resultado.Descontos).Valor);
+        Assert.Equal(8000m - Irrf(resultado), resultado.Resultado);
+        Assert.DoesNotContain(resultado.Informativos, verba => verba.Descricao.StartsWith("FGTS", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public async Task Parcela_isenta_limita_se_ao_beneficio_e_vale_antes_do_desconto_simplificado()
+    {
+        // R$ 1.500,00 cabem inteiros na parcela isenta: nada a tributar.
+        var pequeno = (await SimularAsync(new SimularImpostoRequest(new DateOnly(2026, 10, 1), 1500m, 0m, 0, VinculoSimulacao.Aposentadoria, true))).Valor;
+        Assert.Equal("R$ 1.500,00", Destaque(pequeno, "Parcela isenta"));
+        Assert.Equal("R$ 0,00", Destaque(pequeno, "Rendimento tributável"));
+        Assert.Equal(0m, Irrf(pequeno));
+
+        // 06/2019, tabela de 2017, sem simplificado: R$ 5.000,00 - R$ 1.903,98 - R$ 189,59 (dependente) = R$ 2.906,43;
+        // x 15% - R$ 354,80 = R$ 81,16.
+        var antigo = (await SimularAsync(new SimularImpostoRequest(new DateOnly(2019, 6, 1), 5000m, 0m, 1, VinculoSimulacao.Aposentadoria, true))).Valor;
+        Assert.Equal(81.16m, Irrf(antigo));
+    }
+
+    // O 13º tem parcela isenta própria: R$ 8.000,00 - R$ 1.903,98 = R$ 6.096,02, com o mesmo IRRF de R$ 433,73 do benefício
+    // do mês (12/2026, redução de R$ 166,97 no simplificado).
+    [Fact]
+    public async Task Decimo_terceiro_da_aposentadoria_tem_parcela_isenta_propria()
+    {
+        var resultado = (await SimularAsync(new SimularImpostoRequest(new DateOnly(2026, 12, 1), 8000m, 0m, 0, VinculoSimulacao.Aposentadoria, true, true))).Valor;
+
+        Assert.Equal("R$ 433,73", Destaque(resultado, "IRRF"));
+        Assert.Equal("R$ 7.566,27", Destaque(resultado, "13º líquido"));
+        Assert.Equal("R$ 1.903,98", Destaque(resultado, "Parcela isenta"));
+        Assert.Equal("Própria do 13º", Complemento(resultado, "Parcela isenta"));
+        Assert.Equal("13º da aposentadoria ou pensão", Assert.Single(resultado.Proventos).Descricao);
+        Assert.Equal("13º líquido", resultado.RotuloResultado);
+    }
+
+    // 12/2019, tabela de 2017: R$ 3.850,00 - R$ 1.903,98 = R$ 1.946,02; x 7,5% - R$ 142,80 = R$ 3,15. No benefício do mês, o
+    // IRRF de até R$ 10,00 é dispensado; no 13º, de tributação exclusiva, ele é retido.
+    [Theory]
+    [InlineData(false, 0)]
+    [InlineData(true, 3.15)]
+    public async Task Decimo_terceiro_da_aposentadoria_nao_tem_dispensa_de_retencao(bool decimoTerceiro, decimal irrf)
+    {
+        var resultado = (await SimularAsync(new SimularImpostoRequest(new DateOnly(2019, 12, 1), 3850m, 0m, 0, VinculoSimulacao.Aposentadoria, true, decimoTerceiro))).Valor;
+        Assert.Equal(irrf, Irrf(resultado));
+    }
+
+    [Fact]
+    public async Task Decimo_terceiro_desta_simulacao_exige_aposentadoria()
+    {
+        var resultado = await SimularAsync(new SimularImpostoRequest(new DateOnly(2026, 12, 1), 3000m, 3000m, 0, VinculoSimulacao.Empregado, false, true));
+        Assert.StartsWith("Rendimento:", resultado.Erro.Mensagem, StringComparison.Ordinal);
+    }
+
+    [Theory]
+    [InlineData(VinculoSimulacao.Aposentadoria, 1000, false, "Base de INSS:")]
+    [InlineData(VinculoSimulacao.Empregado, 1000, true, "65 anos ou mais:")]
+    public async Task Aposentadoria_recusa_base_de_inss_e_a_parcela_isenta_exige_aposentadoria(VinculoSimulacao vinculo, double baseInss, bool sessentaECinco, string campo)
+    {
+        var resultado = await SimularAsync(new SimularImpostoRequest(new DateOnly(2026, 10, 1), 1000m, (decimal)baseInss, 0, vinculo, sessentaECinco));
+        Assert.StartsWith(campo, resultado.Erro.Mensagem, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task Formulario_da_aposentadoria_oculta_a_base_de_inss_e_pergunta_os_65_anos()
+    {
+        var calculadora = new CalculadoraSimulacaoTributaria(new SimularImpostoUseCase(await Ambiente.ConsultaAsync()));
+        var campos = calculadora.Campos;
+        var baseInss = (CampoTextoViewModel)campos[2];
+        var vinculo = (CampoOpcaoViewModel)campos[4];
+        var rendimento = (CampoOpcaoViewModel)campos[5];
+        var sessentaECinco = (CampoOpcaoViewModel)campos[6];
+        Assert.False(sessentaECinco.Visivel || rendimento.Visivel);
+
+        calculadora.ImportarCampos(new Dictionary<string, string>
+        {
+            ["Competência"] = "10/2026", ["Valor bruto"] = "8.000,00", ["Tipo de vínculo"] = "Aposentadoria ou pensão", ["65 anos ou mais"] = "Sim"
+        });
+
+        Assert.False(baseInss.Visivel);
+        Assert.True(sessentaECinco.Visivel && rendimento.Visivel);
+        // A base de INSS acompanhou o valor bruto, mas fica oculta e não vai para o cálculo.
+        Assert.Equal("8.000,00", baseInss.Valor);
+        var resultado = await calculadora.CalcularAsync(default);
+        Assert.Equal("R$ 433,73", Destaque(resultado.Valor, "IRRF"));
+
+        vinculo.Selecionada = vinculo.Opcoes[0];
+        Assert.True(baseInss.Visivel);
+        Assert.False(sessentaECinco.Visivel || rendimento.Visivel);
     }
 
     [Fact]
