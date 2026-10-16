@@ -132,7 +132,7 @@ public sealed class SimularFeriasUseCase(ITributacaoConsulta tributacaoConsulta)
 
         var descontos = new List<VerbaDto>
         {
-            new("INSS sobre as férias", "", valorInssFerias),
+            new("INSS sobre as férias", ReferenciaInss(inss, conciliacoes), valorInssFerias),
             new(MemoriaTributaria.DescricaoIrrf("IRRF sobre as férias", irrf), MemoriaTributaria.ReferenciaIrrf(irrf), irrf.Imposto)
         };
         if (request.Pensao is { } regraPensao && valorPensao > 0m)
@@ -276,6 +276,14 @@ public sealed class SimularFeriasUseCase(ITributacaoConsulta tributacaoConsulta)
             return $"Sobram {saldo} dia(s) sem formar um período válido: as férias podem ter até três períodos, cada um com pelo menos 5 dias e um deles com pelo menos 14 (CLT, art. 134, § 1º). Ajuste os dias de descanso{(outros.Length > 0 ? " ou dos demais períodos" : "")}.";
         return null;
     }
+
+    /// <summary>
+    /// Faixa do INSS das férias. Com o gozo dividido entre competências, cada parte é calculada na tabela do seu mês e pode
+    /// cair em outra faixa: as alíquotas aparecem na ordem dos meses, como "9% e 12%".
+    /// </summary>
+    private static string ReferenciaInss(ApuracaoInss inss, IReadOnlyList<ConcilicaoFeriasMes> conciliacoes) => conciliacoes.Count == 0
+        ? MemoriaTributaria.ReferenciaInss(inss)
+        : Formato.Lista(conciliacoes.Select(item => MemoriaTributaria.ReferenciaInss(item.SobreFerias)).Where(faixa => faixa.Length > 0).Distinct().ToList());
 
     private sealed record ConcilicaoFeriasMes(ParcelaFeriasCompetencia Parcela, decimal BaseForaFerias,
         ApuracaoInss SobreFerias, ApuracaoInss Total)

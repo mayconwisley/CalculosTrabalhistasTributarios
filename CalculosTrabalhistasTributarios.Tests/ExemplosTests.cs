@@ -19,6 +19,7 @@ public class ExemplosTests
     private static readonly Dictionary<string, (string Rotulo, string Valor)[]> Esperados = new()
     {
         ["Calculadora.CltPj"] = [("CLT: total no ano", "R$ 81.721,32"), ("PJ: total no ano", "R$ 105.504,00"), ("Diferença no ano", "+R$ 23.782,68"), ("PJ equivalente", "R$ 7.820,18")],
+        ["Calculadora.SimulacaoTributaria"] = [("Salário líquido", "R$ 6.459,15"), ("INSS", "R$ 988,07"), ("IRRF", "R$ 1.052,78"), ("FGTS (8%)", "R$ 680,00")],
         ["Calculadora.SalarioPeloLiquido"] = [("Salário bruto necessário", "R$ 5.947,91"), ("Líquido obtido", "R$ 5.000,00"), ("Descontos", "R$ 947,91"), ("FGTS (8%)", "R$ 475,83")],
         ["Calculadora.HorasExtras"] = [("Horas extras e adicionais", "R$ 487,38"), ("Remuneração do mês", "R$ 3.127,38"), ("Salário líquido", "R$ 2.863,51"), ("Valor da hora", "R$ 12,00")],
         ["Calculadora.DecimoTerceiro"] = [("1ª parcela", "R$ 1.437,50"), ("2ª parcela líquida", "R$ 410,90"), ("13º líquido total", "R$ 1.848,40"), ("FGTS (8%)", "R$ 230,00")],
@@ -59,7 +60,7 @@ public class ExemplosTests
         ["Calculadora.Plr"] = [("Líquido da PLR", "R$ 5.560,25"), ("IRRF desta parcela", "R$ 439,75"), ("PLR no ano", "R$ 12.000,00"), ("Isenção anual", "R$ 8.214,40")],
     };
 
-    private static readonly string[] JanelasProprias = ["SimulacaoTributaria", "Pensao", "PensaoAtraso", "DebitoJudicial", "Estabilidade", "Jornada"];
+    private static readonly string[] JanelasProprias = ["Pensao", "PensaoAtraso", "DebitoJudicial", "Estabilidade", "Jornada"];
 
     public static TheoryData<string> Calculadoras() => new(ExemplosDoManual.Chaves.Where(chave => chave.StartsWith("Calculadora.", StringComparison.Ordinal)));
 
@@ -89,6 +90,31 @@ public class ExemplosTests
             Assert.Equal(valor, Texto.Normalizar(resultado.Valor.Destaques.Single(destaque => destaque.Rotulo == rotulo).Valor));
     }
 
+    // A base de INSS de cada exemplo, pela memória, contra os limites de 2026 (R$ 1.621,00, R$ 2.902,84, R$ 4.354,27 e
+    // R$ 8.475,55): a referência é a alíquota da última faixa alcançada, como no holerite, e não a alíquota efetiva.
+    [Theory]
+    [InlineData("Calculadora.Holerite", "INSS", "12%")] // R$ 4.242,96
+    [InlineData("Calculadora.HorasExtras", "INSS", "12%")] // R$ 3.127,38
+    [InlineData("Calculadora.Adicionais", "INSS", "12%")] // R$ 3.900,00
+    [InlineData("Calculadora.Comissoes", "INSS", "14%")] // R$ 6.100,00
+    [InlineData("Calculadora.Domestico", "INSS", "9%")] // R$ 2.000,00
+    [InlineData("Calculadora.SalarioPeloLiquido", "INSS", "14%")] // R$ 5.947,91
+    [InlineData("Calculadora.DecimoTerceiro", "INSS sobre o 13º", "9%")] // R$ 2.875,00
+    [InlineData("Calculadora.Rescisao", "INSS sobre o saldo de salário", "7,5%")] // R$ 1.500,00
+    [InlineData("Calculadora.Rescisao", "INSS sobre o 13º", "7,5%")] // R$ 1.000,00
+    [InlineData("Calculadora.Ferias", "INSS sobre as férias", "9% e 7,5%")] // R$ 2.240,00 em 01/2026 e R$ 1.493,33 em 02/2026
+    public async Task Referencia_do_inss_e_a_faixa_alcancada(string chave, string descricao, string referencia)
+    {
+        var servicos = await ServicosAsync();
+        var calculadora = servicos.GetRequiredKeyedService<ICalculadora>(Enum.Parse<TipoCalculadora>(chave["Calculadora.".Length..]));
+        calculadora.ImportarCampos(ExemplosDoManual.Obter(chave)!.Campos);
+
+        var resultado = await calculadora.CalcularAsync(CancellationToken.None);
+
+        Assert.True(resultado.Sucesso, resultado.Sucesso ? null : resultado.Erro.Mensagem);
+        Assert.Equal(referencia, resultado.Valor.Descontos.Single(desconto => desconto.Descricao == descricao).Referencia);
+    }
+
     [Theory]
     [MemberData(nameof(Proprias))]
     public async Task Exemplo_da_janela_propria_abre_e_calcula(string chave)
@@ -96,7 +122,6 @@ public class ExemplosTests
         var servicos = await ServicosAsync();
         ICalculoSalvavel tela = chave switch
         {
-            "SimulacaoTributaria" => servicos.GetRequiredService<ISimulacaoTributariaViewModelFactory>().Criar(),
             "Pensao" => servicos.GetRequiredService<IPensaoViewModelFactory>().Criar(),
             "PensaoAtraso" => servicos.GetRequiredService<IPensaoAtrasoViewModelFactory>().Criar(),
             "DebitoJudicial" => servicos.GetRequiredService<IDebitoJudicialViewModelFactory>().Criar(),

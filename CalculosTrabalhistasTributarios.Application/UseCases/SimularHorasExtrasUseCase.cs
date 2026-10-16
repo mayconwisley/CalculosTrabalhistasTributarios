@@ -64,7 +64,7 @@ public sealed class SimularHorasExtrasUseCase(ITributacaoConsulta tributacaoCons
             ],
             proventos,
             [
-                new("INSS", "", inss.Valor),
+                new("INSS", MemoriaTributaria.ReferenciaInss(inss), inss.Valor),
                 new(MemoriaTributaria.DescricaoIrrf("IRRF", irrf), MemoriaTributaria.ReferenciaIrrf(irrf), irrf.Imposto)
             ],
             [new("FGTS", "8%", fgts)],

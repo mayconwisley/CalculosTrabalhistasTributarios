@@ -15,6 +15,13 @@ internal static class MemoriaTributaria
     /// <summary>Alíquota da faixa aplicada; vazia quando não há imposto, por exemplo pela redução mensal.</summary>
     public static string ReferenciaIrrf(ApuracaoIrrf irrf) => irrf.Imposto > 0m ? Formato.PercentualCurto(irrf.Aplicada.Aliquota) : string.Empty;
 
+    /// <summary>
+    /// Alíquota da última faixa alcançada, como no holerite, e não a efetiva: no progressivo, R$ 8.475,55 aparece na faixa de
+    /// 14%, embora o desconto seja 11,66% da base. Vazia quando não há INSS.
+    /// </summary>
+    public static string ReferenciaInss(ApuracaoInss inss) =>
+        inss.Valor > 0m && inss.Detalhes.LastOrDefault(faixa => faixa.BaseCalculada > 0m) is { } faixa ? Formato.PercentualCurto(faixa.Aliquota) : string.Empty;
+
     public static GrupoMemoriaDto Inss(string titulo, ApuracaoInss inss, string rotuloBase)
     {
         var formulas = new List<FormulaDto>

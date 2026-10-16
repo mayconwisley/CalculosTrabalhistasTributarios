@@ -7,9 +7,6 @@ namespace CalculosTrabalhistasTributarios.Infrastructure.Reporting;
 /// <summary>Adaptador ClosedXML da porta de planilhas: cada planilha tem a sua classe em <c>Reporting/Planilha</c>.</summary>
 public sealed class ClosedXmlPlanilhaService : IPlanilhaService
 {
-    public Task GerarImpostoAsync(SimulacaoImpostoDto simulacao, string caminhoArquivo, CancellationToken cancellationToken) =>
-        PlanilhaImposto.GerarImpostoAsync(simulacao, caminhoArquivo, cancellationToken);
-
     public Task GerarPensaoAsync(SimulacaoPensaoDto simulacao, EntradaPensaoDto entrada, string caminhoArquivo, CancellationToken cancellationToken) =>
         PlanilhaPensao.GerarPensaoAsync(simulacao, entrada, caminhoArquivo, cancellationToken);
 

@@ -1,5 +1,3 @@
-using CalculosTrabalhistasTributarios.Application.DTOs;
-
 namespace CalculosTrabalhistasTributarios.Application.Demonstrativos;
 
 /// <summary>
@@ -8,12 +6,6 @@ namespace CalculosTrabalhistasTributarios.Application.Demonstrativos;
 /// </summary>
 public static class FormulaBaseIrrf
 {
-    public static string Normal(SimulacaoImpostoDto simulacao, Func<decimal, string> moeda) =>
-        Normal(simulacao.Entrada.ValorBruto, "valor bruto", simulacao.ValorInss, simulacao.Entrada.QuantidadeDependentes, simulacao.DeducaoPorDependente, simulacao.Normal.BaseCalculo, moeda);
-
-    public static string Simplificada(SimulacaoImpostoDto simulacao, Func<decimal, string> moeda) =>
-        Simplificada(simulacao.Entrada.ValorBruto, "valor bruto", simulacao.DescontoSimplificado, simulacao.Simplificada.BaseCalculo, moeda);
-
     /// <param name="rotuloRendimentos">Como o rendimento aparece na fórmula, por exemplo "valor bruto" ou "férias + 1/3".</param>
     /// <param name="pensao">Pensão alimentícia deduzida da base; zero quando não há.</param>
     /// <param name="previdenciaComplementar">Contribuição à previdência complementar deduzida da base; zero quando não há.</param>

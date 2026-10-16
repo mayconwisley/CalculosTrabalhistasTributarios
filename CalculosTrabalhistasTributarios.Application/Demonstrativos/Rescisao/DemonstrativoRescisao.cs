@@ -67,12 +67,12 @@ internal static class DemonstrativoRescisao
             descontos.Add(new("DSR perdido por faltas", v.Saldo.SemanasComFalta == 1 ? "1 semana" : $"{v.Saldo.SemanasComFalta} semanas", v.Saldo.DsrPerdido));
         if (v.Saldo.VerbasDoMes > 0m)
         {
-            descontos.Add(new($"INSS sobre o {rotuloMes}", "", t.InssSaldo.Valor));
+            descontos.Add(new($"INSS sobre o {rotuloMes}", MemoriaTributaria.ReferenciaInss(t.InssSaldo), t.InssSaldo.Valor));
             descontos.Add(new(MemoriaTributaria.DescricaoIrrf($"IRRF sobre o {rotuloMes}", t.IrrfSaldo), MemoriaTributaria.ReferenciaIrrf(t.IrrfSaldo), t.IrrfSaldo.Imposto));
         }
         if (v.DecimoTerceiro.Total > 0m)
         {
-            descontos.Add(new("INSS sobre o 13º", "", t.Inss13.Valor));
+            descontos.Add(new("INSS sobre o 13º", MemoriaTributaria.ReferenciaInss(t.Inss13), t.Inss13.Valor));
             descontos.Add(new(MemoriaTributaria.DescricaoIrrf("IRRF sobre o 13º", t.Irrf13), MemoriaTributaria.ReferenciaIrrf(t.Irrf13), t.Irrf13.Imposto));
         }
         if (t.Pensao is { } regra && t.PensaoSaldo is { Pensao: > 0m } pensaoSaldo)

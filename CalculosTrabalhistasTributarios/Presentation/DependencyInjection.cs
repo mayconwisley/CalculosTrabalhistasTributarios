@@ -16,7 +16,6 @@ public static class DependencyInjection
         .AddScoped<MainWindowViewModel>()
         .AddScoped<HistoricoViewModel>()
         .AddScoped<ITabelaManutencaoViewModelFactory, TabelaManutencaoViewModelFactory>()
-        .AddScoped<ISimulacaoTributariaViewModelFactory, SimulacaoTributariaViewModelFactory>()
         .AddScoped<IPensaoViewModelFactory, PensaoViewModelFactory>()
         .AddScoped<IPensaoAtrasoViewModelFactory, PensaoAtrasoViewModelFactory>()
         // Uma só memória do último cálculo, compartilhada por todas as janelas.
@@ -83,5 +82,6 @@ public static class DependencyInjection
         .AddKeyedTransient<ICalculadora, CalculadoraContribuicaoSegurado>(TipoCalculadora.ContribuicaoSegurado)
         .AddKeyedTransient<ICalculadora, CalculadoraResgatePrevidencia>(TipoCalculadora.ResgatePrevidencia)
         .AddKeyedTransient<ICalculadora, CalculadoraAposentadoria>(TipoCalculadora.Aposentadoria)
-        .AddKeyedTransient<ICalculadora, CalculadoraPensaoMorte>(TipoCalculadora.PensaoMorte);
+        .AddKeyedTransient<ICalculadora, CalculadoraPensaoMorte>(TipoCalculadora.PensaoMorte)
+        .AddKeyedTransient<ICalculadora, CalculadoraSimulacaoTributaria>(TipoCalculadora.SimulacaoTributaria);
 }

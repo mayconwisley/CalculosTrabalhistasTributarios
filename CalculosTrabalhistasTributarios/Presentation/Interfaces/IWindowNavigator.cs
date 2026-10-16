@@ -7,7 +7,6 @@ namespace CalculosTrabalhistasTributarios.Presentation.Interfaces;
 public interface IWindowNavigator
 {
     void AbrirTabela(TipoTabelaTributaria tipo);
-    void AbrirSimulacaoTributaria();
     void AbrirPensao();
     void AbrirPensaoAtraso();
     void AbrirEstabilidade();

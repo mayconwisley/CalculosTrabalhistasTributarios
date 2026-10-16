@@ -293,7 +293,6 @@ public class FormularioCalculadoraTests
         public DemonstrativoDto? Ultimo { get; private set; }
         public Task GerarDemonstrativoAsync(DemonstrativoDto demonstrativo, string caminhoArquivo, CancellationToken cancellationToken)
         { Ultimo = demonstrativo; return Task.CompletedTask; }
-        public Task GerarRelatorioImpostoAsync(SimulacaoImpostoDto simulacao, string caminhoArquivo, CancellationToken cancellationToken) => throw new NotSupportedException();
         public Task GerarRelatorioPensaoAsync(SimulacaoPensaoDto simulacao, EntradaPensaoDto entrada, bool incluirDetalhes, string caminhoArquivo, CancellationToken cancellationToken) => throw new NotSupportedException();
         public Task GerarRelatorioPensaoAtrasoAsync(SimulacaoPensaoAtrasoDto simulacao, string caminhoArquivo, CancellationToken cancellationToken) => throw new NotSupportedException();
         public Task GerarRelatorioDebitoJudicialAsync(SimulacaoDebitoJudicialDto simulacao, string caminhoArquivo, CancellationToken cancellationToken) => throw new NotSupportedException();
@@ -305,7 +304,6 @@ public class FormularioCalculadoraTests
         public DemonstrativoDto? Ultimo { get; private set; }
         public Task GerarDemonstrativoAsync(DemonstrativoDto demonstrativo, string caminhoArquivo, CancellationToken cancellationToken)
         { Ultimo = demonstrativo; return Task.CompletedTask; }
-        public Task GerarImpostoAsync(SimulacaoImpostoDto simulacao, string caminhoArquivo, CancellationToken cancellationToken) => throw new NotSupportedException();
         public Task GerarPensaoAsync(SimulacaoPensaoDto simulacao, EntradaPensaoDto entrada, string caminhoArquivo, CancellationToken cancellationToken) => throw new NotSupportedException();
         public Task GerarPensaoAtrasoAsync(SimulacaoPensaoAtrasoDto simulacao, string caminhoArquivo, CancellationToken cancellationToken) => throw new NotSupportedException();
         public Task GerarEstabilidadeAsync(SimulacaoEstabilidadeDto simulacao, EntradaEstabilidadeDto entrada, string caminhoArquivo, CancellationToken cancellationToken) => throw new NotSupportedException();

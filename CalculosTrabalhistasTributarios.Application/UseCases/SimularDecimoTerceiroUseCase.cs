@@ -78,7 +78,7 @@ public sealed class SimularDecimoTerceiroUseCase(ITributacaoConsulta tributacaoC
         var descontos = new List<VerbaDto>();
         if (adiantamento > 0m)
             descontos.Add(new("Adiantamento do 13º (1ª parcela)", request.Adiantamento == AdiantamentoDecimoTerceiro.CinquentaPorCento ? "50%" : "", adiantamento));
-        descontos.Add(new("INSS sobre o 13º", "", inss.Valor));
+        descontos.Add(new("INSS sobre o 13º", MemoriaTributaria.ReferenciaInss(inss), inss.Valor));
         descontos.Add(new(MemoriaTributaria.DescricaoIrrf("IRRF sobre o 13º", irrf), MemoriaTributaria.ReferenciaIrrf(irrf), irrf.Imposto));
         if (request.Pensao is { } regraPensao && valorPensao > 0m)
             descontos.Add(new("Pensão alimentícia sobre o 13º", DemonstrativoPensao.Referencia(regraPensao), valorPensao));

@@ -9,7 +9,7 @@ public static class DependencyInjection
 {
     /// <summary>Casos de uso da aplicação; as portas que eles usam são registradas pela infraestrutura.</summary>
     public static IServiceCollection AddApplication(this IServiceCollection services) => services
-        .AddScoped<ISimularImpostoUseCase, SimularImpostoUseCase>()
+        .AddScoped<ISimularDemonstrativoUseCase<SimularImpostoRequest>, SimularImpostoUseCase>()
         .AddScoped<ISimularPensaoUseCase, SimularPensaoUseCase>()
         .AddScoped<ISimularPensaoAtrasoUseCase, SimularPensaoAtrasoUseCase>()
         .AddScoped<ISimularEstabilidadeUseCase, SimularEstabilidadeUseCase>()

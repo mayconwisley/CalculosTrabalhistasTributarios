@@ -55,10 +55,10 @@ dotnet run --project .\tools\GeradorManual
 - Calcula **IRRF** pelas modalidades normal e simplificada.
 - Considera dependentes, desconto simplificado e redução mensal do IRRF quando aplicável, e não retém o IRRF de até R$ 10,00 (desconto mínimo, Lei 9.430/1996, art. 67).
 - Calcula **INSS** por faixas: alíquota única nas competências anteriores a março de 2020 e modelo progressivo nas posteriores, com o valor de cada faixa truncado nos centavos, como no eSocial.
-- Calcula **FGTS padrão (8%)** e **FGTS para Jovem Aprendiz (2%)**.
-- Compara as modalidades de IRRF e destaca a alternativa mais vantajosa.
-- Mostra o salário líquido, descontando o INSS e o IRRF da modalidade mais vantajosa.
-- Exibe indicadores, faixas utilizadas e fórmulas na memória de cálculo, com cada dedução da base do IRRF identificada.
+- Calcula o **FGTS do tipo de vínculo**: 8% para o empregado, 2% para o aprendiz e, no doméstico, 8% mais 3,2% de indenização compensatória, como valor informativo que não reduz o líquido.
+- Compara as modalidades de IRRF e destaca a aplicada, a de menor imposto.
+- Mostra o salário líquido, descontando o INSS e o IRRF da modalidade aplicada.
+- Usa a janela comum das calculadoras: resumo, demonstrativo, memória de cálculo com as faixas do INSS e do IRRF e cada dedução da base identificada, observações, PDF, Excel e histórico, com o aviso de cada campo a corrigir.
 
 ### Calculadoras trabalhistas
 

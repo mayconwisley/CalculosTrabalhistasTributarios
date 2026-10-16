@@ -173,7 +173,7 @@ public sealed class SimularHoleriteUseCase(ITributacaoConsulta tributacaoConsult
         if (faltas > 0m) descontos.Add(new("Faltas injustificadas", Formato.Dias(r.Faltas), faltas));
         if (descansos > 0m) descontos.Add(new("DSR perdido pelas faltas", Formato.Dias(r.DescansosPerdidos), descansos));
         if (atrasos > 0m) descontos.Add(new("Atrasos e saídas antecipadas", Formato.Horas(r.HorasAtraso), atrasos));
-        descontos.Add(new("INSS", "", inss.Valor));
+        descontos.Add(new("INSS", MemoriaTributaria.ReferenciaInss(inss), inss.Valor));
         descontos.Add(new(MemoriaTributaria.DescricaoIrrf("IRRF", irrf), MemoriaTributaria.ReferenciaIrrf(irrf), irrf.Imposto));
         if (r.Pensao is { } regraPensao && valorPensao > 0m) descontos.Add(new("Pensão alimentícia", DemonstrativoPensao.Referencia(regraPensao), valorPensao));
         if (r.PrevidenciaComplementar > 0m) descontos.Add(new("Previdência complementar", "", r.PrevidenciaComplementar));

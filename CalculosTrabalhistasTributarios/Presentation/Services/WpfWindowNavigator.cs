@@ -10,7 +10,6 @@ namespace CalculosTrabalhistasTributarios.Presentation.Services;
 /// <summary>Detalhe de navegação WPF, isolado dos ViewModels.</summary>
 public sealed class WpfWindowNavigator(
     ITabelaManutencaoViewModelFactory tabelaViewModelFactory,
-    ISimulacaoTributariaViewModelFactory simulacaoViewModelFactory,
     IPensaoViewModelFactory pensaoViewModelFactory,
     IPensaoAtrasoViewModelFactory pensaoAtrasoViewModelFactory,
     IEstabilidadeViewModelFactory estabilidadeViewModelFactory,
@@ -19,7 +18,6 @@ public sealed class WpfWindowNavigator(
     IDebitoJudicialViewModelFactory debitoJudicialViewModelFactory) : IWindowNavigator
 {
     public void AbrirTabela(TipoTabelaTributaria tipo) => Abrir(new TabelaManutencaoWindow(tabelaViewModelFactory.Criar(tipo)));
-    public void AbrirSimulacaoTributaria() => Abrir(new SimulacaoTributariaWindow(simulacaoViewModelFactory.Criar()));
     public void AbrirPensao() => Abrir(new PensaoWindow(pensaoViewModelFactory.Criar()));
     public void AbrirPensaoAtraso() => Abrir(new PensaoAtrasoWindow(pensaoAtrasoViewModelFactory.Criar()));
     public void AbrirEstabilidade() => Abrir(new EstabilidadeWindow(estabilidadeViewModelFactory.Criar()));
@@ -40,11 +38,6 @@ public sealed class WpfWindowNavigator(
     {
         switch (salvo.Tipo)
         {
-            case "SimulacaoTributaria":
-                var simulacao = simulacaoViewModelFactory.Criar();
-                await simulacao.Historico.CarregarAsync(salvo);
-                Abrir(new SimulacaoTributariaWindow(simulacao));
-                break;
             case "Pensao":
                 var pensao = pensaoViewModelFactory.Criar();
                 await pensao.Historico.CarregarAsync(salvo);

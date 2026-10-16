@@ -101,7 +101,7 @@ public sealed class SimularAdicionaisUseCase(ITributacaoConsulta tributacaoConsu
                 new(nomeAdicional, Formato.PercentualCurto(aplicaPericulosidade ? PercentualPericulosidade : percentualInsalubridade), adicional)
             ],
             [
-                new("INSS", "", inss.Valor),
+                new("INSS", MemoriaTributaria.ReferenciaInss(inss), inss.Valor),
                 new(MemoriaTributaria.DescricaoIrrf("IRRF", irrf), MemoriaTributaria.ReferenciaIrrf(irrf), irrf.Imposto)
             ],
             informativos,

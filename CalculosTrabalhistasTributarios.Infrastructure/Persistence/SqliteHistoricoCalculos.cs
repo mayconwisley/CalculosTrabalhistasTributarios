@@ -13,7 +13,9 @@ namespace CalculosTrabalhistasTributarios.Infrastructure.Persistence;
 public sealed class SqliteHistoricoCalculos(BancoTributario banco) : IHistoricoCalculos
 {
     private const string FormatoData = "yyyy-MM-dd HH:mm:ss";
-    private const string Colunas = "\"Id\", \"Tipo\", \"Calculadora\", \"Nome\", \"Dados\", \"CriadoEm\", \"AlteradoEm\"";
+    private const string TipoSimulacaoTributariaAnterior = "SimulacaoTributaria";
+    private const string TipoSimulacaoTributaria = "Calculadora.SimulacaoTributaria";
+    private const string Colunas ="\"Id\", \"Tipo\", \"Calculadora\", \"Nome\", \"Dados\", \"CriadoEm\", \"AlteradoEm\"";
     private readonly SemaphoreSlim _criacao = new(1, 1);
     private bool _tabelaCriada;
 
@@ -85,6 +87,11 @@ public sealed class SqliteHistoricoCalculos(BancoTributario banco) : IHistoricoC
                     "AlteradoEm" TEXT NOT NULL
                 )
                 """, cancellationToken);
+            // A simulação tributária tinha janela própria e passou para a janela padrão das calculadoras: os cálculos
+            // salvos antes passam a abrir, recalcular e comparar como os da nova calculadora. O formulário é o mesmo,
+            // e a calculadora lê os nomes antigos dos campos.
+            await conexao.ExecutarAsync(null, "UPDATE \"CalculosSalvos\" SET \"Tipo\" = $novo WHERE \"Tipo\" = $antigo", cancellationToken,
+                ("$novo", TipoSimulacaoTributaria), ("$antigo", TipoSimulacaoTributariaAnterior));
             _tabelaCriada = true;
         }
         finally

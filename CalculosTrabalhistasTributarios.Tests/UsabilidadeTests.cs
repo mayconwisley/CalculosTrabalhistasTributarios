@@ -71,7 +71,7 @@ public class UsabilidadeTests
         Assert.True(paginas["Calculadora.SalarioPeloLiquido"] < paginas["Jornada"]);
         Assert.True(paginas["Calculadora.Holerite"] <= paginas["Jornada"]);
         Assert.True(paginas["Calculadora.CarneLeao"] <= paginas["Calculadora.TrabalhoExterior"]);
-        Assert.True(paginas["SimulacaoTributaria"] > 2);
+        Assert.True(paginas["Calculadora.SimulacaoTributaria"] > 2);
     }
 
     [Fact]

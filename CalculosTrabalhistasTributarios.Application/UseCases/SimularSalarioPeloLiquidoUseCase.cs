@@ -122,7 +122,7 @@ public sealed class SimularSalarioPeloLiquidoUseCase(ITributacaoConsulta tributa
             ],
             [new("Salário bruto", "", apuracao.Bruto)],
             [
-                new("INSS", "", apuracao.Inss.Valor),
+                new("INSS", MemoriaTributaria.ReferenciaInss(apuracao.Inss), apuracao.Inss.Valor),
                 new(MemoriaTributaria.DescricaoIrrf("IRRF", apuracao.Irrf), MemoriaTributaria.ReferenciaIrrf(apuracao.Irrf), apuracao.Irrf.Imposto)
             ],
             [new("FGTS", "8%", fgts)],

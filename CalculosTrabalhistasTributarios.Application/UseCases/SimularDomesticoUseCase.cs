@@ -53,7 +53,7 @@ public sealed class SimularDomesticoUseCase(ITributacaoConsulta tributacaoConsul
         if (r.Adicionais > 0m) proventos.Add(new("Horas extras e adicionais", "", r.Adicionais));
         var descontos = new List<VerbaDto>();
         if (faltas > 0m) descontos.Add(new("Faltas", Formato.Dias(r.Faltas), faltas));
-        descontos.Add(new("INSS", "", inss.Valor));
+        descontos.Add(new("INSS", MemoriaTributaria.ReferenciaInss(inss), inss.Valor));
         descontos.Add(new(MemoriaTributaria.DescricaoIrrf("IRRF", irrf), MemoriaTributaria.ReferenciaIrrf(irrf), irrf.Imposto));
         if (valeTransporte > 0m) descontos.Add(new("Vale-transporte", "6% do salário", valeTransporte));
         var liquido = proventos.Sum(verba => verba.Valor) - descontos.Sum(verba => verba.Valor);

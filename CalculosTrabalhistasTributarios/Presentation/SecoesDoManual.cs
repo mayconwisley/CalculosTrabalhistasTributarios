@@ -8,7 +8,7 @@ public static class SecoesDoManual
 {
     private static readonly Dictionary<string, string> Secoes = new(StringComparer.Ordinal)
     {
-        ["SimulacaoTributaria"] = "5",
+        ["Calculadora.SimulacaoTributaria"] = "5",
         ["Pensao"] = "6.1",
         ["Calculadora.RevisaoPensao"] = "6.4",
         ["PensaoAtraso"] = "6.5",

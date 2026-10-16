@@ -79,7 +79,7 @@ public sealed class SimularComissoesUseCase(ITributacaoConsulta tributacaoConsul
                 new("Líquido do cenário", Formato.Moeda(liquido), "Salário fixo e comissões, menos INSS e IRRF")
             ],
             proventos,
-            [new("INSS", "", inss.Valor), new(MemoriaTributaria.DescricaoIrrf("IRRF", irrf), MemoriaTributaria.ReferenciaIrrf(irrf), irrf.Imposto)],
+            [new("INSS", MemoriaTributaria.ReferenciaInss(inss), inss.Valor), new(MemoriaTributaria.DescricaoIrrf("IRRF", irrf), MemoriaTributaria.ReferenciaIrrf(irrf), irrf.Imposto)],
             [new("FGTS", "8%", fgts)],
             [new("Comissões e DSR", $"Total: {Formato.Moeda(comissoes.Total)}", formulas),
                 MemoriaTributaria.Inss("INSS", inss, "salário fixo, comissões e DSR"),

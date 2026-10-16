@@ -25,7 +25,7 @@ Guia completo para utilizar **Cálculos Trabalhistas e Tributários**: simulaç�
 
 O aplicativo Cálculos Trabalhistas e Tributários reúne, em um único lugar para Windows, os cálculos trabalhistas e tributários mais comuns do dia a dia:
 
-- **Simulação tributária:** IRRF pelas modalidades normal e simplificada, INSS por faixas, salário líquido e FGTS de 8% e de 2% (Jovem Aprendiz), com indicação da modalidade de IRRF mais vantajosa.
+- **Simulação tributária:** IRRF com deduções legais e com desconto simplificado, INSS por faixas, salário líquido e FGTS do tipo de vínculo (8% para o empregado, 2% para o aprendiz e 8% mais 3,2% para o doméstico), com indicação da modalidade de IRRF aplicada.
 - **Calculadoras trabalhistas:** holerite do mês, comissões e DSR, diferenças de reajuste retroativo, média de verbas variáveis, banco de horas, INSS em múltiplos vínculos, jornada pelas marcações de ponto, salário bruto a partir do líquido, horas extras com adicional noturno e DSR, insalubridade e periculosidade, salário-família, 13º salário, férias com abono, PLR, rescisão por motivo de desligamento, seguro-desemprego, custo do funcionário para a empresa, comparação entre CLT e PJ, pró-labore ou pagamento a autônomo (RPA), empregado doméstico com o DAE, estágio e trabalho intermitente.
 - **FGTS, afastamentos e benefícios:** afastamento por doença ou acidente e licenças-maternidade e paternidade, saque-aniversário do FGTS e abono salarial do PIS/Pasep.
 - **Imposto de renda anual:** a declaração do ano com a redução anual da Lei 15.270/2025, a comparação entre os modelos completo e simplificado e a tributação mínima das altas rendas; a retenção de 10% sobre dividendos acima de R$ 50 mil no mês; o carnê-leão de honorários e aluguéis; o ganho de capital na venda de imóveis e outros bens; e a multa e os juros de tributos pagos em atraso.
@@ -125,38 +125,38 @@ Se algum dado estiver em formato inválido, o aplicativo exibe um aviso e não f
 
 ## 5. Simulação tributária
 
-Abra pelo cartão **Simulação tributária**, no grupo **Impostos e salário** da aba **Calculadoras**. Os dados ficam no topo da janela e o resultado logo abaixo.
+Abra pelo cartão **Simulação tributária**, no grupo **Impostos e salário** da aba **Calculadoras**. Ela usa a mesma janela das demais calculadoras: os dados ficam no topo e o resultado logo abaixo, com **Preencher exemplo**, **Salvar no histórico**, **Gerar PDF** e **Gerar Excel**.
 
 ### 5.1 Preenchendo os dados
 
-1. Em **Competência**, confirme ou altere o mês de referência. As tabelas usadas no cálculo são as vigentes nessa competência.
-2. Em **Valor bruto**, informe o total de rendimentos tributáveis do mês.
-3. **Base de INSS** é preenchida automaticamente com o valor bruto. Altere somente se a base de contribuição for diferente do valor bruto.
-4. Em **Dependentes**, informe a quantidade de dependentes para fins de IRRF (número inteiro, zero ou maior).
-5. Clique em **Calcular** ou pressione **Enter**.
+| Campo | O que informar |
+| --- | --- |
+| Competência | Mês e ano das tabelas de INSS e IRRF (MM/AAAA). As tabelas usadas são as vigentes nessa competência. |
+| Valor bruto | Total de rendimentos tributáveis do mês, base do IRRF. |
+| Base de INSS | Acompanha o valor bruto ao digitá-lo. Altere só quando parte do valor não tiver incidência de INSS. É também a base do FGTS. |
+| Dependentes | Quantidade de dependentes para a dedução do IRRF, de 0 a 99. |
+| Tipo de vínculo | **Empregado** (FGTS de 8%), **Aprendiz** (FGTS de 2%) ou **Doméstico** (FGTS de 8% e mais 3,2% de indenização compensatória). O INSS e o IRRF são os mesmos nos três. |
 
-Na primeira simulação, a competência vem com o mês atual. Depois, os campos já abrem com os dados do último cálculo (veja a seção [Conhecendo a tela principal](#3-conhecendo-a-tela-principal)).
+Clique em **Calcular** ou pressione **Enter**. Na primeira simulação, a competência vem com o mês atual. Depois, os campos já abrem com os dados do último cálculo (veja a seção [Conhecendo a tela principal](#3-conhecendo-a-tela-principal)).
+
+Um campo em formato inválido ou fora do limite fica destacado, com a orientação logo abaixo dele, e o cálculo não é feito. A mensagem diz o campo e como corrigir, por exemplo: "Dependentes: informe de 0 a 99 dependentes para a dedução do IRRF."
 
 ### 5.2 Lendo o resultado
 
 ![Resultado da simulação tributária](imagens/02-simulacao-resultado.png)
 
-1. **Resumo executivo:** cartões com os principais valores. São eles o valor bruto, o INSS com a base considerada, o IRRF nas duas modalidades com a alíquota efetiva de cada uma, o **salário líquido** (valor bruto menos o INSS e o menor IRRF) e o FGTS de 8% e de 2%. Antes de 05/2023, o cartão do IRRF simplificado mostra **Não se aplica**, e o comparativo e a memória de cálculo trazem só a modalidade normal.
-2. **Comparação entre modalidades:** base de cálculo, redução mensal e IRRF final da modalidade normal e da simplificada.
-3. **Mais vantajoso:** destaca a modalidade com o menor IRRF. Quando as duas resultam no mesmo valor, nenhuma é destacada.
-4. **Gerar PDF:** salva o resultado completo em um relatório. Ao lado, **Gerar Excel** salva o mesmo conteúdo em uma planilha e **Salvar no histórico** guarda o formulário com um nome (seção [10](#10-relatórios-planilhas-e-histórico)).
+1. **Resumo executivo:** o **salário líquido**, o INSS com a base considerada, o IRRF descontado com a modalidade aplicada e a alíquota efetiva, e o FGTS do tipo de vínculo. No doméstico, o cartão soma o FGTS de 8% e a indenização compensatória de 3,2%.
+2. **IRRF nas duas modalidades:** base de cálculo, redução mensal, IRRF e alíquota efetiva das deduções legais e do desconto simplificado. A modalidade de menor imposto, que é a aplicada, aparece em negrito com **(aplicada)**; quando as duas resultam no mesmo valor, valem as deduções legais. Antes de 05/2023, a tabela traz só as deduções legais.
+3. **Demonstrativo:** o valor bruto, o INSS e o IRRF, com o **salário líquido** no total. Na referência, o INSS e o IRRF mostram a alíquota da última faixa alcançada, como no holerite: no teto do INSS, 14%, embora o desconto corresponda a cerca de 11,7% da base, porque cada faixa tem a sua alíquota. O FGTS fica em **Valores informativos**, porque é depositado pelo empregador e não reduz o líquido.
 
 Role a área de resultado para ver a **memória de cálculo**, que mostra passo a passo como cada valor foi obtido:
 
-![Memória de cálculo do IRRF](imagens/03-simulacao-memoria-irrf.png)
+![Memória de cálculo do INSS e do IRRF](imagens/03-simulacao-memoria-irrf.png)
 
-Para cada modalidade de IRRF são exibidos:
+- **INSS:** a base, limitada ao teto, e o valor de cada faixa, com o total.
+- **IRRF:** a base de cada modalidade, com cada dedução identificada, e o imposto pela alíquota da faixa menos a parcela a deduzir e, quando houver, a redução mensal. A base nunca fica negativa: quando as deduções superam o valor bruto, ela é zero. Por último, a modalidade aplicada e, se for o caso, a dispensa de retenção.
 
-- **Base de cálculo:** o valor sobre o qual o imposto incide, com cada dedução identificada. Na modalidade normal, o valor bruto menos o INSS e a dedução por dependente multiplicada pela quantidade de dependentes; na simplificada, o valor bruto menos o desconto simplificado. A base nunca fica negativa: quando as deduções superam o valor bruto, ela é zero.
-- **IR progressivo:** base × alíquota da faixa − parcela a deduzir.
-- **Redução mensal:** desconto aplicado ao imposto, quando previsto para a competência.
-
-No final da área de resultado aparece o detalhamento **faixa a faixa** do INSS e do IRRF. No IRRF, o total do quadro é o imposto pela tabela progressiva, antes da redução mensal:
+Em seguida, aparece o IRRF **faixa a faixa** de cada modalidade, para conferir o cálculo pela parcela a deduzir. O total é o imposto antes da redução mensal. Como cada faixa é arredondada nos centavos, a soma pode diferir em centavos, e a memória explica a diferença; vale o imposto pela parcela a deduzir. Depois vêm o salário líquido, o FGTS e as observações:
 
 ![Detalhamento por faixas](imagens/04-simulacao-faixas.png)
 
@@ -165,13 +165,15 @@ No final da área de resultado aparece o detalhamento **faixa a faixa** do INSS 
 | Item | Regra aplicada pelo aplicativo |
 | --- | --- |
 | INSS | A partir de 03/2020, cálculo progressivo: cada parte da base é tributada pela alíquota da sua faixa. Antes de 03/2020, alíquota única conforme a faixa em que a base se encontra. A base é limitada ao teto da tabela (último limite cadastrado). O valor de cada faixa é **truncado** nos centavos, sem arredondar, como o eSocial calcula a contribuição (Manual de Orientação do eSocial, evento S-5001): em 2026, o INSS do teto é R$ 988,07. |
-| IRRF normal | Base = valor bruto − INSS − (dependentes × dedução por dependente). |
-| IRRF simplificado | Base = valor bruto − desconto simplificado. Disponível a partir de 05/2023. |
+| IRRF com deduções legais | Base = valor bruto − INSS − (dependentes × dedução por dependente). |
+| IRRF com desconto simplificado | Base = valor bruto − desconto simplificado. Disponível a partir de 05/2023. |
 | Redução mensal | Quando cadastrada para a competência, reduz o imposto apurado conforme a faixa de rendimentos (por exemplo, as regras vigentes a partir de 01/2026). |
-| Alíquota efetiva | IRRF final ÷ valor bruto. |
+| Alíquota efetiva | IRRF da modalidade ÷ valor bruto. |
 | Dispensa de retenção | O IRRF calculado de até R$ 10,00 (tabela **Desconto mínimo**) não é retido nem passa para o mês seguinte (Lei 9.430/1996, art. 67). O desconto fica em R$ 0,00, e a memória de cálculo mostra o valor calculado. Não vale para o 13º nem para a PLR, que têm tributação exclusiva. |
-| Salário líquido | Valor bruto − INSS − IRRF da modalidade mais vantajosa, que é a aplicada pela fonte pagadora, ou zero quando a retenção é dispensada. |
-| FGTS | 8% (padrão) e 2% (Jovem Aprendiz) sobre toda a base de INSS informada. O FGTS não tem teto: diferentemente do INSS, ele não é limitado ao último limite da tabela. |
+| Salário líquido | Valor bruto − INSS − IRRF da modalidade de menor imposto, que é a aplicada pela fonte pagadora, ou zero quando a retenção é dispensada. |
+| FGTS | Sobre toda a base de INSS informada, sem teto: 8% para o empregado (Lei 8.036/1990, art. 15), 2% para o aprendiz (art. 15, § 7º) e, no doméstico, 8% e mais 3,2% de indenização compensatória da perda do emprego, que o trabalhador saca na dispensa sem justa causa (LC 150/2015, arts. 22 e 34). Não reduz o salário líquido. Os encargos do empregador doméstico estão na calculadora **Empregado doméstico (DAE)**. |
+
+A simulação não considera pensão alimentícia, previdência complementar, outros descontos nem outros rendimentos do mês. Para isso, use o **Holerite do mês** (seção 8.14).
 
 > **Importante:** o aplicativo utiliza, para cada tabela, o registro mais recente cuja competência seja **igual ou anterior** à competência informada. Por exemplo, uma simulação de 10/2026 usa as faixas de INSS de 01/2026, se essa for a tabela mais recente até essa data.
 
@@ -396,7 +398,7 @@ Além da simulação tributária, da pensão, dos débitos judiciais, da estabil
 - **Calcular:** faz o cálculo. A tecla **Enter** também calcula. Feito o cálculo, a janela rola até o **Resultado** quando ele está fora da vista.
 - **Resumo executivo:** os valores mais importantes.
 - **Entradas utilizadas neste resultado:** seção expansível para conferir os valores do formulário no momento do cálculo. Nas listas, abra o formulário para conferir cada linha.
-- **Demonstrativo:** proventos, descontos e o resultado, como em um holerite. Clique em um valor do resumo, do demonstrativo, do comparativo ou dos informativos para copiá-lo, sem o "R$", e colar na folha ou numa planilha; uma dica confirma o valor copiado. Pelo teclado, selecione o valor com **Tab** e pressione **Enter**.
+- **Demonstrativo:** proventos, descontos e o resultado, como em um holerite. Na referência do INSS aparece a alíquota da última faixa alcançada pela base, como **12%**, e não a alíquota efetiva; nas férias que passam por dois meses, a de cada mês, como **9% e 7,5%**. Clique em um valor do resumo, do demonstrativo, do comparativo ou dos informativos para copiá-lo, sem o "R$", e colar na folha ou numa planilha; uma dica confirma o valor copiado. Pelo teclado, selecione o valor com **Tab** e pressione **Enter**.
 - **Valores informativos:** valores que não entram nos totais nem no resultado, como o FGTS depositado pelo empregador, bases de cálculo e outras referências.
 - **Memória de cálculo:** a fórmula de cada valor, inclusive o INSS faixa a faixa e o IRRF nas duas modalidades.
 - **Observações:** as premissas e os limites do cálculo.
@@ -1660,7 +1662,7 @@ Todas as calculadoras possuem o botão **Gerar PDF**, que fica disponível depoi
 
 | Calculadora | Nome sugerido | Conteúdo |
 | --- | --- | --- |
-| Simulação tributária | `relatorio-simulacao-tributaria-MM-AAAA.pdf` | Dados considerados, comparativo do IRRF, memória de cálculo e detalhamento por faixas. |
+| Simulação tributária | `simulacao-tributaria-MM-AAAA.pdf` | Resumo, comparativo das modalidades do IRRF, demonstrativo, FGTS, memória de cálculo com o detalhamento por faixas e observações. |
 | Pensão alimentícia | `relatorio-pensao-alimenticia-MM-AAAA.pdf` | Dados considerados, com a regra da pensão, a explicação do cálculo, o IRRF de quem paga com e sem a pensão, o comparativo dos modelos e, se o último cálculo foi feito com **Detalhar**, as iterações. |
 | Revisão de pensão | `revisao-pensao-MM-AAAA.pdf` | Resumo, a comparação entre a pensão atual e a proposta, a memória de cálculo de cada uma e as observações. |
 | Pensão em atraso | `pensao-em-atraso-AAAA-MM-DD.pdf` | Resumo do débito, com os ritos da prisão e da penhora, os critérios, a tabela de parcelas e as observações. |
@@ -1734,7 +1736,7 @@ Por padrão, o aplicativo desenha a interface sem usar a placa de vídeo, o que 
 | "Falta o valor de Selic de MM/AAAA na tabela de índices." | No tributo em atraso e na correção de valores, atualize a tabela do índice pela internet ou cadastre o mês. |
 | "O limite de renda do calendário de AAAA não está no aplicativo." | No abono salarial, informe o limite do calendário divulgado pelo Ministério do Trabalho. |
 | "Os outros descontos não podem passar de uma remuneração mensal..." | Na rescisão, a compensação de descontos é limitada a uma remuneração (CLT, art. 477, § 5º). |
-| "Informe uma competência válida (MM/AAAA), valores monetários válidos e dependentes maior ou igual a zero." | Confira o formato da competência, use vírgula nos centavos e informe dependentes como número inteiro. |
+| "O campo \"Valor bruto\" está em formato inválido..." ou "Dependentes: informe de 0 a 99 dependentes..." | O aviso aparece no formulário, com o campo destacado. Corrija o campo indicado: competência no formato MM/AAAA, valores com vírgula nos centavos e dependentes como número inteiro. |
 | "Informe média, dias-base, datas (dd/MM/aaaa) e complementos em formatos válidos." | Confira as datas da estabilidade e os valores digitados. |
 | "O fim da estabilidade deve ser posterior à data de demissão." | Corrija a data final, que precisa ser depois da demissão. |
 | "Os dias-base devem ser maiores que zero." | Informe o divisor da média, normalmente 30. |
@@ -1772,7 +1774,7 @@ Por padrão, o aplicativo desenha a interface sem usar a placa de vídeo, o que 
 ## 13. Perguntas frequentes
 
 **Onde ficou a simulação tributária que aparecia na tela principal?**
-Ela passou a abrir em uma janela própria, pelo cartão **Simulação tributária** da aba **Calculadoras**, como as demais calculadoras. A pensão alimentícia também deixou de depender dela: tem os próprios campos de rendimentos, que já vêm preenchidos com os dados da última simulação.
+Ela abre pelo cartão **Simulação tributária** da aba **Calculadoras**, na mesma janela das demais calculadoras. As simulações salvas no histórico em versões anteriores continuam abrindo, recalculando e podendo ser comparadas. A pensão alimentícia também deixou de depender dela: tem os próprios campos de rendimentos, que já vêm preenchidos com os dados da última simulação.
 
 **Os meus dados são enviados para a internet?**
 Não. Os cálculos e as tabelas ficam no seu computador. A internet só é usada quando você clica em **Atualizar pela internet**, que apenas lê as páginas das fontes, em links para páginas oficiais e, ao abrir, para consultar no GitHub se há versão nova, o que pode ser desligado no rodapé da tela principal.

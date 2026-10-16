@@ -30,7 +30,7 @@ public class SalarioPeloLiquidoTests
 
         // Nenhum bruto menor, até R$ 300,00 abaixo, pode dar o mesmo líquido.
         var simulador = new SimularImpostoUseCase(consulta);
-        async Task<decimal> Liquido(decimal valor) => (await simulador.ExecutarAsync(new SimularImpostoRequest(competencia, valor, valor, dependentes), default).Sucesso()).SalarioLiquido;
+        async Task<decimal> Liquido(decimal valor) => (await simulador.ExecutarAsync(new SimularImpostoRequest(competencia, valor, valor, dependentes), default).Sucesso()).Resultado;
         Assert.Equal(liquido, await Liquido(bruto));
         for (var valor = Math.Max(liquido, bruto - 300m); valor < bruto; valor += 0.01m)
             Assert.NotEqual(liquido, await Liquido(valor));

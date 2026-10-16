@@ -7,9 +7,6 @@ namespace CalculosTrabalhistasTributarios.Infrastructure.Reporting;
 /// <summary>Adaptador QuestPDF da porta de relatórios: cada relatório tem a sua classe em <c>Reporting/Pdf</c>.</summary>
 public sealed class QuestPdfRelatorioPdfService : IRelatorioPdfService
 {
-    public Task GerarRelatorioImpostoAsync(SimulacaoImpostoDto simulacao, string caminhoArquivo, CancellationToken cancellationToken) =>
-        RelatorioPdfImposto.GerarRelatorioImpostoAsync(simulacao, caminhoArquivo, cancellationToken);
-
     public Task GerarRelatorioPensaoAsync(SimulacaoPensaoDto simulacao, EntradaPensaoDto entrada, bool incluirDetalhes, string caminhoArquivo, CancellationToken cancellationToken) =>
         RelatorioPdfPensao.GerarRelatorioPensaoAsync(simulacao, entrada, incluirDetalhes, caminhoArquivo, cancellationToken);
 
