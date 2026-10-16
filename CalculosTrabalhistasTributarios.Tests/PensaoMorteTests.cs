@@ -71,18 +71,32 @@ public class PensaoMorteTests
         Assert.Equal(100m, CalculadoraPensaoMorte.Calcular(Entrada(outros: 6)).Sucesso().Cota);   // 50% + 7 x 10%, limitado a 100%
     }
 
+    // Limites de cada faixa conferidos no texto oficial: IN PRES/INSS 128/2022, art. 375, § 8º (Portaria ME 424/2020, óbitos
+    // desde 01/01/2021), e Lei 8.213/1991, art. 77, § 2º, V, "c" (óbitos até 31/12/2020).
     [Theory]
-    [InlineData(21, 2021, 3)]
-    [InlineData(22, 2021, 6)]
-    [InlineData(30, 2021, 10)]
-    [InlineData(31, 2021, 15)]
-    [InlineData(44, 2021, 20)]
-    [InlineData(45, 2021, null)]
-    [InlineData(21, 2020, 6)]      // antes de 2021, as idades eram um ano menores
-    [InlineData(44, 2020, null)]
-    public void Duracao_pela_idade_do_conjuge(int idade, int ano, int? anos)
+    [InlineData(21, "2021-01-01", 3)]
+    [InlineData(22, "2021-01-01", 6)]
+    [InlineData(27, "2021-01-01", 6)]
+    [InlineData(28, "2021-01-01", 10)]
+    [InlineData(30, "2021-01-01", 10)]
+    [InlineData(31, "2021-01-01", 15)]
+    [InlineData(41, "2021-01-01", 15)]
+    [InlineData(42, "2021-01-01", 20)]
+    [InlineData(44, "2026-06-01", 20)]
+    [InlineData(45, "2026-06-01", null)]
+    [InlineData(20, "2020-12-31", 3)]
+    [InlineData(21, "2020-12-31", 6)]
+    [InlineData(26, "2020-12-31", 6)]
+    [InlineData(27, "2020-12-31", 10)]
+    [InlineData(29, "2020-12-31", 10)]
+    [InlineData(30, "2020-12-31", 15)]
+    [InlineData(40, "2020-12-31", 15)]
+    [InlineData(41, "2020-12-31", 20)]
+    [InlineData(43, "2020-12-31", 20)]
+    [InlineData(44, "2020-12-31", null)]
+    public void Duracao_pela_idade_do_conjuge(int idade, string obito, int? anos)
     {
-        Assert.Equal(anos, CalculadoraPensaoMorte.DuracaoPorIdade(idade, new DateOnly(ano, 6, 1)));
+        Assert.Equal(anos, CalculadoraPensaoMorte.DuracaoPorIdade(idade, DateOnly.Parse(obito, System.Globalization.CultureInfo.InvariantCulture)));
     }
 
     [Fact]

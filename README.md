@@ -89,14 +89,14 @@ Todas usam a mesma janela, com resumo, demonstrativo no formato de holerite, val
 | Empregado doméstico (DAE) | Salário líquido do doméstico e o DAE do mês: 8% patronal, 0,8% de GILRAT, 8% de FGTS, 3,2% de indenização compensatória, INSS e IRRF do empregado (LC 150/2015). |
 | Estágio | Bolsa líquida com o IRRF, sem INSS e FGTS, bolsa proporcional no mês de início ou de fim e o recesso remunerado proporcional (Lei 11.788/2008). |
 | Trabalho intermitente | Pagamento de cada convocação: horas, DSR, férias proporcionais com 1/3, 13º proporcional e FGTS (CLT, art. 452-A). |
-| Simulação de aposentadoria | Projeção mensal de cada regra do RGPS da EC 103/2019 (pontos, idade mínima progressiva, pedágios de 50% e 100%, transição por idade e permanente), com a data em que se cumpre, o coeficiente ou o fator previdenciário e o benefício estimado entre o mínimo e o teto. |
+| Simulação de aposentadoria | Projeção mensal de cada regra do RGPS da EC 103/2019 (pontos, idade mínima progressiva, pedágios de 50% e 100%, transição por idade e permanente), com a média dos salários de contribuição desde 07/1994 corrigidos pelo INPC (Lei 8.213/1991, art. 29-B) ou informada pronta, a data em que se cumpre, o coeficiente ou o fator previdenciário e o benefício estimado entre o mínimo e o teto. |
 | Pensão por morte | Cota familiar de 50% mais 10% por dependente (EC 103/2019, art. 23), base pela aposentadoria ou pela incapacidade permanente, valor por dependente, duração da cota do cônjuge pela idade (Lei 8.213/1991, art. 77) e redutor da acumulação (art. 24). |
 | Afastamentos e licenças | Doença e acidente de trabalho (15 dias da empresa e o auxílio estimado do INSS), licença-maternidade (120 ou 180 dias) e paternidade (LC 229/2026), com FGTS, estabilidade e a soma de afastamentos pelo mesmo motivo em até 60 dias (Decreto 3.048/1999, art. 75). |
 | Saque-aniversário do FGTS | Composição automática do saldo, exclusão da multa incluída, desconto da parcela cedida e análise dos impedimentos informados para nova antecipação. |
-| Conferência do FGTS | Devido e depositado por competência (8%, 2% do aprendiz, 8% + 3,2% do doméstico), diferenças mensais e rescisórias, vencimentos do dia 7 e do dia 20 do FGTS Digital, reflexo na multa e envio dos depósitos devidos à rescisão. |
+| Conferência do FGTS | Devido e depositado por competência (8%, 2% do aprendiz, 8% + 3,2% do doméstico), diferenças mensais e rescisórias, vencimentos do dia 7 e do dia 20 do FGTS Digital antecipados nos fins de semana e feriados nacionais, reflexo na multa e envio dos depósitos devidos à rescisão. |
 | Abono salarial (PIS/Pasep) | Direito e valor do abono, com o limite de renda da EC 135/2024. |
 | Pró-labore e autônomo | INSS de 11% até o teto, IRRF, ISS do autônomo e o custo para a empresa. |
-| Contribuição do autônomo e do facultativo | GPS do contribuinte individual e do facultativo nos planos de 20%, 11% e 5% (Lei 8.212/1991, art. 21), com o salário mínimo e o teto da competência, código de pagamento, vencimento mensal ou trimestral, complementação até 20% e os três planos lado a lado. |
+| Contribuição do autônomo e do facultativo | GPS do contribuinte individual e do facultativo nos planos de 20%, 11% e 5% (Lei 8.212/1991, art. 21), com o salário mínimo e o teto da competência, código de pagamento, vencimento mensal ou trimestral adiado nos fins de semana e feriados nacionais, complementação até 20% e os três planos lado a lado. |
 | Resgate de previdência privada | IR no resgate total ou parcial de PGBL e VGBL, aporte a aporte dos mais antigos aos mais recentes, na tabela regressiva de 35% a 10% e no progressivo com 15% retidos (Lei 11.053/2004), com saldo estimado por rentabilidade quando o extrato não o traz. |
 | CLT x PJ | O ano do mesmo profissional como CLT e como PJ no Simples Nacional (anexos III e V, com o fator R): total para o profissional, custo para a empresa e o valor de PJ que iguala o CLT. |
 | Simples Nacional e fator r | DAS do período pela receita e pela folha com encargos dos 12 meses, nos Anexos I a V, com início de atividade, as regras de 2027 (Resolução CGSN 190/2026), comparação entre os Anexos III e V e o pró-labore que leva o fator r a 28%. |
@@ -134,7 +134,7 @@ As regras da CLT ficam em `CalculosTrabalhistasTributarios.Domain/Trabalhista` (
 
 ### Gestão de tabelas
 
-- Mantém localmente faixas de INSS e IRRF, dedução por dependente, desconto simplificado, desconto mínimo, redução mensal, tabela anual da PLR, salário-família, salário mínimo e seguro-desemprego, com o histórico desde 2017, e os índices mensais INPC, IPCA, IPCA-E, Selic e TR desde 2015 e a taxa legal desde 08/2024.
+- Mantém localmente faixas de INSS e IRRF, dedução por dependente, desconto simplificado, desconto mínimo, redução mensal, tabela anual da PLR, salário-família, salário mínimo e seguro-desemprego, com o histórico desde 2017, e os índices mensais INPC (desde 07/1994), IPCA, IPCA-E, Selic e TR desde 2015 e a taxa legal desde 08/2024.
 - Permite incluir, editar e remover registros por competência.
 - Inicializa dados históricos de forma idempotente, sem sobrescrever manutenções locais.
 - Atualiza pela internet todas as tabelas, inclusive o seguro-desemprego e o desconto mínimo, pela fonte oficial ou, quando ela ainda não publicou a tabela do ano, por duas fontes alternativas que concordem entre si; em caso de falha, preserva os dados locais.
@@ -181,11 +181,11 @@ A solução segue a Clean Architecture com DDD: cada camada é um projeto, e as 
 
 ```text
 CalculosTrabalhistasTributarios.Domain/          Regras de negócio, sem dependências externas
-├── Comum/             Result, Result<T> e Erro (Result Pattern)
+├── Comum/             Result, Result<T> e Erro (Result Pattern) e o calendário bancário com os feriados nacionais
 ├── Tributacao/        INSS, IRRF, PLR, Simples Nacional e as tabelas da competência
 ├── Trabalhista/       CLT, horas extras, seguro-desemprego, em Rescisao/ as verbas rescisórias e em Reflexos/ o motor de reflexos
 ├── Pensao/            Regra da pensão e o cálculo sobre o líquido
-├── Previdencia/       Contribuição do autônomo e do facultativo, Aposentadoria/ (regras da EC 103), PensaoMorte/ e, em Complementar/, o IR do resgate de PGBL e VGBL
+├── Previdencia/       Contribuição do autônomo e do facultativo, média dos salários de contribuição, Aposentadoria/ (regras da EC 103), PensaoMorte/ e, em Complementar/, o IR do resgate de PGBL e VGBL
 ├── Judicial/          Índices, correção e juros dos débitos judiciais e da pensão em atraso
 └── Estabilidade/      Indenização do período de estabilidade
 CalculosTrabalhistasTributarios.Application/     Casos de uso: orquestram o domínio e montam os demonstrativos

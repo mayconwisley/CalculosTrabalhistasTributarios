@@ -57,11 +57,11 @@ Nos caminhos abreviados deste documento, `Domain/`, `Application/`, `Infrastruct
 
 Pontos de entrada e extensão:
 
-- `Domain/Comum`: `Result`, `Result<T>` e `Erro`.
+- `Domain/Comum`: `Result`, `Result<T>` e `Erro`; `CalendarioBancario` (feriados nacionais e dias sem expediente bancário da Resolução CMN 4.880/2020), usado nos vencimentos de guias. Não repita a regra de fim de semana em cada calculadora.
 - `Domain/Tributacao`: tributação compartilhada, especialmente `TabelasDaCompetencia` e `CalculadoraTributacao`.
 - `Domain/Trabalhista`: regras trabalhistas; rescisão possui o submódulo `Rescisao`. Os reflexos ficam no submódulo `Reflexos`: `FormulasReflexos` (DSR, avos do 13º, férias com o terço, FGTS e multa) e `MotorReflexos`, que aplica a uma verba mês a mês só as incidências informadas como premissa, com o marco de 20/03/2023 do DSR das horas extras, e separa as férias por período aquisitivo quando recebe a admissão. Use-os em vez de repetir essas fórmulas; `MemoriaReflexos`, na Application, monta as linhas e a memória.
 - `Domain/Pensao`, `Domain/Judicial` e `Domain/Estabilidade`: regras dos respectivos assuntos.
-- `Domain/Previdencia`: contribuição do contribuinte individual e do facultativo e `RegrasBeneficioRgps` (coeficiente de 60% mais 2 pontos e limites do mínimo e do teto); os submódulos `Aposentadoria` e `PensaoMorte` tratam das regras da EC 103/2019, e `Complementar`, do IR no resgate de PGBL e VGBL.
+- `Domain/Previdencia`: contribuição do contribuinte individual e do facultativo, `CalculadoraMediaSalarios` (média desde 07/1994 corrigida pelo INPC) e `RegrasBeneficioRgps` (coeficiente de 60% mais 2 pontos e limites do mínimo e do teto); os submódulos `Aposentadoria` e `PensaoMorte` tratam das regras da EC 103/2019, e `Complementar`, do IR no resgate de PGBL e VGBL.
 - `Application/UseCases`, `Application/DTOs` e `Application/Demonstrativos`: orquestração e resultados.
 - `Infrastructure/Persistence/Inicializacao`: esquema, sementes e correções do banco.
 - `Infrastructure/Tributacao`: consultas, fontes e atualização das tabelas.

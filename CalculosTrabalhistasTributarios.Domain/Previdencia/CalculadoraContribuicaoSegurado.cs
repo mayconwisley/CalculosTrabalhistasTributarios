@@ -64,18 +64,11 @@ public static class CalculadoraContribuicaoSegurado
         return new ApuracaoContribuicaoSegurado(entrada, meses, Codigo(entrada), CodigoComplementacao(entrada), Vencimento(ultimo));
     }
 
-    /// <summary>Dia 15 do mês seguinte; no sábado ou no domingo, a segunda-feira. Feriados não são considerados.</summary>
-    public static DateOnly Vencimento(DateOnly ultimaCompetencia)
-    {
-        var dia = new DateOnly(ultimaCompetencia.Year, ultimaCompetencia.Month, 15).AddMonths(1);
-        return dia.DayOfWeek switch
-        {
-            DayOfWeek.Saturday => dia.AddDays(2),
-            DayOfWeek.Sunday => dia.AddDays(1),
-            _ => dia
-        };
-    }
+    /// <summary>Dia 15 do mês seguinte; sem expediente bancário (fim de semana, feriado nacional, Carnaval ou Corpus Christi), o dia útil seguinte.</summary>
+    public static DateOnly Vencimento(DateOnly ultimaCompetencia) =>
+        CalendarioBancario.ProximoDiaUtil(new DateOnly(ultimaCompetencia.Year, ultimaCompetencia.Month, 15).AddMonths(1));
 
+    /// <summary>Códigos da GPS do ADE Codac 98/2009 e, para o facultativo de baixa renda, do ADE Codac 71/2011.</summary>
     private static string Codigo(EntradaContribuicaoSegurado e)
     {
         var mensal = e.Periodicidade == PeriodicidadeContribuicao.Mensal;
@@ -89,11 +82,18 @@ public static class CalculadoraContribuicaoSegurado
         };
     }
 
+    /// <summary>
+    /// Código da complementação até 20%: 1295/1198 e 1686/1694 do plano simplificado (ADE Codac 98/2009) e 1945/1953 do
+    /// facultativo de baixa renda (ADE Codac 71/2011), mensal e trimestral.
+    /// </summary>
     private static string? CodigoComplementacao(EntradaContribuicaoSegurado e)
     {
-        if (e.Plano != PlanoContribuicao.Simplificado)
-            return null;
         var mensal = e.Periodicidade == PeriodicidadeContribuicao.Mensal;
-        return e.Categoria == CategoriaSegurado.ContribuinteIndividual ? (mensal ? "1295" : "1198") : (mensal ? "1686" : "1694");
+        return e.Plano switch
+        {
+            PlanoContribuicao.Simplificado => e.Categoria == CategoriaSegurado.ContribuinteIndividual ? (mensal ? "1295" : "1198") : (mensal ? "1686" : "1694"),
+            PlanoContribuicao.BaixaRenda => mensal ? "1945" : "1953",
+            _ => null
+        };
     }
 }

@@ -45,8 +45,31 @@ internal static class SementesTributarias
         new(2025, 1, 1, 1_518.00d), new(2026, 1, 1, 1_621.00d)
     ];
 
-    // Variação mensal do INPC e do IPCA (IBGE), em %, para a correção da pensão em atraso.
-    internal static readonly SementeParametro[] VariacoesInpc = Mensais(
+    // Variação mensal do INPC e do IPCA (IBGE), em %, para a correção da pensão em atraso. O INPC começa em 07/1994, como os
+    // salários de contribuição da média da aposentadoria (EC 103/2019, art. 26), corrigidos por ele (Lei 8.213/1991,
+    // art. 29-B); de 07/1994 a 12/2014, valores do SIDRA do IBGE, tabela 1736, variável 44.
+    internal static readonly SementeParametro[] VariacoesInpc = Mensais(7,
+        (1994, "7.75 1.85 1.40 2.82 2.96 1.70"),
+        (1995, "1.44 1.01 1.62 2.49 2.10 2.18 2.46 1.02 1.17 1.40 1.51 1.65"),
+        (1996, "1.46 0.71 0.29 0.93 1.28 1.33 1.20 0.50 0.02 0.38 0.34 0.33"),
+        (1997, "0.81 0.45 0.68 0.60 0.11 0.35 0.18 -0.03 0.10 0.29 0.15 0.57"),
+        (1998, "0.85 0.54 0.49 0.45 0.72 0.15 -0.28 -0.49 -0.31 0.11 -0.18 0.42"),
+        (1999, "0.65 1.29 1.28 0.47 0.05 0.07 0.74 0.55 0.39 0.96 0.94 0.74"),
+        (2000, "0.61 0.05 0.13 0.09 -0.05 0.30 1.39 1.21 0.43 0.16 0.29 0.55"),
+        (2001, "0.77 0.49 0.48 0.84 0.57 0.60 1.11 0.79 0.44 0.94 1.29 0.74"),
+        (2002, "1.07 0.31 0.62 0.68 0.09 0.61 1.15 0.86 0.83 1.57 3.39 2.70"),
+        (2003, "2.47 1.46 1.37 1.38 0.99 -0.06 0.04 0.18 0.82 0.39 0.37 0.54"),
+        (2004, "0.83 0.39 0.57 0.41 0.40 0.50 0.73 0.50 0.17 0.17 0.44 0.86"),
+        (2005, "0.57 0.44 0.73 0.91 0.70 -0.11 0.03 0.00 0.15 0.58 0.54 0.40"),
+        (2006, "0.38 0.23 0.27 0.12 0.13 -0.07 0.11 -0.02 0.16 0.43 0.42 0.62"),
+        (2007, "0.49 0.42 0.44 0.26 0.26 0.31 0.32 0.59 0.25 0.30 0.43 0.97"),
+        (2008, "0.69 0.48 0.51 0.64 0.96 0.91 0.58 0.21 0.15 0.50 0.38 0.29"),
+        (2009, "0.64 0.31 0.20 0.55 0.60 0.42 0.23 0.08 0.16 0.24 0.37 0.24"),
+        (2010, "0.88 0.70 0.71 0.73 0.43 -0.11 -0.07 -0.07 0.54 0.92 1.03 0.60"),
+        (2011, "0.94 0.54 0.66 0.72 0.57 0.22 0.00 0.42 0.45 0.32 0.57 0.51"),
+        (2012, "0.51 0.39 0.18 0.64 0.55 0.26 0.43 0.45 0.63 0.71 0.54 0.74"),
+        (2013, "0.92 0.52 0.60 0.59 0.35 0.28 -0.13 0.16 0.27 0.61 0.54 0.72"),
+        (2014, "0.63 0.64 0.82 0.78 0.60 0.26 0.13 0.18 0.49 0.38 0.53 0.62"),
         (2015, "1.48 1.16 1.51 0.71 0.99 0.77 0.58 0.25 0.51 0.77 1.11 0.90"),
         (2016, "1.51 0.95 0.44 0.64 0.98 0.47 0.64 0.31 0.08 0.17 0.07 0.14"),
         (2017, "0.42 0.24 0.32 0.08 0.36 -0.30 0.17 -0.03 -0.02 0.37 0.18 0.26"),
@@ -168,8 +191,11 @@ internal static class SementesTributarias
     ];
 
     /// <summary>Um valor por mês de cada ano, separados por espaço e com ponto decimal; o ano pode terminar antes de dezembro.</summary>
-    internal static SementeParametro[] Mensais(params (int Ano, string Valores)[] anos) => anos
-        .SelectMany(ano => ano.Valores.Split(' ', StringSplitOptions.RemoveEmptyEntries)
-            .Select((valor, indice) => new SementeParametro(ano.Ano, indice + 1, 1, double.Parse(valor, System.Globalization.CultureInfo.InvariantCulture))))
+    internal static SementeParametro[] Mensais(params (int Ano, string Valores)[] anos) => Mensais(1, anos);
+
+    /// <summary>Como <see cref="Mensais(ValueTuple{int, string}[])"/>, com o primeiro ano começando em <paramref name="primeiroMes"/>.</summary>
+    internal static SementeParametro[] Mensais(int primeiroMes, params (int Ano, string Valores)[] anos) => anos
+        .SelectMany((ano, posicao) => ano.Valores.Split(' ', StringSplitOptions.RemoveEmptyEntries)
+            .Select((valor, indice) => new SementeParametro(ano.Ano, indice + (posicao == 0 ? primeiroMes : 1), 1, double.Parse(valor, System.Globalization.CultureInfo.InvariantCulture))))
         .ToArray();
 }

@@ -929,7 +929,7 @@ Informe a **competência**, o **salário**, as **horas extras e adicionais** do 
 | INSS do empregado | Tabela progressiva | Descontado do empregado |
 | IRRF do empregado | Tabela mensal | Descontado do empregado |
 
-- O DAE vence no dia 7 do mês seguinte; se não for dia útil, pague no dia útil anterior.
+- O DAE vence no dia 7 do mês seguinte; se não houver expediente bancário nesse dia (fim de semana ou feriado nacional), vence no dia útil anterior.
 - A **indenização compensatória** substitui a multa de 40% do FGTS: na dispensa sem justa causa ela vai para o empregado; na justa causa, no pedido de demissão e no fim do contrato a prazo, volta ao empregador.
 - No 13º e nas férias, use as calculadoras próprias; na saída, a [Rescisão](#85-rescisão) com o vínculo **Empregado doméstico**.
 
@@ -1330,7 +1330,7 @@ Abra pelo cartão **Conferência do FGTS**, em **FGTS, afastamentos e benefício
 - **Devido:** remuneração × alíquota, por competência. No doméstico, os 3,2% da indenização compensatória aparecem à parte, como referência.
 - **Diferenças:** o que falta depositar em cada competência, somado separadamente para as mensais e a rescisória. Um depósito a maior em um mês não quita outro e aparece como informativo.
 - **Reflexo na multa de 40%:** 40% do que falta depositar, para a dispensa sem justa causa. Não se aplica ao doméstico.
-- **Vencimentos:** até a competência 02/2024, o depósito mensal vencia no dia 7 do mês seguinte; desde 03/2024, no FGTS Digital, vence no dia 20. Sem expediente bancário, o prazo é antecipado; o aplicativo só considera sábados e domingos. O rescisório vence no 10º dia corrido após o desligamento.
+- **Vencimentos:** até a competência 02/2024, o depósito mensal vencia no dia 7 do mês seguinte; desde 03/2024, no FGTS Digital, vence no dia 20. Sem expediente bancário, o prazo é antecipado para o dia útil anterior; o aplicativo considera os sábados, os domingos e os feriados nacionais, mas não os estaduais e municipais. O rescisório vence no 10º dia corrido após o desligamento.
 - **Levar à rescisão:** abre a calculadora de rescisão com o FGTS devido de cada competência anterior ao desligamento no campo **Depósitos históricos do FGTS** e com a data de desligamento.
 
 O FGTS Digital individualiza os débitos a partir das remunerações informadas no eSocial. Juros, multa e atualização de depósitos em atraso (Lei 8.036/1990, art. 22) são calculados por ele e não estão incluídos aqui.
@@ -1444,8 +1444,8 @@ Abra pelo cartão **Contribuição do autônomo e do facultativo**, no grupo **I
 
 - **Valor da GPS:** a alíquota sobre a base de cada mês; no trimestral, a soma dos três meses.
 - **Código da GPS:** contribuinte individual 1007 (normal) e 1163 (simplificado); facultativo 1406 (normal), 1473 (simplificado) e 1929 (baixa renda). No trimestral, 1104, 1180, 1457, 1490 e 1937.
-- **Vencimento:** dia 15 do mês seguinte à competência ou ao trimestre. No sábado ou no domingo, passa para a segunda-feira; feriados não são considerados. Depois do vencimento, há juros e multa: use **Tributo em atraso** (seção 8.18).
-- **Complementação até 20%:** os planos de 11% e de 5% dão benefícios no valor do salário mínimo e não contam para a aposentadoria por tempo de contribuição das regras de transição nem para a certidão de tempo de contribuição. Para contá-los, paga-se a diferença: 9% do mínimo no simplificado (códigos 1295 e 1686, mensais) ou 15% no de baixa renda, pela guia do Meu INSS.
+- **Vencimento:** dia 15 do mês seguinte à competência ou ao trimestre. Sem expediente bancário (sábado, domingo ou feriado nacional), passa para o dia útil seguinte (Lei 8.212/1991, art. 30, § 2º); feriados estaduais e municipais não são considerados. Depois do vencimento, há juros e multa: use **Tributo em atraso** (seção 8.18).
+- **Complementação até 20%:** os planos de 11% e de 5% dão benefícios no valor do salário mínimo e não contam para a aposentadoria por tempo de contribuição das regras de transição nem para a certidão de tempo de contribuição. Para contá-los, paga-se a diferença: 9% do mínimo no simplificado (códigos 1295 e 1686, mensais) ou 15% no de baixa renda (códigos 1945 e 1953).
 - **Planos de contribuição:** os três planos na mesma competência, com o valor e o que cada um cobre.
 
 Confira o código e o valor no Meu INSS antes de pagar. As contribuições pagas pelo próprio segurado são dedutíveis no carnê-leão e na declaração anual.
@@ -1490,7 +1490,7 @@ Abra pelo cartão **Simulação de aposentadoria**, no grupo **FGTS, afastamento
 1. Informe o **Sexo**, a **Data de nascimento** e a **Data da simulação**: a projeção começa nela, com o salário mínimo e o teto do mês.
 2. Informe o tempo de contribuição até a data da simulação, em **anos** e **meses (0 a 11)**, como no CNIS.
 3. Informe o tempo de contribuição **em 13/11/2019**, data da reforma. Use 0 se começou a contribuir depois dela: nesse caso, só vale a regra permanente.
-4. Informe a **Média dos salários**: a média de todos os salários de contribuição desde 07/1994, corrigidos, como no simulador do Meu INSS.
+4. Em **Média dos salários**, escolha **Calcular pelos salários** e preencha a grade **Salários de contribuição** como no extrato do CNIS: cada linha é uma sequência de meses com o mesmo salário, com o mês inicial em **De** e o final em **Até** (MM/AAAA); para um só mês, repita a competência. Some os vínculos do mesmo mês numa linha. **+ Período** começa uma linha no mês seguinte ao fim da anterior, e **×** a remove. Se já tem a média do simulador do Meu INSS, escolha **Informar a média pronta** e preencha a **Média informada**.
 5. Em **Continua contribuindo?**, escolha **Sim** para que o tempo cresça um mês a cada mês da projeção, ou **Não** para que só a idade avance.
 6. Opcional: informe a **Sobrevida do IBGE**, a expectativa de sobrevida na idade da aposentadoria, para calcular o fator previdenciário do pedágio de 50%.
 7. Clique em **Calcular**.
@@ -1509,11 +1509,12 @@ Abra pelo cartão **Simulação de aposentadoria**, no grupo **FGTS, afastamento
 - **Primeira aposentadoria:** a regra cumprida mais cedo; **Já cumpre** quando os requisitos já estão cumpridos na data da simulação.
 - **Maior benefício:** a regra de maior valor estimado, com o mês em que se cumpre. Esperar pode aumentar o coeficiente.
 - **Regras de aposentadoria:** cada regra com o mês, a idade, o tempo e o benefício; **Não se aplica** quando a regra não vale para você e **Não alcança** quando os requisitos não se cumprem em 50 anos de projeção.
+- **Média dos salários de contribuição:** na memória de cálculo, cada período com os fatores de correção e a soma dos salários corrigidos. Cada mês é corrigido pelo INPC acumulado da competência até o mês anterior ao da simulação (Lei 8.213/1991, art. 29-B), arredondado aos centavos, e a média é a soma dividida pela quantidade de meses. Se o INPC dos últimos meses ainda não foi publicado, até dois meses ficam sem correção, com um aviso; com mais meses faltando, atualize a tabela do INPC.
 - O benefício fica entre o salário mínimo e o teto do INSS. Os valores estão em moeda de hoje: a média, o mínimo e o teto não são corrigidos no futuro.
 
-A simulação não considera a carência de 180 contribuições, o tempo especial, o professor, a pessoa com deficiência nem a aposentadoria por incapacidade. Confira o tempo e a média no CNIS e no simulador do Meu INSS antes de decidir.
+Os meses da grade não podem passar do tempo de contribuição informado. Informe os salários como constam no CNIS: o aplicativo não limita cada mês ao teto, não exclui as contribuições que reduzem a média (EC 103/2019, art. 26, § 6º) nem trata os meses abaixo do mínimo. A simulação não considera a carência de 180 contribuições, o tempo especial, o professor, a pessoa com deficiência nem a aposentadoria por incapacidade. Confira o tempo e a média no CNIS e no simulador do Meu INSS antes de decidir.
 
-Fundamentos: [EC 103/2019, arts. 15 a 20 e 26](https://www.planalto.gov.br/ccivil_03/constituicao/emendas/emc/emc103.htm); [Lei 8.213/1991, art. 29](https://www.planalto.gov.br/ccivil_03/leis/l8213cons.htm), para o fator previdenciário.
+Fundamentos: [EC 103/2019, arts. 15 a 20 e 26](https://www.planalto.gov.br/ccivil_03/constituicao/emendas/emc/emc103.htm); [Lei 8.213/1991, arts. 29 e 29-B](https://www.planalto.gov.br/ccivil_03/leis/l8213cons.htm), para o fator previdenciário e a correção pelo INPC.
 
 ### 8.42 Pensão por morte
 
@@ -1538,7 +1539,7 @@ Abra pelo cartão **Pensão por morte**, no grupo **FGTS, afastamentos e benefí
 
 A qualidade de segurado, a comprovação da dependência e a média são conferidas pelo INSS. Os filhos recebem até os 21 anos, salvo invalidez ou deficiência, e o cônjuge inválido recebe enquanto durar a condição.
 
-Fundamentos: [EC 103/2019, arts. 23, 24 e 26](https://www.planalto.gov.br/ccivil_03/constituicao/emendas/emc/emc103.htm); [Lei 8.213/1991, arts. 74 a 77](https://www.planalto.gov.br/ccivil_03/leis/l8213cons.htm); Portaria ME 424/2020, para as idades de duração desde 2021.
+Fundamentos: [EC 103/2019, arts. 23, 24 e 26](https://www.planalto.gov.br/ccivil_03/constituicao/emendas/emc/emc103.htm); [Lei 8.213/1991, arts. 74 a 77](https://www.planalto.gov.br/ccivil_03/leis/l8213cons.htm); [Portaria ME 424/2020, reproduzida na IN PRES/INSS 128/2022, art. 375, § 8º](https://www.in.gov.br/en/web/dou/-/instrucao-normativa-pres/inss-n-128-de-28-de-marco-de-2022-389275446), para as idades de duração desde 2021.
 
 ## 9. Tabelas e parâmetros
 
@@ -1642,7 +1643,7 @@ Se nenhuma tabela puder ser confirmada, por exemplo sem conexão ou com páginas
 
 Essas três tabelas também são atualizadas pela internet com o botão **Atualizar pela internet**, nas mesmas regras das demais (seção 9.3).
 
-**INPC, IPCA e Taxa legal:** um valor por mês, em %. O INPC e o IPCA, com o histórico desde 01/2015, são a variação mensal da inflação, que pode ser negativa, e corrigem a [pensão em atraso](#65-pensão-em-atraso). A taxa legal, desde 08/2024, é a taxa de juros de mora do Código Civil: a Selic do mês anterior descontado o IPCA-15, nunca negativa, com seis casas decimais, calculada e publicada pelo Banco Central no início de cada mês (Resolução CMN 5.171/2024).
+**INPC, IPCA e Taxa legal:** um valor por mês, em %. O INPC, com o histórico desde 07/1994, e o IPCA, desde 01/2015, são a variação mensal da inflação, que pode ser negativa, e corrigem a [pensão em atraso](#65-pensão-em-atraso). A taxa legal, desde 08/2024, é a taxa de juros de mora do Código Civil: a Selic do mês anterior descontado o IPCA-15, nunca negativa, com seis casas decimais, calculada e publicada pelo Banco Central no início de cada mês (Resolução CMN 5.171/2024).
 
 **IPCA-E, Selic e TR:** um valor por mês, em %, desde 01/2015, para os [débitos judiciais](#66-débitos-judiciais). O IPCA-E é a variação mensal do IPCA-15, que corrige a fase pré-judicial trabalhista; a TR do primeiro dia de cada mês faz os juros dessa fase; e a Selic acumulada no mês reúne a correção e os juros até 29/08/2024. A Selic do mês em curso só é gravada quando o mês termina.
 

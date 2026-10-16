@@ -34,7 +34,8 @@ public class DomesticoTests
         Assert.Equal(64.00m, Valor(resultado.Informativos, "DAE: indenização compensatória"));
         Assert.Equal(400m + inss, Valor(resultado.Informativos, "Total do DAE"));
         Assert.Equal(2_000m - inss, resultado.Resultado);
-        Assert.Contains("07/11/2026", resultado.Referencia);
+        // O dia 07/11/2026 é um sábado: o DAE é antecipado para a sexta-feira, 06/11 (LC 150/2015, art. 35, § 2º).
+        Assert.Contains("06/11/2026", resultado.Referencia);
     }
 
     [Theory]

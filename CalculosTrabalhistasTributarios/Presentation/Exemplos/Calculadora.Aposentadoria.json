@@ -7,8 +7,10 @@
     "Contribuição: meses (0 a 11)": "0",
     "Em 13/11/2019: anos": "26",
     "Em 13/11/2019: meses (0 a 11)": "1",
-    "Média dos salários": "5.000,00",
     "Continua contribuindo?": "Sim",
-    "Sobrevida do IBGE (opcional)": ""
+    "Sobrevida do IBGE (opcional)": "",
+    "Média dos salários": "Calcular pelos salários",
+    "Média informada": "0,00",
+    "Salários de contribuição": "[{\"Inicio\":\"07/1994\",\"Fim\":\"12/1999\",\"Salario\":\"800,00\"},{\"Inicio\":\"01/2000\",\"Fim\":\"12/2009\",\"Salario\":\"1.800,00\"},{\"Inicio\":\"01/2010\",\"Fim\":\"12/2019\",\"Salario\":\"3.500,00\"},{\"Inicio\":\"01/2020\",\"Fim\":\"09/2026\",\"Salario\":\"5.000,00\"}]"
   }
 }

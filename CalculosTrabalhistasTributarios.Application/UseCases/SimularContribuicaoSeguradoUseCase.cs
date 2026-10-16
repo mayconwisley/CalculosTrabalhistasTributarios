@@ -48,7 +48,7 @@ public sealed class SimularContribuicaoSeguradoUseCase(ITributacaoConsulta tribu
         {
             new("Valor da GPS", Formato.Moeda(c.Total), trimestral ? "Soma dos três meses do trimestre" : periodo),
             new("Código da GPS", c.Codigo, $"{NomeCategoria(e.Categoria)}, {NomePlano(e.Plano)}, {(trimestral ? "trimestral" : "mensal")}"),
-            new("Vencimento", Formato.Data(c.Vencimento), "Dia 15 do mês seguinte; no fim de semana, a segunda-feira"),
+            new("Vencimento", Formato.Data(c.Vencimento), "Dia 15 do mês seguinte, ou o dia útil seguinte"),
             reduzido
                 ? new("Complementação até 20%", Formato.Moeda(c.TotalComplementacao), c.CodigoComplementacao is { } codigo ? $"{complementacao} do mínimo, código {codigo}" : $"{complementacao} do mínimo, guia do Meu INSS")
                 : new("Complementação até 20%", "Não se aplica", "O plano normal já conta para todos os benefícios")
@@ -68,7 +68,10 @@ public sealed class SimularContribuicaoSeguradoUseCase(ITributacaoConsulta tribu
         if (reduzido)
             formulas.AddRange(c.Meses.Select(mes => new FormulaDto($"Complementação de {Formato.Competencia(mes.Parametros.Competencia)}",
                 $"{Formato.Moeda(mes.Parametros.SalarioMinimo)} x ({Formato.PercentualCurto(CalculadoraContribuicaoSegurado.AliquotaNormal)} - {Formato.PercentualCurto(mes.Aliquota)}) = {Formato.Moeda(mes.Complementacao)}")));
-        formulas.Add(new("Vencimento", $"Dia 15 do mês seguinte {(trimestral ? "ao trimestre" : "à competência")}: {Formato.Data(c.Vencimento)}"));
+        var dia15 = new DateOnly(e.Meses[^1].Competencia.Year, e.Meses[^1].Competencia.Month, 15).AddMonths(1);
+        formulas.Add(new("Vencimento", $"Dia 15 do mês seguinte {(trimestral ? "ao trimestre" : "à competência")}: " + (c.Vencimento == dia15
+            ? Formato.Data(c.Vencimento)
+            : $"{Formato.Data(dia15)} não tem expediente bancário; adiado para o dia útil seguinte, {Formato.Data(c.Vencimento)}")));
 
         var observacoes = new List<string>
         {
@@ -76,7 +79,7 @@ public sealed class SimularContribuicaoSeguradoUseCase(ITributacaoConsulta tribu
             "Plano simplificado (11% do salário mínimo): para o facultativo e para o contribuinte individual que trabalha por conta própria, sem prestar serviço a empresa (art. 21, § 2º, I). Benefícios no valor do salário mínimo; não conta para a aposentadoria por tempo de contribuição nem para a certidão de tempo de contribuição sem a complementação de 9% (§ 3º).",
             "Facultativo de baixa renda (5% do salário mínimo): para quem não tem renda própria, se dedica só ao trabalho doméstico na própria casa e tem a família inscrita no CadÚnico, com renda mensal de até dois salários mínimos (art. 21, § 2º, II, \"b\", e § 4º). Sem cadastro válido, o INSS pode não validar as contribuições.",
             "Quem presta serviço a empresa tem 11% retidos pela empresa sobre o valor pago (Lei 10.666/2003, art. 4º): use Pró-labore e autônomo. O facultativo não pode exercer atividade que o filie obrigatoriamente ao INSS.",
-            "O vencimento considera só sábados e domingos; num feriado, o pagamento passa para o dia útil seguinte (Lei 8.212/1991, art. 30, II). Pago depois do vencimento, há juros e multa: use Tributo em atraso.",
+            "Sem expediente bancário no dia 15, o vencimento passa para o dia útil seguinte (Lei 8.212/1991, art. 30, § 2º, I). O cálculo considera fins de semana, feriados nacionais, Carnaval e Corpus Christi (Resolução CMN 4.880/2020); confira os feriados estaduais e municipais. Pago depois do vencimento, há juros e multa: use Tributo em atraso.",
             "As contribuições ao INSS pagas pelo próprio segurado são dedutíveis no carnê-leão e na declaração anual do IR."
         };
 

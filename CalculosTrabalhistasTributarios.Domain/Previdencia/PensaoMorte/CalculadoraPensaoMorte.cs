@@ -82,8 +82,10 @@ public static class CalculadoraPensaoMorte
     }
 
     /// <summary>
-    /// Anos de pensão do cônjuge pela idade no óbito; nulo quando vitalícia. Desde 2021: até 21 anos, 3; de 22 a 27, 6; de
-    /// 28 a 30, 10; de 31 a 41, 15; de 42 a 44, 20; 45 ou mais, vitalícia. Antes, as idades eram um ano menores.
+    /// Anos de pensão do cônjuge pela idade no óbito; nulo quando vitalícia. Para óbitos desde 01/01/2021 (Portaria ME
+    /// 424/2020, reproduzida na IN PRES/INSS 128/2022, art. 375, § 8º): menos de 22 anos, 3; de 22 a 27, 6; de 28 a 30, 10;
+    /// de 31 a 41, 15; de 42 a 44, 20; 45 ou mais, vitalícia. Antes, as idades da Lei 8.213/1991, art. 77, § 2º, V, "c",
+    /// eram um ano menores: menos de 21, de 21 a 26, de 27 a 29, de 30 a 40, de 41 a 43 e 44 ou mais.
     /// </summary>
     public static int? DuracaoPorIdade(int idade, DateOnly obito)
     {

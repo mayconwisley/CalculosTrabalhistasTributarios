@@ -7,7 +7,8 @@ namespace CalculosTrabalhistasTributarios.Domain.Trabalhista.Fgts;
 /// Conferência local dos depósitos do FGTS: o devido de cada competência (remuneração × alíquota) contra o depósito
 /// informado, com o vencimento de cada um. Até a competência 02/2024, o depósito mensal vencia no dia 7 do mês seguinte;
 /// a partir de 03/2024, com o FGTS Digital, vence no dia 20 (Lei 8.036/1990, art. 15, na redação da Lei 14.438/2022).
-/// Sem expediente bancário, o prazo é antecipado; aqui, só sábados e domingos são considerados. O rescisório vence no
+/// Sem expediente bancário, o prazo é antecipado para o dia útil anterior (Cartilha Operacional do FGTS Digital): fins de
+/// semana, feriados nacionais, Carnaval e Corpus Christi, pelo <see cref="CalendarioBancario"/>. O rescisório vence no
 /// 10º dia corrido após o desligamento. Juros, multa e atualização de depósitos em atraso (art. 22) não são calculados.
 /// </summary>
 public static class ConferenciaFgts
@@ -60,10 +61,7 @@ public static class ConferenciaFgts
         if (item.Tipo == TipoCompetenciaFgts.Rescisoria)
             return desligamento?.AddDays(10);
         var seguinte = item.Competencia.AddMonths(1);
-        var dia = new DateOnly(seguinte.Year, seguinte.Month, item.Competencia >= InicioFgtsDigital ? 20 : 7);
-        while (dia.DayOfWeek is DayOfWeek.Saturday or DayOfWeek.Sunday)
-            dia = dia.AddDays(-1);
-        return dia;
+        return CalendarioBancario.DiaUtilAnterior(new DateOnly(seguinte.Year, seguinte.Month, item.Competencia >= InicioFgtsDigital ? 20 : 7));
     }
 
     private static bool Valido(decimal valor) => valor >= 0m && valor <= LimiteValor && decimal.Round(valor, 2) == valor;

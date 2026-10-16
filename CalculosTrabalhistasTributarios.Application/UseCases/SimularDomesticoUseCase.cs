@@ -47,7 +47,7 @@ public sealed class SimularDomesticoUseCase(ITributacaoConsulta tributacaoConsul
         var encargos = patronal + gilrat + fgts + compensatoria;
         var dae = encargos + inss.Valor + irrf.Imposto;
         var custo = remuneracao + encargos + r.CustoValeTransporte - valeTransporte;
-        var vencimento = r.Competencia.AddMonths(1).AddDays(6);
+        var vencimento = CalendarioBancario.DiaUtilAnterior(r.Competencia.AddMonths(1).AddDays(6));
 
         var proventos = new List<VerbaDto> { new("Salário", "30 dias", r.Salario) };
         if (r.Adicionais > 0m) proventos.Add(new("Horas extras e adicionais", "", r.Adicionais));
@@ -83,7 +83,7 @@ public sealed class SimularDomesticoUseCase(ITributacaoConsulta tributacaoConsul
 
         var observacoes = new List<string>
         {
-            $"O DAE de {Formato.Competencia(r.Competencia)} vence em {Formato.Data(vencimento)}, dia 7 do mês seguinte; se não for dia útil, pague no dia útil anterior (LC 150/2015, art. 35, § 2º). Emita a guia no eSocial, que soma os mesmos valores.",
+            $"O DAE de {Formato.Competencia(r.Competencia)} vence em {Formato.Data(vencimento)}: dia 7 do mês seguinte, antecipado para o dia útil anterior quando não há expediente bancário (LC 150/2015, art. 35, § 2º). A data considera fins de semana, feriados nacionais, Carnaval e Corpus Christi, mas não os feriados estaduais e municipais. Emita a guia no eSocial, que soma os mesmos valores.",
             "A indenização compensatória de 3,2% substitui a multa de 40% do FGTS: na dispensa sem justa causa ela vai para o empregado; na justa causa, no pedido de demissão e no fim do contrato a prazo, volta ao empregador.",
             "No mês do 13º e das férias, os encargos e os descontos sobre eles também entram no DAE; calcule as verbas nas calculadoras 13º salário e Férias. Na saída, use a Rescisão com o vínculo Empregado doméstico."
         };

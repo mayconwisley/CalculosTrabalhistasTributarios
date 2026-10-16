@@ -129,4 +129,35 @@ public class HistoricoTests
         Assert.Equal("80,00", campos["Descontos sem incidência"]);
         Assert.Equal(2, holerite.Contexto.Dependentes);
     }
+
+    [Fact]
+    public void Aposentadoria_salva_com_a_media_digitada_reabre_com_a_media_informada()
+    {
+        // Antes do cálculo pelos salários, "Média dos salários" guardava o valor digitado da média.
+        var antiga = Criar(typeof(CalculadoraAposentadoria));
+        antiga.ImportarCampos(new Dictionary<string, string> { ["Sexo"] = "Mulher", ["Média dos salários"] = "5.000,00" });
+
+        var campos = antiga.ExportarCampos();
+        Assert.Equal(("Informar a média pronta", "5.000,00", "[]"), (campos["Média dos salários"], campos["Média informada"], campos["Salários de contribuição"]));
+        Assert.Equal("Mulher", campos["Sexo"]);
+    }
+
+    [Fact]
+    public void Aposentadoria_reabre_os_periodos_de_salario_na_ordem()
+    {
+        var original = Criar(typeof(CalculadoraAposentadoria));
+        var salarios = original.Campos.OfType<CampoSalariosContribuicaoViewModel>().Single();
+        salarios.AdicionarCommand.Execute(null);
+        salarios.Linhas[0].Fim = "12/1999";
+        salarios.Linhas[0].Salario = "800,00";
+        salarios.AdicionarCommand.Execute(null);
+        Assert.Equal("01/2000", salarios.Linhas[1].Inicio);   // começa no mês seguinte ao fim do período anterior
+        salarios.Linhas[1].Fim = "09/2026";
+        salarios.Linhas[1].Salario = "3.500,00";
+
+        var reaberto = Criar(typeof(CalculadoraAposentadoria));
+        reaberto.ImportarCampos(DadosFormulario.DeJson(new DadosFormulario(original.ExportarCampos()).ParaJson()).Campos);
+        var linhas = reaberto.Campos.OfType<CampoSalariosContribuicaoViewModel>().Single().Linhas;
+        Assert.Equal([("07/1994", "12/1999", "800,00"), ("01/2000", "09/2026", "3.500,00")], linhas.Select(linha => (linha.Inicio, linha.Fim, linha.Salario)));
+    }
 }

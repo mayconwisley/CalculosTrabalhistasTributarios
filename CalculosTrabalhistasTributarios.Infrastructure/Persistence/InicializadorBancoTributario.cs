@@ -12,7 +12,7 @@ namespace CalculosTrabalhistasTributarios.Infrastructure.Persistence;
 public sealed class InicializadorBancoTributario(BancoTributario banco) : IInicializadorBancoTributario
 {
     /// <summary>Incremente ao alterar as sementes ou os scripts, para que bancos existentes recebam a nova carga.</summary>
-    private const int VersaoSementes = 7;
+    private const int VersaoSementes = 8;
 
     public async Task InicializarAsync(CancellationToken cancellationToken)
     {
