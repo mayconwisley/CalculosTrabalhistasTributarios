@@ -133,7 +133,7 @@ public sealed class SimularSalarioPeloLiquidoUseCase(ITributacaoConsulta tributa
                     new("Conferência", $"{Formato.Moeda(apuracao.Bruto)} (bruto) - {Formato.Moeda(apuracao.Inss.Valor)} (INSS) - {Formato.Moeda(apuracao.Irrf.Imposto)} (IRRF) = {Formato.Moeda(apuracao.Liquido)}")
                 ]),
                 MemoriaTributaria.Inss("INSS", apuracao.Inss, "salário bruto"),
-                MemoriaTributaria.Irrf("IRRF", apuracao.Irrf, "salário bruto")
+                .. MemoriaTributaria.IrrfComFaixas("IRRF", apuracao.Irrf, "salário bruto")
             ],
             observacoes);
     }

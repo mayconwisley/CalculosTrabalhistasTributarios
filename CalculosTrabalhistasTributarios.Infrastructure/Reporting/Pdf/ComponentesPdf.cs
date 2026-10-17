@@ -1,3 +1,4 @@
+using CalculosTrabalhistasTributarios.Application.DTOs;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
@@ -119,4 +120,37 @@ internal static class ComponentesPdf
     internal static string Moeda(decimal valor) => valor.ToString("C2", CulturaPtBr);
 
     internal static string Percentual(decimal valor) => valor.ToString("N2", CulturaPtBr) + "%";
+
+    /// <summary>As faixas em tabela: a parte da base de cada uma e o valor antes e depois de truncar.</summary>
+    internal static void CriarQuadroFaixas(IContainer container, QuadroFaixasDto quadro) => container.DefaultTextStyle(estilo => estilo.FontSize(8)).Table(tabela =>
+    {
+        tabela.ColumnsDefinition(colunas =>
+        {
+            colunas.RelativeColumn(0.7f); colunas.RelativeColumn(1.4f); colunas.RelativeColumn(1.4f); colunas.RelativeColumn(1.5f);
+            colunas.RelativeColumn(0.9f); colunas.RelativeColumn(1.6f); colunas.RelativeColumn(1.5f);
+        });
+        foreach (var titulo in new[] { "Faixa", "De", "Até", "Parte da base", "Alíquota", "Valor exato", "Valor considerado" })
+            tabela.Cell().Background(AzulPrimario).Padding(4).AlignRight().Text(titulo).FontColor(Colors.White).SemiBold();
+        foreach (var faixa in quadro.Faixas)
+        {
+            CelulaQuadro(tabela, faixa.Numero.ToString(CulturaPtBr));
+            CelulaQuadro(tabela, Moeda(faixa.De));
+            CelulaQuadro(tabela, faixa.Ate is { } ate ? Moeda(ate) : "Sem limite");
+            CelulaQuadro(tabela, Moeda(faixa.ParteDaBase));
+            CelulaQuadro(tabela, faixa.Aliquota.ToString("0.##", CulturaPtBr) + "%");
+            CelulaQuadro(tabela, MoedaExata(faixa.ValorExato));
+            CelulaQuadro(tabela, MoedaExata(faixa.Valor));
+        }
+        tabela.Cell().ColumnSpan(3).Background(AzulClaro).Padding(4).Text("Soma das faixas").SemiBold();
+        tabela.Cell().Background(AzulClaro).Padding(4).AlignRight().Text(Moeda(quadro.BaseCalculo)).SemiBold();
+        tabela.Cell().Background(AzulClaro).Padding(4);
+        tabela.Cell().Background(AzulClaro).Padding(4).AlignRight().Text(MoedaExata(quadro.ValorExato)).SemiBold();
+        tabela.Cell().Background(AzulClaro).Padding(4).AlignRight().Text(Moeda(quadro.Valor)).SemiBold();
+    });
+
+    private static void CelulaQuadro(TableDescriptor tabela, string texto) =>
+        tabela.Cell().BorderBottom(1).BorderColor(CinzaBorda).Padding(4).AlignRight().Text(texto).FontColor(CinzaTexto);
+
+    /// <summary>Moeda com as casas que o valor tiver, até seis, como na memória: "R$ 115,3656".</summary>
+    internal static string MoedaExata(decimal valor) => "R$ " + valor.ToString("#,##0.00####", CulturaPtBr);
 }

@@ -88,12 +88,12 @@ public sealed class SimularImpostoUseCase(ITributacaoConsulta tributacaoConsulta
 
         var memoria = new List<GrupoMemoriaDto>
         {
-            MemoriaTributaria.Inss("INSS", inss, "base de INSS"),
-            MemoriaTributaria.Irrf("IRRF", irrf, "valor bruto"),
-            Faixas("IRRF por faixas - deduções legais", irrf.Normal)
+            MemoriaTributariaDetalhada.TabelaInss(tabelas),
+            MemoriaTributariaDetalhada.Inss("INSS por faixas", inss, "base de INSS"),
+            MemoriaTributariaDetalhada.TabelaIrrf(tabelas),
+            MemoriaTributariaDetalhada.BaseIrrf(irrf, "valor bruto")
         };
-        if (simplificadoDisponivel)
-            memoria.Add(Faixas("IRRF por faixas - desconto simplificado", irrf.Simplificada));
+        memoria.AddRange(FaixasIrrf(irrf, tributacaoExclusiva: false));
         memoria.Add(new GrupoMemoriaDto("Salário líquido", $"Líquido: {Formato.Moeda(liquido)}",
             [new("Valor bruto - INSS - IRRF", $"{Formato.Moeda(r.ValorBruto)} - {Formato.Moeda(inss.Valor)} - {Formato.Moeda(irrf.Imposto)} = {Formato.Moeda(liquido)}")]));
         var formulasFgts = new List<FormulaDto> { new("FGTS", $"{Formato.Moeda(r.BaseInss)} (base de INSS, sem teto) x {Formato.PercentualCurto(aliquotaFgts)} = {Formato.Moeda(fgts)}") };
@@ -163,11 +163,10 @@ public sealed class SimularImpostoUseCase(ITributacaoConsulta tributacaoConsulta
         var memoria = new List<GrupoMemoriaDto>
         {
             new("Rendimento tributável", Formato.Moeda(tributavel), [rendimento]),
-            MemoriaTributaria.Irrf("IRRF", irrf, "rendimento tributável"),
-            Faixas("IRRF por faixas - deduções legais", irrf.Normal)
+            MemoriaTributariaDetalhada.TabelaIrrf(tabelas),
+            MemoriaTributariaDetalhada.BaseIrrf(irrf, r.SessentaECincoAnos ? "valor bruto - parcela isenta" : "valor bruto")
         };
-        if (simplificadoDisponivel)
-            memoria.Add(Faixas("IRRF por faixas - desconto simplificado", irrf.Simplificada));
+        memoria.AddRange(FaixasIrrf(irrf, r.DecimoTerceiro));
         memoria.Add(new GrupoMemoriaDto(rotuloLiquido, $"Líquido: {Formato.Moeda(liquido)}",
             [new("Valor bruto - IRRF", $"{Formato.Moeda(r.ValorBruto)} - {Formato.Moeda(irrf.Imposto)} = {Formato.Moeda(liquido)}")]));
 
@@ -220,22 +219,13 @@ public sealed class SimularImpostoUseCase(ITributacaoConsulta tributacaoConsulta
         new(aplicada ? $"{nome} (aplicada)" : nome,
             [Formato.Moeda(modalidade.BaseCalculo), Formato.Moeda(modalidade.ReducaoMensal), Formato.Moeda(modalidade.Imposto), Formato.Percentual(modalidade.AliquotaEfetiva)], aplicada);
 
-    /// <summary>
-    /// Imposto de cada faixa da tabela progressiva, para conferir o cálculo pela parcela a deduzir. As faixas são arredondadas
-    /// uma a uma e a soma pode diferir em centavos do imposto calculado pela parcela a deduzir, que é o que vale.
-    /// </summary>
-    private static GrupoMemoriaDto Faixas(string titulo, ModalidadeIrrf modalidade)
+    /// <summary>IRRF faixa a faixa em cada modalidade disponível e a modalidade retida.</summary>
+    private static IEnumerable<GrupoMemoriaDto> FaixasIrrf(ApuracaoIrrf irrf, bool tributacaoExclusiva)
     {
-        if (modalidade.DetalhesProgressivos.Count == 0)
-            return new GrupoMemoriaDto(titulo, Formato.Moeda(0m), [new("Total", $"Sem base de cálculo: {Formato.Moeda(0m)}")]);
-        var formulas = modalidade.DetalhesProgressivos
-            .Select(faixa => new FormulaDto($"Faixa {faixa.Faixa}", $"{Formato.Moeda(faixa.BaseCalculada)} x {Formato.Percentual(faixa.Aliquota)} = {Formato.Moeda(faixa.Imposto)}"))
-            .ToList();
-        var soma = modalidade.DetalhesProgressivos.Sum(faixa => faixa.Imposto);
-        var antesReducao = modalidade.ReducaoMensal > 0m ? ", antes da redução mensal" : "";
-        formulas.Add(new("Total", soma == modalidade.ImpostoAntesReducao
-            ? $"{string.Join(" + ", modalidade.DetalhesProgressivos.Select(faixa => Formato.Moeda(faixa.Imposto)))} = {Formato.Moeda(soma)}{antesReducao}"
-            : $"A soma das faixas é {Formato.Moeda(soma)}; o imposto pela parcela a deduzir é {Formato.Moeda(modalidade.ImpostoAntesReducao)}{antesReducao}. A diferença vem do arredondamento de cada faixa, e vale o da parcela a deduzir."));
-        return new GrupoMemoriaDto(titulo, Formato.Moeda(modalidade.ImpostoAntesReducao), formulas);
+        if (MemoriaTributariaDetalhada.FaixasIrrf("IRRF por faixas - deduções legais", irrf.Normal, irrf) is { } normal)
+            yield return normal;
+        if (irrf.DescontoSimplificado is not null && MemoriaTributariaDetalhada.FaixasIrrf("IRRF por faixas - desconto simplificado", irrf.Simplificada, irrf) is { } simplificada)
+            yield return simplificada;
+        yield return MemoriaTributariaDetalhada.Retido("IRRF retido", irrf, tributacaoExclusiva);
     }
 }

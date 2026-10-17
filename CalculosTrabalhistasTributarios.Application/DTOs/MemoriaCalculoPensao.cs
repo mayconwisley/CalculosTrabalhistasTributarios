@@ -85,6 +85,20 @@ public static class MemoriaCalculoPensao
     }
 
     /// <summary>Complemento de "na modalidade ...": "normal (deduções legais)" ou "de desconto simplificado".</summary>
+    /// <summary>
+    /// A soma das faixas da última iteração ao lado do IR progressivo pela parcela a deduzir, que vale na retenção; vazio
+    /// sem a tabela de faixas.
+    /// </summary>
+    public static string ConferenciaDasFaixas(ModalidadePensaoDto modalidade, Func<decimal, string> moeda)
+    {
+        if (modalidade.QuadroIrrf is not { } quadro)
+            return string.Empty;
+        var pelaParcela = modalidade.Detalhes[^1].ImpostoAntesReducao;
+        return quadro.Valor == pelaParcela
+            ? $"A soma das faixas, {moeda(quadro.Valor)}, é o mesmo IR progressivo da última iteração, calculado pela parcela a deduzir."
+            : $"A soma das faixas dá {moeda(quadro.Valor)}, e o IR progressivo pela parcela a deduzir, {moeda(pelaParcela)}: a diferença vem do arredondamento da parcela a deduzir publicada, e vale o cálculo pela parcela a deduzir, que é o da fonte pagadora.";
+    }
+
     public static string NomeModalidade(ModalidadePensaoDto modalidade) => modalidade.DeduzPensao ? "normal (deduções legais)" : "de desconto simplificado";
 
     public static IReadOnlyList<FormulaDto> Iteracao(ModalidadePensaoDto modalidade, IteracaoPensaoDto iteracao, EntradaPensaoDto entrada, decimal valorInss, Func<decimal, string> moeda, Func<decimal, string> percentual)

@@ -21,6 +21,9 @@ public sealed record SimulacaoPensaoDto(decimal ValorInss, ModalidadePensaoDto N
     /// <summary>Falso antes de 03/2020, quando a alíquota da faixa do INSS incidia sobre toda a base.</summary>
     public bool InssProgressivo { get; init; } = true;
 
+    /// <summary>Faixas do INSS em tabela; nulo sem base de INSS ou antes de 03/2020, sem partes da base por faixa.</summary>
+    public QuadroFaixasDto? QuadroInss { get; init; }
+
     /// <summary>Alíquota da faixa do IRRF sem a pensão, na modalidade de <see cref="ImpostoSemPensao"/>.</summary>
     public decimal AliquotaIrrfSemPensao { get; init; }
 }

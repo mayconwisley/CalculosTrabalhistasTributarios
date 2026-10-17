@@ -1,5 +1,7 @@
 namespace CalculosTrabalhistasTributarios.Domain.Tributacao;
 
+/// <param name="Tabela">Faixas da tabela progressiva usada, da menor para a maior, para a memória mostrar os limites.</param>
+/// <param name="RegrasReducao">Regras da redução mensal da competência; vazias quando não há redução.</param>
 public sealed record ApuracaoIrrf(
     decimal Rendimentos,
     decimal Inss,
@@ -11,7 +13,9 @@ public sealed record ApuracaoIrrf(
     decimal Pensao = 0m,
     decimal LimiteDispensa = 0m,
     decimal PrevidenciaComplementar = 0m,
-    decimal LivroCaixa = 0m)
+    decimal LivroCaixa = 0m,
+    IReadOnlyList<FaixaTributaria>? Tabela = null,
+    IReadOnlyList<RegraReducaoMensalIrrf>? RegrasReducao = null)
 {
     // A fonte pagadora aplica o desconto simplificado quando ele resulta em imposto menor que o das deduções legais.
     public bool SimplificadaAplicada => DescontoSimplificado is not null && Simplificada.Imposto < Normal.Imposto;

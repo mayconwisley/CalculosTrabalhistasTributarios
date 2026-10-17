@@ -22,28 +22,20 @@ internal static class MemoriaTributaria
     public static string ReferenciaInss(ApuracaoInss inss) =>
         inss.Valor > 0m && inss.Detalhes.LastOrDefault(faixa => faixa.BaseCalculada > 0m) is { } faixa ? Formato.PercentualCurto(faixa.Aliquota) : string.Empty;
 
-    public static GrupoMemoriaDto Inss(string titulo, ApuracaoInss inss, string rotuloBase)
-    {
-        var formulas = new List<FormulaDto>
-        {
-            new("Base de cálculo", inss.LimitadaAoTeto
-                ? $"{Formato.Moeda(inss.BaseInformada)} ({rotuloBase}), limitada ao teto de {Formato.Moeda(inss.BaseConsiderada)}"
-                : $"{Formato.Moeda(inss.BaseConsiderada)} ({rotuloBase})")
-        };
-        formulas.AddRange(inss.Detalhes.Select(faixa => new FormulaDto($"Faixa {faixa.Faixa}", $"{Formato.Moeda(faixa.BaseCalculada)} x {Formato.Percentual(faixa.Aliquota)} = {Formato.Moeda(faixa.Imposto)}")));
-        if (inss.Detalhes.Count > 1)
-            formulas.Add(new("Total", $"{string.Join(" + ", inss.Detalhes.Select(faixa => Formato.Moeda(faixa.Imposto)))} = {Formato.Moeda(inss.Valor)}"));
-        return new GrupoMemoriaDto(titulo, $"INSS: {Formato.Moeda(inss.Valor)}", formulas);
-    }
+    /// <summary>INSS faixa a faixa, com os limites de cada faixa, a parte da base que cai nela e o truncamento.</summary>
+    public static GrupoMemoriaDto Inss(string titulo, ApuracaoInss inss, string rotuloBase) => MemoriaTributariaDetalhada.Inss(titulo, inss, rotuloBase);
 
     /// <param name="rotuloRendimentos">Como o rendimento aparece na fórmula da base, por exemplo "férias + 1/3".</param>
     public static GrupoMemoriaDto Irrf(string titulo, ApuracaoIrrf irrf, string rotuloRendimentos)
     {
-        var formulas = new List<FormulaDto>
-        {
+        var formulas = new List<FormulaDto>();
+        if (irrf.Dependentes > 0)
+            formulas.Add(new("Dependentes", MemoriaTributariaDetalhada.Dependentes(irrf)));
+        formulas.AddRange(
+        [
             new("Base com deduções legais", FormulaBaseIrrf.Normal(irrf.Rendimentos, rotuloRendimentos, irrf.Inss, irrf.Dependentes, irrf.DeducaoPorDependente, irrf.Normal.BaseCalculo, Formato.Moeda, irrf.Pensao, irrf.PrevidenciaComplementar, irrf.LivroCaixa)),
             new("Imposto com deduções legais", Imposto(irrf.Normal))
-        };
+        ]);
         if (irrf.DescontoSimplificado is not null)
         {
             var simplificada = FormulaBaseIrrf.Simplificada(irrf.Rendimentos, rotuloRendimentos, irrf.DescontoSimplificado, irrf.Simplificada.BaseCalculo, Formato.Moeda);
@@ -57,12 +49,32 @@ internal static class MemoriaTributaria
             var naoDeduzidas = deducoes.Count == 0 ? "" : $"; {Formato.Lista(deducoes)} não {verbo} nesta modalidade";
             formulas.Add(new("Base com desconto simplificado", simplificada + naoDeduzidas));
             formulas.Add(new("Imposto com desconto simplificado", Imposto(irrf.Simplificada)));
+            if (MemoriaTributariaDetalhada.ComparacaoDasDeducoes(irrf) is { } comparacao)
+                formulas.Add(comparacao);
         }
         formulas.Add(new("Modalidade aplicada", DescreverModalidade(irrf)));
         if (irrf.RetencaoDispensada)
             formulas.Add(new("Retenção dispensada", DispensaDeRetencao(irrf.ImpostoCalculado, irrf.LimiteDispensa)));
         return new GrupoMemoriaDto(titulo, $"IRRF: {Formato.Moeda(irrf.Imposto)}", formulas);
     }
+
+    /// <summary>
+    /// Base do IRRF e, em seguida, o imposto faixa a faixa da modalidade aplicada, com a conferência pela parcela a deduzir
+    /// e a redução mensal.
+    /// </summary>
+    /// <param name="rotuloRendimentos">Como o rendimento aparece na fórmula da base, por exemplo "férias + 1/3".</param>
+    public static IEnumerable<GrupoMemoriaDto> IrrfComFaixas(string titulo, ApuracaoIrrf irrf, string rotuloRendimentos)
+    {
+        yield return Irrf(titulo, irrf, rotuloRendimentos);
+        if (FaixasIrrf(titulo, irrf) is { } faixas)
+            yield return faixas;
+    }
+
+    /// <summary>IRRF faixa a faixa da modalidade aplicada; nulo sem base de cálculo ou sem a tabela usada.</summary>
+    public static GrupoMemoriaDto? FaixasIrrf(string titulo, ApuracaoIrrf irrf) =>
+        irrf.Aplicada.DetalhesProgressivos.Count == 0
+            ? null
+            : MemoriaTributariaDetalhada.FaixasIrrf($"{titulo} por faixas ({(irrf.SimplificadaAplicada ? "desconto simplificado" : "deduções legais")})", irrf.Aplicada, irrf);
 
     /// <summary>Explicação do IRRF calculado que não é descontado por não passar do limite de retenção.</summary>
     public static string DispensaDeRetencao(decimal calculado, decimal limite) =>
@@ -75,7 +87,8 @@ internal static class MemoriaTributaria
             ? $"{Formato.Moeda(modalidade.BaseCalculo)} x {Formato.Percentual(modalidade.Aliquota)} - {Formato.Moeda(modalidade.Deducao)} = {Formato.Moeda(modalidade.ImpostoAntesReducao)}; menos a redução mensal de {Formato.Moeda(modalidade.ReducaoMensal)} = {Formato.Moeda(modalidade.Imposto)}"
             : $"{Formato.Moeda(modalidade.BaseCalculo)} x {Formato.Percentual(modalidade.Aliquota)} - {Formato.Moeda(modalidade.Deducao)} = {Formato.Moeda(modalidade.Imposto)}";
 
-    private static string DescreverModalidade(ApuracaoIrrf irrf)
+    /// <summary>Qual modalidade a fonte pagadora aplica e por quê.</summary>
+    public static string DescreverModalidade(ApuracaoIrrf irrf)
     {
         if (irrf.DescontoSimplificado is null)
             return "Deduções legais: o desconto simplificado só vale a partir de 05/2023.";

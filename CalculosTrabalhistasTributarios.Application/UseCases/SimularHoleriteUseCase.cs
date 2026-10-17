@@ -209,7 +209,7 @@ public sealed class SimularHoleriteUseCase(ITributacaoConsulta tributacaoConsult
             memoria.Add(new("Comissões e DSR", $"Total: {Formato.Moeda(comissoes.Total)}", formulasComissoes));
         }
         memoria.Add(MemoriaTributaria.Inss("INSS", inss, "remuneração do mês"));
-        memoria.Add(MemoriaTributaria.Irrf("IRRF", irrf, rotuloRendimentos));
+        memoria.AddRange(MemoriaTributaria.IrrfComFaixas("IRRF", irrf, rotuloRendimentos));
         if (r.Pensao is { } regraMemoria && pensao is not null)
             memoria.Add(DemonstrativoPensao.Memoria("Pensão alimentícia", regraMemoria, rendimentos, rotuloRendimentos, inss.Valor, irrf.Imposto, pensao.Base, pensao.Pensao, "Deduzida da base do IRRF na modalidade de deduções legais; o desconto simplificado substitui essa dedução."));
         if (r.Filhos > 0)

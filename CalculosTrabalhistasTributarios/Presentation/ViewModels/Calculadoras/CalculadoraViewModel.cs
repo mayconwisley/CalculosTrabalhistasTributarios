@@ -284,7 +284,9 @@ public sealed class CalculadoraViewModel : ViewModelBase, ICalculoSalvavel
             .Concat(demonstrativo.Descontos.Select(verba => new LinhaDemonstrativoViewModel(verba.Descricao, verba.Referencia, string.Empty, Moeda(verba.Valor))))
             .ToArray();
         Informativos = demonstrativo.Informativos.Select(verba => new LinhaDemonstrativoViewModel(verba.Descricao, verba.Referencia, Moeda(verba.Valor), string.Empty)).ToArray();
-        Memoria = demonstrativo.Memoria.Select(grupo => new SecaoMemoriaIrrfViewModel(grupo.Titulo, grupo.Destaque, grupo.Formulas.Select(formula => new FormulaCalculoViewModel(formula.Titulo, formula.Formula)).ToArray())).ToArray();
+        Memoria = demonstrativo.Memoria.Select(grupo => new SecaoMemoriaIrrfViewModel(grupo.Titulo, grupo.Destaque,
+            grupo.Formulas.Select(formula => new FormulaCalculoViewModel(formula.Titulo, formula.Formula)).ToArray(),
+            grupo.Quadro is { } quadro ? QuadroFaixasViewModel.De(quadro) : null)).ToArray();
         Observacoes = demonstrativo.Observacoes;
         RotuloProventos = demonstrativo.RotuloProventos;
         RotuloResultado = demonstrativo.RotuloResultado;

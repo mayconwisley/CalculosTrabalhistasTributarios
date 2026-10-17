@@ -93,9 +93,9 @@ public sealed class SimularDecimoTerceiroUseCase(ITributacaoConsulta tributacaoC
                 new("1ª parcela", formulaAdiantamento),
                 new("2ª parcela", $"{Formato.Moeda(integral)} (integral) - {Formato.Moeda(adiantamento)} (1ª parcela) - {Formato.Moeda(inss.Valor)} (INSS) - {Formato.Moeda(irrf.Imposto)} (IRRF){(valorPensao > 0m ? $" - {Formato.Moeda(valorPensao)} (pensão)" : "")}{(previdencia > 0m ? $" - {Formato.Moeda(previdencia)} (previdência complementar)" : "")} = {Formato.Moeda(segundaParcela)}")
             ]),
-            MemoriaTributaria.Inss("INSS sobre o 13º", inss, "13º integral"),
-            MemoriaTributaria.Irrf("IRRF sobre o 13º", irrf, "13º integral")
+            MemoriaTributaria.Inss("INSS sobre o 13º", inss, "13º integral")
         };
+        memoria.AddRange(MemoriaTributaria.IrrfComFaixas("IRRF sobre o 13º", irrf, "13º integral"));
         if (previdencia > 0m)
             memoria.Add(new("Previdência complementar sobre o 13º", $"Dedução no IRRF: {Formato.Moeda(previdenciaDedutivel)}",
             [

@@ -91,7 +91,7 @@ public sealed class SimularTrabalhoExteriorUseCase(ITributacaoConsulta consulta)
                     new("Câmbio efetivo", $"{r.Valores.CambioEfetivoReais.ToString("N6", Formato.Cultura)} reais por {moeda}; remuneração {Formato.Moeda(a.RemuneracaoEfetiva)} + juros {Formato.Moeda(a.JurosRecebidosEfetivos)}"),
                     new("Crédito bancário", $"{Formato.Moeda(a.RemuneracaoEfetiva)} + {Formato.Moeda(a.JurosRecebidosEfetivos)} - imposto exterior {Formato.Moeda(a.ImpostoExteriorEfetivo)} - taxa em moeda {Formato.Moeda(a.TaxaMoedaEfetiva)} - juros bancários {Formato.Moeda(a.JurosBancoEfetivos)} - taxa em reais {Formato.Moeda(a.TaxaReais)} = {Formato.Moeda(a.CreditoBanco)}")
                 ]),
-                MemoriaTributaria.Irrf("Carnê-leão antes do crédito exterior", ir, "remuneração e juros tributáveis do exterior"),
+                .. MemoriaTributaria.IrrfComFaixas("Carnê-leão antes do crédito exterior", ir, "remuneração e juros tributáveis do exterior"),
                 new GrupoMemoriaDto("Impostos e disponível", $"Disponível estimado: {Formato.Moeda(a.CreditoBanco - impostoBrasil)}", [
                     new("Imposto estrangeiro convertido", $"{r.Valores.ImpostoRetidoMoeda.ToString("N2", Formato.Cultura)} {moeda} × {a.CotacaoFiscalReais.ToString("N12", Formato.Cultura)} = {Formato.Moeda(a.ImpostoExteriorFiscal)}"),
                     new("Crédito admitido", $"Menor entre {Formato.Moeda(a.ImpostoExteriorFiscal)} e {Formato.Moeda(ir.Imposto)}: {Formato.Moeda(creditoExterior)}"),

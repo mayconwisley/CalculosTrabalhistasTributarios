@@ -35,6 +35,9 @@ internal sealed class Aba(IXLWorksheet folha)
         celula.Style.Font.SetBold().Font.SetFontSize(12);
     }
 
+    /// <summary>Garante a largura da aba antes de escrever, para os textos mesclados terminarem na mesma coluna.</summary>
+    public void ReservarColunas(int colunas) => _colunas = Math.Max(_colunas, colunas);
+
     public void Cabecalho(params string[] titulos)
     {
         _colunas = Math.Max(_colunas, titulos.Length);

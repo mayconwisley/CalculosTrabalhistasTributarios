@@ -48,6 +48,13 @@ internal static class PlanilhaPensao
 
             var memoria = new Aba(pasta.AddWorksheet("Memória de cálculo"));
             memoria.Titulo("Memória de cálculo por iteração", $"Competência {entrada.Competencia:MM/yyyy}");
+            if (s.QuadroInss is not null || s.Modalidades.Any(modalidade => modalidade.QuadroIrrf is not null))
+                memoria.ReservarColunas(ColunasDoQuadro.Length);
+            if (s.QuadroInss is { } quadroInss)
+            {
+                memoria.Secao($"INSS por faixas - INSS: {MoedaTexto(s.ValorInss)}");
+                QuadroFaixas(memoria, quadroInss);
+            }
             foreach (var modalidade in s.Modalidades)
             {
                 memoria.Secao($"{modalidade.Nome} - {modalidade.Iteracoes} iteração(ões)");
@@ -56,6 +63,12 @@ internal static class PlanilhaPensao
                     memoria.Linha(iteracao.Sequencia, Moeda(iteracao.BaseIrrf), Percentual(iteracao.Aliquota), Moeda(iteracao.Imposto), Moeda(iteracao.BasePensao), Moeda(iteracao.Pensao));
                 foreach (var formula in MemoriaCalculoPensao.Iteracao(modalidade, modalidade.Detalhes[^1], entrada, s.ValorInss, MoedaTexto, PercentualTexto))
                     memoria.Formula(formula.Titulo, formula.Formula);
+                if (modalidade.QuadroIrrf is { } quadro)
+                {
+                    memoria.Secao($"{modalidade.Nome} - IRRF por faixas na última iteração");
+                    QuadroFaixas(memoria, quadro);
+                    memoria.Texto(MemoriaCalculoPensao.ConferenciaDasFaixas(modalidade, MoedaTexto));
+                }
             }
             memoria.Ajustar();
         });

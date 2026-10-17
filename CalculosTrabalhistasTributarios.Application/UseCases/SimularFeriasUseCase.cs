@@ -212,7 +212,7 @@ public sealed class SimularFeriasUseCase(ITributacaoConsulta tributacaoConsulta)
             memoria.Add(MemoriaTributaria.Inss("INSS sobre as férias", inss, "férias + 1/3"));
         else
             memoria.AddRange(conciliacoes.Select(item => MemoriaTributaria.Inss($"INSS das férias {Formato.Competencia(item.Parcela.Competencia)}", item.SobreFerias, "férias + 1/3 do mês")));
-        memoria.Add(MemoriaTributaria.Irrf("IRRF sobre as férias", irrf, "férias + 1/3"));
+        memoria.AddRange(MemoriaTributaria.IrrfComFaixas("IRRF sobre as férias", irrf, "férias + 1/3"));
         if (inssMes is not null)
             memoria.Add(new("Conciliação do INSS na folha do mês", $"INSS total: {Formato.Moeda(inssMes.Valor)}",
             [

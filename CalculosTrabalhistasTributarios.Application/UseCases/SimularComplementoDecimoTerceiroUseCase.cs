@@ -96,7 +96,8 @@ public sealed class SimularComplementoDecimoTerceiroUseCase(ITributacaoConsulta 
                 new("Em dezembro", $"INSS sobre {Formato.Moeda(c.IntegralPago)} = {Formato.Moeda(inssPago.Valor)}"),
                 new("Revisado", $"INSS sobre {Formato.Moeda(c.IntegralRevisado)} = {Formato.Moeda(inssRevisado.Valor)}, tabela de {Formato.Competencia(tabelas.Competencia)}"),
                 new("Diferença", $"{Formato.Moeda(inssRevisado.Valor)} - {Formato.Moeda(inssPago.Valor)} = {Formato.MoedaComSinal(diferencaInss)}")
-            ])
+            ]),
+            MemoriaTributaria.Inss("INSS sobre o 13º revisado", inssRevisado, "13º revisado")
         };
         if (rra is not null)
             memoria.Add(new GrupoMemoriaDto("IRRF do complemento (RRA de 1 mês)", $"IRRF: {Formato.Moeda(rra.Imposto)}",
@@ -108,12 +109,15 @@ public sealed class SimularComplementoDecimoTerceiroUseCase(ITributacaoConsulta 
                 new("Comparação", $"Pelo recálculo do 13º, o IRRF seria de {Formato.Moeda(Math.Max(0m, diferencaRecalculo))}")
             ]));
         else
+        {
             memoria.Add(new GrupoMemoriaDto("IRRF do 13º recalculado", $"Diferença: {Formato.MoedaComSinal(diferencaRecalculo)}",
             [
                 new("Em dezembro", $"IRRF sobre {Formato.Moeda(c.IntegralPago)} = {Formato.Moeda(irrfPago.Imposto)}"),
                 new("Revisado", $"IRRF sobre {Formato.Moeda(c.IntegralRevisado)} = {Formato.Moeda(irrfRevisado.Imposto)}, tabela de {Formato.Competencia(tabelas.Competencia)}"),
                 new("Diferença", $"{Formato.Moeda(irrfRevisado.Imposto)} - {Formato.Moeda(irrfPago.Imposto)} = {Formato.MoedaComSinal(diferencaRecalculo)}")
             ]));
+            memoria.AddRange(MemoriaTributaria.IrrfComFaixas("IRRF sobre o 13º revisado", irrfRevisado, "13º revisado"));
+        }
 
         var observacoes = new List<string>
         {

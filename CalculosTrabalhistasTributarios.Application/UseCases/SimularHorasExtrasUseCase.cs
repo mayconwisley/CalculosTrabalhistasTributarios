@@ -71,7 +71,7 @@ public sealed class SimularHorasExtrasUseCase(ITributacaoConsulta tributacaoCons
             [
                 new GrupoMemoriaDto("Horas extras, adicional noturno e DSR", $"Remuneração: {Formato.Moeda(remuneracao)}", formulas),
                 MemoriaTributaria.Inss("INSS", inss, "remuneração do mês"),
-                MemoriaTributaria.Irrf("IRRF", irrf, "remuneração do mês")
+                .. MemoriaTributaria.IrrfComFaixas("IRRF", irrf, "remuneração do mês")
             ],
             [
                 "O divisor 220 corresponde a 44 horas semanais; use 200 para 40 horas, 180 para 36 e 150 para 30.",

@@ -155,10 +155,14 @@ Role a área de resultado para ver a **memória de cálculo**, que mostra passo 
 
 ![Memória de cálculo do INSS e do IRRF](imagens/03-simulacao-memoria-irrf.png)
 
-- **INSS:** a base, limitada ao teto, e o valor de cada faixa, com o total.
-- **IRRF:** a base de cada modalidade, com cada dedução identificada, e o imposto pela alíquota da faixa menos a parcela a deduzir e, quando houver, a redução mensal. A base nunca fica negativa: quando as deduções superam o valor bruto, ela é zero. Por último, a modalidade aplicada e, se for o caso, a dispensa de retenção.
+- **Tabela do INSS:** as faixas da competência, com o início, o fim e a alíquota de cada uma, o teto e a forma de aplicação (progressiva desde 03/2020, alíquota única antes disso).
+- **INSS por faixas:** a base, limitada ao teto, e a parte dela que cai em cada faixa, com a conta que a forma: na faixa 2 de 2026, por exemplo, R$ 2.902,84 - R$ 1.621,00 = R$ 1.281,84; na última faixa alcançada, a base menos o limite da faixa anterior. Cada parte aparece multiplicada pela alíquota, com o valor exato e o valor truncado nos centavos (R$ 115,3656 vira R$ 115,36). Depois vêm as faixas não alcançadas, o total e a alíquota efetiva.
+- **Tabela do IRRF:** as faixas com a alíquota e a parcela a deduzir, a dedução por dependente, o desconto simplificado e, a partir de 01/2026, as regras da redução mensal.
+- **Base de cálculo do IRRF:** os rendimentos tributáveis, o INSS, os dependentes (quantidade x valor por dependente) e a base de cada modalidade, com a comparação entre o total das deduções legais e o desconto simplificado. A base nunca fica negativa: quando as deduções superam o valor bruto, ela é zero.
+- **IRRF por faixas:** em cada modalidade, a parte da base em cada faixa, calculada como no INSS, e o imposto exato da faixa, sem arredondar. Em seguida, a soma das faixas e a conferência pela parcela a deduzir, que é o cálculo da fonte pagadora. A parcela a deduzir publicada é arredondada, então a soma exata das faixas pode diferir em um centavo; a memória mostra a diferença, e vale o cálculo pela parcela a deduzir. Por fim, a redução mensal com a conta da faixa de rendimentos (por exemplo, R$ 978,62 - 0,133145 x R$ 6.000,00 = R$ 179,75), o imposto da modalidade e a alíquota efetiva. No INSS por faixas e no IRRF por faixas, uma tabela abaixo das fórmulas resume cada faixa: o intervalo, a parte da base, a alíquota, o valor exato e o valor considerado (no INSS, truncado nos centavos), com a soma das faixas na última linha; as faixas não alcançadas aparecem com zero.
+- **IRRF retido:** a modalidade aplicada e, se for o caso, a dispensa de retenção.
 
-Em seguida, aparece o IRRF **faixa a faixa** de cada modalidade, para conferir o cálculo pela parcela a deduzir. O total é o imposto antes da redução mensal. Como cada faixa é arredondada nos centavos, a soma pode diferir em centavos, e a memória explica a diferença; vale o imposto pela parcela a deduzir. Depois vêm o salário líquido, o FGTS e as observações:
+Depois vêm o salário líquido, o FGTS e as observações:
 
 ![Detalhamento por faixas](imagens/04-simulacao-faixas.png)
 
@@ -238,6 +242,8 @@ Se você só precisa do valor da pensão, por exemplo quando quem paga não tem 
 4. A nova pensão é calculada aplicando o percentual sobre essa base.
 
 ![Memória de cálculo por iteração](imagens/07-pensao-detalhada.png)
+
+A memória detalhada começa pela tabela **INSS por faixas**, comum às duas modalidades, e cada modalidade termina com a tabela **IRRF por faixas na última iteração**: a base final do IRRF repartida pelas faixas, com a parte da base, a alíquota e o valor exato de cada uma (veja a seção [10.1](#101-relatórios-em-pdf)). O relatório detalhado em PDF e a planilha trazem as mesmas tabelas.
 
 Nas bases que não dependem do IRRF (rendimentos brutos, salário mínimo e valor fixo), a pensão é conhecida desde o início, e o cálculo termina na primeira iteração.
 
@@ -403,7 +409,7 @@ Além da simulação tributária, da pensão, dos débitos judiciais, da estabil
 - **Entradas utilizadas neste resultado:** seção expansível para conferir os valores do formulário no momento do cálculo. Nas listas, abra o formulário para conferir cada linha.
 - **Demonstrativo:** proventos, descontos e o resultado, como em um holerite. Na referência do INSS aparece a alíquota da última faixa alcançada pela base, como **12%**, e não a alíquota efetiva; nas férias que passam por dois meses, a de cada mês, como **9% e 7,5%**. Clique em um valor do resumo, do demonstrativo, do comparativo ou dos informativos para copiá-lo, sem o "R$", e colar na folha ou numa planilha; uma dica confirma o valor copiado. Pelo teclado, selecione o valor com **Tab** e pressione **Enter**.
 - **Valores informativos:** valores que não entram nos totais nem no resultado, como o FGTS depositado pelo empregador, bases de cálculo e outras referências.
-- **Memória de cálculo:** a fórmula de cada valor, inclusive o INSS faixa a faixa e o IRRF nas duas modalidades.
+- **Memória de cálculo:** a fórmula de cada valor. No INSS, a parte da base em cada faixa, com a conta que a forma, o valor exato e o truncado nos centavos, o total e a alíquota efetiva. No IRRF, as bases e o imposto das duas modalidades, os dependentes e a comparação das deduções; em seguida, o grupo **por faixas** da modalidade aplicada, com o imposto exato de cada faixa, a conferência pela parcela a deduzir e a redução mensal, como na [Simulação tributária](#52-lendo-o-resultado). Abaixo das fórmulas, uma tabela resume as faixas: o intervalo, a parte da base, a alíquota, o valor exato e o valor considerado, com a soma das faixas na última linha. O PDF e o Excel trazem a mesma tabela.
 - **Observações:** as premissas e os limites do cálculo.
 - **Gerar PDF** e **Gerar Excel:** salvam o demonstrativo completo em um relatório ou em uma planilha.
 - **Salvar no histórico:** guarda o formulário com um nome, para reabrir depois (seção [10.3](#103-histórico-de-cálculos)).
@@ -491,7 +497,7 @@ Para quem recebe horas extras, comissões ou adicionais, a 2ª parcela usa a mé
 
 - **Comparação:** a tabela mostra o 13º de dezembro e o revisado, com a média, o 13º integral, o INSS e o IRRF recalculado.
 - **INSS:** a diferença entre o INSS sobre o 13º revisado e o já descontado, pela tabela de dezembro.
-- **IRRF:** pago no mesmo ano, o 13º total é recalculado pela tabela de dezembro, deduzido o imposto já retido (IN RFB 1.500/2014, art. 13, § 3º). Pago no ano seguinte, o eSocial orienta informar a diferença de 13º como RRA de um mês, no período de referência de dezembro; a IN prevê o recálculo. Os dois critérios são oficiais: escolha o da folha. A memória mostra o valor pelos dois.
+- **IRRF:** pago no mesmo ano, o 13º total é recalculado pela tabela de dezembro, deduzido o imposto já retido (IN RFB 1.500/2014, art. 13, § 3º). Pago no ano seguinte, o eSocial orienta informar a diferença de 13º como RRA de um mês, no período de referência de dezembro; a IN prevê o recálculo. Os dois critérios são oficiais: escolha o da folha. A memória mostra o valor pelos dois e, no recálculo, o INSS e o IRRF do 13º revisado faixa a faixa.
 - **Média final menor:** se a média final ficar abaixo da usada em dezembro, o 13º foi pago a maior. O resultado mostra o valor a compensar e o INSS e o IRRF descontados a mais.
 - O FGTS de 8% sobre o complemento aparece como informativo. Pensão, previdência complementar e adiantamento não entram neste modo.
 
@@ -682,6 +688,8 @@ A remuneração comparada ao limite é o salário de contribuição do mês inte
 - Com mais de um pagamento no ano, o imposto é recalculado sobre o total e o valor já retido é descontado:
 
 ![Memória de cálculo da PLR](imagens/28-plr-memoria.png)
+
+- O grupo **IRRF do ano por faixas da tabela anual** reparte a base do ano pelas faixas da tabela da PLR, com a parte da base e o valor exato de cada faixa, em fórmulas e em tabela, e confere o resultado pela parcela a deduzir. Quando a soma das faixas difere em um centavo, vale o imposto pela parcela a deduzir, que é o da fonte pagadora.
 
 - Paga conforme a lei, no máximo duas vezes por ano e com intervalo de pelo menos um trimestre, a PLR não tem INSS nem FGTS.
 
@@ -1668,7 +1676,7 @@ Todas as calculadoras possuem o botão **Gerar PDF**, que fica disponível depoi
 | Calculadora | Nome sugerido | Conteúdo |
 | --- | --- | --- |
 | Simulação tributária | `simulacao-tributaria-MM-AAAA.pdf` | Resumo, comparativo das modalidades do IRRF, demonstrativo, FGTS, memória de cálculo com o detalhamento por faixas e observações. |
-| Pensão alimentícia | `relatorio-pensao-alimenticia-MM-AAAA.pdf` | Dados considerados, com a regra da pensão, a explicação do cálculo, o IRRF de quem paga com e sem a pensão, o comparativo dos modelos e, se o último cálculo foi feito com **Detalhar**, as iterações. |
+| Pensão alimentícia | `relatorio-pensao-alimenticia-MM-AAAA.pdf` | Dados considerados, com a regra da pensão, a explicação do cálculo, o IRRF de quem paga com e sem a pensão, o comparativo dos modelos e, se o último cálculo foi feito com **Detalhar**, as iterações e as tabelas das faixas do INSS e do IRRF. |
 | Revisão de pensão | `revisao-pensao-MM-AAAA.pdf` | Resumo, a comparação entre a pensão atual e a proposta, a memória de cálculo de cada uma e as observações. |
 | Pensão em atraso | `pensao-em-atraso-AAAA-MM-DD.pdf` | Resumo do débito, com os ritos da prisão e da penhora, os critérios, a tabela de parcelas e as observações. |
 | Débitos judiciais | `debito-judicial-AAAA-MM-DD.pdf` | Resumo do débito, critérios, a tabela de parcelas e as observações. |
@@ -1677,11 +1685,13 @@ Todas as calculadoras possuem o botão **Gerar PDF**, que fica disponível depoi
 
 O relatório sempre reflete o **último cálculo** feito na tela.
 
+Na memória de cálculo, como na tela, os grupos do INSS e do IRRF por faixas, inclusive os da pensão alimentícia detalhada e da tabela anual da PLR, trazem, abaixo das fórmulas, uma tabela com cada faixa: o intervalo (**De** e **Até**), a parte da base que cai nela, a alíquota, o **valor exato** e o **valor considerado** (no INSS, o valor truncado nos centavos). As faixas não alcançadas aparecem com parte da base zero. A linha **Soma das faixas** traz a base, a soma exata e o total; no IRRF, esse total pode diferir em um centavo do imposto pela parcela a deduzir, e a fórmula acima da tabela (na pensão, a nota abaixo dela) explica a diferença. O INSS anterior a 03/2020, com alíquota única sobre a base inteira, fica só com a fórmula.
+
 Todas as páginas dos relatórios em PDF exibem o aviso **CÁLCULO SIMULADO - VALORES ESTIMADOS**. Procure um profissional especializado no cálculo para apurar e validar os valores aplicáveis ao seu caso antes de utilizá-los. O rodapé identifica a versão do aplicativo; o cabeçalho informa a emissão e, conforme a calculadora, a competência ou data de referência.
 
 ### 10.2 Planilhas do Excel
 
-O botão **Gerar Excel**, ao lado do **Gerar PDF**, salva o mesmo conteúdo em uma planilha (.xlsx), com o nome sugerido do PDF. Os valores, os percentuais, os fatores e as datas vão como números, com o formato brasileiro, para você somar, filtrar e refazer as contas; a memória de cálculo fica em uma aba própria. A jornada pelo ponto tem só a planilha, com os dias e os totais do período do ponto.
+O botão **Gerar Excel**, ao lado do **Gerar PDF**, salva o mesmo conteúdo em uma planilha (.xlsx), com o nome sugerido do PDF. Os valores, os percentuais, os fatores e as datas vão como números, com o formato brasileiro, para você somar, filtrar e refazer as contas; a memória de cálculo fica em uma aba própria, e a tabela das faixas do INSS e do IRRF tem as partes da base, as alíquotas e os valores exatos em células numéricas. A jornada pelo ponto tem só a planilha, com os dias e os totais do período do ponto.
 
 Cada aba da planilha exibe o aviso de simulação e validação por profissional especializado, a referência do cálculo, a data e hora da geração e a versão do aplicativo.
 
@@ -1788,7 +1798,7 @@ Não. Os cálculos e as tabelas ficam no seu computador. A internet só é usada
 Sim. Informe o salário da jornada parcial: o INSS, o IRRF, o FGTS e as verbas são calculados sobre ele. Desde 2017, as férias do tempo parcial seguem a mesma tabela de dias do tempo integral (CLT, art. 58-A, § 7º).
 
 **Por que a soma das faixas do IRRF difere em centavos do total?**
-No detalhamento por faixas, o imposto de cada faixa é arredondado separadamente. O total do quadro e o IRRF final são calculados pela fórmula da tabela progressiva (base × alíquota − parcela a deduzir). Por isso pode haver diferença de alguns centavos entre a soma das linhas e o total.
+Na Simulação tributária, o imposto de cada faixa aparece exato, sem arredondar, e a soma é arredondada só no final. O IRRF é calculado pela fórmula da tabela progressiva (base × alíquota − parcela a deduzir), e a parcela a deduzir publicada é arredondada nos centavos. Por isso a soma das faixas pode diferir em um centavo do IRRF; a memória mostra os dois valores, e vale o da parcela a deduzir.
 
 **Por que o INSS difere em 1 ou 2 centavos de outras calculadoras?**
 Não há regra legal de arredondamento para o INSS por faixas. O aplicativo segue o eSocial, que trunca o valor de cada faixa nos centavos (Manual de Orientação do eSocial, evento S-5001). É o valor que o eSocial calcula e leva para a DCTFWeb. Outras calculadoras arredondam cada faixa ou só o total e chegam a 1 ou 2 centavos a mais: em 2026, o teto dá R$ 988,07 no eSocial e R$ 988,09 ou R$ 988,10 nelas.

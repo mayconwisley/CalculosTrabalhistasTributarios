@@ -167,7 +167,8 @@ public sealed class SimularRraUseCase(ITributacaoConsulta tributacaoConsulta) : 
         var rendimentos = parte.Rendimentos - parte.Despesas;
         var comOutros = parte.ComOutros!;
         var rotulo = p.OutrosRendimentosMes > 0m ? $"RRA de {ano} e rendimentos normais" : $"RRA de {ano}";
-        var grupo = MemoriaTributaria.Irrf($"Mês do pagamento com a parte de {ano}", comOutros, rotulo);
+        var titulo = $"Mês do pagamento com a parte de {ano}";
+        var grupo = MemoriaTributaria.Irrf(titulo, comOutros, rotulo);
         yield return grupo with
         {
             Formulas =
@@ -178,7 +179,10 @@ public sealed class SimularRraUseCase(ITributacaoConsulta tributacaoConsulta) : 
                 new($"IRRF atribuído à parte de {ano}", $"{Formato.Moeda(comOutros.Imposto)} - {Formato.Moeda(parte.SoOutros?.Imposto ?? 0m)} (IRRF sem o RRA) = {Formato.Moeda(parte.Imposto)}")
             ]
         };
+        if (MemoriaTributaria.FaixasIrrf(titulo, comOutros) is { } faixas)
+            yield return faixas;
         if (parte.SoOutros is { } soOutros)
-            yield return MemoriaTributaria.Irrf("Rendimentos normais do mês, sem o RRA", soOutros, "rendimentos normais");
+            foreach (var grupoNormal in MemoriaTributaria.IrrfComFaixas("Rendimentos normais do mês, sem o RRA", soOutros, "rendimentos normais"))
+                yield return grupoNormal;
     }
 }

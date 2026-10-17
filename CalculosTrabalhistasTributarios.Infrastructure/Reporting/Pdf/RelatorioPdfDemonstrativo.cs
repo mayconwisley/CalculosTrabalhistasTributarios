@@ -140,6 +140,8 @@ internal static class RelatorioPdfDemonstrativo
             memoria.Spacing(3);
             foreach (var formula in grupo.Formulas)
                 AdicionarFormulaIrrf(memoria, formula.Titulo, formula.Formula);
+            if (grupo.Quadro is { } quadro)
+                memoria.Item().PaddingTop(6).Element(tabela => CriarQuadroFaixas(tabela, quadro));
         }), grupo.Destaque);
     }
 }

@@ -50,11 +50,15 @@ internal static class PlanilhaDemonstrativo
             {
                 var memoria = new Aba(pasta.AddWorksheet("Memória de cálculo"));
                 memoria.Titulo("Memória de cálculo", d.Referencia);
+                if (d.Memoria.Any(grupo => grupo.Quadro is not null))
+                    memoria.ReservarColunas(ColunasDoQuadro.Length);
                 foreach (var grupo in d.Memoria)
                 {
                     memoria.Secao(string.IsNullOrEmpty(grupo.Destaque) ? grupo.Titulo : $"{grupo.Titulo} - {grupo.Destaque}");
                     foreach (var formula in grupo.Formulas)
                         memoria.Formula(formula.Titulo, formula.Formula);
+                    if (grupo.Quadro is { } quadro)
+                        QuadroFaixas(memoria, quadro);
                 }
                 memoria.Ajustar();
             }

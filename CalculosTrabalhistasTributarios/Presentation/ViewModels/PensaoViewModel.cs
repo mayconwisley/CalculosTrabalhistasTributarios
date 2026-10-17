@@ -42,6 +42,7 @@ public sealed class PensaoViewModel : ViewModelBase, ICalculoSalvavel
     private IReadOnlyList<PensaoPorBeneficiarioViewModel> _pensoesPorBeneficiario = [];
     private IReadOnlyList<ComparativoPensaoViewModel> _comparativoPensao = [];
     private IReadOnlyList<SecaoMemoriaPensaoViewModel> _memoriaPensao = [];
+    private QuadroFaixasViewModel? _quadroInss;
 
     public PensaoViewModel(ISimularPensaoUseCase simulador, ITributacaoConsulta tributacao, IUserNotifier notificador, IRelatorioPdfService relatorioPdf, IPlanilhaService planilha, IArquivoDialogService arquivoDialog, ContextoCompartilhado contexto,
         IHistoricoDaJanelaFactory historico)
@@ -123,6 +124,10 @@ public sealed class PensaoViewModel : ViewModelBase, ICalculoSalvavel
     public bool TemPensoesPorBeneficiario => PensoesPorBeneficiario.Count > 1;
     public IReadOnlyList<ComparativoPensaoViewModel> ComparativoPensao { get => _comparativoPensao; private set => SetProperty(ref _comparativoPensao, value); }
     public IReadOnlyList<SecaoMemoriaPensaoViewModel> MemoriaPensao { get => _memoriaPensao; private set => SetProperty(ref _memoriaPensao, value); }
+
+    /// <summary>Faixas do INSS em tabela na memória detalhada; nulo sem o detalhe, sem base de INSS ou antes de 03/2020.</summary>
+    public QuadroFaixasViewModel? QuadroInss { get => _quadroInss; private set { SetProperty(ref _quadroInss, value); OnPropertyChanged(nameof(TemQuadroInss)); } }
+    public bool TemQuadroInss => QuadroInss is not null;
     public ICommand AdicionarBeneficiarioCommand { get; }
     public ICommand RemoverBeneficiarioCommand { get; }
     public ICommand CalcularResumoCommand { get; }
@@ -318,6 +323,7 @@ public sealed class PensaoViewModel : ViewModelBase, ICalculoSalvavel
         MemoriaPensao = detalhar
             ? simulacao.Modalidades.Select(modalidade => CriarMemoria(modalidade, entrada, simulacao.ValorInss)).ToArray()
             : [];
+        QuadroInss = detalhar && simulacao.QuadroInss is { } quadroInss ? QuadroFaixasViewModel.De(quadroInss) : null;
         TemResultado = true;
         TemMemoria = detalhar;
         MensagemMemoria = detalhar ? string.Empty : "Selecione Detalhar para exibir a memória de cálculo por iteração.";
@@ -335,7 +341,8 @@ public sealed class PensaoViewModel : ViewModelBase, ICalculoSalvavel
                 MemoriaCalculoPensao.Iteracao(modalidade, detalhe, entrada, valorInss, Moeda, FormatarPercentual).Select(formula => new FormulaCalculoViewModel(formula.Titulo, formula.Formula)).ToArray()))
             .ToArray();
 
-        return new SecaoMemoriaPensaoViewModel($"{modalidade.Nome} - memória de cálculo", $"Iterações: {modalidade.Iteracoes} | Total: {Moeda(modalidade.Total)}", iteracoes);
+        return new SecaoMemoriaPensaoViewModel($"{modalidade.Nome} - memória de cálculo", $"Iterações: {modalidade.Iteracoes} | Total: {Moeda(modalidade.Total)}", iteracoes,
+            modalidade.QuadroIrrf is { } quadro ? QuadroFaixasViewModel.De(quadro) : null, MemoriaCalculoPensao.ConferenciaDasFaixas(modalidade, Moeda));
     }
 
     private static string Moeda(decimal valor) => valor.ToString("C2", Cultura);

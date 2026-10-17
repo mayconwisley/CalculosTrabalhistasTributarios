@@ -70,7 +70,7 @@ public sealed class SimularCreditoTrabalhadorUseCase(ITributacaoConsulta consult
              new("Juros das prestações", "Total pago menos principal financiado", a.TotalJuros),
              new("Custo total sobre crédito líquido", "Prestações menos crédito líquido", a.CustoTotal)],
             [MemoriaTributaria.Inss("INSS estimado da remuneração habitual", inss, "remuneração habitual após descontos previdenciários"),
-             MemoriaTributaria.Irrf("IRRF estimado da remuneração habitual", ir, "remuneração habitual após descontos previdenciários"),
+             .. MemoriaTributaria.IrrfComFaixas("IRRF estimado da remuneração habitual", ir, "remuneração habitual após descontos previdenciários"),
              new GrupoMemoriaDto("Margem consignável", $"Livre: {Formato.Moeda(a.MargemLivre)}", [
                 new("Remuneração disponível", $"{Formato.Moeda(r.RemuneracaoHabitual)} - descontos previdenciários {Formato.Moeda(r.DescontosPrevidenciarios)} - INSS {Formato.Moeda(inss.Valor)} - IRRF {Formato.Moeda(ir.Imposto)} - pensão {Formato.Moeda(r.Pensao)} - compulsórios {Formato.Moeda(r.OutrosDescontosCompulsorios)} = {Formato.Moeda(disponivel)}"),
                 new("Margem estimada", $"{Formato.Moeda(disponivel)} × 35% = {Formato.Moeda(a.MargemTotal)}; truncada em centavos para não exceder o limite"),

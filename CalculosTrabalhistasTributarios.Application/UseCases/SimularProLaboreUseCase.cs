@@ -91,7 +91,7 @@ public sealed class SimularProLaboreUseCase(ITributacaoConsulta tributacaoConsul
             [
                 new GrupoMemoriaDto(nome, $"Líquido: {Formato.Moeda(liquido)}", formulas),
                 new GrupoMemoriaDto("INSS do contribuinte individual", $"INSS: {Formato.Moeda(inss.Valor)}", formulasInss),
-                MemoriaTributaria.Irrf("IRRF", irrf, autonomo ? "valor do serviço" : "pró-labore")
+                .. MemoriaTributaria.IrrfComFaixas("IRRF", irrf, autonomo ? "valor do serviço" : "pró-labore")
             ],
             observacoes);
     }

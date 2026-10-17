@@ -113,6 +113,35 @@ public class PlanilhaTests
     }
 
     [Fact]
+    public async Task Memoria_traz_as_faixas_do_inss_e_do_irrf_em_celulas_numericas()
+    {
+        var demonstrativo = await MemoriaTributariaDetalhadaTests.HoleriteDeSeisMilAsync();
+        using var pasta = await GerarAsync(caminho => new ClosedXmlPlanilhaService().GerarDemonstrativoAsync(demonstrativo, caminho, default));
+
+        var memoria = pasta.Worksheet("Memória de cálculo");
+        var cabecalhos = memoria.RowsUsed().Where(linha => linha.Cell(1).GetString() == "Faixa" && linha.Cell(7).GetString() == "Valor considerado").ToList();
+        Assert.Equal(2, cabecalhos.Count);
+
+        // INSS, faixa 4: (6.000,00 - 4.354,27) x 14% = 230,4022, truncado em 230,40.
+        var faixa4 = cabecalhos[0].RowBelow(4);
+        Assert.Equal(4d, faixa4.Cell(1).GetDouble());
+        Assert.Equal(1_645.73d, faixa4.Cell(4).GetDouble(), 2);
+        Assert.Equal(0.14d, faixa4.Cell(5).GetDouble(), 4);
+        Assert.Equal(230.4022d, faixa4.Cell(6).GetDouble(), 4);
+        Assert.Equal(230.40d, faixa4.Cell(7).GetDouble(), 2);
+        Assert.Contains("R$", faixa4.Cell(6).Style.NumberFormat.Format);
+        var totalInss = cabecalhos[0].RowBelow(5);
+        Assert.Equal("Soma das faixas", totalInss.Cell(1).GetString());
+        Assert.Equal(641.50d, totalInss.Cell(7).GetDouble(), 2);
+
+        // IRRF: a última faixa não tem limite, e o total é a soma exata 564,866 arredondada.
+        var faixa5 = cabecalhos[1].RowBelow(5);
+        Assert.Equal("Sem limite", faixa5.Cell(3).GetString());
+        Assert.Equal(190.8005d, faixa5.Cell(6).GetDouble(), 4);
+        Assert.Equal(564.87d, cabecalhos[1].RowBelow(6).Cell(7).GetDouble(), 2);
+    }
+
+    [Fact]
     public async Task Demonstrativo_tem_os_valores_como_numeros_e_a_memoria_em_outra_aba()
     {
         var demonstrativo = await new SimularHoleriteUseCase(await Ambiente.ConsultaAsync()).ExecutarAsync(new SimularHoleriteRequest(

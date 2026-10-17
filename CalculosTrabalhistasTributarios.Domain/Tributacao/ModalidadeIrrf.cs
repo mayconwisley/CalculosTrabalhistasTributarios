@@ -2,7 +2,9 @@ namespace CalculosTrabalhistasTributarios.Domain.Tributacao;
 
 /// <summary>IRRF apurado em uma modalidade, deduções legais ou desconto simplificado, com a redução mensal.</summary>
 /// <param name="AliquotaEfetiva">Imposto sobre os rendimentos tributáveis, em %, truncado em duas casas.</param>
-/// <param name="DetalhesProgressivos">Base e imposto de cada faixa da tabela progressiva.</param>
+/// <param name="DetalhesProgressivos">
+/// Base e imposto exato de cada faixa da tabela progressiva, sem arredondar, para conferir o imposto calculado pela parcela a deduzir.
+/// </param>
 public sealed record ModalidadeIrrf(
     string Nome,
     decimal BaseCalculo,

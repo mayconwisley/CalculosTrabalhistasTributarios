@@ -21,6 +21,9 @@ internal static class RelatorioPdfPensao
 
                 if (incluirDetalhes)
                 {
+                    // O INSS é o mesmo nas duas modalidades: uma tabela só, antes das iterações.
+                    if (simulacao.QuadroInss is { } quadroInss)
+                        coluna.Item().Element(container => CriarSecao(container, "INSS por faixas", secao => CriarQuadroFaixas(secao, quadroInss), $"INSS: {Moeda(simulacao.ValorInss)}"));
                     coluna.Item().Element(container => CriarDetalhesPensao(container, simulacao.Normal, entrada, simulacao.ValorInss));
                     if (simulacao.SimplificadoDisponivel)
                     {
@@ -118,6 +121,19 @@ internal static class RelatorioPdfPensao
                     });
                 });
             }
+
+            // A tabela e a conferência passam juntas para a página seguinte, sem deixar a nota sozinha.
+            if (modalidade.QuadroIrrf is { } quadro)
+                coluna.Item().ShowEntire().Border(1).BorderColor(CinzaBorda).Column(cartao =>
+                {
+                    cartao.Item().Background(AzulPrimario).Padding(6).Text("IRRF por faixas na última iteração").FontColor(Colors.White).SemiBold();
+                    cartao.Item().Padding(8).Column(conteudo =>
+                    {
+                        conteudo.Spacing(6);
+                        conteudo.Item().Element(tabela => CriarQuadroFaixas(tabela, quadro));
+                        conteudo.Item().Text(MemoriaCalculoPensao.ConferenciaDasFaixas(modalidade, Moeda)).FontSize(8).FontColor(CinzaTexto);
+                    });
+                });
         }), $"Iterações: {modalidade.Iteracoes} | Total: {Moeda(modalidade.Total)}");
     }
 

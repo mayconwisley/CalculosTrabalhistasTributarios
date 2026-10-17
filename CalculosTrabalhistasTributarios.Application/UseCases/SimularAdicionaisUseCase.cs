@@ -108,7 +108,7 @@ public sealed class SimularAdicionaisUseCase(ITributacaoConsulta tributacaoConsu
             [
                 new GrupoMemoriaDto("Adicionais", $"Adicional: {Formato.Moeda(adicional)}", formulas),
                 MemoriaTributaria.Inss("INSS", inss, "remuneração do mês"),
-                MemoriaTributaria.Irrf("IRRF", irrf, "remuneração do mês")
+                .. MemoriaTributaria.IrrfComFaixas("IRRF", irrf, "remuneração do mês")
             ],
             observacoes);
     }

@@ -36,6 +36,15 @@ public sealed class TabelasDaCompetencia
 
     /// <summary>Limite de cada faixa do INSS, da menor para a maior.</summary>
     public IReadOnlyList<decimal> LimitesInss => _faixasInss.OrderBy(item => item.Numero).Select(item => item.Limite).ToArray();
+
+    /// <summary>Faixas do INSS, da menor para a maior; o limite da última é o teto.</summary>
+    public IReadOnlyList<FaixaTributaria> FaixasInss => _faixasInss.OrderBy(item => item.Numero).ToArray();
+
+    /// <summary>Faixas da tabela progressiva mensal do IRRF, da menor para a maior, com a parcela a deduzir.</summary>
+    public IReadOnlyList<FaixaTributaria> FaixasIrrf => _faixasIrrf.OrderBy(item => item.Numero).ToArray();
+
+    /// <summary>Regras da redução mensal do IRRF, pela ordem dos limites de rendimento; vazias antes de 01/2026.</summary>
+    public IReadOnlyList<RegraReducaoMensalIrrf> RegrasReducaoMensal => _regrasReducao.OrderBy(item => item.Faixa).ToArray();
     public decimal DeducaoPorDependente { get; }
 
     /// <summary>Nulo antes de 05/2023, quando a modalidade simplificada não existia.</summary>
@@ -64,7 +73,8 @@ public sealed class TabelasDaCompetencia
     {
         var baseConsiderada = Math.Min(baseInss, TetoInss);
         var detalhes = CalculadoraInss.CalcularDetalhes(Competencia, baseConsiderada, _faixasInss);
-        return new ApuracaoInss(baseInss, baseConsiderada, CalculadoraTributacao.Arredondar(detalhes.Sum(item => item.Imposto)), detalhes);
+        return new ApuracaoInss(baseInss, baseConsiderada, CalculadoraTributacao.Arredondar(detalhes.Sum(item => item.Imposto)), detalhes,
+            FaixasInss, CalculadoraInss.Progressivo(Competencia));
     }
 
     /// <summary>Faixas de um novo vínculo de empregado, após as faixas já ocupadas por vínculos anteriores dessa categoria.</summary>
@@ -104,7 +114,8 @@ public sealed class TabelasDaCompetencia
         var simplificada = DescontoSimplificado is { } desconto
             ? CalcularModalidade("Simplificado", rendimentos, Math.Max(0m, rendimentos - desconto))
             : ModalidadeIrrf.Indisponivel("Simplificado");
-        return new ApuracaoIrrf(rendimentos, inss, dependentes, DeducaoPorDependente, DescontoSimplificado, normal, simplificada, pensao, tributacaoExclusiva ? 0m : DescontoMinimo, previdenciaComplementar, livroCaixa);
+        return new ApuracaoIrrf(rendimentos, inss, dependentes, DeducaoPorDependente, DescontoSimplificado, normal, simplificada, pensao, tributacaoExclusiva ? 0m : DescontoMinimo, previdenciaComplementar, livroCaixa,
+            FaixasIrrf, RegrasReducaoMensal);
     }
 
     /// <summary>
@@ -116,8 +127,10 @@ public sealed class TabelasDaCompetencia
         if (_faixasPlr.Count == 0)
             return Erro.NaoEncontrado($"Não há tabela de PLR cadastrada para a competência {Competencia:MM/yyyy}.");
 
-        var faixa = _faixasPlr.OrderBy(item => item.Numero).FirstOrDefault(item => baseCalculo <= item.Limite) ?? _faixasPlr.MaxBy(item => item.Limite)!;
-        return new ApuracaoPlr(baseCalculo, faixa.Numero, faixa.Aliquota, faixa.Deducao, CalculadoraTributacao.CalcularPorFaixa(baseCalculo, _faixasPlr));
+        var tabela = _faixasPlr.OrderBy(item => item.Numero).ToArray();
+        var faixa = tabela.FirstOrDefault(item => baseCalculo <= item.Limite) ?? tabela.MaxBy(item => item.Limite)!;
+        return new ApuracaoPlr(baseCalculo, faixa.Numero, faixa.Aliquota, faixa.Deducao, CalculadoraTributacao.CalcularPorFaixa(baseCalculo, _faixasPlr),
+            tabela, CalculadoraTributacao.CalcularProgressivo(baseCalculo, tabela, valor => valor));
     }
 
     /// <summary>
@@ -162,6 +175,6 @@ public sealed class TabelasDaCompetencia
         var reducao = CalculadoraReducaoMensalIrrf.Calcular(rendimentosTributaveis, impostoAntesReducao, _regrasReducao);
         var imposto = CalculadoraTributacao.Arredondar(impostoAntesReducao - reducao);
         var aliquotaEfetiva = rendimentosTributaveis == 0m ? 0m : Math.Truncate(imposto / rendimentosTributaveis * 10_000m) / 100m;
-        return new ModalidadeIrrf(nome, baseCalculo, faixa.Aliquota, faixa.Deducao, impostoAntesReducao, reducao, imposto, aliquotaEfetiva, CalculadoraTributacao.CalcularProgressivo(baseCalculo, _faixasIrrf));
+        return new ModalidadeIrrf(nome, baseCalculo, faixa.Aliquota, faixa.Deducao, impostoAntesReducao, reducao, imposto, aliquotaEfetiva, CalculadoraTributacao.CalcularProgressivo(baseCalculo, _faixasIrrf, valor => valor));
     }
 }

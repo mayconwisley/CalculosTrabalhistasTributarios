@@ -885,6 +885,9 @@
                                                         </DataTemplate>
                                                     </ItemsControl.ItemTemplate>
                                                 </ItemsControl>
+                                                <!-- As faixas em tabela, pelo modelo de QuadroFaixasViewModel em App.xaml. -->
+                                                <ContentControl Margin="0,4,0,0" Content="{Binding Quadro}" Focusable="False" IsTabStop="False"
+                                                                Visibility="{Binding TemQuadro, Converter={StaticResource BooleanToVisibilityConverter}}" />
                                             </StackPanel>
                                         </Border>
                                     </DataTemplate>

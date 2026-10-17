@@ -30,12 +30,12 @@ internal static class MemoriaRescisao
         if (v.Saldo.VerbasDoMes > 0m)
         {
             memoria.Add(MemoriaTributaria.Inss($"INSS sobre o {rotuloMes}", t.InssSaldo, rotuloMes));
-            memoria.Add(MemoriaTributaria.Irrf($"IRRF sobre o {rotuloMes}", t.IrrfSaldo, rotuloMes));
+            memoria.AddRange(MemoriaTributaria.IrrfComFaixas($"IRRF sobre o {rotuloMes}", t.IrrfSaldo, rotuloMes));
         }
         if (v.DecimoTerceiro.Total > 0m)
         {
             memoria.Add(MemoriaTributaria.Inss("INSS sobre o 13º", t.Inss13, "13º proporcional"));
-            memoria.Add(MemoriaTributaria.Irrf("IRRF sobre o 13º", t.Irrf13, "13º proporcional"));
+            memoria.AddRange(MemoriaTributaria.IrrfComFaixas("IRRF sobre o 13º", t.Irrf13, "13º proporcional"));
         }
         if (t.Pensao is { } regra && t.PensaoSaldo is { } pensaoSaldo)
             memoria.Add(DemonstrativoPensao.Memoria(regra.EhPercentual ? $"Pensão alimentícia sobre o {rotuloMes}" : "Pensão alimentícia", regra, v.Saldo.VerbasDoMes, rotuloMes, t.InssSaldo.Valor, t.IrrfSaldo.Imposto, pensaoSaldo.Base, pensaoSaldo.Pensao,

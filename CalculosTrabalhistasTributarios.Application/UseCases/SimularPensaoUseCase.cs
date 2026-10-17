@@ -1,3 +1,4 @@
+using CalculosTrabalhistasTributarios.Application.Demonstrativos;
 using CalculosTrabalhistasTributarios.Application.DTOs;
 using CalculosTrabalhistasTributarios.Application.Interfaces;
 using CalculosTrabalhistasTributarios.Domain.Comum;
@@ -59,10 +60,14 @@ public sealed class SimularPensaoUseCase(ITributacaoConsulta tributacaoConsulta)
         var semPensaoAntesReducao = CalculadoraTributacao.CalcularPorFaixa(baseSemPensao, irrf);
         var normalSemPensao = Reter(CalculadoraTributacao.Arredondar(semPensaoAntesReducao - CalculadoraReducaoMensalIrrf.Calcular(rendimentos, semPensaoAntesReducao, regrasReducao)), limiteDispensa);
         var simplificadaSemPensao = simplificadoDisponivel && simplificada.Imposto < normalSemPensao;
+        var inssProgressivo = CalculadoraInss.Progressivo(request.Competencia);
         return new SimulacaoPensaoDto(valorInss, normal, simplificada, vantagem, simplificadaSemPensao ? simplificada.Imposto : normalSemPensao, simplificadoDisponivel)
         {
             FaixasInss = faixasInss,
-            InssProgressivo = CalculadoraInss.Progressivo(request.Competencia),
+            InssProgressivo = inssProgressivo,
+            QuadroInss = inssProgressivo && faixasInss.Count > 0
+                ? MemoriaTributariaDetalhada.Quadro(inss.OrderBy(faixa => faixa.Numero).ToArray(), faixasInss, baseInss, ultimaSemLimite: false, valorInss)
+                : null,
             AliquotaIrrfSemPensao = simplificadaSemPensao ? simplificada.Detalhes[^1].Aliquota : FaixaDaBase(baseSemPensao, irrf).Aliquota
         };
     }
@@ -96,7 +101,19 @@ public sealed class SimularPensaoUseCase(ITributacaoConsulta tributacaoConsulta)
             if (!deduzPensao || novaPensao == pensao) { pensao = novaPensao; break; }
             pensao = novaPensao;
         }
-        return new ModalidadePensaoDto(nome, impostoAntesReducao, reducaoMensal, imposto, pensao, CalculadoraTributacao.Arredondar(imposto + pensao), iteracoes + 1, detalhes, deducoesBase, rotuloDeducoes, deduzPensao);
+        return new ModalidadePensaoDto(nome, impostoAntesReducao, reducaoMensal, imposto, pensao, CalculadoraTributacao.Arredondar(imposto + pensao), iteracoes + 1, detalhes, deducoesBase, rotuloDeducoes, deduzPensao)
+        {
+            QuadroIrrf = QuadroIrrf(detalhes[^1].BaseIrrf, faixas)
+        };
+    }
+
+    /// <summary>A base da última iteração repartida pelas faixas, com o imposto exato de cada uma, para a tabela da memória.</summary>
+    private static QuadroFaixasDto? QuadroIrrf(decimal baseIrrf, IReadOnlyList<FaixaTributaria> faixas)
+    {
+        var tabela = faixas.OrderBy(faixa => faixa.Numero).ToArray();
+        var exatas = CalculadoraTributacao.CalcularProgressivo(baseIrrf, tabela, valor => valor);
+        return exatas.Count == 0 ? null
+            : MemoriaTributariaDetalhada.Quadro(tabela, exatas, baseIrrf, ultimaSemLimite: true, CalculadoraTributacao.Arredondar(exatas.Sum(faixa => faixa.Imposto)));
     }
 
     /// <summary>Base e valor da pensão de cada beneficiário pela regra da decisão, dado o IRRF que reduz os rendimentos líquidos.</summary>

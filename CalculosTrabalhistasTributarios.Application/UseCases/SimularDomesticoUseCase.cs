@@ -107,7 +107,7 @@ public sealed class SimularDomesticoUseCase(ITributacaoConsulta tributacaoConsul
             [
                 new GrupoMemoriaDto("Folha e DAE", $"DAE: {Formato.Moeda(dae)}", formulas),
                 MemoriaTributaria.Inss("INSS do empregado", inss, "remuneração"),
-                MemoriaTributaria.Irrf("IRRF do empregado", irrf, "remuneração")
+                .. MemoriaTributaria.IrrfComFaixas("IRRF do empregado", irrf, "remuneração")
             ],
             observacoes);
     }

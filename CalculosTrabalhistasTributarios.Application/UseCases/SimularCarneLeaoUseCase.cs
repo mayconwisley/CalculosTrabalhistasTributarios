@@ -70,7 +70,7 @@ public sealed class SimularCarneLeaoUseCase(ITributacaoConsulta tributacaoConsul
             proventos,
             descontos,
             [],
-            [MemoriaTributaria.Irrf("Carnê-leão", irrf, aluguelLiquido > 0m && r.Rendimentos > 0m ? "rendimentos e aluguel líquido" : aluguelLiquido > 0m ? "aluguel líquido" : "rendimentos")],
+            [.. MemoriaTributaria.IrrfComFaixas("Carnê-leão", irrf, aluguelLiquido > 0m && r.Rendimentos > 0m ? "rendimentos e aluguel líquido" : aluguelLiquido > 0m ? "aluguel líquido" : "rendimentos")],
             observacoes,
             RotuloResultado: "Líquido depois do imposto");
     }

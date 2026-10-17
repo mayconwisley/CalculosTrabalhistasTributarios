@@ -73,7 +73,7 @@ public sealed class SimularEstagioUseCase(ITributacaoConsulta tributacaoConsulta
                     new("Recesso de direito", $"30 dias x {meses} ÷ 12 = {Formato.Numero(direito)} dias"),
                     new("Recesso a usufruir", $"{Formato.Numero(direito)} - {Formato.Numero(r.DiasRecessoGozados)} (já usufruídos) = {Formato.Numero(saldo)} dias"),
                     new("Valor", $"{Formato.Moeda(r.Bolsa)} ÷ 30 x {Formato.Numero(saldo)} dias = {Formato.Moeda(valorRecesso)}")]),
-                MemoriaTributaria.Irrf("IRRF sobre a bolsa", irrf, "bolsa")
+                .. MemoriaTributaria.IrrfComFaixas("IRRF sobre a bolsa", irrf, "bolsa")
             ],
             observacoes);
     }

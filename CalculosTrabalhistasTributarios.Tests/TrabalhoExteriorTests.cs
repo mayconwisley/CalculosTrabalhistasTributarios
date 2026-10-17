@@ -56,7 +56,7 @@ public class TrabalhoExteriorTests
         // Tabela mensal de 2026: (50.000 - desconto simplificado 607,20) × 27,5% - 908,73 = 12.674,29.
         // IR exterior: 2.000 USD × R$ 5 = R$ 10.000. IR brasileiro: 2.674,29.
         var dto = (await Simular(Pedido())).Sucesso();
-        Assert.Contains("R$ 10.000,00", dto.Memoria[2].Formulas.Single(f => f.Titulo == "Crédito admitido").Formula);
+        Assert.Contains("R$ 10.000,00", dto.Memoria.Single(g => g.Titulo == "Impostos e disponível").Formulas.Single(f => f.Titulo == "Crédito admitido").Formula);
         Assert.Equal(2_674.29m, dto.Descontos.Single(d => d.Descricao == "Carnê-leão a recolher no Brasil").Valor);
         Assert.Equal(35_873.71m, dto.Resultado);
         Assert.Equal("R$ 38.548,00", dto.Destaques[1].Valor);

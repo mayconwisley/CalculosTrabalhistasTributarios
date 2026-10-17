@@ -333,4 +333,104 @@ public class SimulacaoTributariaTests
         Assert.True((await calculadora.CalcularAsync(default)).Sucesso);
         await historico.ExcluirAsync(id, default);
     }
+
+    private static string Formula(DemonstrativoDto demonstrativo, string grupo, string titulo) =>
+        Texto.Normalizar(demonstrativo.Memoria.Single(item => item.Titulo == grupo).Formulas.Single(formula => formula.Titulo == titulo).Formula);
+
+    [Fact]
+    public async Task Memoria_mostra_a_parte_da_base_em_cada_faixa_do_inss_com_o_truncamento()
+    {
+        // 8.500,00 em 10/2026: base limitada ao teto de 8.475,55; faixas até 1.621,00, 2.902,84, 4.354,27 e 8.475,55.
+        var simulacao = await SimularAsync("2026-10", 8500m, dependentes: 2).Sucesso();
+
+        Assert.Equal("Até R$ 1.621,00: 7,5%", Formula(simulacao, "Tabela do INSS - 10/2026", "Faixa 1"));
+        Assert.Equal("De R$ 1.621,01 a R$ 2.902,84: 9%", Formula(simulacao, "Tabela do INSS - 10/2026", "Faixa 2"));
+        Assert.StartsWith("R$ 8.500,00 (base de INSS), limitada ao teto: R$ 8.475,55. Os R$ 24,45 acima do teto", Formula(simulacao, "INSS por faixas", "Base de cálculo"));
+        Assert.Equal("Parte da base até R$ 1.621,00: R$ 1.621,00; R$ 1.621,00 x 7,5% = R$ 121,575, truncado em R$ 121,57", Formula(simulacao, "INSS por faixas", "Faixa 1 (7,5%)"));
+        Assert.Equal("Parte de R$ 1.621,01 a R$ 2.902,84: R$ 2.902,84 - R$ 1.621,00 = R$ 1.281,84; R$ 1.281,84 x 9% = R$ 115,3656, truncado em R$ 115,36", Formula(simulacao, "INSS por faixas", "Faixa 2 (9%)"));
+        Assert.Equal("Parte de R$ 2.902,85 a R$ 4.354,27: R$ 4.354,27 - R$ 2.902,84 = R$ 1.451,43; R$ 1.451,43 x 12% = R$ 174,1716, truncado em R$ 174,17", Formula(simulacao, "INSS por faixas", "Faixa 3 (12%)"));
+        Assert.Equal("Parte acima de R$ 4.354,27: R$ 8.475,55 (base) - R$ 4.354,27 = R$ 4.121,28; R$ 4.121,28 x 14% = R$ 576,9792, truncado em R$ 576,97", Formula(simulacao, "INSS por faixas", "Faixa 4 (14%)"));
+        Assert.Equal("R$ 121,57 + R$ 115,36 + R$ 174,17 + R$ 576,97 = R$ 988,07", Formula(simulacao, "INSS por faixas", "Total"));
+        Assert.Equal("R$ 988,07 ÷ R$ 8.475,55 = 11,66% da base", Formula(simulacao, "INSS por faixas", "Alíquota efetiva"));
+    }
+
+    [Fact]
+    public async Task Memoria_mostra_a_formacao_da_base_e_o_irrf_faixa_a_faixa()
+    {
+        // 8.500,00 - 988,07 (INSS) - 2 x 189,59 = 7.132,75, na faixa de 27,5%. Acima de 7.350,00 de rendimentos não há redução.
+        var simulacao = await SimularAsync("2026-10", 8500m, dependentes: 2).Sucesso();
+        const string grupo = "IRRF por faixas - deduções legais";
+
+        Assert.Equal("Acima de R$ 4.664,68: 27,5%, parcela a deduzir de R$ 908,73", Formula(simulacao, "Tabela do IRRF - 10/2026", "Faixa 5"));
+        Assert.Equal("2 x R$ 189,59 = R$ 379,18", Formula(simulacao, "Base de cálculo do IRRF", "Dependentes"));
+        Assert.Equal("R$ 8.500,00 (valor bruto) - R$ 988,07 (INSS) - 2 x R$ 189,59 (dependentes) = R$ 7.132,75", Formula(simulacao, "Base de cálculo do IRRF", "Base com deduções legais"));
+        Assert.Equal("R$ 8.500,00 (valor bruto) - R$ 607,20 (desconto simplificado) = R$ 7.892,80", Formula(simulacao, "Base de cálculo do IRRF", "Base com desconto simplificado"));
+        Assert.StartsWith("As deduções legais somam R$ 1.367,25, e o desconto simplificado é de R$ 607,20", Formula(simulacao, "Base de cálculo do IRRF", "Comparação das deduções"));
+        Assert.Equal("R$ 7.132,75, na faixa 5 (acima de R$ 4.664,68)", Formula(simulacao, grupo, "Base de cálculo"));
+        Assert.Equal("Parte de R$ 2.428,81 a R$ 2.826,65: R$ 2.826,65 - R$ 2.428,80 = R$ 397,85; R$ 397,85 x 7,5% = R$ 29,83875", Formula(simulacao, grupo, "Faixa 2 (7,5%)"));
+        Assert.Equal("Parte acima de R$ 4.664,68: R$ 7.132,75 (base) - R$ 4.664,68 = R$ 2.468,07; R$ 2.468,07 x 27,5% = R$ 678,71925", Formula(simulacao, grupo, "Faixa 5 (27,5%)"));
+        Assert.Equal("R$ 0,00 + R$ 29,83875 + R$ 138,66 + R$ 205,56675 + R$ 678,71925 = R$ 1.052,78475, arredondada para R$ 1.052,78", Formula(simulacao, grupo, "Soma das faixas"));
+        Assert.StartsWith("R$ 7.132,75 x 27,5% - R$ 908,73 = R$ 1.052,78.", Formula(simulacao, grupo, "Pela parcela a deduzir"));
+        Assert.EndsWith("o resultado é o mesmo da soma das faixas", Formula(simulacao, grupo, "Pela parcela a deduzir"));
+        Assert.Equal("Rendimentos tributáveis de R$ 8.500,00, acima de R$ 7.350,00: sem redução", Formula(simulacao, grupo, "Redução mensal"));
+        Assert.Equal("R$ 1.052,78, alíquota efetiva de 12,38% dos rendimentos tributáveis", Formula(simulacao, grupo, "IRRF da modalidade"));
+        Assert.Equal("R$ 1.052,78", Formula(simulacao, "IRRF retido", "Desconto"));
+    }
+
+    [Fact]
+    public async Task Memoria_explica_a_reducao_mensal_e_a_diferenca_da_parcela_a_deduzir()
+    {
+        // 6.000,00 sem dependentes: INSS 641,50; base 5.358,50 x 27,5% - 908,73 = 564,86, e as faixas exatas somam 564,866.
+        // Redução: 978,62 - 0,133145 x 6.000,00 = 179,75; IRRF 564,86 - 179,75 = 385,11.
+        var simulacao = await SimularAsync("2026-10", 6000m).Sucesso();
+        const string grupo = "IRRF por faixas - deduções legais";
+
+        Assert.Equal("R$ 0,00 + R$ 29,83875 + R$ 138,66 + R$ 205,56675 + R$ 190,8005 = R$ 564,866, arredondada para R$ 564,87", Formula(simulacao, grupo, "Soma das faixas"));
+        Assert.StartsWith("R$ 5.358,50 x 27,5% - R$ 908,73 = R$ 564,86.", Formula(simulacao, grupo, "Pela parcela a deduzir"));
+        Assert.Contains("A soma das faixas dá R$ 564,87: a diferença vem do arredondamento da parcela a deduzir publicada", Formula(simulacao, grupo, "Pela parcela a deduzir"));
+        Assert.Equal("Rendimentos tributáveis de R$ 6.000,00: R$ 978,62 - 0,133145 x R$ 6.000,00 = R$ 179,75", Formula(simulacao, grupo, "Redução mensal"));
+        Assert.Equal("R$ 564,86 - R$ 179,75 (redução) = R$ 385,11, alíquota efetiva de 6,41% dos rendimentos tributáveis", Formula(simulacao, grupo, "IRRF da modalidade"));
+        Assert.Equal("Rendimentos de R$ 5.000,01 a R$ 7.350,00: R$ 978,62 - 0,133145 x rendimentos tributáveis", Formula(simulacao, "Tabela do IRRF - 10/2026", "Redução mensal 2"));
+    }
+
+    [Fact]
+    public async Task Memoria_indica_faixas_nao_alcancadas_e_a_reducao_limitada_ao_imposto()
+    {
+        // 4.000,00: INSS 121,57 + 115,36 + 131,65 = 368,58; base 3.631,42 x 15% - 394,16 = 150,55, zerado pela redução.
+        var simulacao = await SimularAsync("2026-10", 4000m).Sucesso();
+        const string grupo = "IRRF por faixas - deduções legais";
+
+        Assert.Equal("Parte acima de R$ 2.902,84: R$ 4.000,00 (base) - R$ 2.902,84 = R$ 1.097,16; R$ 1.097,16 x 12% = R$ 131,6592, truncado em R$ 131,65", Formula(simulacao, "INSS por faixas", "Faixa 3 (12%)"));
+        Assert.Equal("Não alcançada: a base termina na faixa 3", Formula(simulacao, "INSS por faixas", "Faixa 4"));
+        Assert.Equal("Não alcançadas: a base termina na faixa 3", Formula(simulacao, grupo, "Faixas 4 e 5"));
+        Assert.Equal("Rendimentos tributáveis de R$ 4.000,00, até R$ 5.000,00: até R$ 312,89, limitada ao imposto de R$ 150,55: R$ 150,55", Formula(simulacao, grupo, "Redução mensal"));
+        Assert.Equal("R$ 150,55 - R$ 150,55 (redução) = R$ 0,00, alíquota efetiva de 0,00% dos rendimentos tributáveis", Formula(simulacao, grupo, "IRRF da modalidade"));
+    }
+
+    [Fact]
+    public async Task Memoria_antes_de_2020_aplica_a_aliquota_da_faixa_sobre_a_base_inteira()
+    {
+        // 06/2019: 3.000,00 na faixa de 11% (2.919,73 a 5.839,45), sobre a base inteira; IRRF (3.000,00 - 330,00 - 1.903,98) x 7,5% = 57,4515.
+        var simulacao = await SimularAsync("2019-06", 3000m).Sucesso();
+
+        Assert.Equal("A base está na faixa 3 (de R$ 2.919,73 a R$ 5.839,45), e a alíquota vale para a base inteira: R$ 3.000,00 x 11% = R$ 330,00, sem centavos a truncar", Formula(simulacao, "INSS por faixas", "Faixa 3 (11%)"));
+        // Na alíquota única não há partes da base por faixa: o PDF e o Excel ficam só com a fórmula.
+        Assert.Null(simulacao.Memoria.Single(grupo => grupo.Titulo == "INSS por faixas").Quadro);
+        Assert.Equal("Não existia na competência: só a partir de 05/2023", Formula(simulacao, "Tabela do IRRF - 06/2019", "Desconto simplificado"));
+        Assert.Equal("Parte acima de R$ 1.903,98: R$ 2.670,00 (base) - R$ 1.903,98 = R$ 766,02; R$ 766,02 x 7,5% = R$ 57,4515", Formula(simulacao, "IRRF por faixas - deduções legais", "Faixa 2 (7,5%)"));
+        Assert.DoesNotContain(simulacao.Memoria, grupo => grupo.Titulo == "IRRF por faixas - desconto simplificado");
+        Assert.DoesNotContain(simulacao.Memoria.Single(grupo => grupo.Titulo == "IRRF por faixas - deduções legais").Formulas, formula => formula.Titulo == "Redução mensal");
+    }
+
+    [Fact]
+    public async Task Memoria_da_aposentadoria_parte_do_rendimento_sem_a_parcela_isenta()
+    {
+        // 13º de 3.850,00 em 12/2019, 65 anos ou mais: 3.850,00 - 1.903,98 = 1.946,02; (1.946,02 - 1.903,98) x 7,5% = 3,153.
+        var simulacao = await SimularAsync(new SimularImpostoRequest(new DateOnly(2019, 12, 1), 3850m, 0m, 0, VinculoSimulacao.Aposentadoria, SessentaECincoAnos: true, DecimoTerceiro: true)).Sucesso();
+
+        Assert.DoesNotContain(simulacao.Memoria, grupo => grupo.Titulo.Contains("INSS", StringComparison.Ordinal));
+        Assert.Equal("R$ 1.946,02 (valor bruto - parcela isenta)", Formula(simulacao, "Base de cálculo do IRRF", "Rendimentos tributáveis"));
+        Assert.Equal("Parte acima de R$ 1.903,98: R$ 1.946,02 (base) - R$ 1.903,98 = R$ 42,04; R$ 42,04 x 7,5% = R$ 3,153", Formula(simulacao, "IRRF por faixas - deduções legais", "Faixa 2 (7,5%)"));
+        Assert.Equal("Tributação exclusiva na fonte: não há a dispensa de retenção do IRRF de até R$ 10,00", Formula(simulacao, "IRRF retido", "Retenção"));
+    }
 }

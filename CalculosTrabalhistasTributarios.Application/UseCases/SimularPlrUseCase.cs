@@ -70,6 +70,11 @@ public sealed class SimularPlrUseCase(ITributacaoConsulta tributacaoConsulta) : 
         formulas.Add(new("Líquido", $"{Formato.Moeda(r.Valor)} - {Formato.Moeda(imposto)} (IRRF){(pensaoAlimenticia > 0m ? $" - {Formato.Moeda(pensaoAlimenticia)} (pensão)" : "")} = {Formato.Moeda(liquido)}"));
 
         var memoria = new List<GrupoMemoriaDto> { new("IRRF sobre a PLR", $"IRRF: {Formato.Moeda(imposto)}", formulas) };
+        if (apuracao is { Tabela: { Count: > 0 } tabelaAnual, DetalhesProgressivos: { Count: > 0 } detalhes })
+        {
+            var (formulasFaixas, quadro) = MemoriaTributariaDetalhada.FaixasProgressivas(tabelaAnual, detalhes, apuracao.BaseCalculo, apuracao.Aliquota, apuracao.Deducao, apuracao.Imposto);
+            memoria.Add(new GrupoMemoriaDto("IRRF do ano por faixas da tabela anual", $"IRRF do ano: {Formato.Moeda(apuracao.Imposto)}", formulasFaixas, quadro));
+        }
         // O valor informado já aparece na base de cálculo; o percentual precisa da base da pensão explicada.
         if (r.Pensao is { EhPercentual: true } regraPercentual && calculoPensao is not null)
             memoria.Add(DemonstrativoPensao.Memoria("Pensão alimentícia sobre a PLR", regraPercentual, r.Valor, "PLR desta parcela", null, imposto, calculoPensao.Base, calculoPensao.Pensao, "Deduzida da base da tabela anual da PLR."));

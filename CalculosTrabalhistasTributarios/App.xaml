@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:media="clr-namespace:System.Windows.Media.Imaging;assembly=PresentationCore"
              xmlns:presentation="clr-namespace:CalculosTrabalhistasTributarios.Presentation"
+             xmlns:viewModels="clr-namespace:CalculosTrabalhistasTributarios.Presentation.ViewModels"
              xmlns:sys="clr-namespace:System;assembly=mscorlib">
     <Application.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
@@ -472,5 +473,47 @@
         <Style x:Key="CelulaNumerica" TargetType="TextBlock">
             <Setter Property="HorizontalAlignment" Value="Right" />
         </Style>
+        <!-- Faixas do INSS ou do IRRF em tabela, usado pela memória das calculadoras e da pensão. Cabeçalho, linhas e soma usam as mesmas colunas proporcionais. -->
+        <DataTemplate DataType="{x:Type viewModels:QuadroFaixasViewModel}">
+            <StackPanel>
+                <Border BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1" Padding="0,0,0,6">
+                    <Grid TextElement.FontSize="12" TextElement.FontWeight="SemiBold" TextElement.Foreground="{DynamicResource MutedTextBrush}">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="0.6*" /><ColumnDefinition Width="1.2*" /><ColumnDefinition Width="1.2*" /><ColumnDefinition Width="1.2*" /><ColumnDefinition Width="0.8*" /><ColumnDefinition Width="1.3*" /><ColumnDefinition Width="1.3*" /></Grid.ColumnDefinitions>
+                        <TextBlock Text="Faixa" TextAlignment="Right" />
+                        <TextBlock Grid.Column="1" Text="De" TextAlignment="Right" />
+                        <TextBlock Grid.Column="2" Text="Até" TextAlignment="Right" />
+                        <TextBlock Grid.Column="3" Text="Parte da base" TextAlignment="Right" TextWrapping="Wrap" />
+                        <TextBlock Grid.Column="4" Text="Alíquota" TextAlignment="Right" />
+                        <TextBlock Grid.Column="5" Text="Valor exato" TextAlignment="Right" TextWrapping="Wrap" />
+                        <TextBlock Grid.Column="6" Text="Valor considerado" TextAlignment="Right" TextWrapping="Wrap" />
+                    </Grid>
+                </Border>
+                <ItemsControl ItemsSource="{Binding Linhas}" AutomationProperties.Name="Faixas em tabela">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1" Padding="0,5">
+                                <Grid TextElement.FontSize="12">
+                                    <Grid.ColumnDefinitions><ColumnDefinition Width="0.6*" /><ColumnDefinition Width="1.2*" /><ColumnDefinition Width="1.2*" /><ColumnDefinition Width="1.2*" /><ColumnDefinition Width="0.8*" /><ColumnDefinition Width="1.3*" /><ColumnDefinition Width="1.3*" /></Grid.ColumnDefinitions>
+                                    <TextBlock Text="{Binding Faixa}" TextAlignment="Right" />
+                                    <TextBlock Grid.Column="1" Text="{Binding De}" TextAlignment="Right" />
+                                    <TextBlock Grid.Column="2" Text="{Binding Ate}" TextAlignment="Right" />
+                                    <TextBlock Grid.Column="3" Text="{Binding ParteDaBase}" TextAlignment="Right" />
+                                    <TextBlock Grid.Column="4" Text="{Binding Aliquota}" TextAlignment="Right" />
+                                    <TextBlock Grid.Column="5" Text="{Binding ValorExato}" TextAlignment="Right" />
+                                    <TextBlock Grid.Column="6" Text="{Binding Valor}" TextAlignment="Right" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <Grid TextElement.FontSize="12" TextElement.FontWeight="SemiBold" Margin="0,6,0,0" AutomationProperties.Name="{Binding}">
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="0.6*" /><ColumnDefinition Width="1.2*" /><ColumnDefinition Width="1.2*" /><ColumnDefinition Width="1.2*" /><ColumnDefinition Width="0.8*" /><ColumnDefinition Width="1.3*" /><ColumnDefinition Width="1.3*" /></Grid.ColumnDefinitions>
+                    <TextBlock Grid.ColumnSpan="3" Text="Soma das faixas" />
+                    <TextBlock Grid.Column="3" Text="{Binding BaseCalculo}" TextAlignment="Right" />
+                    <TextBlock Grid.Column="5" Text="{Binding ValorExato}" TextAlignment="Right" />
+                    <TextBlock Grid.Column="6" Text="{Binding Valor}" TextAlignment="Right" />
+                </Grid>
+            </StackPanel>
+        </DataTemplate>
     </Application.Resources>
 </Application>

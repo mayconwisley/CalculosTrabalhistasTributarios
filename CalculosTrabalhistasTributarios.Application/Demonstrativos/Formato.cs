@@ -9,6 +9,21 @@ internal static class Formato
 
     public static string Moeda(decimal valor) => valor.ToString("C2", Cultura);
 
+    /// <summary>
+    /// Moeda com as casas do valor exato, de 2 a 6, para mostrar na memória um produto antes de ser truncado ou arredondado:
+    /// "R$ 115,3656" em vez de "R$ 115,37".
+    /// </summary>
+    public static string MoedaExata(decimal valor)
+    {
+        var casas = 2;
+        while (casas < 6 && Math.Round(valor, casas) != valor)
+            casas++;
+        return valor.ToString("C" + casas, Cultura);
+    }
+
+    /// <summary>Número com as casas significativas, até 6, como o multiplicador "0,133145" da redução mensal do IRRF.</summary>
+    public static string Fator(decimal valor) => valor.ToString("#,##0.######", Cultura);
+
     /// <summary>Diferença em reais com o sinal: "+R$ 10,00", "-R$ 10,00" ou "R$ 0,00".</summary>
     public static string MoedaComSinal(decimal valor) => valor switch
     {
