@@ -1,3 +1,4 @@
+using CalculosTrabalhistasTributarios.Domain.Trabalhista.CustoFuncionario;
 using CalculosTrabalhistasTributarios.Application.Demonstrativos;
 using CalculosTrabalhistasTributarios.Application.DTOs;
 using CalculosTrabalhistasTributarios.Application.Interfaces;
@@ -13,45 +14,36 @@ namespace CalculosTrabalhistasTributarios.Application.UseCases;
 /// </summary>
 public sealed class SimularCustoFuncionarioUseCase : ISimularDemonstrativoUseCase<SimularCustoFuncionarioRequest>
 {
-    private const decimal AliquotaPatronal = 20m;
     private const decimal AliquotaFgtsPadrao = 8m;
     private const decimal AliquotaFgtsAprendiz = 2m;
-    // Empregador doméstico (LC 150/2015, art. 34): contribuição patronal, GILRAT e indenização compensatória.
-    private const decimal PatronalDomestico = 8m;
-    private const decimal GilratDomestico = 0.8m;
-    private const decimal CompensatoriaDomestico = 3.2m;
-    private const decimal HorasMensais = 220m;
 
-    // O cálculo não consulta o banco: a tarefa só cumpre o contrato assíncrono da interface.
-    public Task<Result<DemonstrativoDto>> ExecutarAsync(SimularCustoFuncionarioRequest r, CancellationToken cancellationToken) => Task.FromResult(Simular(r));
+    public Task<Result<DemonstrativoDto>> ExecutarAsync(SimularCustoFuncionarioRequest r, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        return Task.FromResult(Simular(r));
+    }
 
     private static Result<DemonstrativoDto> Simular(SimularCustoFuncionarioRequest r)
     {
-        if (r.Salario < 0m || r.Beneficios < 0m || r.Terceiros < 0m)
-            return Erro.Validacao("O salário, os benefícios e as contribuições a terceiros não podem ser negativos.");
+        var apuracao = CalculadoraCustoFuncionario.Calcular(new EntradaCustoFuncionario(r.Salario, r.Regime,
+            r.Rat, r.Fap, r.Terceiros, r.Beneficios, r.IncluirProvisoes, r.Aprendiz, r.HorasMensais, r.BeneficiosDetalhados));
+        if (apuracao.Falhou) return apuracao.Erro;
+        var resultado = apuracao.Valor;
         var domestico = r.Regime == RegimeTributario.EmpregadorDomestico;
-        var aliquotaFgts = r.Aprendiz ? AliquotaFgtsAprendiz : AliquotaFgtsPadrao;
-        if (!domestico && r.Rat is < 1m or > 3m)
-            return Erro.Validacao("O RAT deve estar entre 1% e 3%, conforme o grau de risco da atividade.");
-        if (!domestico && r.Fap is < 0.5m or > 2m)
-            return Erro.Validacao("O FAP deve estar entre 0,5 e 2.");
-
-        var pagaPatronal = r.Regime != RegimeTributario.SimplesNacional;
-        var pagaTerceiros = r.Regime == RegimeTributario.LucroRealOuPresumido;
-        var aliquotaPatronal = domestico ? PatronalDomestico : pagaPatronal ? AliquotaPatronal : 0m;
-        var aliquotaRat = domestico ? GilratDomestico : pagaPatronal ? r.Rat * r.Fap : 0m;
-        var aliquotaTerceiros = pagaTerceiros ? r.Terceiros : 0m;
-        var aliquotaCompensatoria = domestico ? CompensatoriaDomestico : 0m;
-        var aliquotaEncargos = aliquotaPatronal + aliquotaRat + aliquotaTerceiros + aliquotaFgts + aliquotaCompensatoria;
-
-        var patronal = Percentual(r.Salario, aliquotaPatronal);
-        var rat = Percentual(r.Salario, aliquotaRat);
-        var terceiros = Percentual(r.Salario, aliquotaTerceiros);
-        var fgts = Percentual(r.Salario, aliquotaFgts);
-        var compensatoria = Percentual(r.Salario, aliquotaCompensatoria);
-        var provisao13 = r.IncluirProvisoes ? CalculadoraTributacao.Arredondar(r.Salario / 12m) : 0m;
-        var provisaoFerias = r.IncluirProvisoes ? CalculadoraTributacao.Arredondar(r.Salario * 4m / 36m) : 0m;
-        var encargosProvisoes = Percentual(provisao13 + provisaoFerias, aliquotaEncargos);
+        var aliquotaPatronal = resultado.AliquotaPatronal;
+        var aliquotaRat = resultado.AliquotaRat;
+        var aliquotaTerceiros = resultado.AliquotaTerceiros;
+        var aliquotaFgts = resultado.AliquotaFgts;
+        var aliquotaCompensatoria = resultado.AliquotaCompensatoria;
+        var aliquotaEncargos = resultado.AliquotaEncargos;
+        var patronal = resultado.Patronal;
+        var rat = resultado.Rat;
+        var terceiros = resultado.Terceiros;
+        var fgts = resultado.Fgts;
+        var compensatoria = resultado.Compensatoria;
+        var provisao13 = resultado.Provisao13;
+        var provisaoFerias = resultado.ProvisaoFerias;
+        var encargosProvisoes = resultado.EncargosProvisoes;
 
         var itens = new List<VerbaDto> { new("Salário", "", r.Salario) };
         if (patronal > 0m) itens.Add(new("INSS patronal", Formato.PercentualCurto(aliquotaPatronal), patronal));
@@ -67,12 +59,12 @@ public sealed class SimularCustoFuncionarioUseCase : ISimularDemonstrativoUseCas
         }
         if (r.Beneficios > 0m) itens.Add(new("Benefícios", "", r.Beneficios));
 
-        var custo = itens.Sum(item => item.Valor);
-        // No mês das férias, o salário e os encargos dele saem da provisão: somar 12 meses de salário e a provisão inteira
-        // contaria esse mês duas vezes. O ano tem 12 salários, o 13º e o 1/3 de férias, com os encargos.
-        var salarioComEncargos = r.Salario + patronal + rat + terceiros + fgts + compensatoria;
-        var custoAnual = r.IncluirProvisoes ? custo * 12m - salarioComEncargos : custo * 12m;
-        var acrescimo = r.Salario == 0m ? 0m : (custo - r.Salario) / r.Salario * 100m;
+        foreach (var beneficio in r.BeneficiosDetalhados ?? [])
+            itens.Add(new($"Benefício: {beneficio.Descricao}",
+                $"{Formato.Moeda(beneficio.Custo)} − {Formato.Moeda(beneficio.ParticipacaoEmpregado)}", beneficio.CustoLiquido));
+        var custo = resultado.TotalComReserva;
+        var custoAnual = resultado.CustoAnual;
+        var salarioComEncargos = resultado.SalarioComEncargos;
 
         var formulas = new List<FormulaDto>
         {
@@ -86,40 +78,54 @@ public sealed class SimularCustoFuncionarioUseCase : ISimularDemonstrativoUseCas
             formulas.Add(new("Provisão de férias + 1/3", $"{Formato.Moeda(r.Salario)} ÷ 12 x 4/3 = {Formato.Moeda(provisaoFerias)}"));
             formulas.Add(new("Encargos sobre as provisões", $"({Formato.Moeda(provisao13)} + {Formato.Moeda(provisaoFerias)}) x {Formato.Percentual(aliquotaEncargos)} = {Formato.Moeda(encargosProvisoes)}"));
         }
-        formulas.Add(new("Custo mensal", $"{string.Join(" + ", itens.Select(item => Formato.Moeda(item.Valor)))} = {Formato.Moeda(custo)}"));
+        formulas.Add(new("Desembolso + reserva", $"{string.Join(" + ", itens.Select(item => Formato.Moeda(item.Valor)))} = {Formato.Moeda(custo)}"));
         formulas.Add(new("Custo anual", r.IncluirProvisoes
             ? $"{Formato.Moeda(custo)} x 12 - {Formato.Moeda(salarioComEncargos)} (salário e encargos do mês de férias, que já estão na provisão) = {Formato.Moeda(custoAnual)}"
             : $"{Formato.Moeda(custo)} x 12 = {Formato.Moeda(custoAnual)}"));
+
+        formulas.Add(new("Desembolso mensal recorrente", $"Salário e encargos + benefícios líquidos = {Formato.Moeda(resultado.Recorrente)}"));
+        formulas.Add(new("Reserva mensal de provisões", $"13º + férias com 1/3 + encargos das provisões = {Formato.Moeda(resultado.Reserva)}"));
+        formulas.Add(new("Custo médio mensal", $"{Formato.Moeda(custoAnual)} ÷ 12 = {Formato.Moeda(resultado.MediaMensal)}"));
+        formulas.Add(new("Custo por hora contratual", $"{Formato.Moeda(resultado.MediaMensal)} ÷ {r.HorasMensais.ToString("0.##", Formato.Cultura)} horas = {Formato.Moeda(resultado.CustoHora)}"));
+        formulas.Add(new("Acréscimo médio sobre o salário", resultado.Acrescimo is { } acrescimo
+            ? $"({Formato.Moeda(resultado.MediaMensal)} − {Formato.Moeda(r.Salario)}) ÷ {Formato.Moeda(r.Salario)} × 100 = {Formato.Percentual(CalculadoraTributacao.Arredondar(acrescimo))}"
+            : "Não calculado: o salário informado é zero."));
 
         var demonstrativo = new DemonstrativoDto(
             "Custo do funcionário",
             NomeRegime(r.Regime),
             [
-                new("Custo mensal", Formato.Moeda(custo), $"Salário de {Formato.Moeda(r.Salario)}"),
-                new("Custo anual", Formato.Moeda(custoAnual), r.IncluirProvisoes ? "12 salários, 13º e férias + 1/3" : "12 meses, sem 13º e férias"),
-                new("Acréscimo sobre o salário", Formato.Percentual(CalculadoraTributacao.Arredondar(acrescimo)), "Encargos, provisões e benefícios"),
-                new("Custo por hora", Formato.Moeda(custo / HorasMensais), "Jornada de 220 horas mensais")
+                new("Desembolso recorrente", Formato.Moeda(resultado.Recorrente), "Mês normal: salário, encargos e benefícios"),
+                new("Reserva de provisões", Formato.Moeda(resultado.Reserva), r.IncluirProvisoes ? "13º, férias + 1/3 e seus encargos" : "Provisões desativadas"),
+                new("Custo anual", Formato.Moeda(custoAnual), r.IncluirProvisoes ? "Ano completo, sem duplicar o salário das férias" : "12 meses; exclui 13º e adicional de férias"),
+                new("Custo médio mensal", Formato.Moeda(resultado.MediaMensal), "Custo anual dividido por 12"),
+                new("Acréscimo médio sobre o salário", resultado.Acrescimo is { } percentual ? Formato.Percentual(CalculadoraTributacao.Arredondar(percentual)) : "Não calculado", "Compara a média mensal com o salário"),
+                new("Custo por hora contratual", Formato.Moeda(resultado.CustoHora), $"Média mensal ÷ {r.HorasMensais.ToString("0.##", Formato.Cultura)} horas")
             ],
             itens,
             [],
             [],
-            [new GrupoMemoriaDto("Custo do funcionário", $"Custo mensal: {Formato.Moeda(custo)}", formulas)],
-            domestico
-            ? [
-                "O empregador doméstico recolhe num só DAE, até o dia 7 do mês seguinte, 8% de contribuição patronal, 0,8% de GILRAT, 8% de FGTS e 3,2% de indenização compensatória, além do INSS e do IRRF descontados do empregado (LC 150/2015, arts. 34 e 35). Para a guia do mês, use a calculadora Empregado doméstico (DAE).",
+            [new GrupoMemoriaDto("Custo do funcionário", $"Desembolso + reserva: {Formato.Moeda(custo)}", formulas)],
+            (domestico
+            ? new string[] {
+                "O empregador doméstico recolhe num só DAE, com vencimento conforme a competência no eSocial, 8% de contribuição patronal, 0,8% de GILRAT, 8% de FGTS e 3,2% de indenização compensatória, além do INSS e do IRRF descontados do empregado (LC 150/2015, arts. 34 e 35). Para a guia do mês, use a calculadora Empregado doméstico (DAE).",
                 "As provisões distribuem mês a mês o 13º e as férias com 1/3, pagos uma vez por ano. A indenização compensatória substitui a multa de 40% do FGTS na dispensa."
-            ]
-            : [
+            }
+            : new string[] {
                 "No Simples Nacional, anexos I a III e V, a contribuição patronal já está incluída no DAS; no anexo IV, a empresa recolhe à parte os 20% e o RAT, mas não as contribuições a terceiros.",
                 "As provisões distribuem mês a mês o 13º e as férias com 1/3, pagos uma vez por ano. Não inclui a provisão da multa do FGTS em caso de dispensa.",
                 "Confira o RAT e o FAP da empresa no eSocial ou com a contabilidade; as contribuições a terceiros podem variar conforme a atividade."
-            ],
+            }).Concat(new[]
+            {
+                "Estimativa para um ano completo, com salário constante e 30 dias de férias, sem substituto. Benefícios são considerados durante 12 meses e informados líquidos da participação do empregado, sem incidências de folha nesta simulação.",
+                "Desembolso + reserva não é a média mensal anualizada: a reserva inclui o salário das férias, que substitui um salário ordinário no ano. O custo por hora é contratual, não por hora efetivamente trabalhada.",
+                "As provisões e seus encargos são arredondados mensalmente; a projeção anual preserva esses centavos e pode diferir de uma apuração direta anual. A média e a hora usam precisão integral antes da exibição.",
+                "Não contempla desoneração/reoneração da folha, atividades concomitantes do Simples, adicionais, horas extras ou custos de substituição e rescisão."
+            }).ToArray(),
             RotuloProventos: "Custo",
-            RotuloResultado: "Custo mensal total");
+            RotuloResultado: "Desembolso + reserva mensal");
         return demonstrativo;
     }
-
-    private static decimal Percentual(decimal valor, decimal aliquota) => CalculadoraTributacao.Arredondar(valor * aliquota / 100m);
 
     private static string NomeRegime(RegimeTributario regime) => regime switch
     {

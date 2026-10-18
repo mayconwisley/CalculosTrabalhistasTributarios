@@ -22,6 +22,104 @@
             <Setter Property="Visibility" Value="{Binding TemErro, Converter={StaticResource BooleanToVisibilityConverter}}" />
         </Style>
         <!-- Cada tipo de campo tem o seu controle; a calculadora só declara os campos. -->
+        <DataTemplate DataType="{x:Type calculadoras:CampoFormularioCustoFuncionarioViewModel}">
+            <DataTemplate.Resources>
+        <DataTemplate DataType="{x:Type calculadoras:CampoTextoViewModel}">
+            <StackPanel Margin="0,0,14,14" ToolTip="{Binding Dica}" Visibility="{Binding Visivel, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <TextBlock Text="{Binding Rotulo}" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,6" TextTrimming="CharacterEllipsis" />
+                <TextBox Text="{Binding Valor, UpdateSourceTrigger=PropertyChanged}" TextAlignment="{Binding Alinhamento}" behaviors:MascaraData.Tipo="{Binding Mascara}" behaviors:FormatacaoNumerica.Formato="{Binding Formato}" behaviors:FormatacaoNumerica.ValorVazio="{Binding ValorVazio}" AutomationProperties.Name="{Binding Rotulo}" AutomationProperties.HelpText="{Binding AjudaAcessivel}">
+                    <TextBox.Style>
+                        <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding TemErro}" Value="True"><Setter Property="BorderBrush" Value="{DynamicResource ErrorBorderBrush}" /><Setter Property="BorderThickness" Value="2" /></DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBox.Style>
+                </TextBox>
+                <TextBlock Text="{Binding MensagemErro}" Style="{StaticResource ErroDoCampo}" />
+                <TextBlock Text="{Binding TextoDicaEmLinha}" Foreground="{DynamicResource MutedTextBrush}" FontSize="11" TextWrapping="Wrap" Margin="2,5,0,0"
+                           Visibility="{Binding MostrarDica, Converter={StaticResource BooleanToVisibilityConverter}}" />
+            </StackPanel>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type calculadoras:CampoOpcaoViewModel}">
+            <StackPanel Margin="0,0,14,14" ToolTip="{Binding Dica}" Visibility="{Binding Visivel, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <TextBlock Text="{Binding Rotulo}" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,6" TextTrimming="CharacterEllipsis" />
+                <ComboBox ItemsSource="{Binding Opcoes}" SelectedItem="{Binding Selecionada, Mode=TwoWay}" MinHeight="54" AutomationProperties.Name="{Binding Rotulo}" AutomationProperties.HelpText="{Binding AjudaAcessivel}">
+                    <ComboBox.Style>
+                        <Style TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding TemErro}" Value="True"><Setter Property="BorderBrush" Value="{DynamicResource ErrorBorderBrush}" /><Setter Property="BorderThickness" Value="2" /></DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ComboBox.Style>
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate><TextBlock Text="{Binding Texto}" /></DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+                <TextBlock Text="{Binding MensagemErro}" Style="{StaticResource ErroDoCampo}" />
+                <TextBlock Text="{Binding TextoDicaEmLinha}" Foreground="{DynamicResource MutedTextBrush}" FontSize="11" TextWrapping="Wrap" Margin="2,5,0,0"
+                           Visibility="{Binding MostrarDica, Converter={StaticResource BooleanToVisibilityConverter}}" />
+            </StackPanel>
+        </DataTemplate>
+                <Style x:Key="CampoCustoVisivel" TargetType="ContentPresenter">
+                    <Setter Property="Visibility" Value="{Binding Visivel, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                </Style>
+            </DataTemplate.Resources>
+            <StackPanel>
+                <TextBlock Text="Remuneração e jornada" FontWeight="SemiBold" Margin="0,0,0,12" />
+                <ItemsControl ItemsSource="{Binding Remuneracao}" ItemContainerStyle="{StaticResource CampoCustoVisivel}">
+                    <ItemsControl.ItemsPanel><ItemsPanelTemplate><UniformGrid Columns="2" /></ItemsPanelTemplate></ItemsControl.ItemsPanel>
+                </ItemsControl>
+                <TextBlock Text="Regime e encargos" FontWeight="SemiBold" Margin="0,6,0,12" />
+                <ItemsControl ItemsSource="{Binding Encargos}" ItemContainerStyle="{StaticResource CampoCustoVisivel}">
+                    <ItemsControl.ItemsPanel><ItemsPanelTemplate><UniformGrid Columns="3" /></ItemsPanelTemplate></ItemsControl.ItemsPanel>
+                </ItemsControl>
+                <TextBlock Text="Benefícios e provisões" FontWeight="SemiBold" Margin="0,6,0,12" />
+                <TextBlock Text="Simulação para um ano completo, salário constante e 30 dias de férias. Benefícios por 12 meses, sem incidências de folha nesta estimativa. Não contempla regimes especiais de desoneração."
+                           TextWrapping="Wrap" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,12" />
+                <ItemsControl ItemsSource="{Binding Planejamento}" ItemContainerStyle="{StaticResource CampoCustoVisivel}">
+                    <ItemsControl.ItemsPanel><ItemsPanelTemplate><UniformGrid Columns="2" /></ItemsPanelTemplate></ItemsControl.ItemsPanel>
+                </ItemsControl>
+                <ContentControl Content="{Binding Beneficios}" />
+            </StackPanel>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type calculadoras:CampoBeneficiosFuncionarioViewModel}">
+            <StackPanel>
+                <TextBlock Text="Benefícios detalhados (opcional)" FontWeight="SemiBold" Margin="0,4,0,6" />
+                <TextBlock Text="Até 30 linhas. O custo da empresa é o valor do benefício menos a participação do empregado. Não repita os valores do campo Benefícios."
+                           TextWrapping="Wrap" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,12" />
+                <ItemsControl ItemsSource="{Binding Linhas}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Margin="0,0,0,10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" /><ColumnDefinition Width="180" /><ColumnDefinition Width="210" /><ColumnDefinition Width="100" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Margin="0,0,12,0">
+                                    <TextBlock Text="Descrição" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,6" />
+                                    <TextBox Text="{Binding Descricao.Valor, UpdateSourceTrigger=PropertyChanged}" MaxLength="100" AutomationProperties.Name="Descrição do benefício" />
+                                </StackPanel>
+                                <StackPanel Grid.Column="1" Margin="0,0,12,0">
+                                    <TextBlock Text="Custo (R$)" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,6" />
+                                    <TextBox Text="{Binding Custo.Valor, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right"
+                                             behaviors:FormatacaoNumerica.Formato="N2" behaviors:FormatacaoNumerica.ValorVazio="0,00" AutomationProperties.Name="Custo do benefício" />
+                                </StackPanel>
+                                <StackPanel Grid.Column="2" Margin="0,0,12,0">
+                                    <TextBlock Text="Parte do empregado (R$)" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,6" />
+                                    <TextBox Text="{Binding Participacao.Valor, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right"
+                                             behaviors:FormatacaoNumerica.Formato="N2" behaviors:FormatacaoNumerica.ValorVazio="0,00" AutomationProperties.Name="Participação do empregado no benefício" />
+                                </StackPanel>
+                                <Button Grid.Column="3" Content="Remover" VerticalAlignment="Bottom" MinHeight="54"
+                                        Command="{Binding DataContext.RemoverCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                        CommandParameter="{Binding}" AutomationProperties.Name="Remover benefício" ToolTip="Remover este benefício" />
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <TextBlock Text="{Binding MensagemErro}" Style="{StaticResource ErroDoCampo}" />
+                <Button Content="+ Benefício" Command="{Binding AdicionarCommand}" HorizontalAlignment="Left" AutomationProperties.Name="Adicionar benefício" ToolTip="Adicionar um benefício, até 30 linhas" />
+            </StackPanel>
+        </DataTemplate>
         <DataTemplate DataType="{x:Type calculadoras:CampoTextoViewModel}">
             <StackPanel Width="170" Margin="0,0,14,14" ToolTip="{Binding Dica}" Visibility="{Binding Visivel, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <TextBlock Text="{Binding Rotulo}" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,6" TextTrimming="CharacterEllipsis" />
@@ -646,7 +744,7 @@
                     <Grid>
                         <Grid.ColumnDefinitions><ColumnDefinition /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
                         <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
-                        <ItemsControl x:Name="Formulario" ItemsSource="{Binding Campos}" Focusable="False">
+                        <ItemsControl x:Name="Formulario" ItemsSource="{Binding CamposDoFormulario}" Focusable="False">
                             <ItemsControl.Style>
                                 <Style TargetType="ItemsControl">
                                     <Setter Property="ItemsPanel" Value="{StaticResource CamposEmLinhas}" />

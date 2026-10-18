@@ -619,7 +619,7 @@ A memória de cálculo detalha o contrato, o aviso, a projeção, cada verba e o
 
 ![Custo do funcionário](imagens/23-custo-funcionario.png)
 
-Informe o **salário**, o **regime da empresa**, o **RAT** e o **FAP**, as **contribuições a terceiros**, o custo mensal com **benefícios** (já descontada a parte do empregado) e se deseja **incluir as provisões** de 13º e férias.
+Informe o **salário**, o **divisor mensal (horas)** do contrato e o **regime da empresa**. O formulário separa remuneração e jornada, regime e encargos, e benefícios e provisões. RAT, FAP e terceiros aparecem somente quando aplicáveis.
 
 | Encargo | Lucro Real ou Presumido | Simples (anexos I a III e V) | Simples (anexo IV) |
 | --- | --- | --- | --- |
@@ -628,14 +628,39 @@ Informe o **salário**, o **regime da empresa**, o **RAT** e o **FAP**, as **con
 | Terceiros (normalmente 5,8%) | Sim | Não | Não |
 | FGTS (8%) | Sim | Sim | Sim |
 
-- **Provisões:** 13º = salário ÷ 12; férias + 1/3 = salário ÷ 12 × 4/3. Os encargos também incidem sobre elas.
-- O resultado mostra o custo mensal, o custo anual, o acréscimo sobre o salário e o custo por hora, numa jornada de 220 horas.
-- **Empregador doméstico:** escolha esse regime para os encargos do DAE: 8% de contribuição patronal, 0,8% de GILRAT, 8% de FGTS e 3,2% de indenização compensatória, 20% ao todo.
+- **Divisor mensal:** informe as horas contratuais, por exemplo 180, 200 ou 220, conforme o contrato. Aceita valor maior que zero e até 744 horas, com duas casas decimais. O indicador representa custo por hora contratual, não por hora produtiva.
+- **Benefícios:** informe o total mensal líquido ou use **+ Benefício** para até 30 linhas com descrição, custo e participação. As linhas são somadas ao total agregado; não duplique valores. A participação não pode superar o custo.
+- **Provisões:** 13º = salário ÷ 12; férias + 1/3 = salário ÷ 12 × 4/3. Os encargos também incidem sobre elas. Desativar provisões exclui o 13º e o adicional de férias da projeção.
+- **Limites:** salário e cada valor de benefício aceitam de zero a R$ 100.000.000,00, com até dois decimais. RAT aceita 1%, 2% ou 3%; FAP, de 0,5 a 2 com até quatro decimais; terceiros, de 0% a 100% com até quatro decimais. Esses limites técnicos não substituem a conferência das alíquotas da empresa.
+
+![Resumo do custo do funcionário](imagens/23-custo-funcionario-resultado.png)
+
+O resumo distingue os conceitos abaixo:
+
+| Indicador | Interpretação |
+| --- | --- |
+| Desembolso recorrente | Salário, encargos e benefícios líquidos em um mês normal. |
+| Reserva de provisões | Reserva mensal para 13º, férias com 1/3 e seus encargos. |
+| Custo anual | Projeção para o ano completo, sem duplicar o salário do mês de férias. |
+| Custo médio mensal | Custo anual dividido por 12. |
+| Acréscimo médio sobre o salário | Diferença percentual entre a média mensal e o salário. Com salário zero, aparece “Não calculado”. |
+| Custo por hora contratual | Média mensal anualizada dividida pelo divisor informado. |
+
+O total do demonstrativo é **Desembolso + reserva mensal**: ele soma as linhas e não deve ser confundido com a média anualizada. No exemplo, o desembolso é R$ 4.574,00, a reserva é R$ 792,16, o total com reserva é R$ 5.366,16 e a média mensal é R$ 5.026,66. O custo anual é R$ 60.319,92 e o custo por hora de 220 horas é R$ 22,85.
+
+**Premissas:** ano completo, salário constante e 30 dias de férias, sem contratar substituto. Os benefícios são considerados por 12 meses, líquidos da participação e sem incidências de folha nesta estimativa. Não contempla desoneração/reoneração, atividades concomitantes do Simples, adicionais, horas extras ou custos de rescisão e substituição.
+
+**Conciliação anual:** multiplica-se o total com reserva por 12 e subtrai-se um salário com encargos, já incluído na reserva de férias. Assim, são considerados 12 salários, o 13º e o terço de férias. As provisões são arredondadas mensalmente e seus centavos são preservados na projeção anual; pode haver diferença em relação ao cálculo direto anual. A média e o custo por hora usam precisão integral antes da exibição.
+
+**Empregador doméstico:** encargos de 8% de contribuição patronal, 0,8% de GILRAT, 8% de FGTS e 3,2% de indenização compensatória, 20% ao todo. Para vencimento e guia por competência, use **Empregado doméstico (DAE)**. Desde março/2024, o vencimento mensal do DAE é dia 20 do mês seguinte, antecipado quando não útil, conforme o eSocial.
 
 ![Custo do empregado doméstico](imagens/72-custo-domestico.png)
 
-- **Jovem aprendiz:** marque **Sim** para o FGTS de 2% em vez de 8%.
-- **Custo anual:** 12 salários, o 13º e o 1/3 de férias, com os encargos e os benefícios. Ele é o custo mensal × 12 menos o salário e os encargos do mês de férias, que já estão na provisão de férias. Até a versão 1.3.0, esse mês era contado duas vezes, e o custo anual saía cerca de um salário maior.
+**Jovem aprendiz:** FGTS de 2% em vez de 8%. A opção não se aplica ao empregador doméstico.
+
+**Histórico:** registros antigos continuam aceitando o campo agregado de benefícios e usam o divisor de 220 horas quando ele não estiver salvo. Ao recalcular, os indicadores de acréscimo e custo por hora passam a usar a média anualizada, conforme os rótulos atuais. Registros novos preservam também o divisor e as linhas de benefícios.
+
+Referências: [FGTS — Lei 8.036/1990, art. 15 e § 7º](https://www.planalto.gov.br/ccivil_03/leis/l8036compilada.htm), [contribuição patronal no Anexo IV — Receita Federal](https://www.gov.br/receitafederal/pt-br/assuntos/orientacao-tributaria/cobrancas-e-intimacoes/contribuicao-previdenciaria-anexo-iv-do-simples-nacional) e [alteração do vencimento do DAE — eSocial](https://www.gov.br/esocial/pt-br/noticias/mudanca-na-data-de-vencimento-do-dae).
 
 ### 8.7 Pró-labore e autônomo
 

@@ -23,7 +23,7 @@ public class ExemplosTests
         ["Calculadora.SalarioPeloLiquido"] = [("Salário bruto necessário", "R$ 5.947,91"), ("Líquido obtido", "R$ 5.000,00"), ("Descontos", "R$ 947,91"), ("FGTS (8%)", "R$ 475,83")],
         ["Calculadora.HorasExtras"] = [("Horas extras e adicionais", "R$ 487,38"), ("Remuneração do mês", "R$ 3.127,38"), ("Salário líquido", "R$ 2.863,51"), ("Valor da hora", "R$ 12,00")],
         ["Calculadora.DecimoTerceiro"] = [("1ª parcela", "R$ 1.437,50"), ("2ª parcela líquida", "R$ 410,90"), ("13º líquido total", "R$ 1.848,40"), ("FGTS (8%)", "R$ 230,00")],
-        ["Calculadora.CustoFuncionario"] = [("Custo mensal", "R$ 5.366,16"), ("Custo anual", "R$ 60.319,92"), ("Acréscimo sobre o salário", "78,87%"), ("Custo por hora", "R$ 24,39")],
+        ["Calculadora.CustoFuncionario"] = [("Desembolso recorrente", "R$ 4.574,00"), ("Reserva de provisões", "R$ 792,16"), ("Custo anual", "R$ 60.319,92"), ("Custo médio mensal", "R$ 5.026,66"), ("Acréscimo médio sobre o salário", "67,56%"), ("Custo por hora contratual", "R$ 22,85")],
         ["Calculadora.ProLaboreAutonomo"] = [("Líquido a receber", "R$ 7.482,81"), ("INSS retido", "R$ 932,31"), ("IRRF retido", "R$ 1.584,88"), ("Custo para a empresa", "R$ 12.000,00")],
         ["Calculadora.Adicionais"] = [("Adicional", "R$ 900,00"), ("Remuneração do mês", "R$ 3.900,00"), ("Salário líquido", "R$ 3.543,42"), ("Base da periculosidade", "R$ 3.000,00")],
         ["Calculadora.SalarioFamilia"] = [("Salário-família", "R$ 135,08"), ("Cota por filho", "R$ 67,54"), ("Limite de remuneração", "R$ 1.980,38"), ("Dias considerados", "30 dias")],

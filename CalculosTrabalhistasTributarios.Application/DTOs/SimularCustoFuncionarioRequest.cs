@@ -1,3 +1,4 @@
+using CalculosTrabalhistasTributarios.Domain.Trabalhista.CustoFuncionario;
 using CalculosTrabalhistasTributarios.Domain.Tributacao;
 
 namespace CalculosTrabalhistasTributarios.Application.DTOs;
@@ -15,4 +16,6 @@ public sealed record SimularCustoFuncionarioRequest(
     decimal Terceiros,
     decimal Beneficios,
     bool IncluirProvisoes,
-    bool Aprendiz = false);
+    bool Aprendiz = false,
+    decimal HorasMensais = 220m,
+    IReadOnlyList<BeneficioFuncionario>? BeneficiosDetalhados = null);

@@ -1,6 +1,7 @@
 {
   "Campos": {
     "Salário": "3.000,00",
+    "Divisor mensal (horas)": "220",
     "Regime da empresa": "Lucro Real ou Presumido",
     "RAT": "2% (risco médio)",
     "FAP": "1,0000",

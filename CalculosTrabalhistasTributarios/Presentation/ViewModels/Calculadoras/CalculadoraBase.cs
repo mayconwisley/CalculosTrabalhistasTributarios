@@ -15,6 +15,7 @@ public abstract class CalculadoraBase : ICalculadora
     public abstract string Descricao { get; }
     public abstract string InstrucaoInicial { get; }
     public abstract IReadOnlyList<CampoViewModel> Campos { get; }
+    public virtual IReadOnlyList<CampoViewModel> CamposDoFormulario => Campos;
     public abstract string NomeArquivoPdf { get; }
 
     // Campos trocados com as outras calculadoras; cada calculadora indica os seus, e os demais ficam de fora.
@@ -64,6 +65,12 @@ public abstract class CalculadoraBase : ICalculadora
         foreach (var campo in Campos.OfType<CampoTextoViewModel>())
             if (valores.TryGetValue(campo.Rotulo, out var valor))
                 campo.Valor = valor;
+    }
+
+    public virtual Result TentarImportarCampos(IReadOnlyDictionary<string, string> valores)
+    {
+        ImportarCampos(valores);
+        return Result.Ok();
     }
 
     protected static CampoTextoViewModel Competencia(string rotulo = "Competência", string? dica = null) =>

@@ -12,6 +12,9 @@ public interface ICalculadora
     string InstrucaoInicial { get; }
     IReadOnlyList<CampoViewModel> Campos { get; }
 
+    /// <summary>Organização visual dos campos; os campos individuais continuam disponíveis para validação e conferência.</summary>
+    IReadOnlyList<CampoViewModel> CamposDoFormulario => Campos;
+
     /// <summary>Nome sugerido para o PDF do último cálculo.</summary>
     string NomeArquivoPdf { get; }
 
@@ -25,6 +28,13 @@ public interface ICalculadora
 
     /// <summary>Preenche o formulário com os valores salvos; rótulos que não existem mais são ignorados.</summary>
     void ImportarCampos(IReadOnlyDictionary<string, string> valores);
+
+    /// <summary>Valida a estrutura do histórico antes de alterar o formulário.</summary>
+    Result TentarImportarCampos(IReadOnlyDictionary<string, string> valores)
+    {
+        ImportarCampos(valores);
+        return Result.Ok();
+    }
 
     /// <summary>O demonstrativo, ou o erro do campo a corrigir quando um campo está em formato inválido ou fora das regras.</summary>
     Task<Result<DemonstrativoDto>> CalcularAsync(CancellationToken cancellationToken);

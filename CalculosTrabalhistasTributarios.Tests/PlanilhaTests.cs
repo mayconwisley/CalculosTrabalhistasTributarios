@@ -12,6 +12,22 @@ namespace CalculosTrabalhistasTributarios.Tests;
 
 public class PlanilhaTests
 {
+    [Fact]
+    public async Task Custo_funcionario_exporta_beneficios_e_total_com_reserva_como_numeros()
+    {
+        var dto = await new SimularCustoFuncionarioUseCase().ExecutarAsync(new(3000m,
+            Domain.Tributacao.RegimeTributario.LucroRealOuPresumido, 2m, 1m, 5.8m, 500m, true,
+            BeneficiosDetalhados: [new("Alimentação", 600m, 120m)]), default).Sucesso();
+        using var pasta = await GerarAsync(caminho => new ClosedXmlPlanilhaService().GerarDemonstrativoAsync(dto, caminho, default));
+        var beneficio = Linha(pasta.Worksheet(1), "Benefício: Alimentação").Cell(3);
+        Assert.Equal(XLDataType.Number, beneficio.DataType);
+        Assert.Equal(480m, beneficio.GetValue<decimal>());
+        var total = Linha(pasta.Worksheet(1), "Desembolso + reserva mensal").Cell(3);
+        Assert.Equal(XLDataType.Number, total.DataType);
+        Assert.Equal(5846.16m, total.GetValue<decimal>());
+        Assert.Contains(pasta.Worksheet(2).CellsUsed(), celula => celula.GetString().Contains("Custo médio mensal"));
+    }
+
     [Theory]
     [InlineData(true)]
     [InlineData(false)]

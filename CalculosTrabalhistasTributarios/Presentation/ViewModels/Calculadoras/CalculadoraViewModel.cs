@@ -79,7 +79,8 @@ public sealed class CalculadoraViewModel : ViewModelBase, ICalculoSalvavel
     public string Descricao => _calculadora.Descricao;
     public string InstrucaoInicial => _calculadora.InstrucaoInicial;
     public IReadOnlyList<CampoViewModel> Campos { get; }
-    public bool UsaFormularioLarguraTotal => Campos.Count == 1 && Campos[0] is CampoBancoHorasViewModel;
+    public IReadOnlyList<CampoViewModel> CamposDoFormulario => _calculadora.CamposDoFormulario;
+    public bool UsaFormularioLarguraTotal => CamposDoFormulario.Count == 1 && CamposDoFormulario[0] is CampoBancoHorasViewModel or CampoFormularioCustoFuncionarioViewModel;
     public bool UsaBotaoAbaixoFormulario => UsaFormularioLarguraTotal || Campos.Any(campo => campo is CampoDepositosFgtsViewModel or CampoQuitacaoBancoHorasViewModel or CampoParcelasRraViewModel or CampoMesesSimplesViewModel or CampoConferenciaFgtsViewModel or CampoSobreavisoViewModel or CampoTransferenciaViewModel or CampoGorjetasViewModel or CampoAportesPrevidenciaViewModel);
     public ICommand CalcularCommand { get; }
     public ICommand ExportarPdfCommand { get; }
@@ -98,6 +99,8 @@ public sealed class CalculadoraViewModel : ViewModelBase, ICalculoSalvavel
     public string NomeCalculadora => Titulo;
     public string NomeSugerido => _calculadora.Contexto.Competencia is { } competencia ? $"{Titulo} - {competencia:MM/yyyy}" : $"{Titulo} - {DateTime.Today:dd/MM/yyyy}";
     public DadosFormulario ExportarDados() => new(_calculadora.ExportarCampos());
+    public Result TentarImportarDados(DadosFormulario dados) => _calculadora.TentarImportarCampos(dados.Campos);
+
     public void ImportarDados(DadosFormulario dados) => _calculadora.ImportarCampos(dados.Campos);
     public Task RecalcularAsync() => CalcularAsync(solicitadoPeloUsuario: false);
 

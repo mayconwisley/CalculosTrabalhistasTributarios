@@ -77,6 +77,6 @@ public class CltPjTests
     {
         var resultado = await new SimularCustoFuncionarioUseCase().ExecutarAsync(new SimularCustoFuncionarioRequest(3000m, RegimeTributario.LucroRealOuPresumido, 2m, 1.2345m, 5.8m, 0m, true), default).Sucesso();
         // 13,33 salários (40.000,00) com 36,269% de encargos, com o arredondamento das provisões.
-        Assert.Equal("R$ 54.507,57", Texto.Normalizar(resultado.Destaques[1].Valor));
+        Assert.Equal("R$ 54.507,57", Texto.Normalizar(resultado.Destaques.Single(destaque => destaque.Rotulo == "Custo anual").Valor));
     }
 }
