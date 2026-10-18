@@ -27,20 +27,11 @@ public static class CalculadoraPensao
                 return new PensaoApurada<T>(pensaoBruta, verba, apurar(pensaoBruta));
         }
 
-        var atual = 0m;
-        var apuracao = apurar(atual);
-        var basePensao = 0m;
-        var pensao = 0m;
-        for (var iteracao = 0; iteracao < 100; iteracao++)
+        return ConvergenciaPensao.Calcular(0m, anterior =>
         {
-            basePensao = Math.Max(0m, verba - inss - imposto(apuracao));
-            pensao = CalculadoraTributacao.Arredondar(basePensao * regra.Percentual / 100m);
-            // Estável: o imposto foi apurado com esta mesma pensão deduzida.
-            if (pensao == atual)
-                break;
-            atual = pensao;
-            apuracao = apurar(atual);
-        }
-        return new PensaoApurada<T>(pensao, basePensao, apuracao);
+            var apuracao = apurar(anterior);
+            var parcela = MotorPensoes.Calcular([regra], false, verba, inss, imposto(apuracao), 0m)[0];
+            return new PensaoApurada<T>(parcela.Valor, parcela.Base, apuracao);
+        }, resultado => resultado.Pensao);
     }
 }

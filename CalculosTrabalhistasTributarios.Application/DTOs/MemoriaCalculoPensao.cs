@@ -106,7 +106,7 @@ public static class MemoriaCalculoPensao
         var pensoes = iteracao.Beneficiarios;
         var varias = pensoes.Count > 1;
         var rendimentos = entrada.ValorBruto - entrada.OutrosDescontos;
-        var rotuloRendimentos = entrada.OutrosDescontos > 0m ? "rendimentos menos outros descontos" : "rendimentos";
+        var rotuloRendimentos = entrada.OutrosDescontos > 0m ? "rendimentos menos abatimentos" : "rendimentos";
         var termosBase = modalidade.DeduzPensao
             ? $"{moeda(rendimentos)} ({rotuloRendimentos}) - {moeda(modalidade.DeducoesBase)} ({modalidade.RotuloDeducoes}) - {moeda(iteracao.PensaoDeduzida)} ({(varias ? "pensões" : "pensão")})"
             : $"{moeda(rendimentos)} ({rotuloRendimentos}) - {moeda(modalidade.DeducoesBase)} ({modalidade.RotuloDeducoes})";

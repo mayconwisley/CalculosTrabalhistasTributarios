@@ -48,7 +48,7 @@ internal static class RelatorioPdfPensao
             CelulaRotulo(tabela.Cell(), "Base de INSS"); CelulaValor(tabela.Cell(), Moeda(entrada.BaseInss));
             CelulaRotulo(tabela.Cell(), "INSS calculado"); CelulaValor(tabela.Cell(), Moeda(simulacao.ValorInss));
             CelulaRotulo(tabela.Cell(), "Pensão"); CelulaValor(tabela.Cell(), DescreverPensoes(entrada));
-            CelulaRotulo(tabela.Cell(), "Outros descontos"); CelulaValor(tabela.Cell(), Moeda(entrada.OutrosDescontos));
+            CelulaRotulo(tabela.Cell(), "Abatimentos dos rendimentos"); CelulaValor(tabela.Cell(), Moeda(entrada.OutrosDescontos));
             CelulaRotulo(tabela.Cell(), "Dependentes"); CelulaValor(tabela.Cell(), entrada.Dependentes.ToString(CulturaPtBr));
         }));
     }

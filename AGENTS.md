@@ -214,6 +214,7 @@ Não considere uma calculadora pronta se ela aparece na tela inicial, mas não r
 - Ao renomear opções, preserve a leitura do texto antigo ou migre-o de maneira explícita.
 - Campos compostos usam seus próprios formatos serializados. Preserve versões antigas quando houver dados salvos; valide propriedades ausentes, enumerações, limites de linhas e JSON inválido.
 - Não limpe as coleções atuais antes de validar minimamente uma importação que pode falhar.
+- `ICalculoSalvavel.TentarImportarDados` permite devolver `Result` na importação. Quando houver validação estrutural, informe a falha antes de modificar o formulário; `HistoricoDaJanela` só associa o registro e recalcula após sucesso. A implementação padrão preserva a compatibilidade das demais janelas.
 - Mantenha a ordem de vínculos e de outros itens quando ela influencia o cálculo.
 - Reabrir, duplicar e recalcular devem reproduzir o formulário com os dados salvos, usando o comportamento documentado das tabelas atuais/históricas.
 - Use testes com histórico antigo ao alterar chaves, rótulos, enumerações ou estrutura de serialização.

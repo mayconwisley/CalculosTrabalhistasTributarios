@@ -1,6 +1,7 @@
 using CalculosTrabalhistasTributarios.Application.DTOs;
 using CalculosTrabalhistasTributarios.Application.Interfaces;
 using CalculosTrabalhistasTributarios.Domain.Pensao;
+using CalculosTrabalhistasTributarios.Domain.Comum;
 using CalculosTrabalhistasTributarios.Presentation.Interfaces;
 using CalculosTrabalhistasTributarios.Presentation.Mvvm;
 using CalculosTrabalhistasTributarios.Presentation.Services;
@@ -13,7 +14,7 @@ using System.Windows.Input;
 namespace CalculosTrabalhistasTributarios.Presentation.ViewModels;
 
 /// <summary>Pensão alimentícia de um ou mais beneficiários e IRRF nas duas modalidades, com os rendimentos informados na própria janela.</summary>
-public sealed class PensaoViewModel : ViewModelBase, ICalculoSalvavel
+public sealed class PensaoViewModel : ViewModelBase, ICalculoSalvavel, System.ComponentModel.IDataErrorInfo
 {
     private const int MaximoBeneficiarios = 10;
     private static readonly CultureInfo Cultura = CultureInfo.GetCultureInfo("pt-BR");
@@ -33,11 +34,15 @@ public sealed class PensaoViewModel : ViewModelBase, ICalculoSalvavel
     private SimulacaoPensaoDto? _ultimaSimulacao;
     private EntradaPensaoDto? _ultimaEntrada;
     private bool _ultimoCalculoDetalhado;
-    private bool _detalharAoReabrir;
+    private bool _resultadoDesatualizado;
+    private bool _usarBrutoComoBaseInss = true;
+    private bool _exibirMemoriaDetalhada;
+    private long _versaoFormulario;
+    private bool _calculando;
     private bool _temResultado;
     private bool _temMemoria;
     private string _explicacao = string.Empty;
-    private string _mensagemMemoria = "Selecione Detalhar para exibir a memória de cálculo por iteração.";
+    private string _mensagemMemoria = "Marque Exibir memória detalhada para conferir as iterações.";
     private IReadOnlyList<IndicadorResumoViewModel> _indicadoresResumo = [];
     private IReadOnlyList<PensaoPorBeneficiarioViewModel> _pensoesPorBeneficiario = [];
     private IReadOnlyList<ComparativoPensaoViewModel> _comparativoPensao = [];
@@ -55,26 +60,40 @@ public sealed class PensaoViewModel : ViewModelBase, ICalculoSalvavel
         _dependentes = (anterior.Dependentes ?? 0).ToString(Cultura);
         if (anterior.Salario is { } salario)
             ValorBruto = salario.ToString("N2", Cultura);
+        PropertyChanged += (_, args) =>
+        {
+            if (args.PropertyName is nameof(Competencia) or nameof(ValorBruto) or nameof(BaseInss)
+                or nameof(Dependentes) or nameof(OutrosDescontos) or nameof(OrdemSelecionada))
+            {
+                InvalidarResultado();
+                OnPropertyChanged("Item[]");
+            }
+        };
+        SubirBeneficiarioCommand = new RelayCommand(item => MoverBeneficiario(item, -1), item => PodeMover(item, -1));
+        DescerBeneficiarioCommand = new RelayCommand(item => MoverBeneficiario(item, 1), item => PodeMover(item, 1));
         var adicionar = new RelayCommand(_ => Beneficiarios.Add(NovoBeneficiario()), _ => Beneficiarios.Count < MaximoBeneficiarios);
         AdicionarBeneficiarioCommand = adicionar;
         RemoverBeneficiarioCommand = new RelayCommand(parametro =>
         {
             if (parametro is BeneficiarioPensaoViewModel beneficiario && Beneficiarios.Count > 1)
                 Beneficiarios.Remove(beneficiario);
-        });
+        }, item => item is BeneficiarioPensaoViewModel beneficiario && Beneficiarios.Contains(beneficiario) && Beneficiarios.Count > 1);
         Beneficiarios.Add(NovoBeneficiario());
         Beneficiarios.CollectionChanged += (_, _) =>
         {
             OnPropertyChanged(nameof(TemVariosBeneficiarios));
             adicionar.RaiseCanExecuteChanged();
+            ((RelayCommand)RemoverBeneficiarioCommand).RaiseCanExecuteChanged();
+            ((RelayCommand)SubirBeneficiarioCommand).RaiseCanExecuteChanged();
+            ((RelayCommand)DescerBeneficiarioCommand).RaiseCanExecuteChanged();
+            InvalidarResultado();
         };
-        CalcularResumoCommand = new AsyncRelayCommand(() => CalcularAsync(false));
-        CalcularDetalheCommand = new AsyncRelayCommand(() => CalcularAsync(true));
-        ExportarPdfCommand = new AsyncRelayCommand(ExportarPdfAsync, () => _ultimaSimulacao is not null && _ultimaEntrada is not null);
+        CalcularCommand = new AsyncRelayCommand(() => CalcularAsync(ExibirMemoriaDetalhada), () => !_calculando);
+        ExportarPdfCommand = new AsyncRelayCommand(ExportarPdfAsync, () => !ResultadoDesatualizado && _ultimaSimulacao is not null && _ultimaEntrada is not null);
         ExportarExcelCommand = new AsyncRelayCommand(
             () => ExportacaoPlanilha.SalvarAsync(_arquivoDialog, _notificador, $"pensao-alimenticia-{_ultimaEntrada!.Competencia:MM-yyyy}.xlsx",
                 caminho => _planilha.GerarPensaoAsync(_ultimaSimulacao!, _ultimaEntrada!, caminho, CancellationToken.None)),
-            () => _ultimaSimulacao is not null && _ultimaEntrada is not null);
+            () => !ResultadoDesatualizado && _ultimaSimulacao is not null && _ultimaEntrada is not null);
     }
 
     public string Competencia
@@ -87,16 +106,70 @@ public sealed class PensaoViewModel : ViewModelBase, ICalculoSalvavel
         }
     }
 
-    /// <summary>Ao alterar o valor bruto, a base de INSS acompanha; ela só precisa ser editada quando for diferente.</summary>
+    /// <summary>A base acompanha o bruto apenas enquanto a sincronização estiver habilitada.</summary>
     public string ValorBruto
     {
         get => _valorBruto;
         set
         {
-            if (SetProperty(ref _valorBruto, value) && TentarLerDecimal(value, out var valorBruto) && valorBruto >= 0m)
+            if (SetProperty(ref _valorBruto, value) && UsarBrutoComoBaseInss && TentarLerDecimal(value, out var valorBruto) && valorBruto >= 0m)
                 BaseInss = valorBruto.ToString("N2", Cultura);
         }
     }
+    public bool UsarBrutoComoBaseInss
+    {
+        get => _usarBrutoComoBaseInss;
+        set
+        {
+            if (SetProperty(ref _usarBrutoComoBaseInss, value) && value)
+                BaseInss = ValorBruto;
+        }
+    }
+    public bool ResultadoDesatualizado { get => _resultadoDesatualizado; private set => SetProperty(ref _resultadoDesatualizado, value); }
+    public bool ExibirMemoriaDetalhada
+    {
+        get => _exibirMemoriaDetalhada;
+        set
+        {
+            if (SetProperty(ref _exibirMemoriaDetalhada, value) && !ResultadoDesatualizado && _ultimaSimulacao is { } simulacao && _ultimaEntrada is { } entrada)
+            {
+                _ultimoCalculoDetalhado = value;
+                AtualizarApresentacao(simulacao, entrada, value);
+            }
+        }
+    }
+    public ICommand CalcularCommand { get; }
+    public ICommand SubirBeneficiarioCommand { get; }
+    public ICommand DescerBeneficiarioCommand { get; }
+
+    private bool PodeMover(object? item, int deslocamento) => item is BeneficiarioPensaoViewModel beneficiario
+        && Beneficiarios.IndexOf(beneficiario) is var indice && indice >= 0
+        && indice + deslocamento >= 0 && indice + deslocamento < Beneficiarios.Count;
+
+    private void MoverBeneficiario(object? item, int deslocamento)
+    {
+        if (PodeMover(item, deslocamento) && item is BeneficiarioPensaoViewModel beneficiario)
+        {
+            var indice = Beneficiarios.IndexOf(beneficiario);
+            Beneficiarios.Move(indice, indice + deslocamento);
+        }
+    }
+
+    private void InvalidarResultado()
+    {
+        _versaoFormulario++;
+        if (_ultimaSimulacao is null)
+            return;
+        ResultadoDesatualizado = true;
+        AtualizarExportacao();
+    }
+
+    private void AtualizarExportacao()
+    {
+        (ExportarPdfCommand as AsyncRelayCommand)?.RaiseCanExecuteChanged();
+        (ExportarExcelCommand as AsyncRelayCommand)?.RaiseCanExecuteChanged();
+    }
+
     public string BaseInss { get => _baseInss; set => SetProperty(ref _baseInss, value); }
     public string Dependentes { get => _dependentes; set => SetProperty(ref _dependentes, value); }
     public string OutrosDescontos { get => _outrosDescontos; set => SetProperty(ref _outrosDescontos, value); }
@@ -130,8 +203,6 @@ public sealed class PensaoViewModel : ViewModelBase, ICalculoSalvavel
     public bool TemQuadroInss => QuadroInss is not null;
     public ICommand AdicionarBeneficiarioCommand { get; }
     public ICommand RemoverBeneficiarioCommand { get; }
-    public ICommand CalcularResumoCommand { get; }
-    public ICommand CalcularDetalheCommand { get; }
     public ICommand ExportarPdfCommand { get; }
     public ICommand ExportarExcelCommand { get; }
     public HistoricoDaJanela Historico { get; }
@@ -149,7 +220,8 @@ public sealed class PensaoViewModel : ViewModelBase, ICalculoSalvavel
             [nameof(Dependentes)] = Dependentes,
             [nameof(OutrosDescontos)] = OutrosDescontos,
             [nameof(OrdemSelecionada)] = OrdemSelecionada.Texto,
-            ["Detalhado"] = _ultimoCalculoDetalhado ? "Sim" : "Não"
+            [nameof(UsarBrutoComoBaseInss)] = UsarBrutoComoBaseInss ? "Sim" : "Não",
+            ["Detalhado"] = ExibirMemoriaDetalhada ? "Sim" : "Não"
         },
         Beneficiarios.Select(beneficiario => new Dictionary<string, string>
         {
@@ -161,40 +233,98 @@ public sealed class PensaoViewModel : ViewModelBase, ICalculoSalvavel
 
     public void ImportarDados(DadosFormulario dados)
     {
-        Competencia = dados.Valor(nameof(Competencia), Competencia);
-        // O valor bruto preenche a base de INSS; a base salva vem depois, para valer a que foi informada.
-        ValorBruto = dados.Valor(nameof(ValorBruto), ValorBruto);
-        BaseInss = dados.Valor(nameof(BaseInss), BaseInss);
-        Dependentes = dados.Valor(nameof(Dependentes), Dependentes);
-        OutrosDescontos = dados.Valor(nameof(OutrosDescontos), OutrosDescontos);
-        OrdemSelecionada = OpcoesOrdem.FirstOrDefault(opcao => opcao.Texto == dados.Valor(nameof(OrdemSelecionada))) ?? OrdemSelecionada;
-        _detalharAoReabrir = dados.Valor("Detalhado") == "Sim";
-        if (dados.Linhas is not { Count: > 0 } linhas)
-            return;
-
-        Beneficiarios.Clear();
-        foreach (var linha in linhas.Take(MaximoBeneficiarios))
-        {
-            var beneficiario = NovoBeneficiario();
-            beneficiario.Nome = linha.GetValueOrDefault(nameof(BeneficiarioPensaoViewModel.Nome), beneficiario.Nome);
-            if (beneficiario.BasesPensao.FirstOrDefault(opcao => opcao.Texto == linha.GetValueOrDefault(nameof(BeneficiarioPensaoViewModel.BaseSelecionada))) is { } basePensao)
-                beneficiario.BaseSelecionada = basePensao;
-            beneficiario.Percentual = linha.GetValueOrDefault(nameof(BeneficiarioPensaoViewModel.Percentual), beneficiario.Percentual);
-            beneficiario.ValorPensao = linha.GetValueOrDefault(nameof(BeneficiarioPensaoViewModel.ValorPensao), beneficiario.ValorPensao);
-            Beneficiarios.Add(beneficiario);
-        }
+        var resultado = TentarImportarDados(dados);
+        if (resultado.Falhou)
+            _notificador.MostrarFalha(resultado.Erro, "Não foi possível importar a pensão. O formulário atual foi preservado.");
     }
 
-    public Task RecalcularAsync() => CalcularAsync(_detalharAoReabrir);
+    public Result TentarImportarDados(DadosFormulario dados)
+    {
+        var preparacao = PrepararImportacao(dados, out var beneficiarios, out var ordem);
+        if (preparacao.Falhou)
+            return preparacao;
 
-    private BeneficiarioPensaoViewModel NovoBeneficiario() =>
-        new($"Beneficiário {Beneficiarios.Count + 1}", () => _ = AtualizarSalarioMinimoAsync());
+        UsarBrutoComoBaseInss = false;
+        Competencia = dados.Valor(nameof(Competencia));
+        ValorBruto = dados.Valor(nameof(ValorBruto));
+        BaseInss = dados.Valor(nameof(BaseInss));
+        Dependentes = dados.Valor(nameof(Dependentes));
+        OutrosDescontos = dados.Valor(nameof(OutrosDescontos));
+        OrdemSelecionada = ordem;
+        ExibirMemoriaDetalhada = dados.Valor("Detalhado") == "Sim";
+        UsarBrutoComoBaseInss = dados.Valor(nameof(UsarBrutoComoBaseInss),
+            TentarLerDecimal(BaseInss, out var baseSalva) && TentarLerDecimal(ValorBruto, out var brutoSalvo) && baseSalva == brutoSalvo ? "Sim" : "Não") == "Sim";
+        Beneficiarios.Clear();
+        foreach (var beneficiario in beneficiarios)
+            Beneficiarios.Add(beneficiario);
+        if (beneficiarios.Any(item => item.EhSalarioMinimo))
+            _ = AtualizarSalarioMinimoAsync();
+        return Result.Ok();
+    }
+
+    private Result PrepararImportacao(DadosFormulario dados,
+        out List<BeneficiarioPensaoViewModel> beneficiarios, out OpcaoCampo ordem)
+    {
+        beneficiarios = [];
+        ordem = OpcoesOrdem[0];
+        var campos = new[] { nameof(Competencia), nameof(ValorBruto), nameof(BaseInss), nameof(Dependentes), nameof(OutrosDescontos) };
+        if (dados.Campos is null || campos.Any(campo => !dados.Campos.TryGetValue(campo, out var texto) || texto is null)
+            || dados.Linhas is not { Count: >= 1 and <= MaximoBeneficiarios })
+            return Erro.Validacao("Informe os campos dos rendimentos e de 1 a 10 beneficiários no histórico.");
+
+        var textoOrdem = dados.Valor(nameof(OrdemSelecionada), OpcoesOrdem[0].Texto);
+        var opcaoOrdem = OpcoesOrdem.FirstOrDefault(item => item.Texto == textoOrdem);
+        if (opcaoOrdem is null)
+            return Erro.Validacao("A ordem de cálculo salva não é reconhecida.");
+        ordem = opcaoOrdem;
+        foreach (var campo in new[] { "Detalhado", nameof(UsarBrutoComoBaseInss) })
+            if (dados.Campos.TryGetValue(campo, out var texto) && texto is not ("Sim" or "Não"))
+                return Erro.Validacao($"A opção {campo} deve ser Sim ou Não.");
+
+        foreach (var linha in dados.Linhas)
+        {
+            if (linha is null)
+                return Erro.Validacao("Existe um beneficiário sem dados.");
+            var beneficiario = NovoBeneficiario();
+            var basePensao = beneficiario.BasesPensao.FirstOrDefault(item => item.Texto == linha.GetValueOrDefault(nameof(BeneficiarioPensaoViewModel.BaseSelecionada)));
+            if (basePensao is null)
+                return Erro.Validacao($"A base da pensão do beneficiário {beneficiarios.Count + 1} não é reconhecida.");
+            var campoValor = (BasePensao)basePensao.Valor == BasePensao.ValorFixo
+                ? nameof(BeneficiarioPensaoViewModel.ValorPensao) : nameof(BeneficiarioPensaoViewModel.Percentual);
+            if (!linha.TryGetValue(campoValor, out var valor) || valor is null)
+                return Erro.Validacao($"Falta o campo {campoValor} do beneficiário {beneficiarios.Count + 1}.");
+            beneficiario.Nome = linha.GetValueOrDefault(nameof(BeneficiarioPensaoViewModel.Nome)) ?? $"Beneficiário {beneficiarios.Count + 1}";
+            beneficiario.Percentual = linha.GetValueOrDefault(nameof(BeneficiarioPensaoViewModel.Percentual)) ?? "0,00";
+            beneficiario.ValorPensao = linha.GetValueOrDefault(nameof(BeneficiarioPensaoViewModel.ValorPensao)) ?? "0,00";
+            // A consulta do salário mínimo só começa depois da importação completa.
+            beneficiario.DefinirBaseSemConsulta(basePensao);
+            beneficiarios.Add(beneficiario);
+        }
+        return Result.Ok();
+    }
+
+    public Task RecalcularAsync() => CalcularAsync(ExibirMemoriaDetalhada);
+
+    private BeneficiarioPensaoViewModel NovoBeneficiario()
+    {
+        var beneficiario = new BeneficiarioPensaoViewModel($"Beneficiário {Beneficiarios.Count + 1}", () => _ = AtualizarSalarioMinimoAsync());
+        beneficiario.PropertyChanged += (_, args) =>
+        {
+            if (Beneficiarios.Contains(beneficiario) && (args.PropertyName is nameof(BeneficiarioPensaoViewModel.Nome)
+                or nameof(BeneficiarioPensaoViewModel.BaseSelecionada) or nameof(BeneficiarioPensaoViewModel.Percentual)
+                or nameof(BeneficiarioPensaoViewModel.ValorPensao)))
+                InvalidarResultado();
+        };
+        return beneficiario;
+    }
 
     private async Task CalcularAsync(bool detalhar)
     {
-        if (!TentarLerEntrada(out var entrada))
+        if (_calculando || !TentarLerEntrada(out var entrada))
             return;
 
+        var versao = _versaoFormulario;
+        _calculando = true;
         try
         {
             var simulacao = await _simulador.ExecutarAsync(new SimularPensaoRequest(entrada.Competencia, entrada.ValorBruto, entrada.BaseInss, entrada.Dependentes, entrada.Beneficiarios, entrada.OutrosDescontos, entrada.Sucessiva), CancellationToken.None);
@@ -203,6 +333,13 @@ public sealed class PensaoViewModel : ViewModelBase, ICalculoSalvavel
                 _notificador.MostrarFalha(simulacao.Erro, "Não foi possível calcular a pensão.");
                 return;
             }
+            if (versao != _versaoFormulario)
+            {
+                _notificador.MostrarAviso("Os dados foram alterados durante o cálculo. Calcule novamente.");
+                return;
+            }
+            ResultadoDesatualizado = false;
+            ExibirMemoriaDetalhada = detalhar;
             var resultado = simulacao.Valor;
             _ultimaSimulacao = resultado;
             _ultimaEntrada = entrada;
@@ -213,48 +350,66 @@ public sealed class PensaoViewModel : ViewModelBase, ICalculoSalvavel
             ((AsyncRelayCommand)ExportarExcelCommand).RaiseCanExecuteChanged();
         }
         catch (Exception ex) { _notificador.MostrarErro("Não foi possível calcular a pensão.", ex); }
+        finally { _calculando = false; }
     }
+
+    public string Error => string.Empty;
+    public string this[string campo] => campo switch
+    {
+        nameof(Competencia) => DateTime.TryParseExact(Competencia.Trim(), "MM/yyyy", Cultura, DateTimeStyles.None, out _) ? "" : "Informe MM/AAAA.",
+        nameof(Dependentes) => int.TryParse(Dependentes, out var quantidade) && quantidade is >= 0 and <= 100 ? "" : "Informe de 0 a 100 dependentes.",
+        nameof(ValorBruto) => ValidarMoeda(ValorBruto),
+        nameof(BaseInss) => ValidarMoeda(BaseInss),
+        nameof(OutrosDescontos) => ValidarMoeda(OutrosDescontos) is { Length: > 0 } erro ? erro
+            : TentarLerDecimal(OutrosDescontos, out var desconto) && TentarLerDecimal(ValorBruto, out var bruto) && desconto > bruto
+                ? "Não pode superar o valor bruto." : "",
+        _ => ""
+    };
+
+    private static string ValidarMoeda(string texto) => TentarLerDecimal(texto, out var valor) && LimitesPensao.MoedaValida(valor)
+        ? "" : "Informe de 0 a 999.999.999,99, com até duas casas decimais.";
 
     private bool TentarLerEntrada(out EntradaPensaoDto entrada)
     {
         entrada = default!;
-        if (!DateTime.TryParseExact(Competencia.Trim(), "MM/yyyy", Cultura, DateTimeStyles.None, out var competencia)
-            || !TentarLerDecimal(ValorBruto, out var valorBruto) || !TentarLerDecimal(BaseInss, out var baseInss) || !int.TryParse(Dependentes, out var dependentes)
-            || !TentarLerDecimal(OutrosDescontos, out var descontos)
-            || valorBruto < 0m || baseInss < 0m || dependentes < 0 || descontos < 0m)
-        {
-            _notificador.MostrarAviso("Informe uma competência válida (MM/AAAA), valores monetários válidos e dependentes maior ou igual a zero.");
-            return false;
-        }
-        if (descontos > valorBruto)
-        {
-            _notificador.MostrarAviso("Outros descontos não podem ser maiores que o valor bruto.");
-            return false;
-        }
+        (string Campo, string Rotulo)[] campos =
+        [
+            (nameof(Competencia), "Competência"), (nameof(ValorBruto), "Valor bruto"),
+            (nameof(BaseInss), "Base de INSS"), (nameof(Dependentes), "Dependentes"),
+            (nameof(OutrosDescontos), "Abatimentos dos rendimentos")
+        ];
+        foreach (var (campo, rotulo) in campos)
+            if (this[campo] is { Length: > 0 } erro)
+            {
+                _notificador.MostrarAviso($"{rotulo}: {erro}");
+                return false;
+            }
 
+        var competencia = DateOnly.ParseExact(Competencia.Trim(), "MM/yyyy", Cultura);
+        TentarLerDecimal(ValorBruto, out var valorBruto);
+        TentarLerDecimal(BaseInss, out var baseInss);
+        TentarLerDecimal(OutrosDescontos, out var descontos);
+        var dependentes = int.Parse(Dependentes);
         var beneficiarios = new List<BeneficiarioPensao>(Beneficiarios.Count);
         foreach (var (beneficiario, indice) in Beneficiarios.Select((beneficiario, indice) => (beneficiario, indice)))
         {
             var nome = string.IsNullOrWhiteSpace(beneficiario.Nome) ? $"Beneficiário {indice + 1}" : beneficiario.Nome.Trim();
-            // Com um só beneficiário, as mensagens não precisam dizer de quem é o campo.
-            var quem = Beneficiarios.Count > 1 ? $" de {nome}" : "";
-            if (!TentarLerDecimal(beneficiario.Percentual, out var percentual) || !TentarLerDecimal(beneficiario.ValorPensao, out var valorPensao) || valorPensao < 0m)
+            var percentual = 0m;
+            var valorPensao = 0m;
+            if (beneficiario.EhPercentual)
+                TentarLerDecimal(beneficiario.Percentual, out percentual);
+            else
+                TentarLerDecimal(beneficiario.ValorPensao, out valorPensao);
+            if (beneficiario[beneficiario.EhPercentual ? nameof(beneficiario.Percentual) : nameof(beneficiario.ValorPensao)] is { Length: > 0 } erroBeneficiario)
             {
-                _notificador.MostrarAviso($"Informe o percentual e o valor da pensão{quem} em formato válido.");
+                _notificador.MostrarAviso($"{nome}: {erroBeneficiario}");
                 return false;
             }
             var regra = beneficiario.EhPercentual ? new RegraPensao(beneficiario.Base, percentual, 0m) : new RegraPensao(BasePensao.ValorFixo, 0m, valorPensao);
-            if (regra.EhPercentual && (percentual < 0m || percentual > regra.PercentualMaximo))
-            {
-                _notificador.MostrarAviso(regra.Base == BasePensao.SalarioMinimo
-                    ? $"O percentual do salário mínimo{quem} deve estar entre 0 e 1.000 (150 para 1,5 salário mínimo)."
-                    : $"O percentual da pensão{quem} deve estar entre 0 e 100.");
-                return false;
-            }
             beneficiarios.Add(new BeneficiarioPensao(nome, regra));
         }
 
-        entrada = new EntradaPensaoDto(DateOnly.FromDateTime(competencia), valorBruto, baseInss, dependentes, beneficiarios, descontos, beneficiarios.Count > 1 && (bool)OrdemSelecionada.Valor);
+        entrada = new EntradaPensaoDto(competencia, valorBruto, baseInss, dependentes, beneficiarios, descontos, beneficiarios.Count > 1 && (bool)OrdemSelecionada.Valor);
         return true;
     }
 
@@ -306,27 +461,37 @@ public sealed class PensaoViewModel : ViewModelBase, ICalculoSalvavel
         [
             new(pensoes.Count > 1 ? "Pensões" : "Pensão", Moeda(aplicada.Pensao), pensoes.Count > 1 ? $"Soma das {pensoes.Count} pensões" : pensoes[0].Descrever(Moeda, FormatarPercentual)),
             new("Líquido de quem paga", temRendimentos ? Moeda(liquido) : "—", temRendimentos
-                ? $"Bruto menos {(entrada.OutrosDescontos > 0m ? "outros descontos, " : "")}INSS, IRRF e {(pensoes.Count > 1 ? "pensões" : "pensão")}"
+                ? $"Bruto menos {(entrada.OutrosDescontos > 0m ? "abatimentos, " : "")}INSS, IRRF e {(pensoes.Count > 1 ? "pensões" : "pensão")}"
                 : "Sem valor bruto informado"),
             new(pensoes.Count > 1 ? "IRRF com pensões" : "IRRF com pensão", Moeda(aplicada.Imposto),
                 $"{(aplicada.DeduzPensao ? "Deduções legais, com a pensão" : "Desconto simplificado")}; {MemoriaCalculoPensao.FaixaIrrf(aplicada.Detalhes[^1].Aliquota, aplicada.Imposto)}"),
             new(pensoes.Count > 1 ? "IRRF sem pensões" : "IRRF sem pensão", Moeda(simulacao.ImpostoSemPensao),
                 $"Se não houvesse a pensão; {MemoriaCalculoPensao.FaixaIrrf(simulacao.AliquotaIrrfSemPensao, simulacao.ImpostoSemPensao)}"),
             new("Economia de IRRF", Moeda(simulacao.EconomiaIrrf), simulacao.EconomiaIrrf > 0m ? "Pela dedução da pensão" : "A pensão não reduziu o IRRF"),
-            new("INSS", Moeda(simulacao.ValorInss), simulacao.FaixasInss.Count == 0
-                ? $"Base: {Moeda(entrada.BaseInss)}"
-                : $"Base: {Moeda(entrada.BaseInss)}; {MemoriaCalculoPensao.FaixaInss(simulacao)}")
+            new("INSS", Moeda(simulacao.ValorInss), DescreverBaseInss(simulacao, entrada.BaseInss))
         ];
         PensoesPorBeneficiario = pensoes.Select(pensao => new PensaoPorBeneficiarioViewModel(pensao.Nome, pensao.Descrever(Moeda, FormatarPercentual), Moeda(pensao.Pensao))).ToArray();
         Explicacao = MemoriaCalculoPensao.Explicacao(simulacao, entrada, Moeda, FormatarPercentual);
-        ComparativoPensao = simulacao.Modalidades.Select(CriarComparativo).ToArray();
+        ComparativoPensao = simulacao.Modalidades.Select(modalidade => CriarComparativo(modalidade) with { Modalidade = modalidade.Nome + (ReferenceEquals(modalidade, aplicada) ? " (aplicada)" : "") }).ToArray();
         MemoriaPensao = detalhar
             ? simulacao.Modalidades.Select(modalidade => CriarMemoria(modalidade, entrada, simulacao.ValorInss)).ToArray()
             : [];
         QuadroInss = detalhar && simulacao.QuadroInss is { } quadroInss ? QuadroFaixasViewModel.De(quadroInss) : null;
         TemResultado = true;
         TemMemoria = detalhar;
-        MensagemMemoria = detalhar ? string.Empty : "Selecione Detalhar para exibir a memória de cálculo por iteração.";
+        MensagemMemoria = detalhar ? string.Empty : "Marque Exibir memória detalhada para conferir as iterações.";
+    }
+
+    private static string DescreverBaseInss(SimulacaoPensaoDto simulacao, decimal baseInformada)
+    {
+        // As parcelas da apuração já refletem o teto da competência, inclusive no regime anterior a 03/2020.
+        var baseUtilizada = simulacao.FaixasInss.Sum(faixa => faixa.BaseCalculada);
+        var descricao = $"Base utilizada: {Moeda(baseUtilizada)}";
+        if (baseInformada > baseUtilizada)
+            descricao += $" (limitada ao teto); base informada: {Moeda(baseInformada)}";
+        if (simulacao.FaixasInss.Count > 0)
+            descricao += $"; {MemoriaCalculoPensao.FaixaInss(simulacao)}";
+        return descricao;
     }
 
     private static ComparativoPensaoViewModel CriarComparativo(ModalidadePensaoDto modalidade) =>
@@ -350,7 +515,7 @@ public sealed class PensaoViewModel : ViewModelBase, ICalculoSalvavel
 
     private async Task ExportarPdfAsync()
     {
-        if (_ultimaSimulacao is null || _ultimaEntrada is null)
+        if (ResultadoDesatualizado || _ultimaSimulacao is null || _ultimaEntrada is null)
             return;
 
         var caminhoArquivo = _arquivoDialog.SolicitarDestinoPdf($"relatorio-pensao-alimenticia-{_ultimaEntrada.Competencia:MM-yyyy}.pdf");

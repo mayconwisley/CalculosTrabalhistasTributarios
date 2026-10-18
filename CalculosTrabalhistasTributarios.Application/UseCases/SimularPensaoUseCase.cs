@@ -18,8 +18,16 @@ public sealed class SimularPensaoUseCase(ITributacaoConsulta tributacaoConsulta)
 
     public async Task<Result<SimulacaoPensaoDto>> ExecutarAsync(SimularPensaoRequest request, CancellationToken cancellationToken)
     {
-        if (request.ValorBruto < 0m || request.BaseInss < 0m || request.Dependentes < 0 || request.OutrosDescontos < 0m || request.OutrosDescontos > request.ValorBruto)
-            return Erro.Validacao("Os parâmetros da pensão são inválidos.");
+        if (!LimitesPensao.MoedaValida(request.ValorBruto))
+            return Erro.Validacao("Valor bruto: informe de 0 a 999.999.999,99, com até duas casas decimais.");
+        if (!LimitesPensao.MoedaValida(request.BaseInss))
+            return Erro.Validacao("Base de INSS: informe de 0 a 999.999.999,99, com até duas casas decimais.");
+        if (!LimitesPensao.MoedaValida(request.OutrosDescontos))
+            return Erro.Validacao("Abatimentos dos rendimentos: informe de 0 a 999.999.999,99, com até duas casas decimais.");
+        if (request.Dependentes is < 0 or > 100)
+            return Erro.Validacao("Dependentes: informe de 0 a 100.");
+        if (request.OutrosDescontos > request.ValorBruto)
+            return Erro.Validacao("Abatimentos dos rendimentos: o valor não pode superar o valor bruto.");
         if (request.Beneficiarios.Count is 0 or > MaximoBeneficiarios)
             return Erro.Validacao($"Informe de 1 a {MaximoBeneficiarios} beneficiários.");
         if (Result.Combinar(request.Beneficiarios.Select(beneficiario => beneficiario.Regra.Validar()).ToArray()) is { Falhou: true } regraInvalida)
@@ -49,8 +57,14 @@ public sealed class SimularPensaoUseCase(ITributacaoConsulta tributacaoConsulta)
         var deducoesNormal = valorInss + request.Dependentes * perfil.DeducaoPorDependente;
         var limiteDispensa = perfil.DescontoMinimo;
         var simplificadoDisponivel = request.Competencia >= InicioSimplificado;
-        var normal = Calcular("Normal", rendimentos, deducoesNormal, request.Dependentes > 0 ? "INSS e dependentes" : "INSS", true, pensoes, irrf, regrasReducao, limiteDispensa);
-        var simplificada = Calcular("Simplificado", rendimentos, perfil.DeducaoSimplificada, "desconto simplificado", false, pensoes, irrf, regrasReducao, limiteDispensa);
+        var resultadoNormal = Calcular("Normal", rendimentos, deducoesNormal, request.Dependentes > 0 ? "INSS e dependentes" : "INSS", true, pensoes, irrf, regrasReducao, limiteDispensa);
+        if (resultadoNormal.Falhou)
+            return resultadoNormal.Erro;
+        var normal = resultadoNormal.Valor;
+        var resultadoSimplificada = Calcular("Simplificado", rendimentos, perfil.DeducaoSimplificada, "desconto simplificado", false, pensoes, irrf, regrasReducao, limiteDispensa);
+        if (resultadoSimplificada.Falhou)
+            return resultadoSimplificada.Erro;
+        var simplificada = resultadoSimplificada.Valor;
         // A fonte pagadora aplica a modalidade de menor IRRF.
         var vantagem = !simplificadoDisponivel ? "Só a modalidade normal: o desconto simplificado existe a partir de 05/2023."
             : normal.Imposto == simplificada.Imposto ? "As duas modalidades resultam no mesmo IRRF."
@@ -79,31 +93,34 @@ public sealed class SimularPensaoUseCase(ITributacaoConsulta tributacaoConsulta)
     /// <summary>O IRRF de até o limite (R$ 10,00) não é retido (Lei 9.430/1996, art. 67).</summary>
     private static decimal Reter(decimal imposto, decimal limiteDispensa) => imposto > 0m && imposto <= limiteDispensa ? 0m : imposto;
 
-    private static ModalidadePensaoDto Calcular(string nome, decimal rendimentosTributaveis, decimal deducoesBase, string rotuloDeducoes, bool deduzPensao, CalculoPensoes calculo, IReadOnlyList<FaixaTributaria> faixas, IReadOnlyList<RegraReducaoMensalIrrf> regrasReducao, decimal limiteDispensa)
+    private static Result<ModalidadePensaoDto> Calcular(string nome, decimal rendimentosTributaveis, decimal deducoesBase, string rotuloDeducoes, bool deduzPensao, CalculoPensoes calculo, IReadOnlyList<FaixaTributaria> faixas, IReadOnlyList<RegraReducaoMensalIrrf> regrasReducao, decimal limiteDispensa)
     {
         var baseIrrfInicial = rendimentosTributaveis - deducoesBase;
         // Fora da base líquida, as pensões não dependem do IRRF e já entram na base desde a primeira iteração.
         var pensao = calculo.DependeDoIrrf ? 0m : calculo.Calcular(0m).Sum(item => item.Pensao);
-        var imposto = 0m; var impostoAntesReducao = 0m; var reducaoMensal = 0m; var iteracoes = 0;
         var detalhes = new List<IteracaoPensaoDto>();
-        for (; iteracoes < 100; iteracoes++)
+        var convergencia = ConvergenciaPensao.Calcular(pensao, anterior =>
         {
-            var pensaoDeduzida = deduzPensao ? pensao : 0m;
+            var pensaoDeduzida = deduzPensao ? anterior : 0m;
             var baseIrrf = Math.Max(0m, baseIrrfInicial - pensaoDeduzida);
             var faixa = FaixaDaBase(baseIrrf, faixas);
-            impostoAntesReducao = CalculadoraTributacao.CalcularPorFaixa(baseIrrf, faixas);
-            reducaoMensal = CalculadoraReducaoMensalIrrf.Calcular(rendimentosTributaveis, impostoAntesReducao, regrasReducao);
-            imposto = Reter(CalculadoraTributacao.Arredondar(impostoAntesReducao - reducaoMensal), limiteDispensa);
+            var impostoAntesReducao = CalculadoraTributacao.CalcularPorFaixa(baseIrrf, faixas);
+            var reducaoMensal = CalculadoraReducaoMensalIrrf.Calcular(rendimentosTributaveis, impostoAntesReducao, regrasReducao);
+            var imposto = Reter(CalculadoraTributacao.Arredondar(impostoAntesReducao - reducaoMensal), limiteDispensa);
             var pensoes = calculo.Calcular(imposto);
-            var novaPensao = pensoes.Sum(item => item.Pensao);
-            detalhes.Add(new IteracaoPensaoDto(iteracoes + 1, baseIrrf, faixa.Aliquota, faixa.Deducao, impostoAntesReducao, reducaoMensal, imposto, pensoes[0].Base, novaPensao, pensaoDeduzida, pensoes));
-            // Estável quando o IRRF foi apurado com esta mesma pensão deduzida; sem a pensão na base, o imposto não muda.
-            if (!deduzPensao || novaPensao == pensao) { pensao = novaPensao; break; }
-            pensao = novaPensao;
-        }
-        return new ModalidadePensaoDto(nome, impostoAntesReducao, reducaoMensal, imposto, pensao, CalculadoraTributacao.Arredondar(imposto + pensao), iteracoes + 1, detalhes, deducoesBase, rotuloDeducoes, deduzPensao)
+            var detalhe = new IteracaoPensaoDto(detalhes.Count + 1, baseIrrf, faixa.Aliquota, faixa.Deducao,
+                impostoAntesReducao, reducaoMensal, imposto, pensoes[0].Base,
+                pensoes.Sum(item => item.Pensao), pensaoDeduzida, pensoes);
+            detalhes.Add(detalhe);
+            return detalhe;
+        }, detalhe => detalhe.Pensao, deduzPensao);
+        if (convergencia.Falhou)
+            return convergencia.Erro;
+        var final = convergencia.Valor;
+        return new ModalidadePensaoDto(nome, final.ImpostoAntesReducao, final.ReducaoMensal, final.Imposto, final.Pensao,
+            CalculadoraTributacao.Arredondar(final.Imposto + final.Pensao), detalhes.Count, detalhes, deducoesBase, rotuloDeducoes, deduzPensao)
         {
-            QuadroIrrf = QuadroIrrf(detalhes[^1].BaseIrrf, faixas)
+            QuadroIrrf = QuadroIrrf(final.BaseIrrf, faixas)
         };
     }
 
@@ -124,23 +141,10 @@ public sealed class SimularPensaoUseCase(ITributacaoConsulta tributacaoConsulta)
 
         public IReadOnlyList<PensaoBeneficiarioDto> Calcular(decimal imposto)
         {
-            var pensoes = new List<PensaoBeneficiarioDto>(beneficiarios.Count);
-            var anteriores = 0m;
-            foreach (var (nome, regra) in beneficiarios)
-            {
-                var descontoAnteriores = sucessiva ? anteriores : 0m;
-                var basePensao = regra.Base switch
-                {
-                    BasePensao.RendimentosLiquidos => Math.Max(0m, rendimentos - valorInss - imposto - descontoAnteriores),
-                    BasePensao.RendimentosBrutos => Math.Max(0m, rendimentos - descontoAnteriores),
-                    BasePensao.SalarioMinimo => salarioMinimo,
-                    _ => regra.Valor
-                };
-                var pensao = regra.EhPercentual ? CalculadoraTributacao.Arredondar(basePensao * regra.Percentual / 100m) : regra.Valor;
-                pensoes.Add(new PensaoBeneficiarioDto(nome, regra, basePensao, pensao));
-                anteriores += pensao;
-            }
-            return pensoes;
+            return MotorPensoes.Calcular(beneficiarios.Select(item => item.Regra).ToArray(), sucessiva,
+                rendimentos, valorInss, imposto, salarioMinimo)
+                .Select((parcela, indice) => new PensaoBeneficiarioDto(beneficiarios[indice].Nome, parcela.Regra, parcela.Base, parcela.Valor))
+                .ToArray();
         }
     }
 }

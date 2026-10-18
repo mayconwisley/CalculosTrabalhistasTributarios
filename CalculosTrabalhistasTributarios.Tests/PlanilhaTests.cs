@@ -43,6 +43,30 @@ public class PlanilhaTests
         Assert.Equal(1000m, dto.Resultado);
     }
 
+    [Theory]
+    [InlineData(0)]
+    [InlineData(1000)]
+    public async Task Pensao_sem_renda_nao_exporta_liquido_negativo_e_com_renda_preserva_numero(int bruto)
+    {
+        var regra = new RegraPensao(BasePensao.ValorFixo, 0m, 500m);
+        var entrada = new EntradaPensaoDto(new DateOnly(2026, 10, 1), bruto, 0m, 0,
+            [new BeneficiarioPensao("Beneficiário", regra)], 0m);
+        var simulacao = await new SimularPensaoUseCase(await Ambiente.ConsultaAsync()).ExecutarAsync(
+            new(entrada.Competencia, bruto, 0m, 0, regra, 0m), default).Sucesso();
+        using var pasta = await GerarAsync(caminho => new ClosedXmlPlanilhaService().GerarPensaoAsync(simulacao, entrada, caminho, default));
+        var celula = Linha(pasta.Worksheet(1), "Líquido de quem paga").Cell(2);
+        if (bruto == 0)
+        {
+            Assert.Equal(XLDataType.Text, celula.DataType);
+            Assert.Contains("Não calculado", celula.GetString());
+        }
+        else
+        {
+            Assert.Equal(XLDataType.Number, celula.DataType);
+            Assert.Equal(500m, celula.GetValue<decimal>());
+        }
+    }
+
     private static async Task<XLWorkbook> GerarAsync(Func<string, Task> gerar)
     {
         var caminho = Path.Combine(Path.GetTempPath(), $"planilha-teste-{Guid.NewGuid():N}.xlsx");

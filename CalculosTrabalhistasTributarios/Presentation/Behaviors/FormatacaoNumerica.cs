@@ -51,7 +51,7 @@ public static class FormatacaoNumerica
 
     private static void LimparZeroAoReceberFoco(object sender, RoutedEventArgs argumentos)
     {
-        if (sender is not TextBox { Text: var texto } campo || !EhZero(texto))
+        if (sender is not TextBox { IsReadOnly: false, IsEnabled: true, Text: var texto } campo || !EhZero(texto))
             return;
 
         campo.Clear();
@@ -60,7 +60,7 @@ public static class FormatacaoNumerica
 
     private static void FormatarAoPerderFoco(object sender, RoutedEventArgs argumentos)
     {
-        if (sender is not TextBox { Text: var texto } campo)
+        if (sender is not TextBox { IsReadOnly: false, IsEnabled: true, Text: var texto } campo)
             return;
 
         var formato = GetFormato(campo);
@@ -72,6 +72,11 @@ public static class FormatacaoNumerica
         }
 
         if (string.IsNullOrEmpty(formato) || !LeituraNumerica.TentarLer(texto, out var valor))
+            return;
+
+        // A validação precisa examinar o texto original antes que a formatação arredonde a entrada.
+        BindingOperations.GetBindingExpression(campo, TextBox.TextProperty)?.UpdateSource();
+        if (Validation.GetHasError(campo))
             return;
 
         campo.Text = valor.ToString(formato, CulturaPtBr);

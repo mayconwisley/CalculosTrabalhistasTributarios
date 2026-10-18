@@ -1,4 +1,5 @@
 using CalculosTrabalhistasTributarios.Presentation.ViewModels.Historico;
+using CalculosTrabalhistasTributarios.Domain.Comum;
 
 namespace CalculosTrabalhistasTributarios.Presentation.Interfaces;
 
@@ -18,6 +19,13 @@ public interface ICalculoSalvavel
 
     /// <summary>Preenche o formulário; valores que não existem mais na janela são ignorados.</summary>
     void ImportarDados(DadosFormulario dados);
+
+    /// <summary>Importa os dados e informa falhas esperadas antes de associar a janela ao histórico.</summary>
+    Result TentarImportarDados(DadosFormulario dados)
+    {
+        ImportarDados(dados);
+        return Result.Ok();
+    }
 
     /// <summary>Refaz o cálculo com os valores carregados, para a janela abrir com o resultado.</summary>
     Task RecalcularAsync();

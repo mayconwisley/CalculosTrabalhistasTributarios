@@ -53,7 +53,22 @@ public sealed class HistoricoDaJanela : ViewModelBase
 
     public async Task CarregarAsync(CalculoSalvoDto salvo)
     {
-        _calculo.ImportarDados(DadosFormulario.DeJson(salvo.Dados));
+        DadosFormulario dados;
+        try
+        {
+            dados = DadosFormulario.DeJson(salvo.Dados);
+        }
+        catch (Exception exception) when (exception is System.Text.Json.JsonException or InvalidOperationException)
+        {
+            _notificador.MostrarAviso("Não foi possível abrir o histórico: os dados salvos estão vazios ou possuem JSON inválido. O formulário atual foi preservado.");
+            return;
+        }
+        var importacao = _calculo.TentarImportarDados(dados);
+        if (importacao.Falhou)
+        {
+            _notificador.MostrarFalha(importacao.Erro, "Não foi possível abrir o histórico. O formulário atual foi preservado.");
+            return;
+        }
         _id = salvo.Id;
         _nome = salvo.Nome;
         Sincronizado?.Invoke();
@@ -66,7 +81,12 @@ public sealed class HistoricoDaJanela : ViewModelBase
         if (ExemplosDoManual.Obter(_calculo.TipoHistorico) is not { } exemplo
             || !_notificador.Confirmar("Preencher o formulário com o exemplo do manual?\n\nOs dados do formulário serão substituídos por valores fictícios.", "Preencher exemplo"))
             return;
-        _calculo.ImportarDados(exemplo);
+        var importacao = _calculo.TentarImportarDados(exemplo);
+        if (importacao.Falhou)
+        {
+            _notificador.MostrarFalha(importacao.Erro, "Não foi possível preencher o exemplo.");
+            return;
+        }
         // O exemplo não é um cálculo do histórico: salvar cria um novo, e fechar a janela não pede confirmação.
         _id = null;
         _nome = null;

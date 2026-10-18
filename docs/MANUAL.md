@@ -192,28 +192,30 @@ Abra pelo cartão **Pensão alimentícia**, no grupo **Pensão e débitos judici
 
 ![Cálculo de pensão alimentícia — resumo](imagens/06-pensao-resumo.png)
 
-1. **Dados dos rendimentos** (1ª linha): informe a **Competência**, o **Valor bruto**, a **Base de INSS** e os **Dependentes** de quem paga a pensão, como na simulação tributária, e os **Outros descontos**, se houver. A base de INSS acompanha o valor bruto; altere somente se a base de contribuição for diferente. Esses dados definem o INSS e o IRRF em todas as bases da pensão.
+1. **Dados dos rendimentos** (1ª linha): informe a **Competência**, o **Valor bruto**, a **Base de INSS** e os **Dependentes** de quem paga a pensão, como na simulação tributária, e os **Abatimentos (R$)**, se houver. A opção **Usar o valor bruto como base de INSS** mantém a base sincronizada. Desmarque-a para informar uma base diferente: ela será preservada ao editar o bruto e ao reabrir o histórico. Valores monetários aceitam de zero a R$ 999.999.999,99, com até duas casas decimais; dependentes, de zero a 100. Esses são limites operacionais da simulação.
 2. Na linha do beneficiário, informe o nome dele em **Beneficiário**, usado no resultado e no relatório. Em **Base da pensão**, escolha como a decisão ou o acordo define a pensão:
    - **% dos rendimentos líquidos:** percentual sobre os rendimentos menos o INSS e o IRRF. É a forma mais comum para quem tem vínculo de emprego.
    - **% dos rendimentos brutos:** percentual sobre os rendimentos, sem descontos.
    - **% do salário mínimo:** percentual sobre o salário mínimo da competência. Ao lado do percentual aparece o campo **Salário mínimo de MM/AAAA**, preenchido automaticamente com o valor da tabela **Salário mínimo** e atualizado quando você muda a competência. Ele é só para leitura: para corrigir o valor, edite a tabela.
    - **Valor fixo:** o valor mensal definido na decisão. Nesta opção, o campo do percentual dá lugar a **Valor da pensão**.
 3. Em **Percentual da pensão**, informe o percentual definido em decisão ou acordo, por exemplo `30,00`: de 0 a 100 sobre os rendimentos e até 1.000 sobre o salário mínimo, como `150` para uma pensão de 1,5 salário mínimo. Com mais de um beneficiário na mesma base, os percentuais somados não podem passar de 100%.
-4. **Resumo** calcula e mostra a explicação, o resumo executivo e o comparativo entre as modalidades.
-5. **Detalhar** faz o mesmo cálculo e inclui a memória de cálculo de cada iteração. A tecla **Enter** também detalha.
+4. **Calcular** calcula e mostra a explicação, o resumo executivo e o comparativo entre as modalidades. A tecla **Enter** também calcula.
+5. **Exibir memória detalhada** mostra as iterações e as tabelas de faixas. Pode ser marcada ou desmarcada depois do cálculo, sem refazer a apuração.
 6. **Como a pensão foi calculada:** explica em uma frase de onde vem o valor da pensão e para que servem o valor bruto, o INSS e o IRRF de quem paga.
 7. **Comparação entre modalidades:** faixa do IRRF, IRRF final, pensão e IRRF + pensão nas modalidades normal e simplificada.
 
-O **resumo executivo** mostra o resultado na modalidade de menor IRRF, a que a fonte pagadora aplica:
+Ao editar os dados ou reordenar beneficiários, a tela avisa **Dados alterados: recalcule** e bloqueia PDF e Excel até um novo cálculo. Os erros de preenchimento aparecem junto aos campos. Valores com mais de duas casas decimais permanecem como digitados para correção; sair do campo não arredonda uma entrada rejeitada.
+
+O comparativo identifica a modalidade **(aplicada)**, cujos valores alimentam o resumo. O **resumo executivo** mostra o resultado na modalidade de menor IRRF, a que a fonte pagadora aplica:
 
 | Cartão | O que mostra |
 | --- | --- |
 | Pensão | O valor da pensão e a regra usada, como "30,00% do salário mínimo de R$ 1.621,00". |
-| Líquido de quem paga | Valor bruto menos outros descontos, INSS, IRRF e pensão. Sem valor bruto informado, mostra "—". |
+| Líquido de quem paga | Valor bruto menos abatimentos, INSS, IRRF e pensão. Sem valor bruto informado, mostra "—". |
 | IRRF com pensão | O IRRF de quem paga, já com a pensão deduzida da base na modalidade normal, e a faixa da tabela progressiva em que a base ficou. |
 | IRRF sem pensão | O IRRF que quem paga teria se não houvesse a pensão, e a faixa dessa base. |
 | Economia de IRRF | A diferença entre os dois: quanto a dedução da pensão reduz o imposto de quem paga. |
-| INSS | A contribuição de quem paga, sobre a base de INSS, e a faixa em que a base termina. |
+| INSS | A contribuição de quem paga, a base efetivamente utilizada e a faixa alcançada. Quando a base informada supera o teto da competência, o cartão identifica a limitação ao teto e também mostra a base informada. |
 
 **Faixa:** é a alíquota da faixa da tabela em que a base ficou, como **faixa de 27,5%**. No IRRF, ela é a alíquota da conta base × alíquota − parcela a deduzir; **faixa isenta** indica base até o limite de isenção, e **sem IRRF a reter** indica base em faixa tributada com imposto zerado pela redução mensal ou por não passar do limite de retenção. No INSS, **até a faixa de 14%** indica a última faixa alcançada: desde 03/2020 cada parte da base paga a alíquota da sua faixa, por isso a contribuição é menor que 14% da base. Antes de 03/2020, a alíquota da faixa valia para toda a base, e o cartão mostra **alíquota de ... sobre toda a base**. A faixa também aparece no PDF e na planilha.
 
@@ -224,17 +226,19 @@ Na base do salário mínimo, a tela fica assim:
 1. **Base da pensão** com a opção **% do salário mínimo**.
 2. **Salário mínimo de MM/AAAA:** o valor vigente na competência, preenchido automaticamente.
 3. **Como a pensão foi calculada:** 30% de R$ 1.621,00 = R$ 486,30, sem relação com os rendimentos de quem paga.
-4. **Economia de IRRF:** com a pensão deduzida, o IRRF de quem paga cai de R$ 1.120,04 para R$ 986,31.
+4. **Economia de IRRF:** com a pensão deduzida, o IRRF de quem paga cai de R$ 1.052,78 para R$ 919,04.
 
-Se você só precisa do valor da pensão, por exemplo quando quem paga não tem emprego formal, deixe o **Valor bruto** em `0,00`: o INSS e o IRRF ficam zerados e a pensão continua sendo calculada.
+Se você só precisa do valor da pensão, por exemplo quando quem paga não tem emprego formal, deixe o **Valor bruto** em `0,00`: o INSS e o IRRF ficam zerados e a pensão continua sendo calculada. Nesse caso, a tela mostra “—” no líquido de quem paga e o Excel informa **Não calculado — sem renda informada**.
 
-**Outros descontos** são valores que não são rendimento tributável, como faltas e atrasos: eles saem dos rendimentos, da base do IRRF (inclusive da redução mensal) e da base da pensão, e não podem ser maiores que o valor bruto. Não informe aqui consignados nem plano de saúde, que não reduzem o IRRF.
+**Abatimentos (R$)** são valores que não são rendimento tributável, como faltas e atrasos: eles saem dos rendimentos, da base do IRRF (inclusive da redução mensal) e da base da pensão, e não podem ser maiores que o valor bruto. Não informe aqui consignados nem plano de saúde, que não reduzem o IRRF.
 
 > **Por que o valor bruto não vira o salário mínimo?** Na pensão sobre o salário mínimo, só o valor da pensão depende do salário mínimo. O INSS e o IRRF continuam sendo os de quem paga, calculados sobre o valor bruto que ele recebe, e a pensão é deduzida da base desse IRRF na modalidade normal.
 
+Ao abrir um histórico de pensão, o aplicativo confere os campos necessários, os beneficiários, suas bases e as opções salvas antes de substituir o formulário. Se os dados estiverem incompletos ou uma opção não for reconhecida, avisa o motivo e preserva o formulário atual. Históricos antigos válidos continuam aceitos.
+
 ### 6.2 Como a pensão entra no IRRF
 
-**Na modalidade normal (deduções legais),** a pensão é deduzida da base do IRRF. Quando ela é calculada sobre os rendimentos líquidos, há uma dependência circular: a pensão reduz o IRRF, e o IRRF reduz o valor sobre o qual a pensão é calculada. Por isso o aplicativo repete o cálculo até que o valor da pensão não mude mais: no resultado, o IRRF é exatamente o calculado com a pensão final deduzida. Em cada iteração:
+**Na modalidade normal (deduções legais),** a pensão é deduzida da base do IRRF. Quando ela é calculada sobre os rendimentos líquidos, há uma dependência circular: a pensão reduz o IRRF, e o IRRF reduz o valor sobre o qual a pensão é calculada. Por isso o aplicativo repete o cálculo até que o valor da pensão não mude mais: no resultado, o IRRF é exatamente o calculado com a pensão final deduzida. Se o cálculo não estabilizar em até 100 iterações, o aplicativo informa a falha e não publica um novo resultado. Em cada iteração:
 
 1. A base do IRRF é recalculada descontando a pensão encontrada na iteração anterior.
 2. O IRRF é apurado pela tabela progressiva e pela redução mensal, quando houver. O título **IR progressivo** indica a faixa usada na iteração.
@@ -265,7 +269,8 @@ Quando quem paga deve pensão a mais de uma pessoa, por exemplo a filhos de rela
 2. **Ordem de cálculo:** aparece com mais de um beneficiário e define como as pensões percentuais sobre os rendimentos são calculadas:
    - **Todas sobre a mesma base:** cada pensão incide sobre os rendimentos inteiros, como se fosse a única.
    - **Cada uma após descontar as anteriores:** a base de cada pensão é reduzida pelas pensões que vêm antes dela na lista. Use quando a decisão mandar calcular uma pensão sobre o que sobra depois de outra.
-3. **Remover beneficiário:** exclui a linha.
+3. **Subir (↑)** e **Descer (↓):** mudam a posição do beneficiário sem apagar os valores; a ordem é preservada no histórico e interfere no cálculo sucessivo.
+4. **Remover beneficiário:** exclui a linha; a última linha não pode ser removida.
 
 As pensões sobre o salário mínimo e as de valor fixo não dependem da ordem. Todas as pensões são somadas e deduzidas juntas da base do IRRF na modalidade normal; com pensões sobre os rendimentos líquidos, o cálculo continua sendo feito em iterações. O resultado mostra o total nos cartões e a tabela **Pensão por beneficiário**:
 
@@ -1676,7 +1681,7 @@ Todas as calculadoras possuem o botão **Gerar PDF**, que fica disponível depoi
 | Calculadora | Nome sugerido | Conteúdo |
 | --- | --- | --- |
 | Simulação tributária | `simulacao-tributaria-MM-AAAA.pdf` | Resumo, comparativo das modalidades do IRRF, demonstrativo, FGTS, memória de cálculo com o detalhamento por faixas e observações. |
-| Pensão alimentícia | `relatorio-pensao-alimenticia-MM-AAAA.pdf` | Dados considerados, com a regra da pensão, a explicação do cálculo, o IRRF de quem paga com e sem a pensão, o comparativo dos modelos e, se o último cálculo foi feito com **Detalhar**, as iterações e as tabelas das faixas do INSS e do IRRF. |
+| Pensão alimentícia | `relatorio-pensao-alimenticia-MM-AAAA.pdf` | Dados considerados, com a regra da pensão, a explicação do cálculo, o IRRF de quem paga com e sem a pensão, o comparativo dos modelos e, se a opção **Exibir memória detalhada** estiver marcada, as iterações e as tabelas das faixas do INSS e do IRRF. |
 | Revisão de pensão | `revisao-pensao-MM-AAAA.pdf` | Resumo, a comparação entre a pensão atual e a proposta, a memória de cálculo de cada uma e as observações. |
 | Pensão em atraso | `pensao-em-atraso-AAAA-MM-DD.pdf` | Resumo do débito, com os ritos da prisão e da penhora, os critérios, a tabela de parcelas e as observações. |
 | Débitos judiciais | `debito-judicial-AAAA-MM-DD.pdf` | Resumo do débito, critérios, a tabela de parcelas e as observações. |
@@ -1757,7 +1762,7 @@ Por padrão, o aplicativo desenha a interface sem usar a placa de vídeo, o que 
 | "Os dias-base devem ser maiores que zero." | Informe o divisor da média, normalmente 30. |
 | "O percentual da pensão deve estar entre 0 e 100." | Corrija o percentual da pensão. Sobre o salário mínimo, o limite é 1.000 (150 para 1,5 salário mínimo). |
 | "A soma dos percentuais sobre os rendimentos líquidos passa de 100%." (ou brutos) | Com mais de um beneficiário na mesma base, confira os percentuais ou escolha **Cada uma após descontar as anteriores**. |
-| "Outros descontos não podem ser maiores que o valor bruto." | Na pensão, reduza os outros descontos ou confira o valor bruto. |
+| "Abatimentos dos rendimentos: o valor não pode superar o valor bruto." | Na pensão, reduza os abatimentos ou confira o valor bruto. |
 | "A pensão informada (...) é maior que o 13º integral (...)", "... que as férias + 1/3 (...)" ou "A pensão alimentícia não pode ser maior que a PLR paga." | O valor informado da pensão não pode superar a verba sobre a qual ela é descontada. |
 | "O percentual da pensão de (nome) deve estar entre 0 e 100." | Com mais de um beneficiário, a mensagem diz de quem é o percentual a corrigir. |
 | "A parcela de MM/AAAA vence em ..., depois da data do cálculo." | Na pensão em atraso, mude a última parcela ou a data do cálculo: só entram parcelas já vencidas. |
@@ -1835,7 +1840,7 @@ Use **Atualizar pela internet**, quando disponível, ou corrija os valores manua
 | **Tab** / **Shift + Tab** | Avança ou volta entre os campos e, na tela principal, entre os cartões. |
 | **Espaço** ou **Enter** com um botão ou cartão selecionado | Aciona o botão ou abre a calculadora do cartão. |
 | **Enter** na simulação tributária e nas calculadoras trabalhistas | Calcula, a partir de qualquer campo do formulário. |
-| **Enter** na pensão alimentícia | Calcula com a memória de cálculo (**Detalhar**). |
+| **Enter** na pensão alimentícia | Executa **Calcular**, respeitando a opção **Exibir memória detalhada**. |
 | **Ctrl + S** nas calculadoras trabalhistas | Salva o formulário no histórico. |
 | **Ctrl + P** / **Ctrl + E** nas calculadoras trabalhistas | Recalcula se o formulário mudou e gera o PDF / a planilha do Excel. |
 | **Esc** nas calculadoras trabalhistas | Fecha a janela, perguntando antes se houver dados que não estão no histórico. Com uma lista aberta, só fecha a lista. |

@@ -16,7 +16,7 @@ internal static class PlanilhaPensao
             aba.Par("Valor bruto", Moeda(entrada.ValorBruto));
             aba.Par("Base de INSS", Moeda(entrada.BaseInss));
             aba.Par("Dependentes", entrada.Dependentes);
-            aba.Par("Outros descontos", Moeda(entrada.OutrosDescontos));
+            aba.Par("Abatimentos dos rendimentos", Moeda(entrada.OutrosDescontos));
             if (entrada.Beneficiarios.Count > 1)
                 aba.Par("Ordem de cálculo", entrada.Sucessiva ? "Cada uma após descontar as anteriores" : "Todas sobre a mesma base");
 
@@ -30,7 +30,10 @@ internal static class PlanilhaPensao
             aba.Par("IRRF sem pensão", Moeda(s.ImpostoSemPensao));
             aba.Par("Alíquota da faixa do IRRF sem pensão", Percentual(s.AliquotaIrrfSemPensao));
             aba.Par("Economia de IRRF", Moeda(s.EconomiaIrrf));
-            aba.Par("Líquido de quem paga", Moeda(entrada.ValorBruto - entrada.OutrosDescontos - s.ValorInss - aplicada.Imposto - aplicada.Pensao));
+            if (entrada.ValorBruto > 0m)
+                aba.Par("Líquido de quem paga", Moeda(entrada.ValorBruto - entrada.OutrosDescontos - s.ValorInss - aplicada.Imposto - aplicada.Pensao));
+            else
+                aba.Par("Líquido de quem paga", "Não calculado — sem renda informada");
             aba.Texto(MemoriaCalculoPensao.Explicacao(s, entrada, MoedaTexto, PercentualTexto));
             aba.Texto(MemoriaCalculoPensao.Faixas(s, MoedaTexto));
 

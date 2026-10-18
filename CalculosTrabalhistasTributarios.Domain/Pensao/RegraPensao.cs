@@ -17,6 +17,12 @@ public sealed record RegraPensao(BasePensao Base, decimal Percentual, decimal Va
     /// <summary>Falha com o que corrigir quando o percentual ou o valor está fora dos limites.</summary>
     public Result Validar()
     {
+        if (!Enum.IsDefined(Base))
+            return Erro.Validacao("Selecione uma base de pensão válida.");
+        if (EhPercentual && decimal.Round(Percentual, 2) != Percentual)
+            return Erro.Validacao("O percentual da pensão deve ter até duas casas decimais.");
+        if (!EhPercentual && !LimitesPensao.MoedaValida(Valor))
+            return Erro.Validacao("Valor da pensão: informe de 0 a 999.999.999,99, com até duas casas decimais.");
         if (EhPercentual && (Percentual < 0m || Percentual > PercentualMaximo))
             return Erro.Validacao(Base == BasePensao.SalarioMinimo
                 ? "O percentual do salário mínimo deve estar entre 0 e 1.000 (150 para 1,5 salário mínimo)."

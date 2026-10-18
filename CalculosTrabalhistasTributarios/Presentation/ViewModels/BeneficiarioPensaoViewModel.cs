@@ -5,7 +5,7 @@ using CalculosTrabalhistasTributarios.Presentation.ViewModels.Calculadoras;
 namespace CalculosTrabalhistasTributarios.Presentation.ViewModels;
 
 /// <summary>Uma linha de beneficiário na janela de pensão: o nome e a regra da pensão dele.</summary>
-public sealed class BeneficiarioPensaoViewModel : ViewModelBase
+public sealed class BeneficiarioPensaoViewModel : ViewModelBase, System.ComponentModel.IDataErrorInfo
 {
     private readonly Action _aoEscolherSalarioMinimo;
     private string _nome;
@@ -21,6 +21,11 @@ public sealed class BeneficiarioPensaoViewModel : ViewModelBase
         _nome = nome;
         _aoEscolherSalarioMinimo = aoEscolherSalarioMinimo;
         _baseSelecionada = BasesPensao[0];
+        PropertyChanged += (_, args) =>
+        {
+            if (args.PropertyName is nameof(Percentual) or nameof(ValorPensao) or nameof(BaseSelecionada))
+                OnPropertyChanged("Item[]");
+        };
     }
 
     /// <summary>Sobre o que a pensão incide, conforme a decisão judicial ou o acordo.</summary>
@@ -31,6 +36,22 @@ public sealed class BeneficiarioPensaoViewModel : ViewModelBase
         new("% do salário mínimo", BasePensao.SalarioMinimo),
         new("Valor fixo", BasePensao.ValorFixo)
     ];
+
+    public string Error => string.Empty;
+    public string this[string campo]
+    {
+        get
+        {
+            if (campo != (EhPercentual ? nameof(Percentual) : nameof(ValorPensao)))
+                return "";
+            var texto = EhPercentual ? Percentual : ValorPensao;
+            if (!LeituraNumerica.TentarLer(texto, out var valor))
+                return "Informe um número válido.";
+            var regra = EhPercentual ? new RegraPensao(Base, valor, 0m) : new RegraPensao(Base, 0m, valor);
+            var validacao = regra.Validar();
+            return validacao.Falhou ? validacao.Erro.Mensagem : "";
+        }
+    }
 
     public string Nome { get => _nome; set => SetProperty(ref _nome, value); }
 
@@ -47,6 +68,15 @@ public sealed class BeneficiarioPensaoViewModel : ViewModelBase
             if (EhSalarioMinimo)
                 _aoEscolherSalarioMinimo();
         }
+    }
+
+    internal void DefinirBaseSemConsulta(OpcaoCampo opcao)
+    {
+        _baseSelecionada = opcao;
+        OnPropertyChanged(nameof(BaseSelecionada));
+        OnPropertyChanged(nameof(EhPercentual));
+        OnPropertyChanged(nameof(EhValorFixo));
+        OnPropertyChanged(nameof(EhSalarioMinimo));
     }
 
     public BasePensao Base => (BasePensao)BaseSelecionada.Valor;
