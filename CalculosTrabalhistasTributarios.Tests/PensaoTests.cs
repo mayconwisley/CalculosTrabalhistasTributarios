@@ -46,6 +46,42 @@ public class PensaoTests
     }
 
     [Fact]
+    public async Task Desconto_simplificado_nao_deduz_a_pensao_e_os_dependentes_recebem_aviso()
+    {
+        // Simplificado: base 8.500,00 - 607,20 = 7.892,80; 7.892,80 x 27,5% - 908,73 = 1.261,79, sem deduzir a pensão.
+        // Pensão: 30% de (8.500,00 - 988,07 - 1.261,79) = 30% de 6.250,14 = 1.875,042, arredondada para 1.875,04.
+        var simulacao = await new SimularPensaoUseCase(await Ambiente.ConsultaAsync()).ExecutarAsync(new SimularPensaoRequest(new DateOnly(2026, 10, 1), 8500m, 8500m, 2, RegraPensao.PercentualDosLiquidos(30m), 0m), default).Sucesso();
+
+        Assert.Equal(1261.79m, simulacao.Simplificada.Imposto);
+        Assert.Equal(1875.04m, simulacao.Simplificada.Pensao);
+        Assert.Equal(0m, simulacao.Simplificada.Detalhes[^1].PensaoDeduzida);
+        Assert.Same(simulacao.Normal, simulacao.Aplicada);
+        // Quem recebe a pensão não é deduzido também como dependente (RIR/2018, art. 72, § 1º).
+        var entrada = new EntradaPensaoDto(new DateOnly(2026, 10, 1), 8500m, 8500m, 2, RegraPensao.PercentualDosLiquidos(30m), 0m);
+        Assert.EndsWith("Os 2 dependentes informados não podem incluir beneficiário da pensão: a partir do mês do pagamento, quem recebe a pensão não é deduzido também como dependente (RIR/2018, art. 72, § 1º).",
+            MemoriaCalculoPensao.Explicacao(simulacao, entrada, valor => valor.ToString("C2"), valor => $"{valor}%"));
+        Assert.DoesNotContain("dependente", MemoriaCalculoPensao.Explicacao(simulacao, entrada with { Dependentes = 0 }, valor => valor.ToString("C2"), valor => $"{valor}%"));
+    }
+
+    [Fact]
+    public async Task Reducao_mensal_de_2026_e_medida_sobre_os_rendimentos_e_nao_sobre_a_base()
+    {
+        // 6.000,00, INSS de 641,50 e pensão fixa de 1.000,00. Redução: 978,62 - 0,133145 x 6.000,00 = 179,753, arredondada para 179,75,
+        // a mesma nas três apurações porque depende só dos rendimentos.
+        // Normal: (6.000,00 - 641,50 - 1.000,00) x 22,5% - 675,49 = 305,17; 305,17 - 179,75 = 125,42.
+        // Simplificado: (6.000,00 - 607,20) x 27,5% - 908,73 = 574,29; 574,29 - 179,75 = 394,54.
+        // Sem a pensão: (6.000,00 - 641,50) x 27,5% - 908,73 = 564,86; 564,86 - 179,75 = 385,11, menor que o simplificado.
+        var simulacao = await new SimularPensaoUseCase(await Ambiente.ConsultaAsync()).ExecutarAsync(new SimularPensaoRequest(new DateOnly(2026, 10, 1), 6000m, 6000m, 0, new RegraPensao(BasePensao.ValorFixo, 0m, 1000m), 0m), default).Sucesso();
+
+        Assert.Equal(179.75m, simulacao.Normal.ReducaoMensal);
+        Assert.Equal(125.42m, simulacao.Normal.Imposto);
+        Assert.Equal(179.75m, simulacao.Simplificada.ReducaoMensal);
+        Assert.Equal(394.54m, simulacao.Simplificada.Imposto);
+        Assert.Equal(385.11m, simulacao.ImpostoSemPensao);
+        Assert.Equal(259.69m, simulacao.EconomiaIrrf);
+    }
+
+    [Fact]
     public async Task Antes_de_maio_de_2023_so_existe_a_modalidade_normal()
     {
         var simulacao = await new SimularPensaoUseCase(await Ambiente.ConsultaAsync()).ExecutarAsync(new SimularPensaoRequest(new DateOnly(2022, 6, 1), 5000m, 5000m, 0, RegraPensao.PercentualDosLiquidos(30m), 0m), default).Sucesso();

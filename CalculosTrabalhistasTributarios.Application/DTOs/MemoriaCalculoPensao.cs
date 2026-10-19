@@ -14,7 +14,20 @@ public static class MemoriaCalculoPensao
     /// Como a pensão foi obtida e para que servem os rendimentos de quem paga. Nas bases que não dependem do IRRF, o valor
     /// bruto, o INSS e o IRRF só mostram o efeito da pensão no salário de quem paga.
     /// </summary>
-    public static string Explicacao(SimulacaoPensaoDto simulacao, EntradaPensaoDto entrada, Func<decimal, string> moeda, Func<decimal, string> percentual)
+    public static string Explicacao(SimulacaoPensaoDto simulacao, EntradaPensaoDto entrada, Func<decimal, string> moeda, Func<decimal, string> percentual) =>
+        entrada.Dependentes > 0
+            ? $"{ExplicacaoDaPensao(simulacao, entrada, moeda, percentual)} {AvisoDependentes(entrada.Dependentes)}"
+            : ExplicacaoDaPensao(simulacao, entrada, moeda, percentual);
+
+    /// <summary>
+    /// Quem recebe a pensão não pode ser deduzido também como dependente, a partir do mês do pagamento (Decreto 9.580/2018,
+    /// RIR/2018, art. 72, § 1º). A calculadora não sabe quem são os dependentes, por isso só avisa.
+    /// </summary>
+    public static string AvisoDependentes(int dependentes) =>
+        $"{(dependentes == 1 ? "O dependente informado não pode ser" : $"Os {dependentes} dependentes informados não podem incluir")} beneficiário da pensão: " +
+        "a partir do mês do pagamento, quem recebe a pensão não é deduzido também como dependente (RIR/2018, art. 72, § 1º).";
+
+    private static string ExplicacaoDaPensao(SimulacaoPensaoDto simulacao, EntradaPensaoDto entrada, Func<decimal, string> moeda, Func<decimal, string> percentual)
     {
         var aplicada = simulacao.Aplicada;
         var pensoes = aplicada.Detalhes[^1].Beneficiarios;
