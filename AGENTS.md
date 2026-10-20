@@ -22,8 +22,8 @@ O produto é um aplicativo desktop Windows para simulações trabalhistas, tribu
 
 Stack atualmente configurada:
 
-- C# e .NET 9; WPF com `net9.0-windows` na apresentação e nos testes.
-- `net9.0` nos projetos Domain, Application e Infrastructure.
+- C# e .NET 10; WPF com `net10.0-windows` na apresentação e nos testes.
+- `net10.0` nos projetos Domain, Application, Infrastructure e no gerador do manual.
 - SQLite com `Microsoft.Data.Sqlite`; o projeto não usa EF Core.
 - `Microsoft.Extensions.DependencyInjection` para composição.
 - QuestPDF para PDF, ClosedXML para Excel e HtmlAgilityPack para fontes HTML.

@@ -15,8 +15,8 @@
   <a href="https://github.com/mayconwisley/CalculosTrabalhistasTributarios/actions/workflows/ci.yml"><img src="https://github.com/mayconwisley/CalculosTrabalhistasTributarios/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
   <a href="https://github.com/mayconwisley/CalculosTrabalhistasTributarios/releases/latest"><img src="https://img.shields.io/github/v/release/mayconwisley/CalculosTrabalhistasTributarios?label=vers%C3%A3o" alt="Versão mais recente" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/licen%C3%A7a-MIT-green" alt="Licença MIT" /></a>
-  <img src="https://img.shields.io/badge/.NET-9.0-512BD4?logo=dotnet&logoColor=white" alt=".NET 9" />
-  <img src="https://img.shields.io/badge/C%23-13-239120?logo=csharp&logoColor=white" alt="C# 13" />
+  <img src="https://img.shields.io/badge/.NET-10.0-512BD4?logo=dotnet&logoColor=white" alt=".NET 10" />
+  <img src="https://img.shields.io/badge/C%23-14-239120?logo=csharp&logoColor=white" alt="C# 14" />
   <img src="https://img.shields.io/badge/WPF-Windows-0078D4?logo=windows&logoColor=white" alt="WPF para Windows" />
   <img src="https://img.shields.io/badge/SQLite-Local%20database-003B57?logo=sqlite&logoColor=white" alt="SQLite" />
   <img src="https://img.shields.io/badge/QuestPDF-2025.12-FF4B4B" alt="QuestPDF" />
@@ -167,14 +167,14 @@ As regras da CLT ficam em `CalculosTrabalhistasTributarios.Domain/Trabalhista` (
 
 | Tecnologia | Versão | Uso no projeto |
 | --- | --- | --- |
-| [.NET](https://dotnet.microsoft.com/) | 9 | Plataforma de execução e compilação. |
-| C# | 13 | Linguagem principal da aplicação. |
-| [WPF](https://learn.microsoft.com/dotnet/desktop/wpf/) | .NET 9 | Interface desktop, recursos e temas. |
+| [.NET](https://dotnet.microsoft.com/) | 10 | Plataforma de execução e compilação. |
+| C# | 14 | Linguagem principal da aplicação. |
+| [WPF](https://learn.microsoft.com/dotnet/desktop/wpf/) | .NET 10 | Interface desktop, recursos e temas. |
 | [SQLite](https://www.sqlite.org/) | — | Banco de dados local das tabelas tributárias. |
-| [Microsoft.Data.Sqlite](https://learn.microsoft.com/dotnet/standard/data/sqlite/) | 9.0.2 | Acesso direto ao SQLite, com as tabelas mantidas em memória entre os cálculos. |
+| [Microsoft.Data.Sqlite](https://learn.microsoft.com/dotnet/standard/data/sqlite/) | 10.0.13 | Acesso direto ao SQLite, com as tabelas mantidas em memória entre os cálculos. |
 | [QuestPDF](https://www.questpdf.com/) | 2025.12.1 | Geração dos relatórios PDF. |
-| [Html Agility Pack](https://html-agility-pack.net/) | 1.11.74 | Leitura das páginas HTML usadas na atualização das tabelas. |
-| [ClosedXML](https://github.com/ClosedXML/ClosedXML) | 0.105.0 | Geração das planilhas do Excel. |
+| [Html Agility Pack](https://html-agility-pack.net/) | 1.13.0 | Leitura das páginas HTML usadas na atualização das tabelas. |
+| [ClosedXML](https://github.com/ClosedXML/ClosedXML) | 0.105.1 | Geração das planilhas do Excel. |
 
 ## Arquitetura
 
@@ -222,7 +222,7 @@ CalculosTrabalhistasTributarios/                 Aplicativo WPF (MVVM)
 ## Pré-requisitos
 
 - Windows 10 ou superior.
-- **.NET 9 SDK** para compilar e desenvolver.
+- **.NET 10 SDK** para compilar e desenvolver.
 - Para gerar e publicar instaladores: [Inno Setup 6](https://jrsoftware.org/isdl.php) e o [GitHub CLI](https://cli.github.com) autenticado (`gh auth login`).
 
 ## Executar localmente
@@ -235,7 +235,7 @@ dotnet build .\CalculosTrabalhistasTributarios.sln
 dotnet run --project .\CalculosTrabalhistasTributarios\CalculosTrabalhistasTributarios.csproj
 ```
 
-O executável de desenvolvimento é gerado como `CalculosTrabalhistasTributarios.exe` em `CalculosTrabalhistasTributarios\bin\<configuração>\net9.0-windows`.
+O executável de desenvolvimento é gerado como `CalculosTrabalhistasTributarios.exe` em `CalculosTrabalhistasTributarios\bin\<configuração>\net10.0-windows`.
 
 ## Testes
 

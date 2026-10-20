@@ -18,8 +18,8 @@ Falhas de segurança não devem ir para issues públicas: veja a [Política de S
 ## Ambiente
 
 - Windows 10 ou superior: a interface é WPF.
-- [.NET 9 SDK](https://dotnet.microsoft.com/download/dotnet/9.0).
-- Um editor com suporte a C#: Visual Studio 2022, JetBrains Rider ou VS Code com o C# Dev Kit.
+- [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0).
+- Um editor com suporte a C#: Visual Studio 2026 (18.0 ou superior), JetBrains Rider ou VS Code com o C# Dev Kit.
 
 O [Inno Setup 6](https://jrsoftware.org/isdl.php) e o GitHub CLI só são necessários para gerar e publicar instaladores, tarefa do mantenedor.
 
