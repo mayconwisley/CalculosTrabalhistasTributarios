@@ -236,6 +236,7 @@ Não considere uma calculadora pronta se ela aparece na tela inicial, mas não r
 
 - Siga os contratos de `Infrastructure/Interfaces` e o fluxo existente de `Infrastructure/Tributacao`.
 - Uma nova fonte de tabela normalmente implementa `IFonteTabela<T>` e é registrada em `Infrastructure/DependencyInjection.cs`.
+- A tela de abertura (`AberturaWindow` e `AberturaViewModel`) prepara o banco e, uma vez por dia, chama `AtualizarTodasTabelasUseCase`, que percorre as tabelas por `IAtualizadorTabelas`. Uma tabela nova com atualização pela internet entra também na lista desse caso de uso. A abertura não pode bloquear o uso: falhas viram aviso na tela principal, e Pular ou o tempo máximo apenas adiam para a próxima abertura.
 - Preserve o critério de confirmação existente: fonte oficial ou concordância das alternativas previstas para aquela tabela. Não relaxe a regra de confiança para contornar uma falha de parsing.
 - Valide competência, faixas, alíquotas e consistência antes de gravar. Uma página acessível não garante uma tabela válida ou referente ao período solicitado.
 - Em falha de rede, estrutura desconhecida ou divergência, preserve os dados locais e apresente um resultado explicável.

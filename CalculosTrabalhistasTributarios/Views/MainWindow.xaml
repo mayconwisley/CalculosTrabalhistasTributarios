@@ -452,9 +452,14 @@
 				<ColumnDefinition />
 				<ColumnDefinition Width="Auto" />
 			</Grid.ColumnDefinitions>
-			<CheckBox Grid.Column="1" VerticalAlignment="Bottom" Margin="16,0,0,0" IsChecked="{Binding VerificarNovasVersoes}"
-					Content="Avisar sobre novas versões" Foreground="{DynamicResource MutedTextBrush}"
-					ToolTip="Ao abrir, consulta no GitHub se há uma versão mais nova. Nenhum dado dos cálculos é enviado." />
+			<StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Bottom">
+				<CheckBox Margin="16,0,0,0" IsChecked="{Binding AtualizarTabelasAoAbrir}"
+						Content="Atualizar tabelas ao abrir" Foreground="{DynamicResource MutedTextBrush}"
+						ToolTip="Na primeira abertura do dia, consulta as fontes de todas as tabelas e grava os valores confirmados. Nenhum dado dos cálculos é enviado." />
+				<CheckBox Margin="16,0,0,0" IsChecked="{Binding VerificarNovasVersoes}"
+						Content="Avisar sobre novas versões" Foreground="{DynamicResource MutedTextBrush}"
+						ToolTip="Ao abrir, consulta no GitHub se há uma versão mais nova. Nenhum dado dos cálculos é enviado." />
+			</StackPanel>
 			<TextBlock Foreground="{DynamicResource MutedTextBrush}" TextWrapping="Wrap" VerticalAlignment="Bottom" Margin="2,0,0,0">
 				<Run Text="{Binding Versao, Mode=OneTime, StringFormat='Cálculos Trabalhistas e Tributários {0}'}" />
 				<Run Text=" • Dados processados localmente - Desenvolvido por: Maycon Wisley" />

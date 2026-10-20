@@ -24,6 +24,7 @@ public sealed class MainWindowViewModel : ViewModelBase
     private ThemeMode _temaSelecionado = ThemeManager.CurrentMode;
     private bool _historicoAberto;
     private string _busca = string.Empty;
+    private IReadOnlyList<AtualizacaoDeTabela> _atualizacaoAoAbrir = [];
 
     public MainWindowViewModel(IWindowNavigator navegador, HistoricoViewModel historico, IVerificarAtualizacoesUseCase verificarAtualizacoes, IRegistroDeErros registroDeErros,
         IBaixadorDeAtualizacao baixador, IExecutorInstalador executor, IUserNotifier notificador, IFavoritosAtalhos favoritos)
@@ -227,6 +228,22 @@ public sealed class MainWindowViewModel : ViewModelBase
             OnPropertyChanged();
         }
     }
+
+    /// <summary>Desligada, a tela de abertura não consulta as tabelas; a atualização continua disponível em cada tabela.</summary>
+    public bool AtualizarTabelasAoAbrir
+    {
+        get => ConfiguracoesUsuario.Atuais.AtualizarTabelasAoAbrir;
+        set
+        {
+            if (value == AtualizarTabelasAoAbrir) return;
+            ConfiguracoesUsuario.Alterar(configuracoes => configuracoes.AtualizarTabelasAoAbrir = value);
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>Resultado da atualização feita na tela de abertura; as tabelas não atualizadas viram um aviso.</summary>
+    public void InformarAtualizacaoAoAbrir(IReadOnlyList<AtualizacaoDeTabela> resultados) => _atualizacaoAoAbrir = resultados;
+
     public HistoricoViewModel Historico { get; }
 
     /// <summary>Tela do histórico aberta pelo menu: a lista é lida de novo cada vez que ela abre.</summary>
@@ -263,6 +280,8 @@ public sealed class MainWindowViewModel : ViewModelBase
         {
             var avisos = await _verificarAtualizacoes.ExecutarAsync(Versao, VerificarNovasVersoes, DateOnly.FromDateTime(DateTime.Today), CancellationToken.None);
             Avisos.Clear();
+            if (AberturaViewModel.DescreverPendencias(_atualizacaoAoAbrir) is { } pendencias)
+                Avisos.Add(CriarAvisoPendencias(pendencias));
             foreach (var aviso in avisos)
                 Avisos.Add(Criar(aviso));
         }
@@ -270,6 +289,14 @@ public sealed class MainWindowViewModel : ViewModelBase
         {
             _registroDeErros.Registrar(exception, "Verificação de atualizações ao abrir");
         }
+    }
+
+    private AvisoInicioViewModel CriarAvisoPendencias(string texto)
+    {
+        AvisoInicioViewModel? criado = null;
+        var detalhes = AberturaViewModel.DetalharPendencias(_atualizacaoAoAbrir);
+        return criado = new(texto, "Ver detalhes", new RelayCommand(_ => _notificador.MostrarAviso(detalhes, "Tabelas não atualizadas")),
+            new RelayCommand(_ => Avisos.Remove(criado!)));
     }
 
     private AvisoInicioViewModel Criar(AvisoAtualizacaoDto aviso)
@@ -312,7 +339,7 @@ public sealed class MainWindowViewModel : ViewModelBase
     }
 
     // A versão vem da tag usada na publicação; o SDK acrescenta "+<commit>" à versão informativa, que não interessa ao usuário.
-    private static string ObterVersao()
+    internal static string ObterVersao()
     {
         var versao = typeof(MainWindowViewModel).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? "1.0.0";
         var indiceCommit = versao.IndexOf('+');

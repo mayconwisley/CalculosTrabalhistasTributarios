@@ -138,6 +138,7 @@ As regras da CLT ficam em `CalculosTrabalhistasTributarios.Domain/Trabalhista` (
 - Mantém localmente faixas de INSS e IRRF, dedução por dependente, desconto simplificado, desconto mínimo, redução mensal, tabela anual da PLR, salário-família, salário mínimo e seguro-desemprego, com o histórico desde 2017, e os índices mensais INPC (desde 07/1994), IPCA, IPCA-E, Selic e TR desde 2015 e a taxa legal desde 08/2024.
 - Permite incluir, editar e remover registros por competência.
 - Inicializa dados históricos de forma idempotente, sem sobrescrever manutenções locais.
+- Na primeira abertura do dia, uma tela de abertura com barra de progresso atualiza todas as tabelas de uma vez (pode ser pulada ou desligada no rodapé); cada tabela também pode ser atualizada na sua tela.
 - Atualiza pela internet todas as tabelas, inclusive o seguro-desemprego e o desconto mínimo, pela fonte oficial ou, quando ela ainda não publicou a tabela do ano, por duas fontes alternativas que concordem entre si; em caso de falha, preserva os dados locais.
 - Atualiza os índices pela API do IBGE (INPC, IPCA e IPCA-15, usado como IPCA-E) e do Banco Central (taxa legal, Selic e TR, séries 29543, 4390 e 7811); se a fonte oficial não responder, uma fonte alternativa, como o Ipeadata, só preenche os meses que faltam.
 
@@ -344,7 +345,7 @@ As faixas do seguro-desemprego só são gravadas se fecharem entre si: o valor f
 
 As fontes alternativas do IRRF publicam apenas as faixas. Nesse caso, o desconto simplificado é calculado em 25% do limite da faixa isenta, como determina a Lei 9.250/1995, e a dedução por dependente e a redução mensal continuam com os valores cadastrados.
 
-Cada fonte é lida por uma classe em `Infrastructure/Tributacao/Fontes`, a escolha entre elas fica em `ConsultaDeFontes`, e `AtualizadorTabelas` encaminha a atualização de cada tabela da janela de manutenção ao seu atualizador. Como a estrutura das páginas públicas pode mudar, uma fonte com falha é apenas ignorada; se nenhuma tabela for confirmada, nada é gravado e a mensagem explica o que aconteceu com cada fonte.
+Cada fonte é lida por uma classe em `Infrastructure/Tributacao/Fontes`, a escolha entre elas fica em `ConsultaDeFontes`, e `AtualizadorTabelas` encaminha a atualização de cada tabela da janela de manutenção ao seu atualizador. Na abertura, `AtualizarTodasTabelasUseCase` consulta todas em sequência, uma fonte por tabela, informando o progresso à `AberturaWindow`; a última atualização com resposta fica em `settings.json`, para a consulta ocorrer uma vez por dia. Como a estrutura das páginas públicas pode mudar, uma fonte com falha é apenas ignorada; se nenhuma tabela for confirmada, nada é gravado e a mensagem explica o que aconteceu com cada fonte.
 
 Revise os valores atualizados antes de utilizá-los em cálculos que exijam precisão legal ou contábil.
 

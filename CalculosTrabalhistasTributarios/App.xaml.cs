@@ -6,6 +6,7 @@ using CalculosTrabalhistasTributarios.Infrastructure.Interfaces;
 using CalculosTrabalhistasTributarios.Presentation;
 using CalculosTrabalhistasTributarios.Presentation.Behaviors;
 using CalculosTrabalhistasTributarios.Presentation.Interfaces;
+using CalculosTrabalhistasTributarios.Presentation.ViewModels;
 using CalculosTrabalhistasTributarios.Views;
 using Microsoft.Extensions.DependencyInjection;
 using System.Runtime.Versioning;
@@ -27,7 +28,8 @@ public partial class App : System.Windows.Application
     private ServiceProvider? _serviceProvider;
     private IServiceScope? _applicationScope;
 
-    protected override void OnStartup(StartupEventArgs e)
+    // async void: OnStartup é o ponto de entrada do WPF, sem quem aguarde a tarefa; toda falha é tratada aqui dentro.
+    protected override async void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
         TratarErrosInesperados();
@@ -36,7 +38,10 @@ public partial class App : System.Windows.Application
         ThemeManager.Initialize();
         if (!ThemeManager.UseHardwareAcceleration)
             RenderOptions.ProcessRenderMode = RenderMode.SoftwareOnly;
+        // A tela de abertura fecha antes de a principal ser a única janela; o fim do aplicativo é decidido abaixo.
+        ShutdownMode = ShutdownMode.OnExplicitShutdown;
 
+        AberturaWindow? abertura = null;
         try
         {
             _serviceProvider = ConfigureServices();
@@ -46,16 +51,28 @@ public partial class App : System.Windows.Application
             CommandManager.RegisterClassCommandBinding(typeof(Window), new CommandBinding(ApplicationCommands.Help,
                 (janela, _) => manual.Abrir(JanelaLembrada.GetChave((DependencyObject)janela))));
             _applicationScope = _serviceProvider.CreateScope();
-            _applicationScope.ServiceProvider.GetRequiredService<IInicializadorBancoTributario>()
-                .InicializarAsync(CancellationToken.None).GetAwaiter().GetResult();
-            var janela = _applicationScope.ServiceProvider.GetRequiredService<MainWindow>();
+            var servicos = _applicationScope.ServiceProvider;
+
+            // A abertura prepara o banco fora da thread da tela, para a barra continuar respondendo, e atualiza as tabelas.
+            abertura = servicos.GetRequiredService<AberturaWindow>();
+            var progresso = (AberturaViewModel)abertura.DataContext;
+            abertura.Show();
+            var inicializador = servicos.GetRequiredService<IInicializadorBancoTributario>();
+            await progresso.ExecutarAsync(() => Task.Run(() => inicializador.InicializarAsync(CancellationToken.None)), DateOnly.FromDateTime(DateTime.Today));
+
+            var janela = servicos.GetRequiredService<MainWindow>();
+            servicos.GetRequiredService<MainWindowViewModel>().InformarAtualizacaoAoAbrir(progresso.Resultados);
+            MainWindow = janela;
+            ShutdownMode = ShutdownMode.OnMainWindowClose;
             janela.Show();
+            abertura.Close();
             MostrarAvisoDeSimulacao(janela);
         }
         catch (Exception exception)
         {
             // Sem o banco ou os serviços não há o que mostrar: o usuário precisa saber o motivo, e não ver o app sumir.
             _registroDeErros.Registrar(exception, "Falha ao abrir o aplicativo");
+            abertura?.Close();
             CaixaMensagemWindow.Mostrar(
                 $"Não foi possível abrir o aplicativo.\n\n{exception.Message}\n\nOs detalhes foram registrados em:\n{_registroDeErros.Arquivo}\n\n" +
                 "Se o problema continuar, reinstale o aplicativo: as tabelas cadastradas ficam preservadas na pasta BancoDados.",

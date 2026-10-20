@@ -65,6 +65,16 @@ Abra **Cálculos Trabalhistas e Tributários** pelo Menu Iniciar ou pelo atalho 
 
 Na primeira execução, o aplicativo prepara o banco de dados local com as tabelas históricas de INSS e IRRF. Esse processo é automático e acontece uma única vez.
 
+Antes da janela principal aparece a **tela de abertura**. Na primeira abertura de cada dia, ela atualiza pela internet todas as tabelas (INSS, IRRF e suas deduções, salário mínimo, salário-família, seguro-desemprego, PLR, desconto mínimo e os índices INPC, IPCA, IPCA-E, Selic, taxa legal e TR). A barra mostra quantas já foram consultadas e o nome da que está em consulta:
+
+![Tela de abertura atualizando as tabelas](imagens/100-tela-abertura.png)
+
+- A atualização segue as mesmas regras do botão **Atualizar pela internet** de cada tabela (seção 9.3): só grava valores confirmados e, se uma fonte falhar, preserva os dados locais daquela tabela e continua com as demais.
+- **Pular** abre o aplicativo na hora, com as tabelas já cadastradas; a atualização é feita na próxima abertura. Ela também é interrompida, do mesmo jeito, se demorar mais de 2 minutos.
+- Nas outras aberturas do mesmo dia, a tela só prepara o aplicativo e fecha em seguida.
+- Se alguma tabela não for atualizada, um aviso na tela principal diz quais foram, e **Ver detalhes** mostra o motivo de cada uma. Sem internet, nenhuma fonte responde: o aviso pede para conferir a conexão, e a atualização é tentada de novo na próxima abertura.
+- Para não atualizar ao abrir, desmarque **Atualizar tabelas ao abrir** no rodapé da tela de boas-vindas (seção 11).
+
 ### Atualizando e desinstalando
 
 Para atualizar, use o botão **Atualizar agora** do aviso de nova versão (veja abaixo) ou baixe e execute o instalador da nova versão: ele substitui a versão anterior, fechando o aplicativo se estiver aberto. As tabelas que você incluiu ou alterou são **preservadas**.
@@ -1611,6 +1621,8 @@ As alterações passam a valer imediatamente para os próximos cálculos.
 
 ### 9.3 Atualizando pela internet
 
+A tela de abertura já faz essa atualização em todas as tabelas na primeira abertura de cada dia (seção 2). Use o botão para atualizar uma tabela na hora, por exemplo quando a atualização ao abrir avisou que ela ficou pendente.
+
 Clique em **Atualizar pela internet** com o computador conectado à internet. O aplicativo consulta ao mesmo tempo a fonte oficial e duas fontes alternativas, valida os valores encontrados e só então grava os dados. Ao final, a mensagem abaixo da lista informa a competência importada, de onde ela veio e a quantidade de faixas:
 
 ![Atualização pela internet concluída](imagens/12-atualizacao-oficial.png)
@@ -1754,7 +1766,9 @@ A escolha é salva automaticamente e restaurada na próxima abertura. As configu
 
 **Escala do Windows:** com escala de 125% ou 150%, ou numa tela pequena, as janelas nunca ficam maiores que a área livre do monitor (sem a barra de tarefas): o tamanho mínimo é reduzido ao que cabe e a página da calculadora rola. As bordas e as linhas das grades são alinhadas aos pixels da tela, para ficarem nítidas também nas escalas fracionárias.
 
-**Avisar sobre novas versões:** no rodapé da tela principal. Marcada, a abertura consulta no GitHub se há uma versão mais nova, sem enviar nenhum dado dos cálculos; desmarcada, o aplicativo não acessa a internet ao abrir. O aviso das tabelas do ano não usa a internet e continua aparecendo.
+**Atualizar tabelas ao abrir:** no rodapé da tela principal, marcada por padrão. Marcada, a tela de abertura atualiza todas as tabelas pela internet na primeira abertura do dia (seção 2), apenas lendo as páginas das fontes; desmarcada, as tabelas só são atualizadas pelo botão de cada uma.
+
+**Avisar sobre novas versões:** no rodapé da tela principal. Marcada, a abertura consulta no GitHub se há uma versão mais nova, sem enviar nenhum dado dos cálculos. Com as duas opções desmarcadas, o aplicativo não acessa a internet ao abrir. O aviso das tabelas do ano não usa a internet e continua aparecendo.
 
 Por padrão, o aplicativo desenha a interface sem usar a placa de vídeo, o que reduz bastante o consumo de memória. Se preferir a aceleração por GPU, feche o aplicativo e altere no arquivo de configurações o valor `"HardwareAcceleration": false` para `true`.
 
@@ -1785,6 +1799,7 @@ Por padrão, o aplicativo desenha a interface sem usar a placa de vídeo, o que 
 | "Não há tabela de INSS cadastrada para MM/AAAA: as tabelas começam em 01/2017." (ou de IRRF e demais tabelas) | Não existe tabela vigente para a competência. Informe uma competência a partir da data indicada ou cadastre a tabela correspondente. |
 | "Informe valores válidos para competência e campos numéricos." | Na manutenção de tabelas, confira a competência (MM/AAAA), a faixa (inteiro maior que zero) e os valores. |
 | "Não foi possível atualizar a tabela pela internet." | A mensagem lista o que aconteceu com cada fonte. Verifique a conexão com a internet e tente novamente mais tarde; os dados locais não foram alterados. Se uma fonte alternativa já mostra a tabela nova sem a confirmação da outra, aguarde ou cadastre os valores manualmente. Se o problema persistir, as páginas podem ter mudado de formato: cadastre os valores manualmente. |
+| "As tabelas não foram atualizadas ao abrir..." ou "Ao abrir, N de 13 tabelas não foram atualizadas..." | A atualização da tela de abertura não confirmou essas tabelas, e os dados locais delas foram preservados. **Ver detalhes** mostra o motivo de cada uma. Confira a conexão e use **Atualizar pela internet** na tela da tabela, ou aguarde a próxima abertura do dia seguinte. |
 | "O campo "..." está em formato inválido: ..." ou "Corrija os ... campos destacados: ..." | Nas calculadoras trabalhistas, corrija os campos com borda vermelha conforme a orientação abaixo de cada um: valores com vírgula nos centavos, datas no formato dd/mm/aaaa, competência no formato mm/aaaa e horas como `10:30` ou `10,5`. |
 | "Os dias de descanso (...) passam dos ... dias disponíveis" | Nas férias, reduza os dias de descanso: a soma com os dias vendidos não pode passar dos dias de direito. |
 | "No pedido de demissão não há aviso prévio indenizado..." | Na rescisão, escolha **Trabalhado ou dispensado** ou **Não cumprido (descontar)**. |
@@ -1809,7 +1824,7 @@ Por padrão, o aplicativo desenha a interface sem usar a placa de vídeo, o que 
 Ela abre pelo item **Simulação tributária** do menu lateral, na mesma janela das demais calculadoras. As simulações salvas no histórico em versões anteriores continuam abrindo, recalculando e podendo ser comparadas. A pensão alimentícia também deixou de depender dela: tem os próprios campos de rendimentos, que já vêm preenchidos com os dados da última simulação.
 
 **Os meus dados são enviados para a internet?**
-Não. Os cálculos e as tabelas ficam no seu computador. A internet só é usada quando você clica em **Atualizar pela internet**, que apenas lê as páginas das fontes, em links para páginas oficiais e, ao abrir, para consultar no GitHub se há versão nova, o que pode ser desligado no rodapé da tela principal.
+Não. Os cálculos e as tabelas ficam no seu computador. A internet só é usada para atualizar as tabelas, na tela de abertura uma vez por dia ou pelo botão **Atualizar pela internet**, o que apenas lê as páginas das fontes; em links para páginas oficiais; e, ao abrir, para consultar no GitHub se há versão nova. As consultas ao abrir podem ser desligadas no rodapé da tela principal.
 
 **Uso as calculadoras para quem trabalha em jornada parcial?**
 Sim. Informe o salário da jornada parcial: o INSS, o IRRF, o FGTS e as verbas são calculados sobre ele. Desde 2017, as férias do tempo parcial seguem a mesma tabela de dias do tempo integral (CLT, art. 58-A, § 7º).

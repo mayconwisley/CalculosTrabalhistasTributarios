@@ -14,6 +14,8 @@ public static class DependencyInjection
     public static IServiceCollection AddPresentation(this IServiceCollection services) => services
         .AddScoped<MainWindow>()
         .AddScoped<MainWindowViewModel>()
+        .AddTransient<AberturaWindow>()
+        .AddTransient<AberturaViewModel>()
         .AddScoped<HistoricoViewModel>()
         .AddScoped<ITabelaManutencaoViewModelFactory, TabelaManutencaoViewModelFactory>()
         .AddScoped<IPensaoViewModelFactory, PensaoViewModelFactory>()

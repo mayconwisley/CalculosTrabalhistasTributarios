@@ -13,6 +13,12 @@ public sealed class Configuracoes
     /// <summary>Consulta no GitHub, ao abrir, se há uma versão mais nova.</summary>
     public bool VerificarNovasVersoes { get; set; } = true;
 
+    /// <summary>Na primeira abertura do dia, atualiza todas as tabelas pela internet na tela de abertura.</summary>
+    public bool AtualizarTabelasAoAbrir { get; set; } = true;
+
+    /// <summary>Dia da última atualização ao abrir em que alguma fonte respondeu.</summary>
+    public DateOnly? UltimaAtualizacaoTabelas { get; set; }
+
     /// <summary>Chaves dos cartões favoritos da tela inicial, na ordem em que foram marcados.</summary>
     public List<string> Favoritos { get => _favoritos; set => _favoritos = value ?? []; }
 

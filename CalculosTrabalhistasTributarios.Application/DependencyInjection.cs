@@ -60,5 +60,6 @@ public static class DependencyInjection
         .AddScoped<ISimularDemonstrativoUseCase<SimularResgatePrevidenciaRequest>, SimularResgatePrevidenciaUseCase>()
         .AddScoped<ISimularDemonstrativoUseCase<SimularAposentadoriaRequest>, SimularAposentadoriaUseCase>()
         .AddScoped<ISimularDemonstrativoUseCase<SimularPensaoMorteRequest>, SimularPensaoMorteUseCase>()
-        .AddScoped<IVerificarAtualizacoesUseCase, VerificarAtualizacoesUseCase>();
+        .AddScoped<IVerificarAtualizacoesUseCase, VerificarAtualizacoesUseCase>()
+        .AddScoped<IAtualizarTodasTabelasUseCase, AtualizarTodasTabelasUseCase>();
 }
