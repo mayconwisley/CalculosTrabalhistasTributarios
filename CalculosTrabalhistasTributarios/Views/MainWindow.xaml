@@ -468,7 +468,8 @@
 					NavigateUri="https://github.com/mayconwisley/CalculosTrabalhistasTributarios"
 					RequestNavigate="Hyperlink_RequestNavigate"
 					Foreground="{DynamicResource AccentBrush}">
-					Projeto no Github
+					<!-- Espaços não separáveis: na largura mínima o link desce inteiro para a linha de baixo, sem se partir. -->
+					<Run Text="Projeto&#160;no&#160;Github" />
 				</Hyperlink>
 			</TextBlock>
 		</Grid>

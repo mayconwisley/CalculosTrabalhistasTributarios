@@ -65,15 +65,17 @@ Abra **Cálculos Trabalhistas e Tributários** pelo Menu Iniciar ou pelo atalho 
 
 Na primeira execução, o aplicativo prepara o banco de dados local com as tabelas históricas de INSS e IRRF. Esse processo é automático e acontece uma única vez.
 
-Antes da janela principal aparece a **tela de abertura**. Na primeira abertura de cada dia, ela atualiza pela internet todas as tabelas (INSS, IRRF e suas deduções, salário mínimo, salário-família, seguro-desemprego, PLR, desconto mínimo e os índices INPC, IPCA, IPCA-E, Selic, taxa legal e TR). A barra mostra quantas já foram consultadas e o nome da que está em consulta:
-
-![Tela de abertura atualizando as tabelas](imagens/100-tela-abertura.png)
+Antes da janela principal aparece a **tela de abertura**. Na primeira abertura de cada dia, ela atualiza pela internet todas as tabelas (INSS, IRRF e suas deduções, salário mínimo, salário-família, seguro-desemprego, PLR, desconto mínimo e os índices INPC, IPCA, IPCA-E, Selic, taxa legal e TR).
 
 - A atualização segue as mesmas regras do botão **Atualizar pela internet** de cada tabela (seção 9.3): só grava valores confirmados e, se uma fonte falhar, preserva os dados locais daquela tabela e continua com as demais.
 - **Pular** abre o aplicativo na hora, com as tabelas já cadastradas; a atualização é feita na próxima abertura. Ela também é interrompida, do mesmo jeito, se demorar mais de 2 minutos.
 - Nas outras aberturas do mesmo dia, a tela só prepara o aplicativo e fecha em seguida.
 - Se alguma tabela não for atualizada, um aviso na tela principal diz quais foram, e **Ver detalhes** mostra o motivo de cada uma. Sem internet, nenhuma fonte responde: o aviso pede para conferir a conexão, e a atualização é tentada de novo na próxima abertura.
 - Para não atualizar ao abrir, desmarque **Atualizar tabelas ao abrir** no rodapé da tela de boas-vindas (seção 11).
+
+A barra mostra quantas tabelas já foram consultadas e o nome da que está em consulta:
+
+![Tela de abertura atualizando as tabelas](imagens/100-tela-abertura.png)
 
 ### Atualizando e desinstalando
 
@@ -1768,7 +1770,7 @@ A escolha é salva automaticamente e restaurada na próxima abertura. As configu
 
 **Atualizar tabelas ao abrir:** no rodapé da tela principal, marcada por padrão. Marcada, a tela de abertura atualiza todas as tabelas pela internet na primeira abertura do dia (seção 2), apenas lendo as páginas das fontes; desmarcada, as tabelas só são atualizadas pelo botão de cada uma.
 
-**Avisar sobre novas versões:** no rodapé da tela principal. Marcada, a abertura consulta no GitHub se há uma versão mais nova, sem enviar nenhum dado dos cálculos. Com as duas opções desmarcadas, o aplicativo não acessa a internet ao abrir. O aviso das tabelas do ano não usa a internet e continua aparecendo.
+**Avisar sobre novas versões:** no rodapé da tela principal. Marcada, a abertura consulta no GitHub se há uma versão mais nova, sem enviar nenhum dado dos cálculos. Com as duas opções desmarcadas, o aplicativo não acessa a internet ao abrir. O aviso das tabelas do ano, feito sem internet, continua.
 
 Por padrão, o aplicativo desenha a interface sem usar a placa de vídeo, o que reduz bastante o consumo de memória. Se preferir a aceleração por GPU, feche o aplicativo e altere no arquivo de configurações o valor `"HardwareAcceleration": false` para `true`.
 
