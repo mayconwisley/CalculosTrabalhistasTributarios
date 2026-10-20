@@ -201,6 +201,51 @@
                 </Setter.Value>
             </Setter>
         </Style>
+        <!-- Barra fina e arredondada nas cores do tema, da abertura e dos carregamentos; o modelo padrão do Windows não acompanha o tema escuro. -->
+        <Style x:Key="BarraAbertura" TargetType="ProgressBar">
+            <Setter Property="Height" Value="8" />
+            <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
+            <Setter Property="Background" Value="{DynamicResource BorderBrush}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ProgressBar">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="4" ClipToBounds="True">
+                            <Grid>
+                                <Border x:Name="PART_Track" />
+                                <Border x:Name="PART_Indicator" HorizontalAlignment="Left" Background="{TemplateBinding Foreground}" CornerRadius="4" />
+                                <!-- Sem etapas para contar, um trecho percorre a barra: há trabalho em andamento. -->
+                                <Border x:Name="Faixa" Width="120" HorizontalAlignment="Left" Background="{TemplateBinding Foreground}" CornerRadius="4" Visibility="Collapsed">
+                                    <Border.RenderTransform><TranslateTransform x:Name="Deslocamento" X="-120" /></Border.RenderTransform>
+                                </Border>
+                            </Grid>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsIndeterminate" Value="True">
+                                <Setter TargetName="PART_Indicator" Property="Visibility" Value="Collapsed" />
+                                <Setter TargetName="Faixa" Property="Visibility" Value="Visible" />
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard x:Name="Percurso">
+                                        <Storyboard RepeatBehavior="Forever">
+                                            <DoubleAnimation Storyboard.TargetName="Deslocamento" Storyboard.TargetProperty="X" From="-120" To="560" Duration="0:0:1.4" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                                <Trigger.ExitActions><StopStoryboard BeginStoryboardName="Percurso" /></Trigger.ExitActions>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <!-- "Atalhos" ao lado do "?": lista as teclas de atalho da tela de cálculo. -->
+        <Style x:Key="BotaoAtalhos" TargetType="Button" BasedOn="{StaticResource LinkButton}">
+            <Setter Property="Command" Value="{x:Static presentation:AtalhosDeTeclado.Mostrar}" />
+            <Setter Property="Content" Value="Atalhos" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Margin" Value="16,2,0,0" />
+            <Setter Property="ToolTip" Value="Lista as teclas de atalho: Ctrl+Enter calcula, Ctrl+S salva no histórico, Ctrl+P e Ctrl+E exportam." />
+            <Setter Property="AutomationProperties.Name" Value="Mostrar os atalhos de teclado" />
+        </Style>
 
         <!-- Rolagem no padrão atual do Windows: barra fina, sem setas, trilho transparente e polegar arredondado que engrossa sob o mouse. -->
         <Style x:Key="ScrollBarPageButton" TargetType="RepeatButton">

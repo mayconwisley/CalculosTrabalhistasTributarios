@@ -17,7 +17,7 @@ namespace CalculosTrabalhistasTributarios.Presentation.ViewModels;
 /// Pensão alimentícia em atraso: gera as parcelas do período, recebe os pagamentos parciais e calcula a correção, os juros e
 /// a separação entre o rito da prisão e o da penhora.
 /// </summary>
-public sealed class PensaoAtrasoViewModel : ViewModelBase, ICalculoSalvavel
+public sealed class PensaoAtrasoViewModel : ViewModelBase, ICalculoSalvavel, IAtalhosDeCalculo
 {
     private static readonly CultureInfo Cultura = CultureInfo.GetCultureInfo("pt-BR");
     private readonly ISimularPensaoAtrasoUseCase _simulador;

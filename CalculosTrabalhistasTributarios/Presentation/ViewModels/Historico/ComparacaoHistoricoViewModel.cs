@@ -16,9 +16,12 @@ public sealed class ComparacaoHistoricoViewModel : ViewModelBase
     private bool _somenteDiferencas;
 
     /// <param name="resultadoPrimeiro">Demonstrativo recalculado do primeiro; nulo quando a calculadora não tem um demonstrativo padrão.</param>
-    public ComparacaoHistoricoViewModel(CalculoSalvoDto primeiro, CalculoSalvoDto segundo, Result<DemonstrativoDto>? resultadoPrimeiro = null, Result<DemonstrativoDto>? resultadoSegundo = null)
+    /// <param name="cenarios">Dois cenários da mesma janela, já calculados nela, em vez de dois cálculos salvos refeitos agora.</param>
+    public ComparacaoHistoricoViewModel(CalculoSalvoDto primeiro, CalculoSalvoDto segundo, Result<DemonstrativoDto>? resultadoPrimeiro = null, Result<DemonstrativoDto>? resultadoSegundo = null,
+        bool cenarios = false)
     {
-        Titulo = $"Comparar cálculos · {primeiro.Calculadora}";
+        Titulo = cenarios ? $"Comparar cenários · {primeiro.Calculadora}" : $"Comparar cálculos · {primeiro.Calculadora}";
+        Cabecalho = cenarios ? "Comparação de cenários" : "Comparação de cálculos salvos";
         NomePrimeiro = primeiro.Nome;
         NomeSegundo = segundo.Nome;
         var entradasPrimeiro = Extrair(DadosFormulario.DeJson(primeiro.Dados));
@@ -35,11 +38,14 @@ public sealed class ComparacaoHistoricoViewModel : ViewModelBase
         else
         {
             _resultados = ComparacaoResultados.Linhas(resultadoPrimeiro.Valor, resultadoSegundo.Valor);
-            MensagemResultados = "Os dois cálculos foram refeitos agora, com as tabelas atuais da competência de cada um. A diferença é a do segundo para o primeiro.";
+            MensagemResultados = cenarios
+                ? $"O cenário A foi calculado às {primeiro.CriadoEm:HH:mm}; o B é o formulário atual. A diferença é a do cenário B para o A."
+                : "Os dois cálculos foram refeitos agora, com as tabelas atuais da competência de cada um. A diferença é a do segundo para o primeiro.";
         }
     }
 
     public string Titulo { get; }
+    public string Cabecalho { get; }
     public bool TemResultados => _resultados.Count > 0;
     public string MensagemResultados { get; }
     public IReadOnlyList<LinhaResultadoComparadoViewModel> LinhasResultado =>

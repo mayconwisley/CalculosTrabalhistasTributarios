@@ -7,7 +7,9 @@ namespace CalculosTrabalhistasTributarios.Presentation.Paineis;
 /// Distribui os campos do formulário em colunas de mesma largura que ocupam todo o espaço disponível.
 /// O número de colunas é o que cabe com a largura mínima de cada uma; os campos marcados com
 /// <see cref="LarguraProperty"/> esticam até a borda das colunas que ocupam, e os demais, como as grades
-/// de meses, mantêm a própria largura, alinhados à esquerda, como no painel com quebra de linha.
+/// de meses, mantêm a própria largura, alinhados à esquerda, como no painel com quebra de linha. Quando um campo
+/// largo não cabe no fim da linha e desce, o campo anterior ocupa as colunas que sobraram, em vez de deixar um vão;
+/// a ordem dos campos, e com ela a do Tab, não muda.
 /// </summary>
 public sealed class GradeDeCampos : System.Windows.Controls.Panel
 {
@@ -59,6 +61,8 @@ public sealed class GradeDeCampos : System.Windows.Controls.Panel
         _posicoes.Clear();
         double topo = 0, alturaDaLinha = 0;
         var coluna = 0;
+        // Último campo que estica na linha atual, para ocupar as colunas que sobrarem quando o próximo descer.
+        int? ultimoQueEstica = null;
         foreach (UIElement filho in InternalChildren)
         {
             filho.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
@@ -74,6 +78,10 @@ public sealed class GradeDeCampos : System.Windows.Controls.Panel
             var ocupa = Math.Clamp((int)Math.Ceiling(larguraNatural / passo - 0.001), 1, colunas);
             if (coluna > 0 && coluna + ocupa > colunas)
             {
+                // Só um campo que desce abre o vão; antes de um bloco próprio, como a grade de meses, a linha termina ali.
+                if (estica && ultimoQueEstica is { } indice)
+                    alturaDaLinha = Math.Max(alturaDaLinha, EsticarAteOFim(indice, largura));
+                ultimoQueEstica = null;
                 topo += alturaDaLinha;
                 alturaDaLinha = 0;
                 coluna = 0;
@@ -84,14 +92,32 @@ public sealed class GradeDeCampos : System.Windows.Controls.Panel
             _posicoes.Add(new Posicao(new Rect(coluna * larguraDaColuna, topo, larguraFinal, filho.DesiredSize.Height)));
             alturaDaLinha = Math.Max(alturaDaLinha, filho.DesiredSize.Height);
             coluna += ocupa;
+            if (estica)
+                ultimoQueEstica = _posicoes.Count - 1;
+            else if (coluna < colunas)
+                // Um campo de largura própria depois do que estica: esticar aquele o sobreporia a este.
+                ultimoQueEstica = null;
             if (coluna >= colunas)
             {
+                ultimoQueEstica = null;
                 topo += alturaDaLinha;
                 alturaDaLinha = 0;
                 coluna = 0;
             }
         }
         return new Size(largura, topo + alturaDaLinha);
+    }
+
+    // Alarga o campo até a borda direita do painel e devolve a nova altura dele.
+    private double EsticarAteOFim(int indice, double largura)
+    {
+        var area = _posicoes[indice].Area;
+        area.Width = largura - area.X;
+        var filho = InternalChildren[indice];
+        filho.Measure(new Size(area.Width, double.PositiveInfinity));
+        area.Height = filho.DesiredSize.Height;
+        _posicoes[indice] = new Posicao(area);
+        return area.Height;
     }
 
     protected override Size ArrangeOverride(Size final)

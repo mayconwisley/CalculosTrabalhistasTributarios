@@ -728,7 +728,8 @@
     <ScrollViewer x:Name="Pagina" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Focusable="False" behaviors:RolagemDaTela.Ativa="True">
         <!-- Com pouco conteúdo, a página ocupa a janela e o cartão do resultado estica até o fim dela. -->
         <Border Padding="28" MinHeight="{Binding ViewportHeight, ElementName=Pagina}" Background="{DynamicResource ApplicationBackgroundBrush}">
-            <Grid>
+            <!-- Em telas largas, o código da janela passa o resultado para a terceira coluna, ao lado do formulário. -->
+            <Grid x:Name="Leiaute">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="16" />
@@ -736,13 +737,18 @@
                     <RowDefinition Height="16" />
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition x:Name="EspacoEntreColunas" Width="0" />
+                    <ColumnDefinition x:Name="ColunaResultado" Width="0" />
+                </Grid.ColumnDefinitions>
 
-                <StackPanel>
-                    <StackPanel Orientation="Horizontal"><TextBlock Text="{Binding Titulo}" FontSize="24" FontWeight="SemiBold" VerticalAlignment="Center" /><Button Style="{StaticResource BotaoAjuda}" /><Button Content="Preencher exemplo" Style="{StaticResource LinkButton}" Command="{Binding Historico.PreencherExemploCommand}" Margin="16,2,0,0" VerticalAlignment="Center" Visibility="{Binding Historico.TemExemplo, Converter={StaticResource BooleanToVisibilityConverter}}" ToolTip="Preenche o formulário com os dados fictícios do exemplo do manual e calcula, para conhecer os campos." /></StackPanel>
+                <StackPanel Grid.ColumnSpan="3">
+                    <StackPanel Orientation="Horizontal"><TextBlock Text="{Binding Titulo}" FontSize="24" FontWeight="SemiBold" VerticalAlignment="Center" /><Button Style="{StaticResource BotaoAjuda}" /><Button Style="{StaticResource BotaoAtalhos}" /><Button Content="Preencher exemplo" Style="{StaticResource LinkButton}" Command="{Binding Historico.PreencherExemploCommand}" Margin="16,2,0,0" VerticalAlignment="Center" Visibility="{Binding Historico.TemExemplo, Converter={StaticResource BooleanToVisibilityConverter}}" ToolTip="Preenche o formulário com os dados fictícios do exemplo do manual e calcula, para conhecer os campos." /></StackPanel>
                     <TextBlock Text="{Binding Descricao}" Foreground="{DynamicResource MutedTextBrush}" Margin="0,5,0,0" TextWrapping="Wrap" />
                 </StackPanel>
 
-                <Border Grid.Row="2" Style="{StaticResource Card}" Padding="24,24,24,10">
+                <Border x:Name="CartaoFormulario" Grid.Row="2" Style="{StaticResource Card}" Padding="24,24,24,10">
                     <Grid>
                         <Grid.ColumnDefinitions><ColumnDefinition /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
                         <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
@@ -831,6 +837,17 @@
                         </Grid>
                         <TextBlock Grid.Row="1" Style="{StaticResource EstadoVazio}" Text="{Binding InstrucaoInicial}" />
                         <StackPanel Grid.Row="1" Margin="0,16,0,0" Visibility="{Binding TemResultado, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <!-- Cenários: guarda o resultado atual como A e compara com o formulário alterado, sem salvar no histórico. -->
+                            <WrapPanel Margin="0,0,0,4" Visibility="{Binding PermiteCenarios, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <Button Content="Guardar como cenário A" Command="{Binding GuardarCenarioCommand}" Margin="0,0,8,8"
+                                        ToolTip="Guarda o resultado atual para comparar com outra simulação nesta mesma janela; recalcula antes se o formulário mudou."
+                                        AutomationProperties.Name="Guardar o resultado atual como cenário A" />
+                                <Button Content="Comparar com o A" Command="{Binding CompararCenarioCommand}" Margin="0,0,8,8"
+                                        ToolTip="Mostra o cenário A e o formulário atual lado a lado, com a diferença de cada valor e as entradas que mudaram."
+                                        AutomationProperties.Name="Comparar o formulário atual com o cenário A" />
+                                <TextBlock Text="{Binding SituacaoCenario}" Foreground="{DynamicResource MutedTextBrush}" FontSize="12" TextWrapping="Wrap" VerticalAlignment="Center" Margin="4,0,0,8"
+                                           Visibility="{Binding TemCenarioA, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                            </WrapPanel>
                             <WrapPanel Margin="0,0,0,12">
                                 <Button Content="Usar no holerite" Command="{Binding UsarNoHoleriteCommand}" Margin="0,0,8,8" ToolTip="Abre o holerite com as parcelas de quitação para conferência" AutomationProperties.Name="Transferir quitação do banco de horas para o holerite" Visibility="{Binding PodeUsarNoHolerite, Converter={StaticResource BooleanToVisibilityConverter}}" />
                                 <Button Content="Usar na rescisão" Command="{Binding UsarNaRescisaoCommand}" Margin="0,0,8,8" ToolTip="Abre a rescisão com as parcelas de quitação para conferência" AutomationProperties.Name="Transferir quitação do banco de horas para a rescisão" Visibility="{Binding PodeUsarNaRescisao, Converter={StaticResource BooleanToVisibilityConverter}}" />

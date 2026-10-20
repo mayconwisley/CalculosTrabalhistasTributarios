@@ -14,7 +14,7 @@ using System.Windows.Input;
 namespace CalculosTrabalhistasTributarios.Presentation.ViewModels;
 
 /// <summary>Pensão alimentícia de um ou mais beneficiários e IRRF nas duas modalidades, com os rendimentos informados na própria janela.</summary>
-public sealed class PensaoViewModel : ViewModelBase, ICalculoSalvavel, System.ComponentModel.IDataErrorInfo
+public sealed class PensaoViewModel : ViewModelBase, ICalculoSalvavel, IAtalhosDeCalculo, System.ComponentModel.IDataErrorInfo
 {
     private const int MaximoBeneficiarios = 10;
     private static readonly CultureInfo Cultura = CultureInfo.GetCultureInfo("pt-BR");

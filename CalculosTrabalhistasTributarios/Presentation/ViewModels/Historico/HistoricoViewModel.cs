@@ -22,6 +22,8 @@ public sealed class HistoricoViewModel : ViewModelBase
     private readonly IComparacaoHistoricoService _comparacao;
     private IReadOnlyList<CalculoSalvoDto> _todos = [];
     private IReadOnlyList<ItemHistoricoViewModel> _itens = [];
+    private bool _carregando;
+    private bool _carregandoRecentes = true;
     private string _filtro = string.Empty;
     private string _calculadoraSelecionada = "Todas as calculadoras";
     private string _periodoSelecionado = "Qualquer data";
@@ -97,6 +99,14 @@ public sealed class HistoricoViewModel : ViewModelBase
 
     public bool TemItens => Itens.Count > 0;
 
+    /// <summary>A lista está sendo lida do banco: a mensagem de lista vazia ainda não vale.</summary>
+    public bool Carregando { get => _carregando; private set { SetProperty(ref _carregando, value); OnPropertyChanged(nameof(MostrarVazia)); } }
+    public bool MostrarVazia => !Carregando && !TemItens;
+
+    /// <summary>Os recentes da tela inicial ainda não foram lidos pela primeira vez.</summary>
+    public bool CarregandoRecentes { get => _carregandoRecentes; private set { SetProperty(ref _carregandoRecentes, value); OnPropertyChanged(nameof(SemRecentes)); } }
+    public bool SemRecentes => !CarregandoRecentes && !TemRecentes;
+
     /// <summary>Mensagem da lista vazia: sem cálculos salvos ou sem nenhum que atenda à busca.</summary>
     public string MensagemVazia => _todos.Count == 0
         ? "Nenhum cálculo salvo ainda. Em qualquer calculadora, selecione Salvar no histórico para guardar o formulário com um nome, como o do empregado ou o número do processo."
@@ -112,6 +122,7 @@ public sealed class HistoricoViewModel : ViewModelBase
 
     public async Task CarregarAsync()
     {
+        Carregando = true;
         try
         {
             _todos = await _historico.ListarAsync(CancellationToken.None);
@@ -120,6 +131,10 @@ public sealed class HistoricoViewModel : ViewModelBase
         {
             _notificador.MostrarErro("Não foi possível ler o histórico de cálculos.", exception);
             _todos = [];
+        }
+        finally
+        {
+            Carregando = false;
         }
         _itens = _todos.Select(calculo => new ItemHistoricoViewModel(calculo)).ToArray();
         MostrarRecentes(_todos);
@@ -144,10 +159,21 @@ public sealed class HistoricoViewModel : ViewModelBase
     }
 
     /// <summary>Lê só os recentes, sem mexer na lista, nos filtros e nas seleções do histórico.</summary>
-    public async Task AtualizarRecentesAsync() => MostrarRecentes(await _historico.ListarAsync(CancellationToken.None));
+    public async Task AtualizarRecentesAsync()
+    {
+        try
+        {
+            MostrarRecentes(await _historico.ListarAsync(CancellationToken.None));
+        }
+        finally
+        {
+            CarregandoRecentes = false;
+        }
+    }
 
     private void MostrarRecentes(IReadOnlyList<CalculoSalvoDto> calculos)
     {
+        CarregandoRecentes = false;
         var recentes = calculos.OrderByDescending(calculo => calculo.AlteradoEm).Take(QuantidadeRecentes).ToArray();
         if (recentes.Select(calculo => (calculo.Id, calculo.AlteradoEm, calculo.Nome)).SequenceEqual(Recentes.Select(item => (item.Calculo.Id, item.Calculo.AlteradoEm, item.Calculo.Nome))))
             return;
@@ -155,6 +181,7 @@ public sealed class HistoricoViewModel : ViewModelBase
         foreach (var calculo in recentes)
             Recentes.Add(new ItemHistoricoViewModel(calculo));
         OnPropertyChanged(nameof(TemRecentes));
+        OnPropertyChanged(nameof(SemRecentes));
     }
 
     private void Filtrar()
@@ -181,6 +208,7 @@ public sealed class HistoricoViewModel : ViewModelBase
         foreach (var item in encontrados)
             Itens.Add(item);
         OnPropertyChanged(nameof(TemItens));
+        OnPropertyChanged(nameof(MostrarVazia));
         OnPropertyChanged(nameof(MensagemVazia));
         OnPropertyChanged(nameof(Resumo));
         AtualizarComparacao();

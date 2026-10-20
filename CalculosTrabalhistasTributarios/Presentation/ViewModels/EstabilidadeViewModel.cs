@@ -9,7 +9,7 @@ using System.Windows.Input;
 
 namespace CalculosTrabalhistasTributarios.Presentation.ViewModels;
 
-public sealed class EstabilidadeViewModel : ViewModelBase, ICalculoSalvavel
+public sealed class EstabilidadeViewModel : ViewModelBase, ICalculoSalvavel, IAtalhosDeCalculo
 {
     private static readonly CultureInfo Cultura = CultureInfo.GetCultureInfo("pt-BR");
     private readonly ISimularEstabilidadeUseCase _simulador;

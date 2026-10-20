@@ -13,7 +13,7 @@ using System.Windows.Input;
 namespace CalculosTrabalhistasTributarios.Presentation.ViewModels.Calculadoras;
 
 /// <summary>Janela padrão das calculadoras: formulário, demonstrativo no formato de holerite, memória de cálculo e PDF.</summary>
-public sealed class CalculadoraViewModel : ViewModelBase, ICalculoSalvavel
+public sealed class CalculadoraViewModel : ViewModelBase, ICalculoSalvavel, IAtalhosDeCalculo
 {
     private static readonly CultureInfo Cultura = CultureInfo.GetCultureInfo("pt-BR");
     private readonly ICalculadora _calculadora;
@@ -48,10 +48,18 @@ public sealed class CalculadoraViewModel : ViewModelBase, ICalculoSalvavel
     private bool _resultadoDesatualizado;
     private IReadOnlyDictionary<string, string>? _dadosDoResultado;
     private IReadOnlyDictionary<string, string>? _dadosSalvos;
+    private CancellationTokenSource? _recalculoAgendado;
+    private readonly IComparacaoHistoricoService? _comparacao;
+    private (CalculoSalvoDto Calculo, DemonstrativoDto Demonstrativo)? _cenarioA;
+    private bool _calculando;
+
+    // Uma pausa curta na digitação antes de recalcular, para não calcular a cada tecla.
+    private static readonly TimeSpan EsperaDoRecalculo = TimeSpan.FromMilliseconds(700);
 
     public CalculadoraViewModel(TipoCalculadora tipo, ICalculadora calculadora, IUserNotifier notificador, IRelatorioPdfService relatorioPdf, IPlanilhaService planilha, IArquivoDialogService arquivoDialog,
-        ContextoCompartilhado contexto, IHistoricoDaJanelaFactory historico)
+        ContextoCompartilhado contexto, IHistoricoDaJanelaFactory historico, IComparacaoHistoricoService? comparacao = null)
     {
+        _comparacao = comparacao;
         _tipo = tipo;
         _calculadora = calculadora;
         _notificador = notificador;
@@ -67,6 +75,8 @@ public sealed class CalculadoraViewModel : ViewModelBase, ICalculoSalvavel
         CalcularCommand = new AsyncRelayCommand(() => CalcularAsync(solicitadoPeloUsuario: true));
         ExportarPdfCommand = new AsyncRelayCommand(ExportarPdfAsync, () => _demonstrativo is not null);
         ExportarExcelCommand = new AsyncRelayCommand(ExportarExcelAsync, () => _demonstrativo is not null);
+        GuardarCenarioCommand = new AsyncRelayCommand(GuardarCenarioAsync, () => _demonstrativo is not null && _comparacao is not null);
+        CompararCenarioCommand = new AsyncRelayCommand(CompararCenarioAsync, () => _demonstrativo is not null && _cenarioA is not null && _comparacao is not null);
         UsarNoHoleriteCommand = new RelayCommand(_ => TransferirQuitacao(TipoCalculadora.Holerite),
             _ => !ResultadoDesatualizado && _demonstrativo?.QuitacaoBancoHoras?.Situacao == SituacaoBancoHoras.Fechamento && _abrirCalculadora is not null);
         UsarNaRescisaoCommand = new RelayCommand(_ => TransferirQuitacao(TipoCalculadora.Rescisao),
@@ -82,9 +92,24 @@ public sealed class CalculadoraViewModel : ViewModelBase, ICalculoSalvavel
     public IReadOnlyList<CampoViewModel> CamposDoFormulario => _calculadora.CamposDoFormulario;
     public bool UsaFormularioLarguraTotal => CamposDoFormulario.Count == 1 && CamposDoFormulario[0] is CampoBancoHorasViewModel or CampoFormularioCustoFuncionarioViewModel;
     public bool UsaBotaoAbaixoFormulario => UsaFormularioLarguraTotal || Campos.Any(campo => campo is CampoDepositosFgtsViewModel or CampoQuitacaoBancoHorasViewModel or CampoParcelasRraViewModel or CampoMesesSimplesViewModel or CampoConferenciaFgtsViewModel or CampoSobreavisoViewModel or CampoTransferenciaViewModel or CampoGorjetasViewModel or CampoAportesPrevidenciaViewModel);
+
+    /// <summary>
+    /// Em telas largas, o resultado pode ficar ao lado do formulário; não nos formulários de grades largas, que precisam
+    /// da largura inteira para as colunas.
+    /// </summary>
+    public bool PermiteResultadoAoLado => !UsaBotaoAbaixoFormulario && !Campos.Any(campo => campo is CampoReajusteRetroativoViewModel or CampoVinculosInssViewModel or CampoMediaVerbasVariaveisViewModel);
     public ICommand CalcularCommand { get; }
     public ICommand ExportarPdfCommand { get; }
     public ICommand ExportarExcelCommand { get; }
+    public ICommand GuardarCenarioCommand { get; }
+    public ICommand CompararCenarioCommand { get; }
+
+    /// <summary>Visível só onde há comparação; o cenário A fica na memória da janela e some ao fechá-la.</summary>
+    public bool PermiteCenarios => _comparacao is not null;
+    public bool TemCenarioA => _cenarioA is not null;
+    public string SituacaoCenario => _cenarioA is { } cenario
+        ? $"Cenário A guardado às {cenario.Calculo.CriadoEm:HH:mm}. Altere o formulário e use Comparar com o A para ver as diferenças."
+        : string.Empty;
     public ICommand UsarNoHoleriteCommand { get; }
     public ICommand UsarNaRescisaoCommand { get; }
     public ICommand CalcularRraCommand { get; }
@@ -169,6 +194,25 @@ public sealed class CalculadoraViewModel : ViewModelBase, ICalculoSalvavel
     {
         if (_dadosDoResultado is not null && TemResultado)
             ResultadoDesatualizado = !EquivalenciaFormulario.Equivalentes(_dadosDoResultado, _calculadora.ExportarCampos());
+        if (ResultadoDesatualizado && ConfiguracoesUsuario.Atuais.RecalcularAoAlterar)
+            _ = RecalcularAoAlterarAsync();
+    }
+
+    /// <summary>Com a opção ligada em Configurações: cada alteração adia o recálculo, que roda quando a digitação para.</summary>
+    private async Task RecalcularAoAlterarAsync()
+    {
+        _recalculoAgendado?.Cancel();
+        var agendado = _recalculoAgendado = new CancellationTokenSource();
+        try
+        {
+            await Task.Delay(EsperaDoRecalculo, agendado.Token);
+        }
+        catch (OperationCanceledException)
+        {
+            return;
+        }
+        if (ResultadoDesatualizado && !_calculando)
+            await CalcularAsync(solicitadoPeloUsuario: false, automatico: true);
     }
 
     /// <summary>Registra o formulário atual como o salvo: ao abrir a janela, ao salvar e ao abrir do histórico.</summary>
@@ -189,17 +233,19 @@ public sealed class CalculadoraViewModel : ViewModelBase, ICalculoSalvavel
             LimparAviso();
     }
 
-    private async Task<bool> CalcularAsync(bool solicitadoPeloUsuario)
+    private async Task<bool> CalcularAsync(bool solicitadoPeloUsuario, bool automatico = false)
     {
+        _recalculoAgendado?.Cancel();
         LimparAviso();
         foreach (var campo in Campos)
             campo.MensagemErro = null;
+        _calculando = true;
         try
         {
             var resultado = await _calculadora.CalcularAsync(CancellationToken.None);
             if (resultado.Falhou)
             {
-                ApresentarFalha(resultado.Erro, solicitadoPeloUsuario);
+                ApresentarFalha(resultado.Erro, solicitadoPeloUsuario, automatico);
                 return false;
             }
             _nomeArquivoPdf = _calculadora.NomeArquivoPdf;
@@ -222,11 +268,21 @@ public sealed class CalculadoraViewModel : ViewModelBase, ICalculoSalvavel
             _notificador.MostrarErro($"Não foi possível concluir o cálculo de {Titulo.ToLower(Cultura)}.", exception);
             return false;
         }
+        finally
+        {
+            _calculando = false;
+        }
     }
 
     // Erros de preenchimento ficam no formulário, junto dos campos; falhas de tabela ou de serviço continuam numa mensagem.
-    private void ApresentarFalha(Erro erro, bool solicitadoPeloUsuario)
+    private void ApresentarFalha(Erro erro, bool solicitadoPeloUsuario, bool automatico)
     {
+        // No recálculo automático, uma janela de mensagem interromperia a digitação: a falha fica junto do botão Calcular.
+        if (erro.Tipo != TipoErro.Validacao && automatico)
+        {
+            Aviso = erro.Mensagem;
+            return;
+        }
         if (erro.Tipo != TipoErro.Validacao)
         {
             _notificador.MostrarFalha(erro, $"Não foi possível concluir o cálculo de {Titulo.ToLower(Cultura)}.");
@@ -311,6 +367,8 @@ public sealed class CalculadoraViewModel : ViewModelBase, ICalculoSalvavel
         ((RelayCommand)LevarFgtsRescisaoCommand).RaiseCanExecuteChanged();
         ((AsyncRelayCommand)ExportarPdfCommand).RaiseCanExecuteChanged();
         ((AsyncRelayCommand)ExportarExcelCommand).RaiseCanExecuteChanged();
+        ((AsyncRelayCommand)GuardarCenarioCommand).RaiseCanExecuteChanged();
+        ((AsyncRelayCommand)CompararCenarioCommand).RaiseCanExecuteChanged();
     }
 
     private void TransferirQuitacao(TipoCalculadora destino)
@@ -337,6 +395,31 @@ public sealed class CalculadoraViewModel : ViewModelBase, ICalculoSalvavel
         if (fgts.Desligamento is { } desligamento)
             valores["Data de desligamento"] = desligamento.ToString("dd/MM/yyyy", Cultura);
         _abrirCalculadora(TipoCalculadora.Rescisao, valores);
+    }
+
+    // O resultado guardado é o do formulário atual: com alterações, o cálculo é refeito antes, como na exportação.
+    private async Task GuardarCenarioAsync()
+    {
+        if (!await AtualizarResultadoParaExportacaoAsync() || _demonstrativo is null)
+            return;
+        _cenarioA = (Cenario("Cenário A"), _demonstrativo);
+        OnPropertyChanged(nameof(TemCenarioA));
+        OnPropertyChanged(nameof(SituacaoCenario));
+        ((AsyncRelayCommand)CompararCenarioCommand).RaiseCanExecuteChanged();
+    }
+
+    private async Task CompararCenarioAsync()
+    {
+        if (_cenarioA is not { } cenarioA || _comparacao is null || !await AtualizarResultadoParaExportacaoAsync() || _demonstrativo is null)
+            return;
+        _comparacao.MostrarCenarios(cenarioA.Calculo, cenarioA.Demonstrativo, Cenario("Cenário B (formulário atual)"), _demonstrativo);
+    }
+
+    // Um cálculo fora do histórico, só para a comparação mostrar os dados informados em cada cenário.
+    private CalculoSalvoDto Cenario(string nome)
+    {
+        var agora = DateTime.Now;
+        return new CalculoSalvoDto(0, TipoHistorico, NomeCalculadora, nome, ExportarDados().ParaJson(), agora, agora);
     }
 
     private async Task ExportarPdfAsync()

@@ -3,6 +3,7 @@ using CalculosTrabalhistasTributarios.Application.Interfaces;
 using CalculosTrabalhistasTributarios.Domain.Comum;
 using CalculosTrabalhistasTributarios.Presentation;
 using CalculosTrabalhistasTributarios.Presentation.Behaviors;
+using CalculosTrabalhistasTributarios.Presentation.Interfaces;
 using CalculosTrabalhistasTributarios.Presentation.Services;
 using CalculosTrabalhistasTributarios.Presentation.ViewModels.Calculadoras;
 using CalculosTrabalhistasTributarios.Presentation.ViewModels.Historico;
@@ -61,6 +62,18 @@ public class UsabilidadeTests
     }
 
     [Fact]
+    public void Toda_tela_de_calculo_salvavel_atende_aos_atalhos_de_teclado()
+    {
+        // A janela principal liga Ctrl+Enter, Ctrl+S, Ctrl+P e Ctrl+E pela interface; uma tela sem ela ficaria sem atalhos.
+        var telas = typeof(ICalculoSalvavel).Assembly.GetTypes()
+            .Where(tipo => tipo is { IsClass: true, IsAbstract: false } && typeof(ICalculoSalvavel).IsAssignableFrom(tipo)).ToArray();
+
+        Assert.NotEmpty(telas);
+        Assert.DoesNotContain(telas, tipo => !typeof(IAtalhosDeCalculo).IsAssignableFrom(tipo));
+        Assert.Contains(AtalhosDeTeclado.Lista, atalho => atalho.Teclas == "Ctrl+Enter");
+    }
+
+    [Fact]
     public void Pdf_do_manual_tem_a_pagina_de_cada_secao()
     {
         var indice = IndiceManualPdf.Ler(File.ReadAllBytes(Path.Combine(Raiz(), "docs", "ManualDoUsuario.pdf")));
@@ -106,6 +119,12 @@ public class UsabilidadeTests
         var falha = new ComparacaoHistoricoViewModel(salvo, salvo with { Id = 2, Nome = "B" }, demonstrativo, Erro.Validacao("Salário: informe um valor."));
         Assert.False(falha.TemResultados);
         Assert.Equal("Não foi possível recalcular “B”: Salário: informe um valor.", falha.MensagemResultados);
+
+        // Cenários da mesma janela não são refeitos: a explicação diz de quando é o A.
+        var cenarios = new ComparacaoHistoricoViewModel(salvo with { CriadoEm = new DateTime(2026, 10, 20, 9, 5, 0) }, salvo with { Id = 0, Nome = "B" }, demonstrativo, demonstrativo, cenarios: true);
+        Assert.Equal("Comparação de cenários", cenarios.Cabecalho);
+        Assert.StartsWith("O cenário A foi calculado às 09:05;", cenarios.MensagemResultados);
+        Assert.Equal("Comparação de cálculos salvos", comparacao.Cabecalho);
     }
 
     [Theory]

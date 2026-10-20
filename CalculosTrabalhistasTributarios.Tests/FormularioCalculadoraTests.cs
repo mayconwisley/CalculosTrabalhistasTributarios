@@ -228,6 +228,73 @@ public class FormularioCalculadoraTests
         Assert.Equal(2, notificador.Perguntas);
     }
 
+    [Theory]
+    [InlineData(TipoCampo.Moeda, "3.5x0,00", "Use números e vírgula, como 3.500,00.")]
+    [InlineData(TipoCampo.Data, "31/02/2026", "Use uma data dd/mm/aaaa.")]
+    [InlineData(TipoCampo.Competencia, "13/2026", "Use o mês e o ano, mm/aaaa.")]
+    [InlineData(TipoCampo.Horas, "10:75", "Use 10:30 ou 10,5 horas.")]
+    [InlineData(TipoCampo.Inteiro, "2,5", "Use um número inteiro.")]
+    public void Ao_sair_do_campo_o_formato_invalido_ja_aparece(TipoCampo tipo, string valor, string mensagem)
+    {
+        var campo = new CampoTextoViewModel("Campo", tipo, valor);
+
+        LeitorFormulario.ConferirFormato(campo);
+
+        Assert.Equal(mensagem, campo.MensagemErro);
+    }
+
+    [Theory]
+    [InlineData(TipoCampo.Moeda, "3.500,00")]
+    [InlineData(TipoCampo.Data, "29/02/2028")]
+    [InlineData(TipoCampo.Horas, "10:30")]
+    [InlineData(TipoCampo.Data, "")]
+    [InlineData(TipoCampo.Texto, "qualquer texto")]
+    public void Ao_sair_do_campo_valor_valido_ou_vazio_nao_e_marcado(TipoCampo tipo, string valor)
+    {
+        // Vazio fica para o cálculo, que sabe se o campo é opcional.
+        var campo = new CampoTextoViewModel("Campo", tipo, valor);
+
+        LeitorFormulario.ConferirFormato(campo);
+
+        Assert.False(campo.TemErro);
+    }
+
+    [Fact]
+    public void Cenario_A_guarda_o_resultado_e_compara_com_o_formulario_atual()
+    {
+        var calculadora = new CalculadoraFalsa();
+        var notificador = new NotificadorFalso();
+        var comparacao = new ComparacaoFalsa();
+        var janela = new CalculadoraViewModel(TipoCalculadora.Holerite, calculadora, notificador, null!, null!, null!, new ContextoCompartilhado(),
+            new HistoricoDaJanelaFactory(null!, null!, notificador), comparacao);
+        Assert.False(janela.GuardarCenarioCommand.CanExecute(null));
+
+        janela.CalcularCommand.Execute(null);
+        Assert.False(janela.CompararCenarioCommand.CanExecute(null));
+        janela.GuardarCenarioCommand.Execute(null);
+        Assert.True(janela.TemCenarioA);
+
+        // O cenário B é o formulário alterado, recalculado antes da comparação, como na exportação.
+        calculadora.Salario.Valor = "4.000,00";
+        janela.CompararCenarioCommand.Execute(null);
+
+        Assert.Equal(3_000m, comparacao.ResultadoA?.Resultado);
+        Assert.Equal(4_000m, comparacao.ResultadoB?.Resultado);
+        Assert.Contains("3.000,00", comparacao.CenarioA?.Dados);
+        Assert.Contains("4.000,00", comparacao.CenarioB?.Dados);
+        Assert.False(janela.ResultadoDesatualizado);
+    }
+
+    [Fact]
+    public void Sem_comparacao_os_cenarios_ficam_ocultos()
+    {
+        var (janela, _, _) = Criar();
+        janela.CalcularCommand.Execute(null);
+
+        Assert.False(janela.PermiteCenarios);
+        Assert.False(janela.GuardarCenarioCommand.CanExecute(null));
+    }
+
     private static (CalculadoraViewModel Janela, CalculadoraFalsa Calculadora, NotificadorFalso Notificador) Criar()
     {
         var calculadora = new CalculadoraFalsa();
@@ -280,6 +347,19 @@ public class FormularioCalculadoraTests
             Perguntas++;
             return Resposta;
         }
+    }
+
+    private sealed class ComparacaoFalsa : IComparacaoHistoricoService
+    {
+        public CalculoSalvoDto? CenarioA { get; private set; }
+        public CalculoSalvoDto? CenarioB { get; private set; }
+        public DemonstrativoDto? ResultadoA { get; private set; }
+        public DemonstrativoDto? ResultadoB { get; private set; }
+
+        public Task MostrarAsync(CalculoSalvoDto primeiro, CalculoSalvoDto segundo) => throw new NotSupportedException();
+
+        public void MostrarCenarios(CalculoSalvoDto cenarioA, DemonstrativoDto resultadoA, CalculoSalvoDto cenarioB, DemonstrativoDto resultadoB) =>
+            (CenarioA, ResultadoA, CenarioB, ResultadoB) = (cenarioA, resultadoA, cenarioB, resultadoB);
     }
 
     private sealed class ArquivoDialogFalso : IArquivoDialogService

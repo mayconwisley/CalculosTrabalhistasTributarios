@@ -20,7 +20,7 @@
                 </Grid.RowDefinitions>
 
                 <StackPanel>
-                    <StackPanel Orientation="Horizontal"><TextBlock Text="Cálculo de estabilidade" FontSize="24" FontWeight="SemiBold" VerticalAlignment="Center" /><Button Style="{StaticResource BotaoAjuda}" /><Button Content="Preencher exemplo" Style="{StaticResource LinkButton}" Command="{Binding Historico.PreencherExemploCommand}" Margin="16,2,0,0" VerticalAlignment="Center" Visibility="{Binding Historico.TemExemplo, Converter={StaticResource BooleanToVisibilityConverter}}" ToolTip="Preenche o formulário com os dados fictícios do exemplo do manual e calcula, para conhecer os campos." /></StackPanel>
+                    <StackPanel Orientation="Horizontal"><TextBlock Text="Cálculo de estabilidade" FontSize="24" FontWeight="SemiBold" VerticalAlignment="Center" /><Button Style="{StaticResource BotaoAjuda}" /><Button Style="{StaticResource BotaoAtalhos}" /><Button Content="Preencher exemplo" Style="{StaticResource LinkButton}" Command="{Binding Historico.PreencherExemploCommand}" Margin="16,2,0,0" VerticalAlignment="Center" Visibility="{Binding Historico.TemExemplo, Converter={StaticResource BooleanToVisibilityConverter}}" ToolTip="Preenche o formulário com os dados fictícios do exemplo do manual e calcula, para conhecer os campos." /></StackPanel>
                     <TextBlock Text="Apure as verbas indenizatórias do período restante de estabilidade." Foreground="{DynamicResource MutedTextBrush}" Margin="0,5,0,0" />
                 </StackPanel>
 

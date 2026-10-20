@@ -30,6 +30,7 @@ public static class DependencyInjection
         .AddSingleton<IManualUsuarioService, WpfManualUsuarioService>()
         .AddSingleton<INomeDialogService, WpfNomeDialogService>()
         .AddScoped<IComparacaoHistoricoService, WpfComparacaoHistoricoService>()
+        .AddScoped<IAtualizacaoTabelasService, WpfAtualizacaoTabelasService>()
         // Do escopo da janela principal, como a fábrica das calculadoras: resolve as calculadoras pelo mesmo provedor.
         .AddScoped<IRecalculoHistorico, RecalculoHistorico>()
         .AddSingleton<IHistoricoDaJanelaFactory, HistoricoDaJanelaFactory>()

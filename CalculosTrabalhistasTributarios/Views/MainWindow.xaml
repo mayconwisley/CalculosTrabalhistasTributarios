@@ -1,6 +1,7 @@
 <Window x:Class="CalculosTrabalhistasTributarios.Views.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:presentation="clr-namespace:CalculosTrabalhistasTributarios.Presentation"
         Title="Cálculos Trabalhistas e Tributários" Height="850" Width="1560" MinHeight="620" MinWidth="1360"
         Background="{DynamicResource ApplicationBackgroundBrush}"
         Foreground="{DynamicResource TextBrush}" WindowStartupLocation="CenterScreen">
@@ -204,6 +205,8 @@
 		</Style>
 	</Window.Resources>
 	<Grid Background="{DynamicResource ApplicationBackgroundBrush}">
+		<!-- Densidade compacta (Configurações): reduz tudo por igual, sem mudar a distribuição das colunas. -->
+		<Grid.LayoutTransform><ScaleTransform ScaleX="{Binding Escala}" ScaleY="{Binding Escala}" /></Grid.LayoutTransform>
 		<Grid.RowDefinitions><RowDefinition Height="68" /><RowDefinition Height="*" /></Grid.RowDefinitions>
 		<Grid.ColumnDefinitions><ColumnDefinition Width="308" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
 		<Border Grid.ColumnSpan="2" Background="{DynamicResource ResultBackgroundBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1">
@@ -243,6 +246,7 @@
 				<StackPanel Grid.Row="2" Margin="0,10,0,0">
 					<Border Height="1" Background="{DynamicResource BorderBrush}" Margin="0,0,0,8" />
 					<Button DataContext="{Binding AtalhoHistorico}" Content="{Binding Titulo}" Tag="&#xE81C;" Style="{StaticResource ItemRaizMenuLateral}" Click="Historico_Click" ToolTip="{Binding Descricao}" AutomationProperties.Name="Histórico" />
+					<Button DataContext="{Binding AtalhoConfiguracoes}" Content="{Binding Titulo}" Tag="&#xE713;" Style="{StaticResource ItemRaizMenuLateral}" Click="Configuracoes_Click" ToolTip="{Binding Descricao}" AutomationProperties.Name="Configurações" />
 				</StackPanel>
 			</Grid>
 		</Border>
@@ -275,7 +279,10 @@
 		<ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Focusable="False">
 			<ScrollViewer.Style>
 				<Style TargetType="ScrollViewer">
-					<Style.Triggers><DataTrigger Binding="{Binding HistoricoAberto}" Value="True"><Setter Property="Visibility" Value="Collapsed" /></DataTrigger></Style.Triggers>
+					<Style.Triggers>
+							<DataTrigger Binding="{Binding HistoricoAberto}" Value="True"><Setter Property="Visibility" Value="Collapsed" /></DataTrigger>
+							<DataTrigger Binding="{Binding ConfiguracoesAbertas}" Value="True"><Setter Property="Visibility" Value="Collapsed" /></DataTrigger>
+						</Style.Triggers>
 				</Style>
 			</ScrollViewer.Style>
 			<StackPanel Margin="0,4,0,0">
@@ -297,6 +304,10 @@
 							<StackPanel>
 								<TextBlock FontSize="26" FontWeight="Bold" Foreground="{DynamicResource AccentBrush}"><Run Text="{Binding QuantidadeTabelas, Mode=OneWay}" /><Run Text=" tabelas" FontSize="15" FontWeight="SemiBold" /></TextBlock>
 								<TextBlock Text="INSS, IRRF, deduções e índices econômicos. Cada registro vale a partir da sua competência e pode ser atualizado pela internet." Style="{StaticResource TextoDica}" />
+								<TextBlock Text="{Binding SituacaoTabelas}" Style="{StaticResource TextoDica}" Foreground="{DynamicResource TextBrush}" Margin="0,8,0,0" />
+								<Button Content="Atualizar agora" Command="{Binding AtualizarTabelasAgoraCommand}" Style="{StaticResource LinkButton}" HorizontalAlignment="Left" Margin="0,6,0,0"
+								        ToolTip="Consulta as fontes de todas as tabelas agora, mostrando o andamento; os dados locais são preservados quando uma fonte não responde."
+								        AutomationProperties.Name="Atualizar todas as tabelas agora" />
 							</StackPanel>
 						</DockPanel>
 					</Border>
@@ -319,13 +330,12 @@
 							<Button Content="Ver o histórico" Click="Historico_Click" Style="{StaticResource LinkButton}" HorizontalAlignment="Right" VerticalAlignment="Center"
 							        ToolTip="Abre o histórico, com todos os cálculos salvos, a busca e a comparação." />
 						</Grid>
-						<TextBlock Text="Nenhum cálculo salvo ainda. Em uma calculadora, use Salvar no histórico para retomá-lo depois por aqui.">
-							<TextBlock.Style>
-								<Style TargetType="TextBlock" BasedOn="{StaticResource TextoDica}">
-									<Style.Triggers><DataTrigger Binding="{Binding Historico.TemRecentes}" Value="True"><Setter Property="Visibility" Value="Collapsed" /></DataTrigger></Style.Triggers>
-								</Style>
-							</TextBlock.Style>
-						</TextBlock>
+						<StackPanel Orientation="Horizontal" Visibility="{Binding Historico.CarregandoRecentes, Converter={StaticResource BooleanToVisibilityConverter}}">
+							<ProgressBar Style="{StaticResource BarraAbertura}" IsIndeterminate="True" Width="160" VerticalAlignment="Center" AutomationProperties.Name="Lendo os cálculos recentes" />
+							<TextBlock Text="Lendo os cálculos recentes..." Style="{StaticResource TextoDica}" Margin="12,0,0,0" VerticalAlignment="Center" />
+						</StackPanel>
+						<TextBlock Text="Nenhum cálculo salvo ainda. Em uma calculadora, use Salvar no histórico para retomá-lo depois por aqui." Style="{StaticResource TextoDica}"
+						           Visibility="{Binding Historico.SemRecentes, Converter={StaticResource BooleanToVisibilityConverter}}" />
 						<ItemsControl ItemsSource="{Binding Historico.Recentes}" Focusable="False" AutomationProperties.Name="Cálculos recentes">
 							<ItemsControl.ItemTemplate>
 								<DataTemplate>
@@ -407,15 +417,12 @@
 							<Button Content="Comparar" Command="{Binding Historico.CompararCommand}" Margin="0,0,12,0" AutomationProperties.Name="Comparar os resultados e as entradas de dois cálculos salvos" />
 							<TextBlock Text="{Binding Historico.SituacaoComparacao}" TextWrapping="Wrap" VerticalAlignment="Center" Foreground="{DynamicResource MutedTextBrush}" />
 						</WrapPanel>
-						<TextBlock Text="{Binding Historico.MensagemVazia}" Foreground="{DynamicResource MutedTextBrush}" TextWrapping="Wrap" MaxWidth="520" HorizontalAlignment="Left" Margin="0,8,0,0">
-							<TextBlock.Style>
-								<Style TargetType="TextBlock">
-									<Style.Triggers>
-										<DataTrigger Binding="{Binding Historico.TemItens}" Value="True"><Setter Property="Visibility" Value="Collapsed" /></DataTrigger>
-									</Style.Triggers>
-								</Style>
-							</TextBlock.Style>
-						</TextBlock>
+						<StackPanel Orientation="Horizontal" Margin="0,8,0,0" Visibility="{Binding Historico.Carregando, Converter={StaticResource BooleanToVisibilityConverter}}">
+							<ProgressBar Style="{StaticResource BarraAbertura}" IsIndeterminate="True" Width="160" VerticalAlignment="Center" AutomationProperties.Name="Lendo o histórico" />
+							<TextBlock Text="Lendo o histórico..." Foreground="{DynamicResource MutedTextBrush}" Margin="12,0,0,0" VerticalAlignment="Center" />
+						</StackPanel>
+						<TextBlock Text="{Binding Historico.MensagemVazia}" Foreground="{DynamicResource MutedTextBrush}" TextWrapping="Wrap" MaxWidth="520" HorizontalAlignment="Left" Margin="0,8,0,0"
+						           Visibility="{Binding Historico.MostrarVazia, Converter={StaticResource BooleanToVisibilityConverter}}" />
 						<ItemsControl ItemsSource="{Binding Historico.Itens}" Focusable="False">
 							<ItemsControl.ItemTemplate>
 								<DataTemplate>
@@ -446,20 +453,101 @@
 				</ScrollViewer>
 			</Border>
 		</Grid>
+		<!-- Configurações: as preferências gravadas no arquivo de configurações do usuário, cada uma valendo ao ser marcada. -->
+		<ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Focusable="False"
+		              Visibility="{Binding ConfiguracoesAbertas, Converter={StaticResource BooleanToVisibilityConverter}}">
+			<StackPanel Margin="0,4,0,0">
+				<TextBlock Text="Configurações" FontSize="28" FontWeight="SemiBold" />
+				<TextBlock Text="As preferências ficam gravadas neste computador e valem para todas as janelas do aplicativo." Foreground="{DynamicResource MutedTextBrush}" FontSize="14" TextWrapping="Wrap" Margin="0,6,0,0" />
+				<Border Style="{StaticResource Card}" Padding="22,18" Margin="0,22,0,0">
+					<StackPanel>
+						<TextBlock Text="Aparência" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,14" />
+						<Grid>
+							<Grid.ColumnDefinitions><ColumnDefinition Width="Auto" /><ColumnDefinition /></Grid.ColumnDefinitions>
+							<ComboBox Width="200" VerticalAlignment="Top" ItemsSource="{Binding Temas}" SelectedItem="{Binding TemaSelecionado, Mode=TwoWay}" AutomationProperties.Name="Tema do aplicativo">
+								<ComboBox.ItemTemplate><DataTemplate><TextBlock Text="{Binding Converter={StaticResource NomeTemaConverter}}" /></DataTemplate></ComboBox.ItemTemplate>
+							</ComboBox>
+							<StackPanel Grid.Column="1" Margin="16,0,0,0" VerticalAlignment="Center">
+								<TextBlock Text="Tema" Style="{StaticResource TituloDica}" />
+								<TextBlock Text="Claro, escuro ou automático, que acompanha o tema do Windows. Também pode ser trocado no alto da tela." Style="{StaticResource TextoDica}" />
+							</StackPanel>
+						</Grid>
+						<Border Height="1" Background="{DynamicResource BorderBrush}" Margin="0,16" />
+						<CheckBox IsChecked="{Binding AceleracaoPorPlacaDeVideo}" Foreground="{DynamicResource TextBrush}" AutomationProperties.Name="Usar a placa de vídeo para desenhar as telas">
+							<StackPanel Margin="4,0,0,0">
+								<TextBlock Text="Usar a placa de vídeo para desenhar as telas" Style="{StaticResource TituloDica}" />
+								<TextBlock Text="Deixa a rolagem e as animações mais leves. Desmarque se as telas piscarem ou aparecerem com falhas. Vale a partir da próxima abertura do aplicativo." Style="{StaticResource TextoDica}" />
+							</StackPanel>
+						</CheckBox>
+						<Border Height="1" Background="{DynamicResource BorderBrush}" Margin="0,16" />
+						<CheckBox IsChecked="{Binding DensidadeCompacta}" Foreground="{DynamicResource TextBrush}" AutomationProperties.Name="Densidade compacta">
+							<StackPanel Margin="4,0,0,0">
+								<TextBlock Text="Densidade compacta" Style="{StaticResource TituloDica}" />
+								<TextBlock Text="Reduz as telas em 10% para caber mais do formulário e do resultado em monitores baixos, como 1366×768. Vale na hora." Style="{StaticResource TextoDica}" />
+							</StackPanel>
+						</CheckBox>
+					</StackPanel>
+				</Border>
+				<Border Style="{StaticResource Card}" Padding="22,18" Margin="0,16,0,0">
+					<StackPanel>
+						<TextBlock Text="Calculadoras" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,14" />
+						<CheckBox IsChecked="{Binding RecalcularAoAlterar}" Foreground="{DynamicResource TextBrush}" AutomationProperties.Name="Recalcular ao alterar o formulário">
+							<StackPanel Margin="4,0,0,0">
+								<TextBlock Text="Recalcular ao alterar o formulário" Style="{StaticResource TituloDica}" />
+								<TextBlock Text="Depois do primeiro Calcular, refaz o cálculo logo que a digitação para, sem precisar clicar de novo. Vale para as calculadoras com o formulário comum; com um campo inválido, o resultado anterior fica marcado como desatualizado." Style="{StaticResource TextoDica}" />
+							</StackPanel>
+						</CheckBox>
+					</StackPanel>
+				</Border>
+				<Border Style="{StaticResource Card}" Padding="22,18" Margin="0,16,0,0">
+					<StackPanel>
+						<TextBlock Text="Internet ao abrir" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,4" />
+						<TextBlock Text="As consultas leem apenas páginas públicas; nenhum dado dos cálculos é enviado." Style="{StaticResource TextoDica}" Margin="0,0,0,14" />
+						<CheckBox IsChecked="{Binding AtualizarTabelasAoAbrir}" Foreground="{DynamicResource TextBrush}" AutomationProperties.Name="Atualizar as tabelas ao abrir">
+							<StackPanel Margin="4,0,0,0">
+								<TextBlock Text="Atualizar as tabelas ao abrir" Style="{StaticResource TituloDica}" />
+								<TextBlock Text="Na primeira abertura do dia, consulta as fontes de todas as tabelas e grava os valores confirmados. Desmarcada, as tabelas são atualizadas por Atualizar agora ou pela tela de cada uma." Style="{StaticResource TextoDica}" />
+							</StackPanel>
+						</CheckBox>
+						<Grid Margin="28,12,0,0">
+							<Grid.ColumnDefinitions><ColumnDefinition /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+							<TextBlock Text="{Binding SituacaoTabelas}" Foreground="{DynamicResource TextBrush}" TextWrapping="Wrap" VerticalAlignment="Center" />
+							<Button Grid.Column="1" Content="Atualizar agora" Command="{Binding AtualizarTabelasAgoraCommand}" MinWidth="140" Margin="16,0,0,0"
+							        ToolTip="Consulta as fontes de todas as tabelas agora, mostrando o andamento; os dados locais são preservados quando uma fonte não responde."
+							        AutomationProperties.Name="Atualizar todas as tabelas agora" />
+						</Grid>
+						<Border Height="1" Background="{DynamicResource BorderBrush}" Margin="0,16" />
+						<CheckBox IsChecked="{Binding VerificarNovasVersoes}" Foreground="{DynamicResource TextBrush}" AutomationProperties.Name="Avisar sobre novas versões">
+							<StackPanel Margin="4,0,0,0">
+								<TextBlock Text="Avisar sobre novas versões" Style="{StaticResource TituloDica}" />
+								<TextBlock Text="Ao abrir, consulta no GitHub se há uma versão mais nova e mostra um aviso na tela inicial, com o link para baixá-la." Style="{StaticResource TextoDica}" />
+							</StackPanel>
+						</CheckBox>
+					</StackPanel>
+				</Border>
+				<Border Style="{StaticResource Card}" Padding="22,18" Margin="0,16,0,0">
+					<StackPanel>
+						<TextBlock Text="Atalhos de teclado" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,4" />
+						<TextBlock Text="Os atalhos das telas de cálculo também aparecem pelo botão Atalhos, ao lado do &quot;?&quot;." Style="{StaticResource TextoDica}" Margin="0,0,0,12" />
+						<ItemsControl ItemsSource="{x:Static presentation:AtalhosDeTeclado.Lista}" Focusable="False" AutomationProperties.Name="Atalhos de teclado">
+							<ItemsControl.ItemTemplate>
+								<DataTemplate>
+									<Grid Margin="0,0,0,8">
+										<Grid.ColumnDefinitions><ColumnDefinition Width="150" /><ColumnDefinition /></Grid.ColumnDefinitions>
+										<Border HorizontalAlignment="Left" Background="{DynamicResource ResultBackgroundBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="6" Padding="8,2">
+											<TextBlock Text="{Binding Teclas}" FontWeight="SemiBold" />
+										</Border>
+										<TextBlock Grid.Column="1" Text="{Binding Acao}" TextWrapping="Wrap" VerticalAlignment="Center" />
+									</Grid>
+								</DataTemplate>
+							</ItemsControl.ItemTemplate>
+						</ItemsControl>
+					</StackPanel>
+				</Border>
+			</StackPanel>
+		</ScrollViewer>
 
 		<Grid Grid.Row="2" Margin="0,18,0,0">
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition />
-				<ColumnDefinition Width="Auto" />
-			</Grid.ColumnDefinitions>
-			<StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Bottom">
-				<CheckBox Margin="16,0,0,0" IsChecked="{Binding AtualizarTabelasAoAbrir}"
-						Content="Atualizar tabelas ao abrir" Foreground="{DynamicResource MutedTextBrush}"
-						ToolTip="Na primeira abertura do dia, consulta as fontes de todas as tabelas e grava os valores confirmados. Nenhum dado dos cálculos é enviado." />
-				<CheckBox Margin="16,0,0,0" IsChecked="{Binding VerificarNovasVersoes}"
-						Content="Avisar sobre novas versões" Foreground="{DynamicResource MutedTextBrush}"
-						ToolTip="Ao abrir, consulta no GitHub se há uma versão mais nova. Nenhum dado dos cálculos é enviado." />
-			</StackPanel>
 			<TextBlock Foreground="{DynamicResource MutedTextBrush}" TextWrapping="Wrap" VerticalAlignment="Bottom" Margin="2,0,0,0">
 				<Run Text="{Binding Versao, Mode=OneTime, StringFormat='Cálculos Trabalhistas e Tributários {0}'}" />
 				<Run Text=" • Dados processados localmente - Desenvolvido por: Maycon Wisley" />

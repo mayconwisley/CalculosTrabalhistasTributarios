@@ -11,7 +11,13 @@ namespace CalculosTrabalhistasTributarios.Views;
 
 public partial class CalculadoraWindow : Window
 {
+    // Largura do conteúdo a partir da qual o resultado vai para o lado do formulário; abaixo da segunda, volta para baixo.
+    // A diferença evita alternar sem parar quando a barra de rolagem aparece e estreita o conteúdo.
+    private const double LarguraResultadoAoLado = 1400;
+    private const double LarguraResultadoAbaixo = 1370;
+
     private readonly CalculadoraViewModel _viewModel;
+    private bool _resultadoAoLado;
 
     public CalculadoraWindow(CalculadoraViewModel viewModel)
     {
@@ -41,6 +47,31 @@ public partial class CalculadoraWindow : Window
         Formulario.AddHandler(TextBoxBase.TextChangedEvent, new RoutedEventHandler(AoEditar));
         Formulario.AddHandler(Selector.SelectionChangedEvent, new RoutedEventHandler(AoEditar));
         Formulario.AddHandler(ButtonBase.ClickEvent, new RoutedEventHandler(AoEditar), handledEventsToo: true);
+        Formulario.AddHandler(UIElement.LostKeyboardFocusEvent, new KeyboardFocusChangedEventHandler(AoSairDoCampo));
+        if (viewModel.PermiteResultadoAoLado)
+            Leiaute.SizeChanged += (_, _) => DisporResultado();
+    }
+
+    private void DisporResultado()
+    {
+        var aoLado = _resultadoAoLado ? Leiaute.ActualWidth >= LarguraResultadoAbaixo : Leiaute.ActualWidth >= LarguraResultadoAoLado;
+        if (aoLado == _resultadoAoLado)
+            return;
+        _resultadoAoLado = aoLado;
+        EspacoEntreColunas.Width = new GridLength(aoLado ? 20 : 0);
+        ColunaResultado.Width = aoLado ? new GridLength(1, GridUnitType.Star) : new GridLength(0);
+        Grid.SetRowSpan(CartaoFormulario, aoLado ? 3 : 1);
+        CartaoFormulario.VerticalAlignment = aoLado ? VerticalAlignment.Top : VerticalAlignment.Stretch;
+        Grid.SetRow(CartaoResultado, aoLado ? 2 : 4);
+        Grid.SetRowSpan(CartaoResultado, aoLado ? 3 : 1);
+        Grid.SetColumn(CartaoResultado, aoLado ? 2 : 0);
+    }
+
+    // O formato errado aparece ao sair do campo, sem esperar o Calcular; depois do binding, que entrega o texto ao sair.
+    private void AoSairDoCampo(object sender, KeyboardFocusChangedEventArgs e)
+    {
+        if (e.OriginalSource is TextBox { DataContext: CampoTextoViewModel campo })
+            Dispatcher.BeginInvoke(DispatcherPriority.Background, () => LeitorFormulario.ConferirFormato(campo));
     }
 
     // Depois da atualização dos bindings, para comparar o formulário já com o valor digitado.

@@ -52,6 +52,26 @@ public sealed class LeitorFormulario
         _ => null
     };
 
+    /// <summary>
+    /// Confere só o formato, ao sair do campo, com as mesmas mensagens do cálculo. Um campo vazio fica para o cálculo, que
+    /// sabe se ele é opcional; as demais regras, como limites e datas fora do período, também.
+    /// </summary>
+    public static void ConferirFormato(CampoTextoViewModel campo)
+    {
+        if (string.IsNullOrWhiteSpace(campo.Valor))
+            return;
+        var leitor = new LeitorFormulario();
+        switch (campo.Tipo)
+        {
+            case TipoCampo.Moeda: leitor.Moeda(campo); break;
+            case TipoCampo.Numero: leitor.Numero(campo); break;
+            case TipoCampo.Inteiro: leitor.Inteiro(campo); break;
+            case TipoCampo.Data: leitor.Data(campo); break;
+            case TipoCampo.Competencia: leitor.Competencia(campo); break;
+            case TipoCampo.Horas: leitor.Horas(campo); break;
+        }
+    }
+
     private T Invalido<T>(CampoViewModel campo, string orientacao, string orientacaoCurta, T padrao)
     {
         Erro ??= Erro.Validacao($"O campo \"{campo.Rotulo}\" está em formato inválido: {orientacao}.");

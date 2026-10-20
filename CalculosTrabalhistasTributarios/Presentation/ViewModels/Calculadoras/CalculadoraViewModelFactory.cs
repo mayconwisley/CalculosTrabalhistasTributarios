@@ -9,12 +9,12 @@ namespace CalculosTrabalhistasTributarios.Presentation.ViewModels.Calculadoras;
 /// preenchida com os dados do último cálculo.
 /// </summary>
 public sealed class CalculadoraViewModelFactory(IServiceProvider servicos, IUserNotifier notificador, IRelatorioPdfService relatorioPdf, IPlanilhaService planilha, IArquivoDialogService arquivoDialog,
-    ContextoCompartilhado contexto, IHistoricoDaJanelaFactory historico) : ICalculadoraViewModelFactory
+    ContextoCompartilhado contexto, IHistoricoDaJanelaFactory historico, IComparacaoHistoricoService comparacao) : ICalculadoraViewModelFactory
 {
     public CalculadoraViewModel Criar(TipoCalculadora tipo)
     {
         var calculadora = servicos.GetRequiredKeyedService<ICalculadora>(tipo);
         calculadora.Preencher(contexto.Atual);
-        return new CalculadoraViewModel(tipo, calculadora, notificador, relatorioPdf, planilha, arquivoDialog, contexto, historico);
+        return new CalculadoraViewModel(tipo, calculadora, notificador, relatorioPdf, planilha, arquivoDialog, contexto, historico, comparacao);
     }
 }

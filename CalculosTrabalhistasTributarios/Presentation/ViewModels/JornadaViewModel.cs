@@ -18,7 +18,7 @@ namespace CalculosTrabalhistasTributarios.Presentation.ViewModels;
 /// holerite da competência. O período acompanha o mês da competência, mas pode começar num mês e terminar no outro, como
 /// muitas empresas fecham o ponto (de 16/09 a 15/10, por exemplo).
 /// </summary>
-public sealed class JornadaViewModel : ViewModelBase, ICalculoSalvavel
+public sealed class JornadaViewModel : ViewModelBase, ICalculoSalvavel, IAtalhosDeCalculo
 {
     private static readonly CultureInfo Cultura = CultureInfo.GetCultureInfo("pt-BR");
     private readonly IApurarJornadaUseCase _apuracao;
@@ -148,6 +148,7 @@ public sealed class JornadaViewModel : ViewModelBase, ICalculoSalvavel
     public bool TemObservacoes => Observacoes.Count > 0;
     public ICommand GerarDiasCommand { get; }
     public ICommand ApurarCommand { get; }
+    ICommand IAtalhosDeCalculo.CalcularCommand => ApurarCommand;
     public ICommand UsarNasHorasExtrasCommand { get; }
     public ICommand UsarNoHoleriteCommand { get; }
     public ICommand ExportarExcelCommand { get; }

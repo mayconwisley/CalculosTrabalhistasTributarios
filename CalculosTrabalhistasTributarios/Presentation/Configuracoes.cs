@@ -19,6 +19,15 @@ public sealed class Configuracoes
     /// <summary>Dia da última atualização ao abrir em que alguma fonte respondeu.</summary>
     public DateOnly? UltimaAtualizacaoTabelas { get; set; }
 
+    /// <summary>Data e hora da última atualização em que alguma fonte respondeu, ao abrir ou pelo botão Atualizar agora.</summary>
+    public DateTime? HorarioAtualizacaoTabelas { get; set; }
+
+    /// <summary>Depois do primeiro cálculo, refaz o cálculo das calculadoras comuns logo após cada alteração do formulário.</summary>
+    public bool RecalcularAoAlterar { get; set; }
+
+    /// <summary>Reduz o tamanho das telas, para monitores com pouca altura, como 1366×768.</summary>
+    public bool DensidadeCompacta { get; set; }
+
     /// <summary>Chaves dos cartões favoritos da tela inicial, na ordem em que foram marcados.</summary>
     public List<string> Favoritos { get => _favoritos; set => _favoritos = value ?? []; }
 

@@ -14,6 +14,14 @@ public sealed class WpfComparacaoHistoricoService(IRecalculoHistorico recalculo)
             ? new ComparacaoHistoricoViewModel(primeiro, segundo,
                 await recalculo.RecalcularAsync(primeiro, CancellationToken.None), await recalculo.RecalcularAsync(segundo, CancellationToken.None))
             : new ComparacaoHistoricoViewModel(primeiro, segundo);
+        Mostrar(viewModel);
+    }
+
+    public void MostrarCenarios(CalculoSalvoDto cenarioA, DemonstrativoDto resultadoA, CalculoSalvoDto cenarioB, DemonstrativoDto resultadoB) =>
+        Mostrar(new ComparacaoHistoricoViewModel(cenarioA, cenarioB, resultadoA, resultadoB, cenarios: true));
+
+    private static void Mostrar(ComparacaoHistoricoViewModel viewModel)
+    {
         var janela = new ComparacaoHistoricoWindow(viewModel);
         var aplicativo = System.Windows.Application.Current;
         janela.Owner = aplicativo.Windows.OfType<Window>().FirstOrDefault(aberta => aberta.IsActive) ?? aplicativo.MainWindow;

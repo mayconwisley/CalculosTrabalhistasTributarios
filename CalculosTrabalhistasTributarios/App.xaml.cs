@@ -50,6 +50,8 @@ public partial class App : System.Windows.Application
             var manual = _serviceProvider.GetRequiredService<IManualUsuarioService>();
             CommandManager.RegisterClassCommandBinding(typeof(Window), new CommandBinding(ApplicationCommands.Help,
                 (janela, _) => manual.Abrir(JanelaLembrada.GetChave((DependencyObject)janela))));
+            CommandManager.RegisterClassCommandBinding(typeof(Window), new CommandBinding(AtalhosDeTeclado.Mostrar,
+                (janela, _) => CaixaMensagemWindow.Mostrar(AtalhosDeTeclado.Texto, "Atalhos de teclado", TipoCaixaMensagem.Informacao, (Window)janela)));
             _applicationScope = _serviceProvider.CreateScope();
             var servicos = _applicationScope.ServiceProvider;
 

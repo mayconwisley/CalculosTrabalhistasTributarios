@@ -31,7 +31,7 @@
                 </Grid.RowDefinitions>
 
                 <StackPanel>
-                    <StackPanel Orientation="Horizontal"><TextBlock Text="Débitos judiciais" FontSize="24" FontWeight="SemiBold" VerticalAlignment="Center" /><Button Style="{StaticResource BotaoAjuda}" /><Button Content="Preencher exemplo" Style="{StaticResource LinkButton}" Command="{Binding Historico.PreencherExemploCommand}" Margin="16,2,0,0" VerticalAlignment="Center" Visibility="{Binding Historico.TemExemplo, Converter={StaticResource BooleanToVisibilityConverter}}" ToolTip="Preenche o formulário com os dados fictícios do exemplo do manual e calcula, para conhecer os campos." /></StackPanel>
+                    <StackPanel Orientation="Horizontal"><TextBlock Text="Débitos judiciais" FontSize="24" FontWeight="SemiBold" VerticalAlignment="Center" /><Button Style="{StaticResource BotaoAjuda}" /><Button Style="{StaticResource BotaoAtalhos}" /><Button Content="Preencher exemplo" Style="{StaticResource LinkButton}" Command="{Binding Historico.PreencherExemploCommand}" Margin="16,2,0,0" VerticalAlignment="Center" Visibility="{Binding Historico.TemExemplo, Converter={StaticResource BooleanToVisibilityConverter}}" ToolTip="Preenche o formulário com os dados fictícios do exemplo do manual e calcula, para conhecer os campos." /></StackPanel>
                     <TextBlock Text="Atualização de débitos trabalhistas e cíveis com correção monetária e juros pelas fases da ADC 58, do TST, do STJ e da Lei 14.905/2024." Foreground="{DynamicResource MutedTextBrush}" TextWrapping="Wrap" Margin="0,5,0,0" />
                 </StackPanel>
 

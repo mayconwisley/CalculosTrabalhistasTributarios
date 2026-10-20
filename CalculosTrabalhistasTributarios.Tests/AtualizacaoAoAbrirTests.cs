@@ -68,6 +68,24 @@ public class AtualizacaoAoAbrirTests
         Assert.Equal(atualiza, AberturaViewModel.DeveAtualizar(configuracoes, Hoje));
     }
 
+    [Theory]
+    [InlineData("2027-01-15T08:12:00", null, "Tabelas atualizadas pela internet hoje às 08:12.")]
+    [InlineData("2027-01-14T17:40:00", null, "Tabelas atualizadas pela internet ontem às 17:40.")]
+    [InlineData("2026-12-31T23:59:00", null, "Tabelas atualizadas pela internet em 31/12/2026 às 23:59.")]
+    [InlineData(null, "2027-01-10", "Tabelas atualizadas pela internet em 10/01/2027.")]
+    [InlineData(null, null, "As tabelas ainda não foram atualizadas pela internet neste computador.")]
+    public void Descreve_quando_as_tabelas_foram_atualizadas(string? horario, string? dia, string esperado)
+    {
+        // Arquivos das versões anteriores só têm o dia da atualização.
+        var configuracoes = new Configuracoes
+        {
+            HorarioAtualizacaoTabelas = horario is null ? null : DateTime.Parse(horario, System.Globalization.CultureInfo.InvariantCulture),
+            UltimaAtualizacaoTabelas = dia is null ? null : DateOnly.Parse(dia, System.Globalization.CultureInfo.InvariantCulture)
+        };
+
+        Assert.Equal(esperado, AberturaViewModel.DescreverUltimaAtualizacao(configuracoes, new DateTime(2027, 1, 15, 10, 0, 0)));
+    }
+
     [Fact]
     public void Avisa_as_tabelas_nao_atualizadas_com_o_motivo()
     {

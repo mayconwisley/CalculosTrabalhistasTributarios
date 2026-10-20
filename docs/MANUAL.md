@@ -71,7 +71,7 @@ Antes da janela principal aparece a **tela de abertura**. Na primeira abertura d
 - **Pular** abre o aplicativo na hora, com as tabelas já cadastradas; a atualização é feita na próxima abertura. Ela também é interrompida, do mesmo jeito, se demorar mais de 2 minutos.
 - Nas outras aberturas do mesmo dia, a tela só prepara o aplicativo e fecha em seguida.
 - Se alguma tabela não for atualizada, um aviso na tela principal diz quais foram, e **Ver detalhes** mostra o motivo de cada uma. Sem internet, nenhuma fonte responde: o aviso pede para conferir a conexão, e a atualização é tentada de novo na próxima abertura.
-- Para não atualizar ao abrir, desmarque **Atualizar tabelas ao abrir** no rodapé da tela de boas-vindas (seção 11).
+- Para não atualizar ao abrir, desmarque **Atualizar as tabelas ao abrir** em **Configurações** (seção 11).
 
 A barra mostra quantas tabelas já foram consultadas e o nome da que está em consulta:
 
@@ -87,13 +87,13 @@ Para remover, use **Configurações do Windows > Aplicativos > Aplicativos insta
 
 ![Janela principal com o menu lateral e a tela de boas-vindas](imagens/01-tela-principal.png)
 
-O **menu lateral** permanece visível durante o cálculo. Nele, as calculadoras aparecem por assunto, seguidas do grupo **Tabelas**, dividido em **INSS e salário**, **Imposto de renda**, **Deduções do IRRF** e **Índices econômicos**, e as favoritas, calculadoras ou tabelas, ficam no alto. Cada grupo e cada divisão mostram quantos itens têm e recolhem ou expandem ao clicar no título. Ao abrir o aplicativo, só as favoritas aparecem expandidas; a busca abre os grupos com itens encontrados e, ao ser limpa, devolve-os como estavam, e o grupo do item aberto pelo histórico se expande para mostrá-lo. A estrela ao fim da linha, que aparece ao passar o mouse ou ao focar o item pelo teclado, marca ou desmarca a favorita. Use **Procurar calculadora ou tabela** ou **Ctrl+F** para filtrar a lista; **Esc** limpa a busca quando ela está em foco. O botão **Histórico** fica no rodapé do menu. Nomes longos ocupam até duas linhas. O título **Central de simulações de cálculos**, no alto, volta à tela de boas-vindas.
+O **menu lateral** permanece visível durante o cálculo. Nele, as calculadoras aparecem por assunto, seguidas do grupo **Tabelas**, dividido em **INSS e salário**, **Imposto de renda**, **Deduções do IRRF** e **Índices econômicos**, e as favoritas, calculadoras ou tabelas, ficam no alto. Cada grupo e cada divisão mostram quantos itens têm e recolhem ou expandem ao clicar no título. Ao abrir o aplicativo, só as favoritas aparecem expandidas; a busca abre os grupos com itens encontrados e, ao ser limpa, devolve-os como estavam, e o grupo do item aberto pelo histórico se expande para mostrá-lo. A estrela ao fim da linha, que aparece ao passar o mouse ou ao focar o item pelo teclado, marca ou desmarca a favorita. Use **Procurar calculadora ou tabela** ou **Ctrl+F** para filtrar a lista; **Esc** limpa a busca quando ela está em foco. Os botões **Histórico** e **Configurações** ficam no rodapé do menu. Nomes longos ocupam até duas linhas. O título **Central de simulações de cálculos**, no alto, volta à tela de boas-vindas.
 
 Clique em um item do menu ou selecione-o com **Tab** e pressione **Enter** para abri-lo na área central da mesma janela; o item aberto fica destacado no menu. O seletor de tema e o botão **Manual do usuário** ficam no cabeçalho; **F1** abre a seção correspondente à calculadora atual.
 
 Ao trocar de calculadora ou voltar à tela de boas-vindas, o aplicativo confirma a saída se houver dados do formulário ainda não salvos no histórico. Os atalhos **Esc** e **Alt+F4** continuam disponíveis; **Esc** volta à tela de boas-vindas quando uma calculadora, uma tabela ou o histórico está aberto.
 
-**Boas-vindas:** quando nenhum item do menu está aberto, a área central mostra quantas calculadoras e tabelas o aplicativo oferece, o acesso ao histórico, a seção **Continuar de onde parou** e os **Primeiros passos**, com os atalhos mais usados.
+**Boas-vindas:** quando nenhum item do menu está aberto, a área central mostra quantas calculadoras e tabelas o aplicativo oferece, o acesso ao histórico, a seção **Continuar de onde parou** e os **Primeiros passos**, com os atalhos mais usados. O quadro das tabelas informa quando elas foram atualizadas pela internet, por exemplo "Tabelas atualizadas pela internet hoje às 08:12.", e o botão **Atualizar agora** refaz a consulta de todas na hora, com a mesma tela de andamento da abertura; **Cancelar** interrompe a consulta e preserva o que já estava gravado.
 
 **Favoritas:** clique na estrela (☆) de um item do menu para levá-lo ao grupo **Favoritas**, no alto; a estrela fica preenchida (★) e permanece visível. O item sai do grupo de origem, e o grupo que fica sem itens deixa de aparecer. Para desfazer, clique de novo na estrela. As favoritas valem para calculadoras e tabelas e ficam gravadas neste computador, nas preferências do usuário, de uma abertura para outra.
 
@@ -104,6 +104,10 @@ Ao trocar de calculadora ou voltar à tela de boas-vindas, o aplicativo confirma
 **Avisos ao abrir:** logo abaixo do cabeçalho, uma faixa avisa quando há uma versão nova publicada e quando as tabelas do ano ainda não foram cadastradas (a do INSS mais recente é de um ano anterior), com o botão **Abrir a tabela do INSS**. **Dispensar** esconde o aviso até a próxima abertura.
 
 **Atualizar agora:** baixa o instalador da nova versão direto do release do projeto no GitHub, confere se o arquivo é idêntico ao publicado (SHA-256) e o executa sem perguntas; o aplicativo fecha durante a instalação e abre de novo no fim. Antes de começar, o aplicativo pede confirmação: salve os cálculos abertos. Se o download falhar ou o arquivo não conferir, nada é instalado. **Ver novidades** abre a página do release com as mudanças. Quando o release não traz o instalador com o hash para conferência, o aviso mostra apenas **Baixar a nova versão**, que abre a página para baixar manualmente.
+
+**Resultado ao lado do formulário:** nas calculadoras da janela padrão (capítulo 8), quando a área central tem largura suficiente, como numa tela larga com a janela maximizada, o resultado passa para uma coluna à direita do formulário; ao estreitar a janela, ele volta para baixo. Calculadoras com listas longas no formulário, como o holerite com o banco de horas, mantêm o resultado abaixo.
+
+**Leituras em andamento:** enquanto o aplicativo lê os cálculos recentes, o histórico ou os registros de uma tabela, a área mostra uma barra de andamento com a mensagem da leitura, em vez de uma lista vazia.
 
 **Rolagem nas calculadoras:** cada calculadora mostra o formulário no alto e o resultado logo abaixo. Quando o resultado não cabe, a área central rola pela roda do mouse ou pela barra à direita, enquanto o menu lateral permanece no lugar. Listas com barra própria, como a de beneficiários da pensão, rolam primeiro e, ao chegar ao fim, passam a rolagem para a página.
 
@@ -407,7 +411,7 @@ O botão **Gerar PDF** cria um demonstrativo com as verbas, os dados considerado
 Além da simulação tributária, da pensão, dos débitos judiciais, da estabilidade e da jornada pelo ponto, o menu lateral reúne cálculos para o dia a dia do departamento pessoal e do imposto de renda. As calculadoras deste capítulo usam o mesmo formato na área central:
 
 - **? e Preencher exemplo:** ao lado do título. O **?** (ou **F1**) abre este manual na seção da calculadora. **Preencher exemplo** substitui o formulário pelos dados fictícios do exemplo deste manual, depois de confirmar, e calcula: é uma forma de conhecer os campos antes de digitar o seu caso.
-- **Formulário:** os campos do cálculo. Passe o mouse sobre um campo para ver uma dica do que informar. Orientações essenciais também aparecem abaixo de alguns campos de rescisão, crédito e empréstimo. Ao abrir uma calculadora, a competência, o salário e os dependentes do último cálculo já vêm preenchidos. Alguns campos só aparecem quando a opção escolhida em outro campo exige. Os campos se distribuem em colunas que ocupam toda a largura da área central; ao estreitar a janela, o número de colunas diminui, sem cortar os campos.
+- **Formulário:** os campos do cálculo. Passe o mouse sobre um campo para ver uma dica do que informar. Orientações essenciais também aparecem abaixo de alguns campos de rescisão, crédito e empréstimo. Ao abrir uma calculadora, a competência, o salário e os dependentes do último cálculo já vêm preenchidos. Alguns campos só aparecem quando a opção escolhida em outro campo exige. Os campos se distribuem em colunas que ocupam toda a largura da área central; ao estreitar a janela, o número de colunas diminui, sem cortar os campos. Quando um campo largo não cabe no fim de uma linha e passa para a seguinte, o campo anterior se alarga até a borda, sem deixar espaço vazio.
 - **Calcular:** faz o cálculo. A tecla **Enter** também calcula. Feito o cálculo, a janela rola até o **Resultado** quando ele está fora da vista.
 - **Resumo executivo:** os valores mais importantes.
 - **Entradas utilizadas neste resultado:** seção expansível para conferir os valores do formulário no momento do cálculo. Nas listas, abra o formulário para conferir cada linha.
@@ -418,13 +422,15 @@ Além da simulação tributária, da pensão, dos débitos judiciais, da estabil
 - **Gerar PDF** e **Gerar Excel:** salvam o demonstrativo completo em um relatório ou em uma planilha.
 - **Salvar no histórico:** guarda o formulário com um nome, para reabrir depois (seção [10.3](#103-histórico-de-cálculos)).
 
-**Campos a corrigir:** quando um dado impede o cálculo, a borda do campo fica vermelha, a orientação aparece logo abaixo dele, e o cursor vai para o primeiro campo a corrigir. Todos os campos em formato inválido são destacados de uma vez; uma faixa junto do botão **Calcular** lista os campos ou, para uma regra do cálculo, como um valor que precisa ser maior que zero, traz a explicação completa. Ao digitar de novo no campo, o destaque sai; o novo valor é conferido no próximo cálculo. Falhas que não dependem do formulário, como uma tabela que não existe para a competência, continuam em uma mensagem.
+**Campos a corrigir:** quando um dado impede o cálculo, a borda do campo fica vermelha, a orientação aparece logo abaixo dele, e o cursor vai para o primeiro campo a corrigir. Todos os campos em formato inválido são destacados de uma vez; uma faixa junto do botão **Calcular** lista os campos ou, para uma regra do cálculo, como um valor que precisa ser maior que zero, traz a explicação completa. Ao digitar de novo no campo, o destaque sai. O formato também é conferido ao sair de cada campo: uma data inexistente, como `31/02/2026`, uma competência como `13/2026` ou um valor com letras ficam destacados na hora, antes do cálculo. Campo vazio não é marcado ao sair; se ele for obrigatório, o aviso vem ao calcular. Falhas que não dependem do formulário, como uma tabela que não existe para a competência, continuam em uma mensagem.
 
 ![Valor solicitado zerado no empréstimo pessoal: o campo destacado e a explicação junto do botão Calcular](imagens/95-erro-no-formulario.png)
 
-**Resultado desatualizado:** se você alterar o formulário depois de calcular, o resultado continua na tela com o aviso **O formulário mudou depois deste cálculo**. Use **Calcular** para atualizar a tela. Ao escolher **Gerar PDF** ou **Gerar Excel**, o aplicativo recalcula antes de salvar; se o novo cálculo falhar, não cria o arquivo com o resultado anterior. Ações que levam valores a outra calculadora ficam indisponíveis até o recálculo. Apenas passar pelo campo, que limpa o zero ou formata o número, não conta como alteração.
+**Resultado desatualizado:** se você alterar o formulário depois de calcular, o resultado continua na tela com o aviso **O formulário mudou depois deste cálculo**. Use **Calcular** para atualizar a tela. Com a opção **Recalcular ao alterar o formulário** marcada nas Configurações (capítulo 11), depois do primeiro **Calcular** o resultado é refeito sozinho, logo depois que você para de digitar; se o novo cálculo encontrar um erro, os campos são destacados e o resultado anterior continua com o aviso. Ao escolher **Gerar PDF** ou **Gerar Excel**, o aplicativo recalcula antes de salvar; se o novo cálculo falhar, não cria o arquivo com o resultado anterior. Ações que levam valores a outra calculadora ficam indisponíveis até o recálculo. Apenas passar pelo campo, que limpa o zero ou formata o número, não conta como alteração.
 
-**Atalhos:** **Ctrl+S** salva no histórico, **Ctrl+P** gera o PDF e **Ctrl+E** gera a planilha do Excel. **Esc** volta à tela de boas-vindas; se o formulário tiver dados que não estão no histórico, o aplicativo pergunta antes de sair.
+**Cenários A e B:** para ver o efeito de uma mudança sem salvar dois cálculos, calcule e escolha **Guardar como cenário A**, abaixo do resultado. Altere o formulário, por exemplo o salário ou o tipo de aviso, e escolha **Comparar com o A**: o aplicativo recalcula o formulário atual (cenário B) e abre a comparação lado a lado, com a **Diferença** do B para o A, como na comparação do histórico (seção 10.3). O cenário A fica guardado enquanto a calculadora estiver aberta; guardar de novo substitui o anterior.
+
+**Atalhos:** **Ctrl+Enter** calcula sem sair do campo, **Ctrl+S** salva no histórico, **Ctrl+P** gera o PDF e **Ctrl+E** gera a planilha do Excel. **Esc** volta à tela de boas-vindas; se o formulário tiver dados que não estão no histórico, o aplicativo pergunta antes de sair. O botão **Atalhos**, ao lado do **?**, mostra a lista completa (capítulo 14).
 
 O INSS e o IRRF seguem as mesmas regras da simulação tributária, com as tabelas da competência informada: o IRRF aplica a modalidade mais vantajosa para o trabalhador (deduções legais ou desconto simplificado) e a redução mensal, quando prevista.
 
@@ -1736,7 +1742,7 @@ Em qualquer calculadora, o botão **Salvar no histórico** guarda os valores do 
 
 O **Histórico**, aberto pelo botão no rodapé do menu lateral ou pela tela de boas-vindas, lista os cálculos salvos, do alterado mais recentemente para o mais antigo. O campo **Procurar** filtra pelo nome ou pela calculadora, sem diferenciar maiúsculas e acentos. Também é possível filtrar por calculadora e pela data da última alteração e ordenar por data ou nome.
 
-Marque dois cálculos da mesma calculadora e selecione **Comparar**. Nas calculadoras da janela padrão (capítulo 8), a comparação refaz os dois cálculos com as tabelas atuais e mostra os **Resultados** lado a lado: os valores do resumo, cada provento e desconto, os totais e os informativos, com a **Diferença** do segundo para o primeiro. Abaixo vêm os **Dados informados**, inclusive as linhas salvas. **Mostrar apenas diferenças** oculta o que é igual. Para comparar cenários, por exemplo uma rescisão com e sem aviso indenizado, salve o cálculo, use **Duplicar**, abra a cópia, mude o dado e salve; depois marque os dois e compare. Nas janelas próprias, como a pensão, a jornada e os débitos judiciais, a comparação mostra só os dados informados: abra cada cálculo para ver o resultado. Se um dos cálculos não puder ser refeito, por exemplo por falta de tabela, a comparação explica o motivo e mostra só os dados.
+Marque dois cálculos da mesma calculadora e selecione **Comparar**. Nas calculadoras da janela padrão (capítulo 8), a comparação refaz os dois cálculos com as tabelas atuais e mostra os **Resultados** lado a lado: os valores do resumo, cada provento e desconto, os totais e os informativos, com a **Diferença** do segundo para o primeiro. Abaixo vêm os **Dados informados**, inclusive as linhas salvas. **Mostrar apenas diferenças** oculta o que é igual. Para comparar cenários sem salvar, use **Guardar como cenário A** e **Comparar com o A** na própria calculadora (capítulo 8). Para guardar os dois, por exemplo uma rescisão com e sem aviso indenizado, salve o cálculo, use **Duplicar**, abra a cópia, mude o dado e salve; depois marque os dois e compare. Nas janelas próprias, como a pensão, a jornada e os débitos judiciais, a comparação mostra só os dados informados: abra cada cálculo para ver o resultado. Se um dos cálculos não puder ser refeito, por exemplo por falta de tabela, a comparação explica o motivo e mostra só os dados.
 
 ![Comparação de dois holerites salvos: o salário passou de R$ 4.200,00 para R$ 5.000,00](imagens/98-comparacao-resultados.png)
 
@@ -1755,24 +1761,34 @@ O histórico preserva os dados digitados do formulário, mas não uma cópia dos
 
 ## 11. Tema e configurações
 
-No canto superior direito da tela principal, escolha o **Tema**:
+O botão **Configurações**, no rodapé do menu lateral, abre na área central as preferências do aplicativo. Cada opção vale assim que é marcada ou escolhida e fica gravada neste computador, de uma abertura para outra. **Esc** volta à tela de boas-vindas.
+
+![Configurações com a aparência, as calculadoras e as consultas à internet ao abrir](imagens/116-configuracoes.png)
+
+**Tema:** escolha a aparência das telas. O mesmo seletor fica no cabeçalho da tela principal.
 
 - **Automático:** acompanha o tema claro ou escuro configurado no Windows.
 - **Claro** ou **Escuro:** mantém sempre a aparência escolhida.
 
 ![Tema escuro, com o holerite do mês aberto](imagens/16-tema-escuro.png)
 
-A escolha é salva automaticamente e restaurada na próxima abertura. As configurações ficam no arquivo `%LOCALAPPDATA%\CalculoIRRF\settings.json`.
+**Usar a placa de vídeo para desenhar as telas:** desmarcada por padrão. Desmarcada, o aplicativo desenha a interface sem a placa de vídeo, o que reduz bastante o consumo de memória. Marcada, a rolagem e as animações ficam mais leves; desmarque se as telas piscarem ou aparecerem com falhas. A mudança vale a partir da próxima abertura do aplicativo.
+
+**Densidade compacta:** reduz por igual o texto, os campos e os espaços de toda a janela principal, para mostrar mais do formulário e do resultado sem rolar, útil em telas pequenas ou com escala de 125% e 150%. Vale na hora.
+
+**Recalcular ao alterar o formulário:** desmarcada por padrão. Marcada, nas calculadoras da janela padrão o resultado é refeito sozinho a cada alteração do formulário, depois do primeiro **Calcular** (capítulo 8). Desmarcada, o resultado fica com o aviso de desatualizado até você calcular de novo.
+
+**Atualizar as tabelas ao abrir:** marcada por padrão. Marcada, a tela de abertura atualiza todas as tabelas pela internet na primeira abertura do dia (seção 2), apenas lendo as páginas das fontes; desmarcada, as tabelas só são atualizadas pelo botão de cada uma. Abaixo da opção aparecem o dia e a hora da última atualização pela internet e o botão **Atualizar agora**, que consulta todas as tabelas na hora, com a tela de andamento; se alguma ficar pendente, o aviso aparece na tela inicial.
+
+**Avisar sobre novas versões:** marcada, a abertura consulta no GitHub se há uma versão mais nova e mostra o aviso na tela inicial, sem enviar nenhum dado dos cálculos. Com as duas opções de internet desmarcadas, o aplicativo não acessa a internet ao abrir. O aviso das tabelas do ano, feito sem internet, continua.
+
+**Atalhos de teclado:** a lista dos atalhos, a mesma do botão **Atalhos** das calculadoras e do capítulo 14.
+
+As preferências ficam no arquivo `%LOCALAPPDATA%\CalculoIRRF\settings.json`, que não precisa ser editado à mão.
 
 **Tamanho e posição das janelas:** a janela principal e a comparação do histórico reabrem com o tamanho e a posição que tinham ao fechar, inclusive maximizadas. Se o monitor onde a janela estava não estiver mais conectado, ela abre na tela principal.
 
 **Escala do Windows:** com escala de 125% ou 150%, ou numa tela pequena, as janelas nunca ficam maiores que a área livre do monitor (sem a barra de tarefas): o tamanho mínimo é reduzido ao que cabe e a página da calculadora rola. As bordas e as linhas das grades são alinhadas aos pixels da tela, para ficarem nítidas também nas escalas fracionárias.
-
-**Atualizar tabelas ao abrir:** no rodapé da tela principal, marcada por padrão. Marcada, a tela de abertura atualiza todas as tabelas pela internet na primeira abertura do dia (seção 2), apenas lendo as páginas das fontes; desmarcada, as tabelas só são atualizadas pelo botão de cada uma.
-
-**Avisar sobre novas versões:** no rodapé da tela principal. Marcada, a abertura consulta no GitHub se há uma versão mais nova, sem enviar nenhum dado dos cálculos. Com as duas opções desmarcadas, o aplicativo não acessa a internet ao abrir. O aviso das tabelas do ano, feito sem internet, continua.
-
-Por padrão, o aplicativo desenha a interface sem usar a placa de vídeo, o que reduz bastante o consumo de memória. Se preferir a aceleração por GPU, feche o aplicativo e altere no arquivo de configurações o valor `"HardwareAcceleration": false` para `true`.
 
 ## 12. Mensagens e solução de problemas
 
@@ -1826,7 +1842,7 @@ Por padrão, o aplicativo desenha a interface sem usar a placa de vídeo, o que 
 Ela abre pelo item **Simulação tributária** do menu lateral, na mesma janela das demais calculadoras. As simulações salvas no histórico em versões anteriores continuam abrindo, recalculando e podendo ser comparadas. A pensão alimentícia também deixou de depender dela: tem os próprios campos de rendimentos, que já vêm preenchidos com os dados da última simulação.
 
 **Os meus dados são enviados para a internet?**
-Não. Os cálculos e as tabelas ficam no seu computador. A internet só é usada para atualizar as tabelas, na tela de abertura uma vez por dia ou pelo botão **Atualizar pela internet**, o que apenas lê as páginas das fontes; em links para páginas oficiais; e, ao abrir, para consultar no GitHub se há versão nova. As consultas ao abrir podem ser desligadas no rodapé da tela principal.
+Não. Os cálculos e as tabelas ficam no seu computador. A internet só é usada para atualizar as tabelas, na tela de abertura uma vez por dia ou pelo botão **Atualizar pela internet**, o que apenas lê as páginas das fontes; em links para páginas oficiais; e, ao abrir, para consultar no GitHub se há versão nova. As consultas ao abrir podem ser desligadas em **Configurações**, no rodapé do menu lateral.
 
 **Uso as calculadoras para quem trabalha em jornada parcial?**
 Sim. Informe o salário da jornada parcial: o INSS, o IRRF, o FGTS e as verbas são calculados sobre ele. Desde 2017, as férias do tempo parcial seguem a mesma tabela de dias do tempo integral (CLT, art. 58-A, § 7º).
@@ -1870,10 +1886,14 @@ Use **Atualizar pela internet**, quando disponível, ou corrija os valores manua
 | **Espaço** ou **Enter** com um botão ou item do menu selecionado | Aciona o botão ou abre a calculadora ou a tabela do item. |
 | **Enter** na simulação tributária e nas calculadoras trabalhistas | Calcula, a partir de qualquer campo do formulário. |
 | **Enter** na pensão alimentícia | Executa **Calcular**, respeitando a opção **Exibir memória detalhada**. |
-| **Ctrl + S** nas calculadoras trabalhistas | Salva o formulário no histórico. |
-| **Ctrl + P** / **Ctrl + E** nas calculadoras trabalhistas | Recalcula se o formulário mudou e gera o PDF / a planilha do Excel. |
+| **Ctrl + Enter** nas telas de cálculo | Calcula (na jornada pelo ponto, apura) com o valor do campo em que o cursor está, sem sair dele. |
+| **Ctrl + S** nas telas de cálculo | Salva o formulário no histórico. |
+| **Ctrl + P** / **Ctrl + E** nas telas de cálculo | Recalcula se o formulário mudou e gera o PDF / a planilha do Excel. |
 | **Esc** nas calculadoras trabalhistas | Volta à tela de boas-vindas, perguntando antes se houver dados que não estão no histórico. Com uma lista aberta, só fecha a lista. |
+| **Ctrl + F** na tela principal | Vai para **Procurar calculadora ou tabela**. |
 | **Alt + F4** | Fecha a janela principal. |
+
+O botão **Atalhos**, ao lado do **?** de cada tela de cálculo, e o quadro **Atalhos de teclado** das Configurações mostram esta lista resumida.
 
 ---
 

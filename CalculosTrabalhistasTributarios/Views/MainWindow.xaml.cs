@@ -1,4 +1,6 @@
 using CalculosTrabalhistasTributarios.Presentation.Behaviors;
+using CalculosTrabalhistasTributarios.Presentation.Interfaces;
+using CalculosTrabalhistasTributarios.Presentation.Mvvm;
 using CalculosTrabalhistasTributarios.Presentation.ViewModels;
 using CalculosTrabalhistasTributarios.Presentation.ViewModels.Calculadoras;
 using System.Diagnostics;
@@ -40,11 +42,12 @@ public partial class MainWindow : Window
         conteudo.DataContext = janela.DataContext;
         conteudo.Resources.MergedDictionaries.Add(janela.Resources);
         _janelaHospedada = janela;
-        if (janela.DataContext is CalculadoraViewModel calculadoraComAtalhos)
+        if (janela.DataContext is IAtalhosDeCalculo calculoComAtalhos)
         {
-            _atalhosHospedados.Add(new KeyBinding(calculadoraComAtalhos.Historico.SalvarCommand, Key.S, ModifierKeys.Control));
-            _atalhosHospedados.Add(new KeyBinding(calculadoraComAtalhos.ExportarPdfCommand, Key.P, ModifierKeys.Control));
-            _atalhosHospedados.Add(new KeyBinding(calculadoraComAtalhos.ExportarExcelCommand, Key.E, ModifierKeys.Control));
+            Atalho(calculoComAtalhos.CalcularCommand, Key.Enter);
+            Atalho(calculoComAtalhos.Historico.SalvarCommand, Key.S);
+            Atalho(calculoComAtalhos.ExportarPdfCommand, Key.P);
+            Atalho(calculoComAtalhos.ExportarExcelCommand, Key.E);
             foreach (var atalho in _atalhosHospedados)
                 InputBindings.Add(atalho);
         }
@@ -58,6 +61,7 @@ public partial class MainWindow : Window
         RotuloSecao.Text = chave.StartsWith("Tabela.", StringComparison.Ordinal) ? "Tabelas / " : "Calculadoras / ";
         _viewModel.DefinirAtivo(chave);
         _viewModel.HistoricoAberto = false;
+        _viewModel.ConfiguracoesAbertas = false;
         Dashboard.Visibility = Visibility.Collapsed;
         ConteudoInterno.Visibility = Visibility.Visible;
         if (janela.DataContext is CalculadoraViewModel calculadora)
@@ -65,6 +69,19 @@ public partial class MainWindow : Window
         if (janela.DataContext is TabelaManutencaoViewModel tabelaAberta)
             tabelaAberta.CarregarCommand.Execute(null);
         return true;
+    }
+
+    // O campo com o foco ainda não entregou o texto ao formulário: sem o clique num botão, ele não perde o foco antes do comando.
+    private void Atalho(ICommand? comando, Key tecla)
+    {
+        if (comando is null) return;
+        _atalhosHospedados.Add(new KeyBinding(new RelayCommand(_ =>
+        {
+            (Keyboard.FocusedElement as TextBox)?.GetBindingExpression(TextBox.TextProperty)?.UpdateSource();
+            (Keyboard.FocusedElement as ComboBox)?.GetBindingExpression(ComboBox.TextProperty)?.UpdateSource();
+            if (comando.CanExecute(null))
+                comando.Execute(null);
+        }), tecla, ModifierKeys.Control));
     }
 
     private bool LiberarConteudo()
@@ -86,12 +103,17 @@ public partial class MainWindow : Window
     {
         if (MostrarInicio()) _viewModel.HistoricoAberto = true;
     }
+    private void Configuracoes_Click(object sender, RoutedEventArgs e)
+    {
+        if (MostrarInicio()) _viewModel.ConfiguracoesAbertas = true;
+    }
 
     private bool MostrarInicio()
     {
         if (!LiberarConteudo()) return false;
         _viewModel.DefinirAtivo(null);
         _viewModel.HistoricoAberto = false;
+        _viewModel.ConfiguracoesAbertas = false;
         ConteudoInterno.Visibility = Visibility.Collapsed;
         Dashboard.Visibility = Visibility.Visible;
         return true;
@@ -124,7 +146,7 @@ public partial class MainWindow : Window
             _viewModel.Busca = string.Empty;
             e.Handled = true;
         }
-        else if (ConteudoInterno.Visibility == Visibility.Visible || _viewModel.HistoricoAberto)
+        else if (ConteudoInterno.Visibility == Visibility.Visible || _viewModel.HistoricoAberto || _viewModel.ConfiguracoesAbertas)
             e.Handled = MostrarInicio();
     }
 

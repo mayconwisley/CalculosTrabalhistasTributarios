@@ -16,7 +16,7 @@ namespace CalculosTrabalhistasTributarios.Presentation.ViewModels;
 /// Atualização de débitos judiciais trabalhistas e cíveis: as parcelas com vencimento e valor, as datas do processo e os
 /// critérios da decisão; o cálculo segue as fases dos tribunais superiores e da Lei 14.905/2024.
 /// </summary>
-public sealed class DebitoJudicialViewModel : ViewModelBase, ICalculoSalvavel
+public sealed class DebitoJudicialViewModel : ViewModelBase, ICalculoSalvavel, IAtalhosDeCalculo
 {
     private static readonly CultureInfo Cultura = CultureInfo.GetCultureInfo("pt-BR");
     private readonly ISimularDebitoJudicialUseCase _simulador;

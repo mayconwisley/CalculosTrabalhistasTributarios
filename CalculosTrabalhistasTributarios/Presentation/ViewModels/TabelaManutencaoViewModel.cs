@@ -25,6 +25,7 @@ public sealed class TabelaManutencaoViewModel : ViewModelBase
     private string _valor = "0,00";
     private string _aliquota = "0,00";
     private string _deducao = "0,00";
+    private bool _carregando = true;
     private string _statusAtualizacao = "Dados exibidos localmente.";
 
     public TabelaManutencaoViewModel(
@@ -131,6 +132,9 @@ public sealed class TabelaManutencaoViewModel : ViewModelBase
     public string Aliquota { get => _aliquota; set => SetProperty(ref _aliquota, value); }
     public string Deducao { get => _deducao; set => SetProperty(ref _deducao, value); }
     public string StatusAtualizacao { get => _statusAtualizacao; private set => SetProperty(ref _statusAtualizacao, value); }
+
+    /// <summary>Os registros estão sendo lidos do banco; a grade vazia ainda não significa tabela sem registros.</summary>
+    public bool Carregando { get => _carregando; private set => SetProperty(ref _carregando, value); }
     public ICommand SalvarCommand { get; }
     public ICommand ExcluirCommand { get; }
     public ICommand CarregarCommand { get; }
@@ -141,7 +145,16 @@ public sealed class TabelaManutencaoViewModel : ViewModelBase
     /// <summary>Recarrega a lista mantendo selecionado o registro informado; se ele não existir mais, volta ao modo de inclusão.</summary>
     private async Task CarregarAsync(int? idSelecionado)
     {
-        var registros = await _service.ListarAsync(Tipo, CancellationToken.None);
+        Carregando = true;
+        IReadOnlyList<RegistroTabelaDto> registros;
+        try
+        {
+            registros = await _service.ListarAsync(Tipo, CancellationToken.None);
+        }
+        finally
+        {
+            Carregando = false;
+        }
         Registros.Clear();
         foreach (var item in registros) Registros.Add(item);
         // Os registros são records (igualdade por valor): limpar antes garante que o formulário seja preenchido de novo com o que está no banco.

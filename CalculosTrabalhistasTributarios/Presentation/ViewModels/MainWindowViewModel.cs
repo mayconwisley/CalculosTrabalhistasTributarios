@@ -21,14 +21,20 @@ public sealed class MainWindowViewModel : ViewModelBase
     private readonly IBaixadorDeAtualizacao _baixador;
     private readonly IExecutorInstalador _executor;
     private readonly IUserNotifier _notificador;
+    private readonly IAtualizacaoTabelasService _atualizacaoTabelas;
     private ThemeMode _temaSelecionado = ThemeManager.CurrentMode;
     private bool _historicoAberto;
+    private bool _configuracoesAbertas;
     private string _busca = string.Empty;
     private IReadOnlyList<AtualizacaoDeTabela> _atualizacaoAoAbrir = [];
+    private AvisoInicioViewModel? _avisoPendencias;
 
     public MainWindowViewModel(IWindowNavigator navegador, HistoricoViewModel historico, IVerificarAtualizacoesUseCase verificarAtualizacoes, IRegistroDeErros registroDeErros,
-        IBaixadorDeAtualizacao baixador, IExecutorInstalador executor, IUserNotifier notificador, IFavoritosAtalhos favoritos)
+        IBaixadorDeAtualizacao baixador, IExecutorInstalador executor, IUserNotifier notificador, IFavoritosAtalhos favoritos,
+        IAtualizacaoTabelasService atualizacaoTabelas)
     {
+        _atualizacaoTabelas = atualizacaoTabelas;
+        AtualizarTabelasAgoraCommand = new AsyncRelayCommand(AtualizarTabelasAgoraAsync);
         _baixador = baixador;
         _executor = executor;
         _notificador = notificador;
@@ -162,9 +168,11 @@ public sealed class MainWindowViewModel : ViewModelBase
         ];
         // O item Histórico do menu usa o mesmo destaque de item ativo das calculadoras e das tabelas.
         AtalhoHistorico = new AtalhoViewModel("Historico", "Histórico", "Cálculos salvos neste computador, com busca, filtros e comparação.", new RelayCommand(_ => HistoricoAberto = true));
+        AtalhoConfiguracoes = new AtalhoViewModel("Configuracoes", "Configurações", "Tema, aceleração por placa de vídeo e consultas à internet ao abrir.", new RelayCommand(_ => ConfiguracoesAbertas = true));
     }
 
     public AtalhoViewModel AtalhoHistorico { get; }
+    public AtalhoViewModel AtalhoConfiguracoes { get; }
 
     /// <summary>Chamado ao abrir e sempre que a tela inicial volta a ficar ativa, como ao fechar uma calculadora.</summary>
     public async Task AtualizarRecentesAsync()
@@ -254,10 +262,87 @@ public sealed class MainWindowViewModel : ViewModelBase
         {
             if (!SetProperty(ref _historicoAberto, value)) return;
             AtalhoHistorico.Ativo = value;
-            if (value)
-                _ = Historico.CarregarAsync();
+            if (!value) return;
+            ConfiguracoesAbertas = false;
+            _ = Historico.CarregarAsync();
         }
     }
+
+    /// <summary>Tela de configurações aberta pelo menu, no lugar da tela de boas-vindas, como o histórico.</summary>
+    public bool ConfiguracoesAbertas
+    {
+        get => _configuracoesAbertas;
+        set
+        {
+            if (!SetProperty(ref _configuracoesAbertas, value)) return;
+            AtalhoConfiguracoes.Ativo = value;
+            if (!value) return;
+            HistoricoAberto = false;
+            OnPropertyChanged(nameof(SituacaoTabelas));
+        }
+    }
+
+    /// <summary>Quando as tabelas foram atualizadas pela internet, lido do arquivo de configurações.</summary>
+    public string SituacaoTabelas => AberturaViewModel.DescreverUltimaAtualizacao(ConfiguracoesUsuario.Atuais, DateTime.Now);
+
+    /// <summary>Atualiza todas as tabelas na hora, com a mesma tela de andamento da abertura.</summary>
+    public AsyncRelayCommand AtualizarTabelasAgoraCommand { get; }
+
+    private async Task AtualizarTabelasAgoraAsync()
+    {
+        var resultados = await _atualizacaoTabelas.AtualizarAgoraAsync();
+        OnPropertyChanged(nameof(SituacaoTabelas));
+        // Interrompida, a atualização não muda o aviso das pendências anteriores.
+        if (resultados.Count == 0)
+            return;
+        _atualizacaoAoAbrir = resultados;
+        if (_avisoPendencias is not null)
+            Avisos.Remove(_avisoPendencias);
+        _avisoPendencias = AberturaViewModel.DescreverPendencias(resultados) is { } pendencias ? CriarAvisoPendencias(pendencias) : null;
+        if (_avisoPendencias is not null)
+            Avisos.Insert(0, _avisoPendencias);
+    }
+
+    /// <summary>Muda a forma de desenhar a interface, que só pode ser escolhida antes de a primeira janela abrir.</summary>
+    public bool AceleracaoPorPlacaDeVideo
+    {
+        get => ConfiguracoesUsuario.Atuais.HardwareAcceleration;
+        set
+        {
+            if (value == AceleracaoPorPlacaDeVideo) return;
+            ConfiguracoesUsuario.Alterar(configuracoes => configuracoes.HardwareAcceleration = value);
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>Lida pelas calculadoras a cada alteração do formulário; vale também para as já abertas.</summary>
+    public bool RecalcularAoAlterar
+    {
+        get => ConfiguracoesUsuario.Atuais.RecalcularAoAlterar;
+        set
+        {
+            if (value == RecalcularAoAlterar) return;
+            ConfiguracoesUsuario.Alterar(configuracoes => configuracoes.RecalcularAoAlterar = value);
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>Telas 10% menores, para caber mais formulário em monitores baixos; aplicada na hora.</summary>
+    public bool DensidadeCompacta
+    {
+        get => ConfiguracoesUsuario.Atuais.DensidadeCompacta;
+        set
+        {
+            if (value == DensidadeCompacta) return;
+            ConfiguracoesUsuario.Alterar(configuracoes => configuracoes.DensidadeCompacta = value);
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(Escala));
+        }
+    }
+
+    /// <summary>Escala do conteúdo da janela principal, que hospeda também as calculadoras e as tabelas.</summary>
+    public double Escala => DensidadeCompacta ? 0.9 : 1.0;
+
     public IReadOnlyList<ThemeMode> Temas { get; } = [ThemeMode.Automatico, ThemeMode.Claro, ThemeMode.Escuro];
     public string Versao { get; } = ObterVersao();
 
@@ -280,8 +365,9 @@ public sealed class MainWindowViewModel : ViewModelBase
         {
             var avisos = await _verificarAtualizacoes.ExecutarAsync(Versao, VerificarNovasVersoes, DateOnly.FromDateTime(DateTime.Today), CancellationToken.None);
             Avisos.Clear();
-            if (AberturaViewModel.DescreverPendencias(_atualizacaoAoAbrir) is { } pendencias)
-                Avisos.Add(CriarAvisoPendencias(pendencias));
+            _avisoPendencias = AberturaViewModel.DescreverPendencias(_atualizacaoAoAbrir) is { } pendencias ? CriarAvisoPendencias(pendencias) : null;
+            if (_avisoPendencias is not null)
+                Avisos.Add(_avisoPendencias);
             foreach (var aviso in avisos)
                 Avisos.Add(Criar(aviso));
         }

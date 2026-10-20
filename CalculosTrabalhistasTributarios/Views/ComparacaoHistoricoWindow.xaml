@@ -25,7 +25,7 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal">
-            <TextBlock Text="Comparação de cálculos salvos" FontSize="20" FontWeight="SemiBold" VerticalAlignment="Center" />
+            <TextBlock Text="{Binding Cabecalho, Mode=OneTime}" FontSize="20" FontWeight="SemiBold" VerticalAlignment="Center" />
             <Button Style="{StaticResource BotaoAjuda}" />
         </StackPanel>
         <CheckBox Grid.Row="1" Content="Mostrar apenas diferenças" IsChecked="{Binding SomenteDiferencas}" Margin="0,12,0,12" Foreground="{DynamicResource TextBrush}"

@@ -1,6 +1,7 @@
 using CalculosTrabalhistasTributarios.Application.DTOs;
 using CalculosTrabalhistasTributarios.Application.Interfaces;
 using CalculosTrabalhistasTributarios.Presentation.Mvvm;
+using System.Globalization;
 using System.Windows.Input;
 
 namespace CalculosTrabalhistasTributarios.Presentation.ViewModels;
@@ -13,6 +14,7 @@ public sealed class AberturaViewModel : ViewModelBase
 {
     // Cada consulta tem o próprio limite; este evita que uma rede lenta prenda a abertura em todas as tabelas.
     private static readonly TimeSpan TempoMaximo = TimeSpan.FromMinutes(2);
+    private static readonly CultureInfo Cultura = CultureInfo.GetCultureInfo("pt-BR");
 
     private readonly IAtualizarTodasTabelasUseCase _atualizarTabelas;
     private readonly IRegistroDeErros _registroDeErros;
@@ -23,6 +25,7 @@ public sealed class AberturaViewModel : ViewModelBase
     private int _concluidas;
     private bool _indeterminado = true;
     private bool _atualizando;
+    private bool _pedidaPeloUsuario;
 
     public AberturaViewModel(IAtualizarTodasTabelasUseCase atualizarTabelas, IRegistroDeErros registroDeErros)
     {
@@ -53,6 +56,9 @@ public sealed class AberturaViewModel : ViewModelBase
 
     public ICommand PularCommand => _pularCommand;
 
+    /// <summary>Pedida pelo botão Atualizar agora, a interrupção cancela a consulta, e não adia para a próxima abertura.</summary>
+    public bool PedidaPeloUsuario { get => _pedidaPeloUsuario; private set => SetProperty(ref _pedidaPeloUsuario, value); }
+
     /// <summary>Resultado de cada tabela, quando a atualização foi feita até o fim nesta abertura.</summary>
     public IReadOnlyList<AtualizacaoDeTabela> Resultados { get; private set; } = [];
 
@@ -71,7 +77,34 @@ public sealed class AberturaViewModel : ViewModelBase
             Concluir(ConfiguracoesUsuario.Atuais.AtualizarTabelasAoAbrir ? "As tabelas já foram atualizadas hoje." : "Abrindo o aplicativo...");
             return;
         }
+        await AtualizarAsync(DateTime.Now);
+    }
 
+    /// <summary>Atualização pedida na tela principal: roda mesmo se as tabelas já foram atualizadas hoje ou se a opção ao abrir está desligada.</summary>
+    public Task AtualizarAgoraAsync(DateTime agora)
+    {
+        PedidaPeloUsuario = true;
+        return AtualizarAsync(agora);
+    }
+
+    /// <summary>Texto de quando as tabelas foram atualizadas pela última vez, pela abertura ou pelo botão Atualizar agora.</summary>
+    public static string DescreverUltimaAtualizacao(Configuracoes configuracoes, DateTime agora)
+    {
+        if (configuracoes.HorarioAtualizacaoTabelas is { } horario)
+        {
+            var dia = DateOnly.FromDateTime(horario);
+            var hoje = DateOnly.FromDateTime(agora);
+            var quando = dia == hoje ? "hoje" : dia == hoje.AddDays(-1) ? "ontem" : $"em {horario.ToString("dd/MM/yyyy", Cultura)}";
+            return $"Tabelas atualizadas pela internet {quando} às {horario.ToString("HH:mm", Cultura)}.";
+        }
+        // Versões anteriores gravavam só o dia.
+        if (configuracoes.UltimaAtualizacaoTabelas is { } ultima)
+            return $"Tabelas atualizadas pela internet em {ultima.ToString("dd/MM/yyyy", Cultura)}.";
+        return "As tabelas ainda não foram atualizadas pela internet neste computador.";
+    }
+
+    private async Task AtualizarAsync(DateTime agora)
+    {
         Mensagem = "Atualizando as tabelas pela internet...";
         Indeterminado = false;
         Atualizando = true;
@@ -88,7 +121,11 @@ public sealed class AberturaViewModel : ViewModelBase
             Resultados = await Task.Run(() => _atualizarTabelas.ExecutarAsync(progresso, _pular.Token));
             // Sem nenhuma fonte respondendo, como sem internet, a próxima abertura do dia tenta de novo.
             if (Resultados.Any(resultado => resultado.Resultado.Sucesso))
-                ConfiguracoesUsuario.Alterar(configuracoes => configuracoes.UltimaAtualizacaoTabelas = hoje);
+                ConfiguracoesUsuario.Alterar(configuracoes =>
+                {
+                    configuracoes.UltimaAtualizacaoTabelas = DateOnly.FromDateTime(agora);
+                    configuracoes.HorarioAtualizacaoTabelas = agora;
+                });
             Concluir(Resultados.All(resultado => resultado.Resultado.Sucesso) ? "Tabelas atualizadas." : "Atualização concluída com pendências.");
             // Uma pausa curta para a barra cheia e o resultado serem vistos antes de a tela fechar.
             await Task.Delay(TimeSpan.FromMilliseconds(600));
@@ -96,12 +133,12 @@ public sealed class AberturaViewModel : ViewModelBase
         catch (OperationCanceledException)
         {
             Resultados = [];
-            Concluir("Atualização interrompida; ela será feita na próxima abertura.");
+            Concluir(PedidaPeloUsuario ? "Atualização interrompida; os dados locais foram preservados." : "Atualização interrompida; ela será feita na próxima abertura.");
         }
         catch (Exception exception)
         {
             // Uma falha inesperada na atualização não pode impedir o uso das tabelas já cadastradas.
-            _registroDeErros.Registrar(exception, "Atualização das tabelas ao abrir");
+            _registroDeErros.Registrar(exception, "Atualização das tabelas");
             Resultados = [];
             Concluir("Não foi possível atualizar as tabelas; os dados locais foram preservados.");
         }
@@ -114,8 +151,8 @@ public sealed class AberturaViewModel : ViewModelBase
         if (falhas.Count == 0)
             return null;
         if (falhas.Count == resultados.Count)
-            return "As tabelas não foram atualizadas ao abrir: nenhuma fonte respondeu. Confira a conexão com a internet; os dados locais foram preservados e a atualização será tentada de novo na próxima abertura.";
-        return $"Ao abrir, {falhas.Count} de {resultados.Count} tabelas não foram atualizadas ({string.Join(", ", falhas.Select(falha => falha.Nome))}). " +
+            return "As tabelas não foram atualizadas: nenhuma fonte respondeu. Confira a conexão com a internet; os dados locais foram preservados e a atualização será tentada de novo na próxima abertura.";
+        return $"Na última atualização, {falhas.Count} de {resultados.Count} tabelas não foram atualizadas ({string.Join(", ", falhas.Select(falha => falha.Nome))}). " +
             "Os dados locais foram preservados; atualize-as pela tela de cada tabela.";
     }
 
