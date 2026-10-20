@@ -61,7 +61,7 @@ Ao atualizar uma instalação anterior, o instalador usa a pasta já instalada (
 
 ### Abrindo o aplicativo
 
-Abra **Cálculos Trabalhistas e Tributários** pelo Menu Iniciar ou pelo atalho da área de trabalho. A janela principal reúne um menu lateral de calculadoras, a central com cartões, as tabelas e o histórico. Ao escolher uma calculadora, o formulário e o resultado aparecem na área central da mesma janela. A versão instalada aparece no rodapé da central.
+Abra **Cálculos Trabalhistas e Tributários** pelo Menu Iniciar ou pelo atalho da área de trabalho. A janela principal reúne, no menu lateral, as calculadoras, as tabelas e o histórico. Ao escolher um item, o formulário e o resultado aparecem na área central da mesma janela. Sem nenhum item aberto, a área central mostra a tela de boas-vindas, com a versão instalada no rodapé.
 
 Na primeira execução, o aplicativo prepara o banco de dados local com as tabelas históricas de INSS e IRRF. Esse processo é automático e acontece uma única vez.
 
@@ -73,19 +73,21 @@ Para remover, use **Configurações do Windows > Aplicativos > Aplicativos insta
 
 ## 3. Conhecendo a tela principal
 
-![Janela principal com menu lateral e central de calculadoras](imagens/01-tela-principal.png)
+![Janela principal com o menu lateral e a tela de boas-vindas](imagens/01-tela-principal.png)
 
-O **menu lateral** permanece visível durante o cálculo. Nele, as calculadoras aparecem por assunto e as favoritas ficam no alto. Use **Procurar calculadora** ou **Ctrl+F** para filtrar a lista; **Esc** limpa a busca quando ela está em foco. Os botões **Tabelas** e **Histórico** ficam no rodapé do menu. **Calculadoras**, no alto, volta à central de cartões.
+O **menu lateral** permanece visível durante o cálculo. Nele, as calculadoras aparecem por assunto, seguidas do grupo **Tabelas**, dividido em **INSS e salário**, **Imposto de renda**, **Deduções do IRRF** e **Índices econômicos**, e as favoritas, calculadoras ou tabelas, ficam no alto. Cada grupo e cada divisão mostram quantos itens têm e recolhem ou expandem ao clicar no título. Ao abrir o aplicativo, só as favoritas aparecem expandidas; a busca abre os grupos com itens encontrados e, ao ser limpa, devolve-os como estavam, e o grupo do item aberto pelo histórico se expande para mostrá-lo. A estrela ao fim da linha, que aparece ao passar o mouse ou ao focar o item pelo teclado, marca ou desmarca a favorita. Use **Procurar calculadora ou tabela** ou **Ctrl+F** para filtrar a lista; **Esc** limpa a busca quando ela está em foco. O botão **Histórico** fica no rodapé do menu. Nomes longos ocupam até duas linhas. O título **Central de simulações de cálculos**, no alto, volta à tela de boas-vindas.
 
-Na **central**, os cartões continuam agrupados por assunto. Clique em um cartão ou selecione-o com **Tab** e pressione **Enter** para abrir o cálculo na área central da mesma janela. O seletor de tema e o botão **Manual do usuário** ficam no cabeçalho; **F1** abre a seção correspondente à calculadora atual.
+Clique em um item do menu ou selecione-o com **Tab** e pressione **Enter** para abri-lo na área central da mesma janela; o item aberto fica destacado no menu. O seletor de tema e o botão **Manual do usuário** ficam no cabeçalho; **F1** abre a seção correspondente à calculadora atual.
 
-Ao trocar de calculadora ou voltar à central, o aplicativo confirma a saída se houver dados do formulário ainda não salvos no histórico. Os atalhos **Esc** e **Alt+F4** continuam disponíveis; **Esc** volta à central quando a calculadora está aberta.
+Ao trocar de calculadora ou voltar à tela de boas-vindas, o aplicativo confirma a saída se houver dados do formulário ainda não salvos no histórico. Os atalhos **Esc** e **Alt+F4** continuam disponíveis; **Esc** volta à tela de boas-vindas quando uma calculadora, uma tabela ou o histórico está aberto.
 
-**Favoritas:** clique na estrela (☆) de um cartão para levá-lo à seção **Favoritas**, no alto da aba; a estrela fica preenchida (★). O cartão sai do grupo de origem, que mostra um aviso quando todos os seus cartões estão nas favoritas. Para desfazer, clique de novo na estrela. As favoritas valem para as abas **Calculadoras** e **Tabelas** e ficam gravadas neste computador, nas preferências do usuário, de uma abertura para outra.
+**Boas-vindas:** quando nenhum item do menu está aberto, a área central mostra quantas calculadoras e tabelas o aplicativo oferece, o acesso ao histórico, a seção **Continuar de onde parou** e os **Primeiros passos**, com os atalhos mais usados.
 
-**Recentes:** no alto da aba **Calculadoras**, os cinco últimos cálculos salvos no histórico, do alterado mais recentemente para o mais antigo, com a calculadora e quando foram alterados. Clique em um para reabri-lo já calculado, como pelo botão **Abrir** do histórico; **Ver o histórico** abre a aba **Histórico**. A seção só aparece quando há cálculos salvos e fica oculta durante a busca.
+**Favoritas:** clique na estrela (☆) de um item do menu para levá-lo ao grupo **Favoritas**, no alto; a estrela fica preenchida (★) e permanece visível. O item sai do grupo de origem, e o grupo que fica sem itens deixa de aparecer. Para desfazer, clique de novo na estrela. As favoritas valem para calculadoras e tabelas e ficam gravadas neste computador, nas preferências do usuário, de uma abertura para outra.
 
-**Procurar:** digite parte do nome ou da descrição, como `fgts`, `pensao` ou `13`. A busca lateral filtra as calculadoras e os cartões da central ao mesmo tempo, sem diferenciar maiúsculas e acentos. Com várias palavras, mostra os itens que têm todas. Na aba **Histórico**, a busca própria procura nos cálculos salvos.
+**Continuar de onde parou:** na tela de boas-vindas, os cinco últimos cálculos salvos no histórico, do alterado mais recentemente para o mais antigo, com a calculadora e quando foram alterados. Clique em um para reabri-lo já calculado, como pelo botão **Abrir** do histórico; **Ver o histórico** abre o histórico completo. Sem cálculos salvos, a seção explica como salvar um.
+
+**Procurar:** digite parte do nome ou da descrição, como `fgts`, `pensao` ou `13`. A busca lateral filtra as calculadoras e as tabelas do menu, sem diferenciar maiúsculas e acentos. Com várias palavras, mostra os itens que têm todas. No **Histórico**, a busca própria procura nos cálculos salvos.
 
 **Avisos ao abrir:** logo abaixo do cabeçalho, uma faixa avisa quando há uma versão nova publicada e quando as tabelas do ano ainda não foram cadastradas (a do INSS mais recente é de um ano anterior), com o botão **Abrir a tabela do INSS**. **Dispensar** esconde o aviso até a próxima abertura.
 
@@ -110,7 +112,7 @@ Se algum dado estiver em formato inválido, o aplicativo exibe um aviso e não f
 
 ## 5. Simulação tributária
 
-Abra **Simulação tributária** no menu lateral ou pelo cartão do grupo **Impostos e salário** da central. Os dados ficam no topo da área central e o resultado logo abaixo, com **Preencher exemplo**, **Salvar no histórico**, **Gerar PDF** e **Gerar Excel**.
+Abra **Simulação tributária** pelo menu lateral. Os dados ficam no topo da área central e o resultado logo abaixo, com **Preencher exemplo**, **Salvar no histórico**, **Gerar PDF** e **Gerar Excel**.
 
 ### 5.1 Preenchendo os dados
 
@@ -171,7 +173,7 @@ A simulação não considera pensão alimentícia, previdência complementar, ou
 
 ## 6. Pensão alimentícia e débitos judiciais
 
-Abra **Pensão alimentícia** no menu lateral ou pelo cartão do grupo **Pensão e débitos judiciais** da central. No mesmo grupo estão a [revisão de pensão](#64-revisão-de-pensão), a [pensão em atraso](#65-pensão-em-atraso) e os [débitos judiciais](#66-débitos-judiciais). O formulário tem os próprios dados dos rendimentos e não depende de uma simulação tributária feita antes. Se você acabou de fazer uma simulação, a competência, o valor bruto e os dependentes já vêm preenchidos com os dela.
+Abra **Pensão alimentícia** pelo menu lateral, no grupo **Pensão e débitos**. No mesmo grupo estão a [revisão de pensão](#64-revisão-de-pensão), a [pensão em atraso](#65-pensão-em-atraso) e os [débitos judiciais](#66-débitos-judiciais). O formulário tem os próprios dados dos rendimentos e não depende de uma simulação tributária feita antes. Se você acabou de fazer uma simulação, a competência, o valor bruto e os dependentes já vêm preenchidos com os dela.
 
 ### 6.1 Calculando
 
@@ -265,7 +267,7 @@ Na memória de cálculo, cada iteração mostra a base e a pensão de cada benef
 
 ### 6.4 Revisão de pensão
 
-Abra pelo cartão **Revisão de pensão**, no grupo **Pensão e débitos judiciais**. Ela compara a pensão em vigor com a pedida ou oferecida em uma ação revisional, com o efeito de cada uma no IRRF e no líquido de quem paga.
+Abra **Revisão de pensão** pelo menu lateral. Ela compara a pensão em vigor com a pedida ou oferecida em uma ação revisional, com o efeito de cada uma no IRRF e no líquido de quem paga.
 
 | Campo | O que informar |
 | --- | --- |
@@ -291,7 +293,7 @@ Cada cenário é calculado como na calculadora de pensão: o IRRF é o da modali
 
 ### 6.5 Pensão em atraso
 
-Abra pelo cartão **Pensão em atraso**, no grupo **Pensão e débitos judiciais**. Ela atualiza o débito de pensões não pagas, com correção monetária e juros de mora, e separa as parcelas cobradas pelo rito da prisão das cobradas pelo rito da penhora.
+Abra **Pensão em atraso** pelo menu lateral. Ela atualiza o débito de pensões não pagas, com correção monetária e juros de mora, e separa as parcelas cobradas pelo rito da prisão das cobradas pelo rito da penhora.
 
 ![Pensão em atraso](imagens/38-pensao-atraso.png)
 
@@ -327,7 +329,7 @@ Depois de **Calcular**, os cartões mostram o **total atualizado**, a parte cobr
 
 ### 6.6 Débitos judiciais
 
-Abra pelo cartão **Débitos judiciais**, no grupo **Pensão e débitos judiciais**. Ele atualiza um ou mais valores devidos em um processo, trabalhista ou cível, com a correção monetária e os juros de cada fase, até a data do cálculo.
+Abra **Débitos judiciais** pelo menu lateral. Ele atualiza um ou mais valores devidos em um processo, trabalhista ou cível, com a correção monetária e os juros de cada fase, até a data do cálculo.
 
 ![Débitos judiciais](imagens/49-debitos-judiciais.png)
 
@@ -357,7 +359,7 @@ Abra pelo cartão **Débitos judiciais**, no grupo **Pensão e débitos judiciai
 
 ## 7. Cálculo de estabilidade
 
-Abra pelo cartão **Estabilidade**, no grupo **Férias, 13º e desligamento** da aba **Calculadoras**.
+Abra **Estabilidade** pelo menu lateral.
 
 ![Cálculo de estabilidade](imagens/08-estabilidade-resultado.png)
 
@@ -390,10 +392,10 @@ O botão **Gerar PDF** cria um demonstrativo com as verbas, os dados considerado
 
 ## 8. Calculadoras trabalhistas
 
-Além da simulação tributária, da pensão, dos débitos judiciais, da estabilidade e da jornada pelo ponto, o menu lateral e a central reúnem cálculos para o dia a dia do departamento pessoal e do imposto de renda. As calculadoras deste capítulo usam o mesmo formato na área central:
+Além da simulação tributária, da pensão, dos débitos judiciais, da estabilidade e da jornada pelo ponto, o menu lateral reúne cálculos para o dia a dia do departamento pessoal e do imposto de renda. As calculadoras deste capítulo usam o mesmo formato na área central:
 
 - **? e Preencher exemplo:** ao lado do título. O **?** (ou **F1**) abre este manual na seção da calculadora. **Preencher exemplo** substitui o formulário pelos dados fictícios do exemplo deste manual, depois de confirmar, e calcula: é uma forma de conhecer os campos antes de digitar o seu caso.
-- **Formulário:** os campos do cálculo. Passe o mouse sobre um campo para ver uma dica do que informar. Orientações essenciais também aparecem abaixo de alguns campos de rescisão, crédito e empréstimo. Ao abrir uma calculadora, a competência, o salário e os dependentes do último cálculo já vêm preenchidos. Alguns campos só aparecem quando a opção escolhida em outro campo exige.
+- **Formulário:** os campos do cálculo. Passe o mouse sobre um campo para ver uma dica do que informar. Orientações essenciais também aparecem abaixo de alguns campos de rescisão, crédito e empréstimo. Ao abrir uma calculadora, a competência, o salário e os dependentes do último cálculo já vêm preenchidos. Alguns campos só aparecem quando a opção escolhida em outro campo exige. Os campos se distribuem em colunas que ocupam toda a largura da área central; ao estreitar a janela, o número de colunas diminui, sem cortar os campos.
 - **Calcular:** faz o cálculo. A tecla **Enter** também calcula. Feito o cálculo, a janela rola até o **Resultado** quando ele está fora da vista.
 - **Resumo executivo:** os valores mais importantes.
 - **Entradas utilizadas neste resultado:** seção expansível para conferir os valores do formulário no momento do cálculo. Nas listas, abra o formulário para conferir cada linha.
@@ -410,7 +412,7 @@ Além da simulação tributária, da pensão, dos débitos judiciais, da estabil
 
 **Resultado desatualizado:** se você alterar o formulário depois de calcular, o resultado continua na tela com o aviso **O formulário mudou depois deste cálculo**. Use **Calcular** para atualizar a tela. Ao escolher **Gerar PDF** ou **Gerar Excel**, o aplicativo recalcula antes de salvar; se o novo cálculo falhar, não cria o arquivo com o resultado anterior. Ações que levam valores a outra calculadora ficam indisponíveis até o recálculo. Apenas passar pelo campo, que limpa o zero ou formata o número, não conta como alteração.
 
-**Atalhos:** **Ctrl+S** salva no histórico, **Ctrl+P** gera o PDF e **Ctrl+E** gera a planilha do Excel. **Esc** volta à central; se o formulário tiver dados que não estão no histórico, o aplicativo pergunta antes de sair.
+**Atalhos:** **Ctrl+S** salva no histórico, **Ctrl+P** gera o PDF e **Ctrl+E** gera a planilha do Excel. **Esc** volta à tela de boas-vindas; se o formulário tiver dados que não estão no histórico, o aplicativo pergunta antes de sair.
 
 O INSS e o IRRF seguem as mesmas regras da simulação tributária, com as tabelas da competência informada: o IRRF aplica a modalidade mais vantajosa para o trabalhador (deduções legais ou desconto simplificado) e a redução mensal, quando prevista.
 
@@ -732,7 +734,7 @@ No 13º, nas férias e na rescisão, a pensão é deduzida da base do IRRF na mo
 
 ### 8.12 Seguro-desemprego
 
-Abra pelo cartão **Seguro-desemprego**, no grupo **Férias, 13º e desligamento**. Ele calcula o valor de cada parcela e quantas parcelas o trabalhador dispensado sem justa causa recebe.
+Abra **Seguro-desemprego** pelo menu lateral. Ele calcula o valor de cada parcela e quantas parcelas o trabalhador dispensado sem justa causa recebe.
 
 | Campo | O que informar |
 | --- | --- |
@@ -758,7 +760,7 @@ Não têm direito o pedido de demissão, a justa causa, o acordo (CLT, art. 484-
 
 ### 8.13 CLT x PJ
 
-Abra pelo cartão **CLT x PJ**, no grupo **Impostos e salário**. Ele compara, em um ano, o mesmo profissional como empregado e como PJ no Simples Nacional: o que sobra para ele e quanto custa para a empresa.
+Abra **CLT x PJ** pelo menu lateral. Ele compara, em um ano, o mesmo profissional como empregado e como PJ no Simples Nacional: o que sobra para ele e quanto custa para a empresa.
 
 ![CLT x PJ](imagens/44-clt-pj.png)
 
@@ -784,7 +786,7 @@ A tabela **Comparação no ano** coloca lado a lado o recebido, o INSS, o IRRF, 
 
 ### 8.14 Holerite do mês
 
-Abra pelo cartão **Holerite do mês**, no grupo **Remuneração e custos**. Ele monta o holerite completo de um mês, com as mesmas regras das calculadoras de horas extras, de insalubridade e periculosidade e de salário-família.
+Abra **Holerite do mês** pelo menu lateral. Ele monta o holerite completo de um mês, com as mesmas regras das calculadoras de horas extras, de insalubridade e periculosidade e de salário-família.
 
 ![Holerite do mês](imagens/47-holerite.png)
 
@@ -820,7 +822,7 @@ Abra pelo cartão **Holerite do mês**, no grupo **Remuneração e custos**. Ele
 
 ### 8.15 Jornada pelo ponto
 
-Abra pelo cartão **Jornada pelo ponto**, no grupo **Remuneração e custos**. A partir das marcações de entrada e saída de cada dia do período do ponto, ela apura as horas normais, as extras, as noturnas, as faltas, os atrasos e os intervalos não concedidos, e leva os totais para a calculadora de horas extras ou para o holerite.
+Abra **Jornada pelo ponto** pelo menu lateral. A partir das marcações de entrada e saída de cada dia do período do ponto, ela apura as horas normais, as extras, as noturnas, as faltas, os atrasos e os intervalos não concedidos, e leva os totais para a calculadora de horas extras ou para o holerite.
 
 ![Jornada pelo ponto](imagens/48-jornada.png)
 
@@ -858,7 +860,7 @@ Com um período diferente do mês da competência, as observações lembram que 
 
 ### 8.16 IRPF anual
 
-Abra pelo cartão **IRPF anual**, no grupo **Impostos e salário**. Ele simula a declaração do imposto de renda a partir do ano-calendário 2026 (declaração de 2027), com as regras da Lei 15.270/2025.
+Abra **IRPF anual** pelo menu lateral. Ele simula a declaração do imposto de renda a partir do ano-calendário 2026 (declaração de 2027), com as regras da Lei 15.270/2025.
 
 ![IRPF anual](imagens/51-irpf-anual.png)
 
@@ -887,7 +889,7 @@ A memória de cálculo mostra os dois modelos, a redução e a tributação mín
 
 ### 8.17 Dividendos
 
-Abra pelo cartão **Dividendos**, no grupo **Impostos e salário**. Ele calcula a retenção de IRRF sobre lucros e dividendos pagos desde 01/2026.
+Abra **Dividendos** pelo menu lateral. Ele calcula a retenção de IRRF sobre lucros e dividendos pagos desde 01/2026.
 
 ![Dividendos](imagens/53-dividendos.png)
 
@@ -906,7 +908,7 @@ Abra pelo cartão **Dividendos**, no grupo **Impostos e salário**. Ele calcula 
 
 ### 8.18 Tributo em atraso
 
-Abra pelo cartão **Tributo em atraso**, no grupo **Impostos e salário**. Ele calcula a multa e os juros de uma guia federal paga depois do vencimento.
+Abra **Tributo em atraso** pelo menu lateral. Ele calcula a multa e os juros de uma guia federal paga depois do vencimento.
 
 ![Tributo em atraso](imagens/60-tributo-em-atraso.png)
 
@@ -924,7 +926,7 @@ Abra pelo cartão **Tributo em atraso**, no grupo **Impostos e salário**. Ele c
 
 ### 8.19 Correção de valores
 
-Abra pelo cartão **Correção de valores**, no grupo **Pensão e débitos judiciais**. Ele atualiza um valor por um índice mensal, como a Calculadora do Cidadão do Banco Central, com juros e multa opcionais.
+Abra **Correção de valores** pelo menu lateral. Ele atualiza um valor por um índice mensal, como a Calculadora do Cidadão do Banco Central, com juros e multa opcionais.
 
 ![Correção de valores](imagens/61-correcao-de-valores.png)
 
@@ -944,7 +946,7 @@ Para débitos de processos, use [Débitos judiciais](#6-pensão-alimentícia-e-d
 
 ### 8.20 Empregado doméstico (DAE)
 
-Abra pelo cartão **Empregado doméstico (DAE)**, no grupo **Remuneração e custos**. Ele calcula o salário líquido do doméstico e o DAE do mês, a guia única do eSocial (LC 150/2015, arts. 34 e 35).
+Abra **Empregado doméstico (DAE)** pelo menu lateral. Ele calcula o salário líquido do doméstico e o DAE do mês, a guia única do eSocial (LC 150/2015, arts. 34 e 35).
 
 ![Empregado doméstico (DAE)](imagens/62-domestico-dae.png)
 
@@ -965,7 +967,7 @@ Informe a **competência**, o **salário**, as **horas extras e adicionais** do 
 
 ### 8.21 Estágio
 
-Abra pelo cartão **Estágio**, no grupo **Remuneração e custos**. Ele calcula o líquido da bolsa e o recesso remunerado (Lei 11.788/2008).
+Abra **Estágio** pelo menu lateral. Ele calcula o líquido da bolsa e o recesso remunerado (Lei 11.788/2008).
 
 ![Estágio](imagens/63-estagio.png)
 
@@ -977,7 +979,7 @@ Abra pelo cartão **Estágio**, no grupo **Remuneração e custos**. Ele calcula
 
 ### 8.22 Trabalho intermitente
 
-Abra pelo cartão **Trabalho intermitente**, no grupo **Remuneração e custos**. Ele calcula o pagamento ao fim de cada período de convocação (CLT, art. 452-A, § 6º).
+Abra **Trabalho intermitente** pelo menu lateral. Ele calcula o pagamento ao fim de cada período de convocação (CLT, art. 452-A, § 6º).
 
 ![Trabalho intermitente](imagens/64-intermitente.png)
 
@@ -993,7 +995,7 @@ O INSS e o IRRF dependem de como cada verba é lançada na folha e não são cal
 
 ### 8.23 Carnê-leão
 
-Abra pelo cartão **Carnê-leão**, no grupo **Impostos e salário**. Ele calcula o IR mensal sobre rendimentos recebidos de pessoas físicas e do exterior.
+Abra **Carnê-leão** pelo menu lateral. Ele calcula o IR mensal sobre rendimentos recebidos de pessoas físicas e do exterior.
 
 ![Carnê-leão](imagens/65-carne-leao.png)
 
@@ -1096,7 +1098,7 @@ Os campos e opções podem ser salvos e reabertos pelo histórico. PDF e Excel u
 
 ### 8.24 Ganho de capital
 
-Abra pelo cartão **Ganho de capital**, no grupo **Impostos e salário**. Ele calcula o IR na venda de um imóvel ou de outro bem pela pessoa física.
+Abra **Ganho de capital** pelo menu lateral. Ele calcula o IR na venda de um imóvel ou de outro bem pela pessoa física.
 
 ![Ganho de capital](imagens/66-ganho-de-capital.png)
 
@@ -1114,7 +1116,7 @@ O imposto é pago em DARF, código 4600, até o último dia útil do mês seguin
 
 ### 8.25 Afastamentos e licenças
 
-Abra pelo cartão **Afastamentos e licenças**, no grupo **FGTS, afastamentos e benefícios**. Ele mostra quem paga cada parte do afastamento, quanto e até quando.
+Abra **Afastamentos e licenças** pelo menu lateral. Ele mostra quem paga cada parte do afastamento, quanto e até quando.
 
 ![Afastamentos e licenças](imagens/67-afastamento.png)
 
@@ -1131,7 +1133,7 @@ O auxílio do INSS é uma estimativa: o valor exato sai da média de todos os sa
 
 ### 8.26 Saque-aniversário do FGTS
 
-Abra pelo cartão **Saque-aniversário do FGTS**, no grupo **FGTS, afastamentos e benefícios**. Copie o **Saldo do extrato (R$)** e a **Garantia bloqueada (R$)** em campos separados. Em **Saldo inclui garantia**, selecione **Não (saldo livre)** para somar a garantia, ou **Sim (saldo total)** se ela já estiver incluída: a calculadora evita a soma duplicada. Informe **Multa incluída (R$)** somente se a multa estiver dentro do saldo copiado, para exclusão automática; caso já esteja separada no extrato, deixe zero. Selecione o mês de aniversário e não desconte novamente saques já debitados.
+Abra **Saque-aniversário do FGTS** pelo menu lateral. Copie o **Saldo do extrato (R$)** e a **Garantia bloqueada (R$)** em campos separados. Em **Saldo inclui garantia**, selecione **Não (saldo livre)** para somar a garantia, ou **Sim (saldo total)** se ela já estiver incluída: a calculadora evita a soma duplicada. Informe **Multa incluída (R$)** somente se a multa estiver dentro do saldo copiado, para exclusão automática; caso já esteja separada no extrato, deixe zero. Selecione o mês de aniversário e não desconte novamente saques já debitados.
 
 Em **Parcela ao banco (R$)**, informe quanto **deste saque anual** será repassado ao banco por antecipações anteriores, conforme contrato ou extrato. O campo é opcional: deixe zero se esse saque não estiver comprometido. Não informe o total líquido recebido nos empréstimos, o saldo bloqueado como garantia, parcelas de outros anos ou contratos quitados. Esses valores não permitem determinar sozinhos a parcela cedida deste ano; consulte o contrato ou a instituição financeira.
 
@@ -1161,7 +1163,7 @@ O saque fica disponível do 1º dia útil do mês do aniversário até o fim do 
 
 ### 8.27 Abono salarial (PIS/Pasep)
 
-Abra pelo cartão **Abono salarial (PIS/Pasep)**, no grupo **FGTS, afastamentos e benefícios**. Ele verifica o direito ao abono e calcula o valor.
+Abra **Abono salarial (PIS/Pasep)** pelo menu lateral. Ele verifica o direito ao abono e calcula o valor.
 
 ![Abono salarial](imagens/69-abono-salarial.png)
 
@@ -1179,7 +1181,7 @@ Abra pelo cartão **Abono salarial (PIS/Pasep)**, no grupo **FGTS, afastamentos 
 
 ### 8.28 Comissões e DSR
 
-Abra pelo cartão **Comissões e DSR**, no grupo **Remuneração e custos**. A calculadora separa comissões e repouso remunerado, mostra a remuneração do mês com INSS e IRRF, o depósito de FGTS e o impacto líquido das comissões.
+Abra **Comissões e DSR** pelo menu lateral. A calculadora separa comissões e repouso remunerado, mostra a remuneração do mês com INSS e IRRF, o depósito de FGTS e o impacto líquido das comissões.
 
 ![Formulário de comissões e DSR preenchido com dados fictícios](imagens/76-comissoes-dsr-formulario.png)
 
@@ -1203,7 +1205,7 @@ Abra pelo cartão **Comissões e DSR**, no grupo **Remuneração e custos**. A c
 
 ### 8.29 INSS em múltiplos vínculos
 
-Abra pelo cartão **INSS em múltiplos vínculos**, no grupo **Impostos e salário**. Informe uma competência a partir de 03/2020. A tela já apresenta dois vínculos, que é a quantidade mínima para este cálculo:
+Abra **INSS em múltiplos vínculos** pelo menu lateral. Informe uma competência a partir de 03/2020. A tela já apresenta dois vínculos, que é a quantidade mínima para este cálculo:
 
 ![Formulário de INSS em múltiplos vínculos com dois empregadores fictícios](imagens/78-inss-vinculos-formulario.png)
 
@@ -1225,7 +1227,7 @@ Regras e exemplos numéricos: [Manual de Orientação do eSocial, seção “Mú
 
 ### 8.30 Diferenças de reajuste retroativo
 
-Abra pelo cartão **Diferenças de reajuste retroativo**, em **Remuneração e custos**.
+Abra **Diferenças de reajuste retroativo** pelo menu lateral.
 
 ![Formulário de reajuste retroativo com três competências e reflexo de 13º salário](imagens/80-reajuste-retroativo-formulario.png)
 
@@ -1244,7 +1246,7 @@ Fundamentos: [Manual de Orientação do eSocial](https://www.gov.br/esocial/pt-b
 
 ### 8.31 Média de verbas variáveis
 
-Abra pelo cartão **Média de verbas variáveis**, em **Remuneração e custos**. Esta calculadora organiza os valores mensais que você poderá informar como **Médias de variáveis** nas calculadoras de férias, 13º ou rescisão.
+Abra **Média de verbas variáveis** pelo menu lateral. Esta calculadora organiza os valores mensais que você poderá informar como **Médias de variáveis** nas calculadoras de férias, 13º ou rescisão.
 
 ![Formulário de médias de verbas variáveis com três meses fictícios](imagens/82-media-verbas-formulario.png)
 
@@ -1260,7 +1262,7 @@ Fundamentos: [CLT, art. 142, §§ 1º a 6º](https://www.planalto.gov.br/ccivil_
 
 ### 8.32 Banco de horas
 
-Abra pelo cartão **Banco de horas**, em **Remuneração e custos**. A tela concilia um **ciclo** de compensação por vez.
+Abra **Banco de horas** pelo menu lateral. A tela concilia um **ciclo** de compensação por vez.
 
 1. Informe início e fim em **dd/MM/aaaa** e escolha o regime: compensação no **mesmo mês**, acordo **individual escrito** de até **seis meses** ou acordo/convenção **coletiva** de até **um ano**. A tela rejeita um ciclo maior que o prazo escolhido.
 2. Escolha **Acompanhamento**, **Fechamento do ciclo** ou **Rescisão**. O salário atual é opcional para acompanhar apenas as horas; para estimar quitação no fechamento ou na rescisão, informe o salário, o divisor de horas e o adicional padrão de pelo menos 50%.
@@ -1276,7 +1278,7 @@ Incidências de referência: [Manual do Empregador Doméstico do eSocial, rubric
 
 ### 8.33 IR sobre rendimentos recebidos acumuladamente (RRA)
 
-Abra pelo cartão **RRA (rendimentos acumulados)**, em **Impostos e salário**. Use esta calculadora quando você recebe de uma vez valores de vários meses, como diferenças salariais, verbas de ação trabalhista ou atrasados de aposentadoria. Ela estima o IR retido no pagamento e separa as duas regras da Receita Federal:
+Abra **RRA (rendimentos acumulados)** pelo menu lateral. Use esta calculadora quando você recebe de uma vez valores de vários meses, como diferenças salariais, verbas de ação trabalhista ou atrasados de aposentadoria. Ela estima o IR retido no pagamento e separa as duas regras da Receita Federal:
 
 - **Anos anteriores ao pagamento:** tributação **exclusiva na fonte**, em separado dos demais rendimentos do mês. A tabela mensal do mês do pagamento é multiplicada pela quantidade de meses a que os valores se referem (**NM**).
 - **Ano do pagamento:** os valores entram no mês do recebimento, somados aos rendimentos normais pagos pela mesma fonte, e vão para a declaração anual. No precatório ou RPV da **Justiça Federal**, essa parte tem retenção de 3%, sem deduções.
@@ -1312,7 +1314,7 @@ Fundamentos: [Lei 7.713/1988, arts. 12-A e 12-B](https://www.planalto.gov.br/cci
 
 ### 8.34 Simples Nacional e fator r
 
-Abra pelo cartão **Simples Nacional e fator r**, em **Impostos e salário**. Ela estima o DAS de um período de apuração pela receita bruta e pela folha de salários dos 12 meses que a regra exige, indica o anexo aplicável e, nos serviços sujeitos ao fator r, compara os Anexos III e V e mostra o efeito do pró-labore no custo do PJ.
+Abra **Simples Nacional e fator r** pelo menu lateral. Ela estima o DAS de um período de apuração pela receita bruta e pela folha de salários dos 12 meses que a regra exige, indica o anexo aplicável e, nos serviços sujeitos ao fator r, compara os Anexos III e V e mostra o efeito do pró-labore no custo do PJ.
 
 ![Formulário do Simples Nacional com 12 meses de receita e folha](imagens/88-simples-formulario.png)
 
@@ -1343,7 +1345,7 @@ Fundamentos: [Lei Complementar 123/2006, art. 18](https://www.planalto.gov.br/cc
 
 ### 8.35 Conferência do FGTS
 
-Abra pelo cartão **Conferência do FGTS**, em **FGTS, afastamentos e benefícios**. Ela compara, em cada competência, o FGTS devido com o depósito informado, separa as diferenças mensais e rescisórias e mostra o vencimento de cada depósito. É uma conferência local: o aplicativo não consulta o FGTS Digital nem o extrato oficial.
+Abra **Conferência do FGTS** pelo menu lateral. Ela compara, em cada competência, o FGTS devido com o depósito informado, separa as diferenças mensais e rescisórias e mostra o vencimento de cada depósito. É uma conferência local: o aplicativo não consulta o FGTS Digital nem o extrato oficial.
 
 ![Formulário da conferência do FGTS com três competências mensais e a rescisória](imagens/92-conferencia-fgts-formulario.png)
 
@@ -1369,7 +1371,7 @@ Fundamentos: [Lei 8.036/1990, arts. 15 e 22](https://www.planalto.gov.br/ccivil_
 
 ### 8.36 Sobreaviso e prontidão
 
-Abra pelo cartão **Sobreaviso e prontidão**, no grupo **Remuneração e custos**. Ela calcula, competência a competência, as horas em que o empregado aguardou ser chamado e os reflexos dessas horas no DSR, no 13º, nas férias, no aviso prévio e no FGTS.
+Abra **Sobreaviso e prontidão** pelo menu lateral. Ela calcula, competência a competência, as horas em que o empregado aguardou ser chamado e os reflexos dessas horas no DSR, no 13º, nas férias, no aviso prévio e no FGTS.
 
 - **Sobreaviso:** o empregado fica fora da empresa, normalmente em casa, aguardando o chamado a qualquer momento, com a liberdade restringida pelo empregador, inclusive por celular ou outro meio telemático em escala de plantão. O simples uso do celular da empresa não caracteriza o sobreaviso (Súmula 428 do TST). Cada hora vale **1/3** do salário-hora normal, em escalas de até 24 horas.
 - **Prontidão:** o empregado aguarda ordens nas dependências da empresa. Cada hora vale **2/3** do salário-hora normal, em escalas de até 12 horas.
@@ -1403,7 +1405,7 @@ Fundamentos: [CLT, art. 244, §§ 2º e 3º](https://www.planalto.gov.br/ccivil_
 
 ### 8.37 Adicional de transferência
 
-Abra pelo cartão **Adicional de transferência**, no grupo **Remuneração e custos**. Quando o empregador transfere o empregado provisoriamente para outra localidade, com mudança de domicílio, deve pagar um adicional de no mínimo **25%** dos salários que ele recebia na origem, enquanto durar a transferência (CLT, art. 469, § 3º). A calculadora apura esse adicional mês a mês e os reflexos no 13º, nas férias, no aviso prévio e no FGTS.
+Abra **Adicional de transferência** pelo menu lateral. Quando o empregador transfere o empregado provisoriamente para outra localidade, com mudança de domicílio, deve pagar um adicional de no mínimo **25%** dos salários que ele recebia na origem, enquanto durar a transferência (CLT, art. 469, § 3º). A calculadora apura esse adicional mês a mês e os reflexos no 13º, nas férias, no aviso prévio e no FGTS.
 
 - **Só a transferência provisória gera o adicional.** A definitiva não gera. O cargo de confiança ou uma cláusula de transferência no contrato não afastam o direito (OJ 113 da SBDI-1 do TST).
 
@@ -1430,7 +1432,7 @@ Fundamentos: [CLT, arts. 469 e 470](https://www.planalto.gov.br/ccivil_03/decret
 
 ### 8.38 Gorjetas
 
-Abra pelo cartão **Gorjetas**, no grupo **Remuneração e custos**. A gorjeta, cobrada na nota como taxa de serviço ou dada espontaneamente pelo cliente, não é receita da empresa: pertence aos empregados e integra a remuneração (CLT, art. 457, §§ 3º e 4º, incluídos pela Lei 13.419/2017). A calculadora apura o que foi repassado em cada mês, a retenção da empresa, a média de 12 meses e os reflexos.
+Abra **Gorjetas** pelo menu lateral. A gorjeta, cobrada na nota como taxa de serviço ou dada espontaneamente pelo cliente, não é receita da empresa: pertence aos empregados e integra a remuneração (CLT, art. 457, §§ 3º e 4º, incluídos pela Lei 13.419/2017). A calculadora apura o que foi repassado em cada mês, a retenção da empresa, a média de 12 meses e os reflexos.
 
 ![Formulário de gorjetas com seis competências e retenção de 20%](imagens/106-gorjetas-formulario.png)
 
@@ -1455,7 +1457,7 @@ Fundamentos: [CLT, art. 457, §§ 3º a 11](https://www.planalto.gov.br/ccivil_0
 
 ### 8.39 Contribuição do autônomo e do facultativo
 
-Abra pelo cartão **Contribuição do autônomo e do facultativo**, no grupo **Impostos e salário**. Ela calcula a GPS de quem recolhe a própria contribuição ao INSS: o valor, o código de pagamento, o vencimento e a complementação dos planos reduzidos, com os três planos lado a lado.
+Abra **Contribuição do autônomo e do facultativo** pelo menu lateral. Ela calcula a GPS de quem recolhe a própria contribuição ao INSS: o valor, o código de pagamento, o vencimento e a complementação dos planos reduzidos, com os três planos lado a lado.
 
 - **Contribuinte individual:** quem trabalha por conta própria, como autônomo ou profissional liberal. Quem presta serviço a empresa tem 11% retidos por ela: use **Pró-labore e autônomo** (seção 8.7).
 - **Facultativo:** quem não tem atividade remunerada que o filie ao INSS, como estudante ou dona de casa, e quer contribuir.
@@ -1484,7 +1486,7 @@ Fundamentos: [Lei 8.212/1991, arts. 21, 28 e 30](https://www.planalto.gov.br/cci
 
 ### 8.40 Resgate de previdência privada
 
-Abra pelo cartão **Resgate de previdência privada**, no grupo **Impostos e salário**. Ela calcula o IR no resgate de um plano PGBL ou VGBL pelo prazo de cada aporte, no regime escolhido, e mostra o outro regime lado a lado.
+Abra **Resgate de previdência privada** pelo menu lateral. Ela calcula o IR no resgate de um plano PGBL ou VGBL pelo prazo de cada aporte, no regime escolhido, e mostra o outro regime lado a lado.
 
 - **PGBL:** as contribuições são dedutíveis na declaração completa, até 12% da renda tributável; por isso o IR incide sobre **todo o valor resgatado**.
 - **VGBL:** não há dedução, e o IR incide **só sobre os rendimentos**.
@@ -1513,7 +1515,7 @@ Fundamentos: [Lei 11.053/2004, arts. 1º e 3º](https://www.planalto.gov.br/cciv
 
 ### 8.41 Simulação de aposentadoria
 
-Abra pelo cartão **Simulação de aposentadoria**, no grupo **FGTS, afastamentos e benefícios**. Ela projeta, mês a mês, quando você cumpre cada regra de aposentadoria do INSS da reforma de 2019 (EC 103/2019) e estima o benefício em cada uma, para comparar a primeira aposentadoria possível com a de maior valor.
+Abra **Simulação de aposentadoria** pelo menu lateral. Ela projeta, mês a mês, quando você cumpre cada regra de aposentadoria do INSS da reforma de 2019 (EC 103/2019) e estima o benefício em cada uma, para comparar a primeira aposentadoria possível com a de maior valor.
 
 ![Formulário da simulação de aposentadoria de um homem com 33 anos de contribuição](imagens/112-aposentadoria-formulario.png)
 
@@ -1548,7 +1550,7 @@ Fundamentos: [EC 103/2019, arts. 15 a 20 e 26](https://www.planalto.gov.br/ccivi
 
 ### 8.42 Pensão por morte
 
-Abra pelo cartão **Pensão por morte**, no grupo **FGTS, afastamentos e benefícios**. Ela calcula a pensão por morte do INSS para óbitos desde 13/11/2019: o valor, a cota de cada dependente, a duração para o cônjuge e o efeito do redutor quando o cônjuge já recebe outro benefício.
+Abra **Pensão por morte** pelo menu lateral. Ela calcula a pensão por morte do INSS para óbitos desde 13/11/2019: o valor, a cota de cada dependente, a duração para o cônjuge e o efeito do redutor quando o cônjuge já recebe outro benefício.
 
 ![Formulário da pensão por morte de um segurado não aposentado, com cônjuge e um filho](imagens/114-pensao-morte-formulario.png)
 
@@ -1574,9 +1576,9 @@ Fundamentos: [EC 103/2019, arts. 23, 24 e 26](https://www.planalto.gov.br/ccivil
 
 ## 9. Tabelas e parâmetros
 
-As tabelas definem as faixas e os valores usados em todos os cálculos. Elas já vêm preenchidas com o histórico desde 2017, e você pode consultá-las, corrigi-las, incluir novos períodos ou atualizá-las pela internet. Para abri-las, selecione a aba **Tabelas** da tela principal e clique no cartão da tabela. Elas estão em quatro grupos: **INSS e salário**, **Imposto de renda**, **Deduções do IRRF** e **Índices econômicos**.
+As tabelas definem as faixas e os valores usados em todos os cálculos. Elas já vêm preenchidas com o histórico desde 2017, e você pode consultá-las, corrigi-las, incluir novos períodos ou atualizá-las pela internet. Para abri-las, use o grupo **Tabelas** do menu lateral. Elas estão em quatro divisões: **INSS e salário**, **Imposto de renda**, **Deduções do IRRF** e **Índices econômicos**.
 
-![Aba Tabelas da tela principal](imagens/29-aba-tabelas.png)
+![Grupo Tabelas do menu lateral, com a tabela do salário mínimo aberta](imagens/29-aba-tabelas.png)
 
 ### 9.1 Conhecendo a área de uma tabela
 
@@ -1718,7 +1720,7 @@ Em qualquer calculadora, o botão **Salvar no histórico** guarda os valores do 
 
 ![Salvar no histórico](imagens/55-salvar-historico.png)
 
-A aba **Histórico** da tela principal lista os cálculos salvos, do alterado mais recentemente para o mais antigo. O campo **Procurar** filtra pelo nome ou pela calculadora, sem diferenciar maiúsculas e acentos. Também é possível filtrar por calculadora e pela data da última alteração e ordenar por data ou nome.
+O **Histórico**, aberto pelo botão no rodapé do menu lateral ou pela tela de boas-vindas, lista os cálculos salvos, do alterado mais recentemente para o mais antigo. O campo **Procurar** filtra pelo nome ou pela calculadora, sem diferenciar maiúsculas e acentos. Também é possível filtrar por calculadora e pela data da última alteração e ordenar por data ou nome.
 
 Marque dois cálculos da mesma calculadora e selecione **Comparar**. Nas calculadoras da janela padrão (capítulo 8), a comparação refaz os dois cálculos com as tabelas atuais e mostra os **Resultados** lado a lado: os valores do resumo, cada provento e desconto, os totais e os informativos, com a **Diferença** do segundo para o primeiro. Abaixo vêm os **Dados informados**, inclusive as linhas salvas. **Mostrar apenas diferenças** oculta o que é igual. Para comparar cenários, por exemplo uma rescisão com e sem aviso indenizado, salve o cálculo, use **Duplicar**, abra a cópia, mude o dado e salve; depois marque os dois e compare. Nas janelas próprias, como a pensão, a jornada e os débitos judiciais, a comparação mostra só os dados informados: abra cada cálculo para ver o resultado. Se um dos cálculos não puder ser refeito, por exemplo por falta de tabela, a comparação explica o motivo e mostra só os dados.
 
@@ -1744,7 +1746,7 @@ No canto superior direito da tela principal, escolha o **Tema**:
 - **Automático:** acompanha o tema claro ou escuro configurado no Windows.
 - **Claro** ou **Escuro:** mantém sempre a aparência escolhida.
 
-![Tema escuro](imagens/16-tema-escuro.png)
+![Tema escuro, com o holerite do mês aberto](imagens/16-tema-escuro.png)
 
 A escolha é salva automaticamente e restaurada na próxima abertura. As configurações ficam no arquivo `%LOCALAPPDATA%\CalculoIRRF\settings.json`.
 
@@ -1804,7 +1806,7 @@ Por padrão, o aplicativo desenha a interface sem usar a placa de vídeo, o que 
 ## 13. Perguntas frequentes
 
 **Onde ficou a simulação tributária que aparecia na tela principal?**
-Ela abre pelo cartão **Simulação tributária** da aba **Calculadoras**, na mesma janela das demais calculadoras. As simulações salvas no histórico em versões anteriores continuam abrindo, recalculando e podendo ser comparadas. A pensão alimentícia também deixou de depender dela: tem os próprios campos de rendimentos, que já vêm preenchidos com os dados da última simulação.
+Ela abre pelo item **Simulação tributária** do menu lateral, na mesma janela das demais calculadoras. As simulações salvas no histórico em versões anteriores continuam abrindo, recalculando e podendo ser comparadas. A pensão alimentícia também deixou de depender dela: tem os próprios campos de rendimentos, que já vêm preenchidos com os dados da última simulação.
 
 **Os meus dados são enviados para a internet?**
 Não. Os cálculos e as tabelas ficam no seu computador. A internet só é usada quando você clica em **Atualizar pela internet**, que apenas lê as páginas das fontes, em links para páginas oficiais e, ao abrir, para consultar no GitHub se há versão nova, o que pode ser desligado no rodapé da tela principal.
@@ -1847,13 +1849,13 @@ Use **Atualizar pela internet**, quando disponível, ou corrija os valores manua
 | Tecla | Ação |
 | --- | --- |
 | **F1** | Abre este manual, em qualquer janela do aplicativo; numa calculadora ou tabela, na seção correspondente. |
-| **Tab** / **Shift + Tab** | Avança ou volta entre os campos e, na tela principal, entre os cartões. |
-| **Espaço** ou **Enter** com um botão ou cartão selecionado | Aciona o botão ou abre a calculadora do cartão. |
+| **Tab** / **Shift + Tab** | Avança ou volta entre os campos e, na tela principal, entre os itens do menu. |
+| **Espaço** ou **Enter** com um botão ou item do menu selecionado | Aciona o botão ou abre a calculadora ou a tabela do item. |
 | **Enter** na simulação tributária e nas calculadoras trabalhistas | Calcula, a partir de qualquer campo do formulário. |
 | **Enter** na pensão alimentícia | Executa **Calcular**, respeitando a opção **Exibir memória detalhada**. |
 | **Ctrl + S** nas calculadoras trabalhistas | Salva o formulário no histórico. |
 | **Ctrl + P** / **Ctrl + E** nas calculadoras trabalhistas | Recalcula se o formulário mudou e gera o PDF / a planilha do Excel. |
-| **Esc** nas calculadoras trabalhistas | Volta à central, perguntando antes se houver dados que não estão no histórico. Com uma lista aberta, só fecha a lista. |
+| **Esc** nas calculadoras trabalhistas | Volta à tela de boas-vindas, perguntando antes se houver dados que não estão no histórico. Com uma lista aberta, só fecha a lista. |
 | **Alt + F4** | Fecha a janela principal. |
 
 ---

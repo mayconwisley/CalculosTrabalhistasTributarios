@@ -13,6 +13,20 @@ public sealed class AtalhoViewModel(string chave, string titulo, string descrica
     public string Chave { get; } = chave;
     public string Titulo { get; } = titulo;
     public string Descricao { get; } = descricao;
+    public string IconeMenu => Chave switch
+    {
+        "Calculadora.BancoHoras" => "\uE823",
+        "Calculadora.HorasExtras" => "\uE916",
+        "Calculadora.Ferias" => "\uE706",
+        "Calculadora.DecimoTerceiro" => "\uE8C7",
+        "Calculadora.Rescisao" => "\uE8A5",
+        "Calculadora.Holerite" => "\uE9F9",
+        "Simulacao" => "\uE8EF",
+        "Calculadora.InssMultiplosVinculos" => "\uE716",
+        "Tabela.Inpc" or "Tabela.Ipca" or "Tabela.TaxaLegal" or "Tabela.Selic" or "Tabela.IpcaE" or "Tabela.Tr" => "\uE9D2",
+        _ when Chave.StartsWith("Tabela.", StringComparison.Ordinal) => "\uE80A",
+        _ => "\uE8EF"
+    };
     public ICommand Abrir { get; } = abrir;
 
     /// <summary>Grupo de origem, também usado na busca.</summary>

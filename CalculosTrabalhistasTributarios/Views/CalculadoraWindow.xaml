@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:behaviors="clr-namespace:CalculosTrabalhistasTributarios.Presentation.Behaviors"
         xmlns:calculadoras="clr-namespace:CalculosTrabalhistasTributarios.Presentation.ViewModels.Calculadoras"
+        xmlns:paineis="clr-namespace:CalculosTrabalhistasTributarios.Presentation.Paineis"
         Title="{Binding Titulo}" Height="840" Width="1180" MinHeight="620" MinWidth="900"
         Background="{DynamicResource ApplicationBackgroundBrush}"
         Foreground="{DynamicResource TextBrush}" WindowStartupLocation="CenterOwner">
@@ -12,7 +13,8 @@
         <KeyBinding Modifiers="Ctrl" Key="E" Command="{Binding ExportarExcelCommand}" />
     </Window.InputBindings>
     <Window.Resources>
-        <ItemsPanelTemplate x:Key="CamposEmLinhas"><WrapPanel /></ItemsPanelTemplate>
+        <!-- Colunas de mesma largura que ocupam o cartão inteiro; o número de colunas acompanha a largura da janela. -->
+        <ItemsPanelTemplate x:Key="CamposEmLinhas"><paineis:GradeDeCampos /></ItemsPanelTemplate>
         <ItemsPanelTemplate x:Key="CampoEmLarguraTotal"><Grid /></ItemsPanelTemplate>
         <Style x:Key="ErroDoCampo" TargetType="TextBlock">
             <Setter Property="Foreground" Value="{DynamicResource ErrorTextBrush}" />
@@ -121,7 +123,7 @@
             </StackPanel>
         </DataTemplate>
         <DataTemplate DataType="{x:Type calculadoras:CampoTextoViewModel}">
-            <StackPanel Width="170" Margin="0,0,14,14" ToolTip="{Binding Dica}" Visibility="{Binding Visivel, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <StackPanel paineis:GradeDeCampos.Largura="170" Margin="0,0,14,14" ToolTip="{Binding Dica}" Visibility="{Binding Visivel, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <TextBlock Text="{Binding Rotulo}" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,6" TextTrimming="CharacterEllipsis" />
                 <TextBox Text="{Binding Valor, UpdateSourceTrigger=PropertyChanged}" TextAlignment="{Binding Alinhamento}" behaviors:MascaraData.Tipo="{Binding Mascara}" behaviors:FormatacaoNumerica.Formato="{Binding Formato}" behaviors:FormatacaoNumerica.ValorVazio="{Binding ValorVazio}" AutomationProperties.Name="{Binding Rotulo}" AutomationProperties.HelpText="{Binding AjudaAcessivel}">
                     <TextBox.Style>
@@ -138,7 +140,7 @@
             </StackPanel>
         </DataTemplate>
         <DataTemplate DataType="{x:Type calculadoras:CampoOpcaoViewModel}">
-            <StackPanel Width="{Binding Largura}" Margin="0,0,14,14" ToolTip="{Binding Dica}" Visibility="{Binding Visivel, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <StackPanel paineis:GradeDeCampos.Largura="{Binding Largura}" Margin="0,0,14,14" ToolTip="{Binding Dica}" Visibility="{Binding Visivel, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <TextBlock Text="{Binding Rotulo}" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,6" TextTrimming="CharacterEllipsis" />
                 <ComboBox ItemsSource="{Binding Opcoes}" SelectedItem="{Binding Selecionada, Mode=TwoWay}" MinHeight="54" AutomationProperties.Name="{Binding Rotulo}" AutomationProperties.HelpText="{Binding AjudaAcessivel}">
                     <ComboBox.Style>

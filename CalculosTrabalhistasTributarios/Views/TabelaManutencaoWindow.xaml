@@ -8,7 +8,11 @@
     <Window.Resources>
         <behaviors:BindingProxy x:Key="Proxy" Data="{Binding}" />
     </Window.Resources>
-    <Grid Margin="32" Background="{DynamicResource ApplicationBackgroundBrush}">
+    <!-- A página ocupa a altura disponível, com a lista esticando até o fim; quando falta altura, ela para no mínimo
+         e a página inteira rola, em vez de espremer a lista. O espaçamento é o das calculadoras e da trilha "Tabelas / ...". -->
+    <ScrollViewer x:Name="Pagina" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Focusable="False" behaviors:RolagemDaTela.Ativa="True">
+    <Border Padding="28" Height="{Binding ViewportHeight, ElementName=Pagina}" MinHeight="620" Background="{DynamicResource ApplicationBackgroundBrush}">
+    <Grid>
         <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="20"/><RowDefinition Height="Auto"/><RowDefinition Height="20"/><RowDefinition Height="*"/></Grid.RowDefinitions>
         <Grid>
             <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
@@ -69,4 +73,6 @@
             </Grid>
         </Border>
     </Grid>
+    </Border>
+    </ScrollViewer>
 </Window>

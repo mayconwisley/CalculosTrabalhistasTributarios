@@ -5,192 +5,256 @@
         Background="{DynamicResource ApplicationBackgroundBrush}"
         Foreground="{DynamicResource TextBrush}" WindowStartupLocation="CenterScreen">
 	<Window.Resources>
+		<!-- Contorno só na navegação por teclado; o clique não deixa o item ativo contornado. -->
+		<Style x:Key="FocoMenuLateral">
+			<Setter Property="Control.Template"><Setter.Value><ControlTemplate><Rectangle RadiusX="8" RadiusY="8" Stroke="{DynamicResource AccentBrush}" StrokeThickness="1.5" /></ControlTemplate></Setter.Value></Setter>
+		</Style>
+		<!-- Menu lateral: o cabeçalho do grupo e os itens soltos (Tabelas, Histórico) alinham o ícone na mesma coluna; os itens do grupo recuam pelo Padding. -->
 		<Style x:Key="ItemMenuLateral" TargetType="Button">
+			<Setter Property="FocusVisualStyle" Value="{StaticResource FocoMenuLateral}" />
 			<Setter Property="Background" Value="Transparent" />
 			<Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
 			<Setter Property="BorderThickness" Value="0" />
-			<Setter Property="HorizontalContentAlignment" Value="Left" />
-			<Setter Property="Padding" Value="12,9" />
+			<Setter Property="Padding" Value="17,0,36,0" />
 			<Setter Property="Margin" Value="0,1" />
+			<Setter Property="FontSize" Value="15" />
 			<Setter Property="Cursor" Value="Hand" />
-			<Style.Triggers>
-				<DataTrigger Binding="{Binding Ativo}" Value="True"><Setter Property="Background" Value="{DynamicResource SelectionBrush}" /><Setter Property="Foreground" Value="{DynamicResource AccentBrush}" /><Setter Property="FontWeight" Value="SemiBold" /></DataTrigger>
-			</Style.Triggers>
+			<Setter Property="HorizontalContentAlignment" Value="Stretch" />
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="Button">
+						<Border x:Name="Fundo" Background="{TemplateBinding Background}" CornerRadius="8" BorderBrush="Transparent" BorderThickness="1">
+							<Grid MinHeight="42">
+								<Grid.ColumnDefinitions><ColumnDefinition Width="4" /><ColumnDefinition /></Grid.ColumnDefinitions>
+								<Border x:Name="Indicador" Background="Transparent" CornerRadius="2" Margin="0,4" />
+								<Grid Grid.Column="1" Margin="{TemplateBinding Padding}">
+									<Grid.ColumnDefinitions><ColumnDefinition Width="36" /><ColumnDefinition /></Grid.ColumnDefinitions>
+									<TextBlock Text="{TemplateBinding Tag}" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="18" FontWeight="Normal" Foreground="{TemplateBinding Foreground}" VerticalAlignment="Center" HorizontalAlignment="Center" />
+									<ContentPresenter Grid.Column="1" VerticalAlignment="Center" Margin="10,0,0,0" RecognizesAccessKey="True">
+										<!-- Nomes longos, como "Contribuição do autônomo e do facultativo", quebram em até duas linhas em vez de perder o fim. -->
+										<ContentPresenter.Resources><Style TargetType="TextBlock"><Setter Property="TextWrapping" Value="Wrap" /><Setter Property="TextTrimming" Value="CharacterEllipsis" /><Setter Property="LineHeight" Value="19" /><Setter Property="LineStackingStrategy" Value="BlockLineHeight" /><Setter Property="MaxHeight" Value="38" /><Setter Property="Margin" Value="0,5" /></Style></ContentPresenter.Resources>
+									</ContentPresenter>
+								</Grid>
+							</Grid>
+						</Border>
+						<ControlTemplate.Triggers>
+							<Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Fundo" Property="Background" Value="{DynamicResource ButtonHoverBrush}" /></Trigger>
+							<DataTrigger Binding="{Binding Ativo}" Value="True">
+								<Setter TargetName="Fundo" Property="Background" Value="{DynamicResource SelectionBrush}" />
+								<Setter TargetName="Indicador" Property="Background" Value="{DynamicResource AccentBrush}" />
+								<Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
+								<Setter Property="FontWeight" Value="SemiBold" />
+							</DataTrigger>
+						</ControlTemplate.Triggers>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
 		</Style>
-		<DataTemplate x:Key="AtalhoMenuLateral">
-			<Button Style="{StaticResource ItemMenuLateral}" Content="{Binding Titulo}" Command="{Binding Abrir}" ToolTip="{Binding Descricao}" AutomationProperties.Name="{Binding Titulo}" />
-		</DataTemplate>
-		<DataTemplate x:Key="GrupoMenuLateral">
-			<StackPanel Margin="0,14,0,0">
-				<StackPanel.Style><Style TargetType="StackPanel"><Style.Triggers><DataTrigger Binding="{Binding Atalhos.Count}" Value="0"><Setter Property="Visibility" Value="Collapsed" /></DataTrigger></Style.Triggers></Style></StackPanel.Style>
-				<TextBlock Text="{Binding Titulo}" FontWeight="SemiBold" Foreground="{DynamicResource MutedTextBrush}" FontSize="12" Margin="12,0,8,6" TextWrapping="Wrap" />
-				<ItemsControl ItemsSource="{Binding Atalhos}" ItemTemplate="{StaticResource AtalhoMenuLateral}" />
-			</StackPanel>
-		</DataTemplate>
-		<!-- Estrela do cartão: um botão à parte, sobre o canto do cartão, para não aninhar um botão dentro de outro. -->
-		<Style x:Key="Estrela" TargetType="Button">
-			<Setter Property="Width" Value="34" />
-			<Setter Property="Height" Value="34" />
+		<Style x:Key="ItemRaizMenuLateral" TargetType="Button" BasedOn="{StaticResource ItemMenuLateral}">
+			<Setter Property="Padding" Value="0,0,8,0" />
+		</Style>
+		<!-- Cabeçalho recolhível do grupo: Tag é o ícone, Content o título e IsChecked indica o grupo expandido. -->
+		<Style x:Key="CabecalhoMenuLateral" TargetType="ToggleButton">
+			<Setter Property="FocusVisualStyle" Value="{StaticResource FocoMenuLateral}" />
+			<Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+			<Setter Property="FontSize" Value="15" />
+			<Setter Property="FontWeight" Value="SemiBold" />
+			<Setter Property="Margin" Value="0,0,0,2" />
+			<Setter Property="Cursor" Value="Hand" />
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="ToggleButton">
+						<Border x:Name="Fundo" Background="Transparent" CornerRadius="8" BorderBrush="Transparent" BorderThickness="1">
+							<Grid Height="42">
+								<Grid.ColumnDefinitions><ColumnDefinition Width="4" /><ColumnDefinition Width="36" /><ColumnDefinition /><ColumnDefinition Width="32" /></Grid.ColumnDefinitions>
+								<TextBlock Grid.Column="1" Text="{TemplateBinding Tag}" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="19" FontWeight="Normal" Foreground="{TemplateBinding Foreground}" VerticalAlignment="Center" HorizontalAlignment="Center" />
+								<ContentPresenter Grid.Column="2" VerticalAlignment="Center" Margin="10,0,0,0" />
+								<TextBlock x:Name="Seta" Grid.Column="3" Text="&#xE70D;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="12" FontWeight="Normal" Foreground="{DynamicResource MutedTextBrush}" VerticalAlignment="Center" HorizontalAlignment="Center" />
+							</Grid>
+						</Border>
+						<ControlTemplate.Triggers>
+							<Trigger Property="IsChecked" Value="True"><Setter TargetName="Seta" Property="Text" Value="&#xE70E;" /></Trigger>
+							<Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Fundo" Property="Background" Value="{DynamicResource ButtonHoverBrush}" /></Trigger>
+						</ControlTemplate.Triggers>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
+		<!-- Cabeçalho de uma divisão dentro do grupo, como as categorias das tabelas: recuado e sem ícone. -->
+		<Style x:Key="CabecalhoSubgrupoMenuLateral" TargetType="ToggleButton" BasedOn="{StaticResource CabecalhoMenuLateral}">
+			<Setter Property="Foreground" Value="{DynamicResource MutedTextBrush}" />
+			<Setter Property="FontSize" Value="13" />
+			<Setter Property="Margin" Value="0,2,0,0" />
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="ToggleButton">
+						<Border x:Name="Fundo" Background="Transparent" CornerRadius="8" BorderBrush="Transparent" BorderThickness="1">
+							<Grid Height="34">
+								<Grid.ColumnDefinitions><ColumnDefinition Width="4" /><ColumnDefinition /><ColumnDefinition Width="32" /></Grid.ColumnDefinitions>
+								<ContentPresenter Grid.Column="1" VerticalAlignment="Center" Margin="17,0,0,0" />
+								<TextBlock x:Name="Seta" Grid.Column="2" Text="&#xE70D;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="11" FontWeight="Normal" Foreground="{DynamicResource MutedTextBrush}" VerticalAlignment="Center" HorizontalAlignment="Center" />
+							</Grid>
+						</Border>
+						<ControlTemplate.Triggers>
+							<Trigger Property="IsChecked" Value="True"><Setter TargetName="Seta" Property="Text" Value="&#xE70E;" /></Trigger>
+							<Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Fundo" Property="Background" Value="{DynamicResource ButtonHoverBrush}" /></Trigger>
+						</ControlTemplate.Triggers>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
+		<!-- Estrela do item do menu: botão à parte, sobre o fim da linha, como nos cartões. Aparece ao passar o mouse ou focar a linha e fica fixa na favorita. -->
+		<Style x:Key="EstrelaMenuLateral" TargetType="Button">
+			<Setter Property="Width" Value="30" />
+			<Setter Property="Height" Value="30" />
 			<Setter Property="Cursor" Value="Hand" />
 			<Setter Property="Foreground" Value="{DynamicResource MutedTextBrush}" />
 			<Setter Property="FocusVisualStyle" Value="{x:Null}" />
 			<Setter Property="Template">
 				<Setter.Value>
 					<ControlTemplate TargetType="Button">
-						<Border x:Name="Fundo" Background="Transparent" BorderBrush="Transparent" BorderThickness="1" CornerRadius="8">
-							<TextBlock x:Name="Simbolo" Text="☆" FontSize="18" Foreground="{TemplateBinding Foreground}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,1" />
+						<Border x:Name="Fundo" Background="Transparent" BorderBrush="Transparent" BorderThickness="1" CornerRadius="6">
+							<TextBlock x:Name="Simbolo" Text="&#xE734;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="14" Foreground="{TemplateBinding Foreground}" HorizontalAlignment="Center" VerticalAlignment="Center" />
 						</Border>
 						<ControlTemplate.Triggers>
 							<DataTrigger Binding="{Binding Favorito}" Value="True">
-								<Setter TargetName="Simbolo" Property="Text" Value="★" />
+								<Setter TargetName="Simbolo" Property="Text" Value="&#xE735;" />
 								<Setter TargetName="Simbolo" Property="Foreground" Value="{DynamicResource AccentBrush}" />
 							</DataTrigger>
 							<Trigger Property="IsMouseOver" Value="True">
 								<Setter TargetName="Fundo" Property="Background" Value="{DynamicResource ButtonHoverBrush}" />
 								<Setter TargetName="Simbolo" Property="Foreground" Value="{DynamicResource AccentBrush}" />
 							</Trigger>
-							<Trigger Property="IsKeyboardFocused" Value="True">
-								<Setter TargetName="Fundo" Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
-								<Setter TargetName="Fundo" Property="Background" Value="{DynamicResource ButtonHoverBrush}" />
-							</Trigger>
+							<Trigger Property="IsKeyboardFocused" Value="True"><Setter TargetName="Fundo" Property="BorderBrush" Value="{DynamicResource AccentBrush}" /></Trigger>
 						</ControlTemplate.Triggers>
 					</ControlTemplate>
 				</Setter.Value>
 			</Setter>
 		</Style>
-		<!-- Cartão: abre a janela da calculadora ou da tabela; a estrela, ao lado, marca ou desmarca a favorita. -->
-		<DataTemplate x:Key="CartaoDeAtalho">
-			<Grid Margin="0,0,0,10">
-				<Button Style="{StaticResource Atalho}" Command="{Binding Abrir}" AutomationProperties.Name="{Binding Titulo}" ToolTip="{Binding Descricao}">
-					<Grid>
-						<Grid.ColumnDefinitions>
-							<ColumnDefinition />
-							<ColumnDefinition Width="30" />
-						</Grid.ColumnDefinitions>
-						<StackPanel VerticalAlignment="Center">
-							<TextBlock Text="{Binding Titulo}" FontSize="14" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
-							<TextBlock Text="{Binding Descricao}" FontSize="12" FontWeight="Normal" Foreground="{DynamicResource MutedTextBrush}" TextWrapping="Wrap" Margin="0,3,0,0" />
-						</StackPanel>
-					</Grid>
-				</Button>
-				<Button Style="{StaticResource Estrela}" Command="{Binding AlternarFavorito}" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,8,0"
-				        ToolTip="{Binding DescricaoFavorito}" AutomationProperties.Name="{Binding DescricaoFavorito}" />
+		<!-- Título do cabeçalho com a quantidade de calculadoras visíveis no grupo, no mesmo selo dos grupos da central. -->
+		<DataTemplate x:Key="TituloGrupoMenuLateral">
+			<StackPanel Orientation="Horizontal">
+				<TextBlock Text="{Binding Titulo}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+				<Border Background="{DynamicResource ButtonBackgroundBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="10" Padding="7,1" Margin="8,0,0,0" VerticalAlignment="Center">
+					<TextBlock Text="{Binding Atalhos.Count}" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource MutedTextBrush}" />
+				</Border>
+			</StackPanel>
+		</DataTemplate>
+		<!-- O recuo do item vem do Tag da lista: maior dentro das divisões de um grupo. -->
+		<DataTemplate x:Key="AtalhoMenuLateral">
+			<Grid x:Name="Linha">
+				<Button Style="{StaticResource ItemMenuLateral}" Padding="{Binding Tag, RelativeSource={RelativeSource AncestorType=ItemsControl}}" Content="{Binding Titulo}" Tag="{Binding IconeMenu}" Command="{Binding Abrir}" ToolTip="{Binding Descricao}" AutomationProperties.Name="{Binding Titulo}" />
+				<Button x:Name="Estrela" Style="{StaticResource EstrelaMenuLateral}" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,6,0" Visibility="Hidden"
+				        Command="{Binding AlternarFavorito}" ToolTip="{Binding DescricaoFavorito}" AutomationProperties.Name="{Binding DescricaoFavorito}" />
 			</Grid>
+			<DataTemplate.Triggers>
+				<Trigger SourceName="Linha" Property="IsMouseOver" Value="True"><Setter TargetName="Estrela" Property="Visibility" Value="Visible" /></Trigger>
+				<Trigger SourceName="Linha" Property="IsKeyboardFocusWithin" Value="True"><Setter TargetName="Estrela" Property="Visibility" Value="Visible" /></Trigger>
+				<DataTrigger Binding="{Binding Favorito}" Value="True"><Setter TargetName="Estrela" Property="Visibility" Value="Visible" /></DataTrigger>
+			</DataTemplate.Triggers>
 		</DataTemplate>
-		<!-- Um grupo é uma coluna de cartões; os favoritos saem do grupo e vão para a seção Favoritas. -->
-		<DataTemplate x:Key="GrupoDeAtalhos">
-			<StackPanel Margin="9,0">
-				<Grid Margin="2,0,0,10" Height="50">
-					<Grid.ColumnDefinitions>
-						<ColumnDefinition />
-						<ColumnDefinition Width="Auto" />
-					</Grid.ColumnDefinitions>
-					<TextBlock Text="{Binding Titulo}" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource MutedTextBrush}" TextWrapping="Wrap" VerticalAlignment="Center" />
-					<Border Grid.Column="1" Background="{DynamicResource ButtonBackgroundBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="10" Padding="7,2" Margin="8,0,0,0" VerticalAlignment="Center">
-						<TextBlock Text="{Binding Atalhos.Count}" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource MutedTextBrush}" />
-					</Border>
-				</Grid>
-				<TextBlock Text="Todos os cartões deste grupo estão nas Favoritas." FontSize="12" Foreground="{DynamicResource MutedTextBrush}" TextWrapping="Wrap" Margin="2,0,0,10"
-				           Visibility="{Binding TodosFavoritos, Converter={StaticResource BooleanToVisibilityConverter}}" />
-				<TextBlock Text="Nenhum cartão encontrado neste grupo." FontSize="12" Foreground="{DynamicResource MutedTextBrush}" TextWrapping="Wrap" Margin="2,0,0,10"
-				           Visibility="{Binding SemResultado, Converter={StaticResource BooleanToVisibilityConverter}}" />
-				<ItemsControl ItemsSource="{Binding Atalhos}" ItemTemplate="{StaticResource CartaoDeAtalho}" Focusable="False" />
+		<Style x:Key="OcultaSemItens" TargetType="StackPanel">
+			<Style.Triggers><DataTrigger Binding="{Binding Atalhos.Count}" Value="0"><Setter Property="Visibility" Value="Collapsed" /></DataTrigger></Style.Triggers>
+		</Style>
+		<DataTemplate x:Key="SubgrupoMenuLateral">
+			<StackPanel Style="{StaticResource OcultaSemItens}">
+				<ToggleButton Style="{StaticResource CabecalhoSubgrupoMenuLateral}" Content="{Binding}" ContentTemplate="{StaticResource TituloGrupoMenuLateral}" IsChecked="{Binding Expandido}" ToolTip="Expandir ou recolher a divisão" AutomationProperties.Name="{Binding Titulo}" />
+				<ItemsControl ItemsSource="{Binding Atalhos}" ItemTemplate="{StaticResource AtalhoMenuLateral}" Visibility="{Binding Expandido, Converter={StaticResource BooleanToVisibilityConverter}}">
+					<ItemsControl.Tag><Thickness>30,0,36,0</Thickness></ItemsControl.Tag>
+				</ItemsControl>
 			</StackPanel>
 		</DataTemplate>
-		<ItemsPanelTemplate x:Key="ColunasDeGrupos">
-			<UniformGrid Rows="1" />
-		</ItemsPanelTemplate>
-		<!-- Uma aba de cartões: as favoritas, alinhadas às colunas dos grupos, e os grupos; ou o aviso de busca sem resultado. -->
-		<DataTemplate x:Key="PainelDeAtalhos">
-			<StackPanel>
-				<StackPanel Margin="0,0,0,8" Visibility="{Binding TemFavoritas, Converter={StaticResource BooleanToVisibilityConverter}}">
-					<StackPanel Orientation="Horizontal" Margin="11,0,0,10">
-						<TextBlock Text="★" FontSize="14" Foreground="{DynamicResource AccentBrush}" VerticalAlignment="Center" Margin="0,0,6,1" />
-						<TextBlock Text="Favoritas" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource MutedTextBrush}" VerticalAlignment="Center" />
-						<Border Background="{DynamicResource ButtonBackgroundBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="10" Padding="7,2" Margin="8,0,0,0" VerticalAlignment="Center">
-							<TextBlock Text="{Binding Favoritas.Count}" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource MutedTextBrush}" />
-						</Border>
-					</StackPanel>
-					<ItemsControl ItemsSource="{Binding Favoritas}" Focusable="False" AutomationProperties.Name="Favoritas">
-						<ItemsControl.ItemsPanel>
-							<ItemsPanelTemplate><UniformGrid Columns="{Binding Colunas}" /></ItemsPanelTemplate>
-						</ItemsControl.ItemsPanel>
-						<ItemsControl.ItemTemplate>
-							<DataTemplate><ContentControl Content="{Binding}" ContentTemplate="{StaticResource CartaoDeAtalho}" Margin="9,0" Focusable="False" /></DataTemplate>
-						</ItemsControl.ItemTemplate>
+		<DataTemplate x:Key="GrupoMenuLateral">
+			<StackPanel Margin="0,10,0,0" Style="{StaticResource OcultaSemItens}">
+				<ToggleButton Style="{StaticResource CabecalhoMenuLateral}" Content="{Binding}" ContentTemplate="{StaticResource TituloGrupoMenuLateral}" Tag="{Binding Icone}" IsChecked="{Binding Expandido}" ToolTip="Expandir ou recolher o grupo" AutomationProperties.Name="{Binding Titulo}" />
+				<StackPanel Visibility="{Binding Expandido, Converter={StaticResource BooleanToVisibilityConverter}}">
+					<ItemsControl ItemsSource="{Binding Atalhos}" ItemTemplate="{StaticResource AtalhoMenuLateral}">
+						<ItemsControl.Tag><Thickness>17,0,36,0</Thickness></ItemsControl.Tag>
+						<ItemsControl.Style><Style TargetType="ItemsControl"><Style.Triggers><DataTrigger Binding="{Binding TemSubgrupos}" Value="True"><Setter Property="Visibility" Value="Collapsed" /></DataTrigger></Style.Triggers></Style></ItemsControl.Style>
 					</ItemsControl>
-					<Border Height="1" Background="{DynamicResource BorderBrush}" Margin="9,6,9,16" />
+					<ItemsControl ItemsSource="{Binding Subgrupos}" ItemTemplate="{StaticResource SubgrupoMenuLateral}" />
 				</StackPanel>
-				<TextBlock Text="{Binding MensagemSemResultado}" Foreground="{DynamicResource MutedTextBrush}" TextWrapping="Wrap" MaxWidth="560" HorizontalAlignment="Left" Margin="11,4,0,0"
-				           Visibility="{Binding SemResultado, Converter={StaticResource BooleanToVisibilityConverter}}" />
-				<ItemsControl ItemsSource="{Binding Grupos}" ItemTemplate="{StaticResource GrupoDeAtalhos}" ItemsPanel="{StaticResource ColunasDeGrupos}" Focusable="False" />
 			</StackPanel>
 		</DataTemplate>
+		<!-- Indicador da tela inicial: ícone em círculo ao lado do número e da explicação. -->
+		<Style x:Key="IconeIndicador" TargetType="Border">
+			<Setter Property="Width" Value="46" />
+			<Setter Property="Height" Value="46" />
+			<Setter Property="CornerRadius" Value="23" />
+			<Setter Property="Background" Value="{DynamicResource SelectionBrush}" />
+			<Setter Property="VerticalAlignment" Value="Top" />
+			<Setter Property="Margin" Value="0,0,16,0" />
+		</Style>
+		<Style x:Key="GlifoIndicador" TargetType="TextBlock">
+			<Setter Property="FontFamily" Value="Segoe Fluent Icons, Segoe MDL2 Assets" />
+			<Setter Property="FontSize" Value="20" />
+			<Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
+			<Setter Property="HorizontalAlignment" Value="Center" />
+			<Setter Property="VerticalAlignment" Value="Center" />
+		</Style>
+		<Style x:Key="TituloDica" TargetType="TextBlock">
+			<Setter Property="FontWeight" Value="SemiBold" />
+			<Setter Property="FontSize" Value="14" />
+		</Style>
+		<Style x:Key="TextoDica" TargetType="TextBlock">
+			<Setter Property="Foreground" Value="{DynamicResource MutedTextBrush}" />
+			<Setter Property="FontSize" Value="12" />
+			<Setter Property="TextWrapping" Value="Wrap" />
+			<Setter Property="Margin" Value="0,3,0,0" />
+		</Style>
 	</Window.Resources>
 	<Grid Background="{DynamicResource ApplicationBackgroundBrush}">
-		<Grid.ColumnDefinitions><ColumnDefinition Width="258" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
-		<Border Grid.Column="0" Background="{DynamicResource ResultBackgroundBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,1,0">
-			<Grid Margin="12,16,12,14">
-				<Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="*" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
-				<Button Content="◧  Calculadoras" FontSize="17" FontWeight="SemiBold" HorizontalContentAlignment="Left" Padding="12,10" Click="Inicio_Click" ToolTip="Voltar à central de calculadoras" AutomationProperties.Name="Início" />
-				<Grid Grid.Row="1" Margin="0,16,0,4">
-					<TextBox x:Name="BuscaLateral" Text="{Binding Busca, UpdateSourceTrigger=PropertyChanged}" Padding="12,8" AutomationProperties.Name="Procurar calculadora" ToolTip="Filtra as calculadoras pelo nome ou descrição (Ctrl+F)." />
-				</Grid>
-				<ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-					<StackPanel>
-						<StackPanel Margin="0,12,0,0" Visibility="{Binding Calculadoras.TemFavoritas, Converter={StaticResource BooleanToVisibilityConverter}}">
-							<TextBlock Text="★  Favoritas" FontWeight="SemiBold" Foreground="{DynamicResource MutedTextBrush}" Margin="12,0,8,6" />
-							<ItemsControl ItemsSource="{Binding Calculadoras.Favoritas}" ItemTemplate="{StaticResource AtalhoMenuLateral}" />
-						</StackPanel>
-						<ItemsControl ItemsSource="{Binding Calculadoras.Grupos}" ItemTemplate="{StaticResource GrupoMenuLateral}" />
+		<Grid.RowDefinitions><RowDefinition Height="68" /><RowDefinition Height="*" /></Grid.RowDefinitions>
+		<Grid.ColumnDefinitions><ColumnDefinition Width="308" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+		<Border Grid.ColumnSpan="2" Background="{DynamicResource ResultBackgroundBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1">
+			<Grid Margin="20,0,28,0">
+				<Grid.ColumnDefinitions><ColumnDefinition Width="Auto" /><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+				<Button Click="Inicio_Click" Background="Transparent" BorderThickness="0" Padding="0" Cursor="Hand" ToolTip="Voltar à tela inicial (Esc)" AutomationProperties.Name="Início">
+					<StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+						<Image Source="{DynamicResource BrandLogoImage}" Width="42" Height="42" Stretch="Uniform" Margin="0,0,12,0" />
+						<TextBlock Text="Central de simulações de cálculos" FontSize="21" FontWeight="SemiBold" VerticalAlignment="Center" />
 					</StackPanel>
-				</ScrollViewer>
-				<StackPanel Grid.Row="3" Margin="0,10,0,0">
-					<Border Height="1" Background="{DynamicResource BorderBrush}" Margin="0,0,0,8" />
-					<Button Content="▦  Tabelas" Style="{StaticResource ItemMenuLateral}" Click="Tabelas_Click" AutomationProperties.Name="Tabelas" />
-					<Button Content="◴  Histórico" Style="{StaticResource ItemMenuLateral}" Click="Historico_Click" AutomationProperties.Name="Histórico" />
+				</Button>
+				<StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+					<TextBlock Text="Tema" Foreground="{DynamicResource MutedTextBrush}" VerticalAlignment="Center" Margin="0,0,8,0" />
+					<ComboBox Width="128" ItemsSource="{Binding Temas}" SelectedItem="{Binding TemaSelecionado, Mode=TwoWay}" AutomationProperties.Name="Tema">
+						<ComboBox.ItemTemplate><DataTemplate><TextBlock Text="{Binding Converter={StaticResource NomeTemaConverter}}" /></DataTemplate></ComboBox.ItemTemplate>
+					</ComboBox>
+					<Button Content="Manual do usuário" Command="ApplicationCommands.Help" ToolTip="Abrir o manual do usuário (F1)" MinHeight="38" Padding="14,7" Margin="12,0,0,0" />
 				</StackPanel>
 			</Grid>
 		</Border>
-		<Grid x:Name="Dashboard" Grid.Column="1" Margin="28" Background="{DynamicResource ApplicationBackgroundBrush}">
+		<Border Grid.Row="1" Grid.Column="0" Background="{DynamicResource ResultBackgroundBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,1,0">
+			<Grid Margin="16,20,16,14">
+				<Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="*" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
+				<Grid>
+					<TextBox x:Name="BuscaLateral" Text="{Binding Busca, UpdateSourceTrigger=PropertyChanged}" Padding="40,9,12,9" FontSize="15" AutomationProperties.Name="Procurar calculadora ou tabela" ToolTip="Filtra as calculadoras e as tabelas pelo nome ou descrição (Ctrl+F)." />
+					<TextBlock Text="&#xE721;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="16" Foreground="{DynamicResource MutedTextBrush}" VerticalAlignment="Center" Margin="14,0,0,0" IsHitTestVisible="False" />
+					<TextBlock Text="Procurar calculadora ou tabela" FontSize="15" Foreground="{DynamicResource MutedTextBrush}" VerticalAlignment="Center" Margin="41,0,0,0" IsHitTestVisible="False">
+						<TextBlock.Style><Style TargetType="TextBlock"><Setter Property="Visibility" Value="Collapsed" /><Style.Triggers><DataTrigger Binding="{Binding Busca}" Value=""><Setter Property="Visibility" Value="Visible" /></DataTrigger></Style.Triggers></Style></TextBlock.Style>
+					</TextBlock>
+				</Grid>
+				<ScrollViewer Grid.Row="1" Margin="0,10,0,0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+					<StackPanel>
+						<ItemsControl ItemsSource="{Binding GruposMenuLateral}" ItemTemplate="{StaticResource GrupoMenuLateral}" />
+						<TextBlock Text="Nenhuma calculadora ou tabela encontrada." Foreground="{DynamicResource MutedTextBrush}" TextWrapping="Wrap" Margin="12,20,0,0" Visibility="{Binding MenuLateralSemResultado, Converter={StaticResource BooleanToVisibilityConverter}}" />
+					</StackPanel>
+				</ScrollViewer>
+				<StackPanel Grid.Row="2" Margin="0,10,0,0">
+					<Border Height="1" Background="{DynamicResource BorderBrush}" Margin="0,0,0,8" />
+					<Button DataContext="{Binding AtalhoHistorico}" Content="{Binding Titulo}" Tag="&#xE81C;" Style="{StaticResource ItemRaizMenuLateral}" Click="Historico_Click" ToolTip="{Binding Descricao}" AutomationProperties.Name="Histórico" />
+				</StackPanel>
+			</Grid>
+		</Border>
+		<Grid x:Name="Dashboard" Grid.Row="1" Grid.Column="1" Margin="28,24,28,20" Background="{DynamicResource ApplicationBackgroundBrush}">
 		<Grid.RowDefinitions>
-			<RowDefinition Height="Auto" />
 			<RowDefinition Height="Auto" />
 			<RowDefinition Height="*" />
 			<RowDefinition Height="Auto" />
 		</Grid.RowDefinitions>
 
-		<Grid>
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition />
-				<ColumnDefinition Width="Auto" />
-				<ColumnDefinition Width="Auto" />
-			</Grid.ColumnDefinitions>
-			<Grid>
-				<Grid.ColumnDefinitions>
-					<ColumnDefinition Width="Auto" />
-					<ColumnDefinition />
-				</Grid.ColumnDefinitions>
-				<Image Source="{DynamicResource BrandLogoImage}" Width="52" Height="52" Stretch="Uniform" Margin="0,0,14,0" VerticalAlignment="Center" />
-				<StackPanel Grid.Column="1" VerticalAlignment="Center">
-					<TextBlock Text="Central de simulações de cálculos" FontSize="28" FontWeight="SemiBold" TextWrapping="Wrap" />
-					<TextBlock Text="Escolha uma calculadora para simular ou consulte as tabelas usadas nos cálculos." Foreground="{DynamicResource MutedTextBrush}" TextWrapping="Wrap" Margin="0,5,0,0" />
-				</StackPanel>
-			</Grid>
-			<TextBlock Grid.Column="1" Text="Imposto • Brasil" Foreground="{DynamicResource AccentBrush}" FontWeight="SemiBold" VerticalAlignment="Center" Margin="20,0,20,0" />
-			<StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
-				<TextBlock Text="Tema" Foreground="{DynamicResource MutedTextBrush}" VerticalAlignment="Center" Margin="0,0,8,0" />
-				<ComboBox Width="128" ItemsSource="{Binding Temas}" SelectedItem="{Binding TemaSelecionado, Mode=TwoWay}">
-					<ComboBox.ItemTemplate>
-						<DataTemplate><TextBlock Text="{Binding Converter={StaticResource NomeTemaConverter}}" /></DataTemplate>
-					</ComboBox.ItemTemplate>
-				</ComboBox>
-				<Button Content="Manual do usuário" Command="ApplicationCommands.Help" ToolTip="Abrir o manual do usuário (F1)" MinHeight="38" Padding="14,7" Margin="12,0,0,0" />
-			</StackPanel>
-		</Grid>
-
 		<!-- Avisos da abertura: versão nova e tabelas do ano não cadastradas. Sem avisos, fica só o espaçamento. -->
-		<ItemsControl Grid.Row="1" ItemsSource="{Binding Avisos}" Margin="0,20,0,0" Focusable="False">
+		<ItemsControl ItemsSource="{Binding Avisos}" Focusable="False">
 			<ItemsControl.ItemTemplate>
 				<DataTemplate>
 					<Border Background="{DynamicResource SelectionBrush}" BorderBrush="{DynamicResource AccentBrush}" BorderThickness="1" CornerRadius="10" Padding="16,10" Margin="0,0,0,14">
@@ -207,191 +271,183 @@
 			</ItemsControl.ItemTemplate>
 		</ItemsControl>
 
-		<Border Grid.Row="2" Style="{StaticResource Card}" Padding="24,20,12,14">
-			<Grid>
-				<Grid.RowDefinitions>
-					<RowDefinition Height="Auto" />
-					<RowDefinition Height="*" />
-				</Grid.RowDefinitions>
-				<Grid Margin="0,0,12,0">
-					<Grid.ColumnDefinitions>
-						<ColumnDefinition Width="Auto" />
-						<ColumnDefinition MinWidth="176" MaxWidth="356" />
-						<ColumnDefinition />
-						<ColumnDefinition Width="Auto" />
-					</Grid.ColumnDefinitions>
-					<Grid Grid.Column="1" Margin="16,0,0,0" VerticalAlignment="Center">
-						<Grid.Style>
-							<Style TargetType="Grid">
-								<Style.Triggers>
-									<DataTrigger Binding="{Binding IsChecked, ElementName=AbaHistorico}" Value="True"><Setter Property="Visibility" Value="Collapsed" /></DataTrigger>
-								</Style.Triggers>
-							</Style>
-						</Grid.Style>
-						<TextBox x:Name="CampoBusca" Text="{Binding Busca, UpdateSourceTrigger=PropertyChanged}" Padding="17,0,15,0" VerticalContentAlignment="Center"
-						         AutomationProperties.Name="Procurar calculadora ou tabela" ToolTip="Procura no nome e na descrição dos cartões, sem diferenciar maiúsculas e acentos (Ctrl+F). Esc limpa." />
-						<TextBlock Text="⌕" FontSize="17" Foreground="{DynamicResource MutedTextBrush}" VerticalAlignment="Center" Margin="13,0,0,2" IsHitTestVisible="False" />
-						<TextBlock Text="Procurar" Foreground="{DynamicResource MutedTextBrush}" VerticalAlignment="Center" Margin="36,0,0,0" IsHitTestVisible="False">
+		<!-- Tela inicial, quando nenhum item do menu está aberto. -->
+		<ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Focusable="False">
+			<ScrollViewer.Style>
+				<Style TargetType="ScrollViewer">
+					<Style.Triggers><DataTrigger Binding="{Binding HistoricoAberto}" Value="True"><Setter Property="Visibility" Value="Collapsed" /></DataTrigger></Style.Triggers>
+				</Style>
+			</ScrollViewer.Style>
+			<StackPanel Margin="0,4,0,0">
+				<TextBlock Text="Boas-vindas" FontSize="28" FontWeight="SemiBold" />
+				<TextBlock Text="Escolha uma calculadora ou uma tabela no menu ao lado para começar. As simulações são feitas neste computador, com as tabelas da competência informada." Foreground="{DynamicResource MutedTextBrush}" FontSize="14" TextWrapping="Wrap" MaxWidth="760" HorizontalAlignment="Left" Margin="0,6,0,0" />
+				<UniformGrid Columns="3" Margin="-8,22,-8,0">
+					<Border Style="{StaticResource Card}" Padding="20,18" Margin="8,0">
+						<DockPanel>
+							<Border Style="{StaticResource IconeIndicador}"><TextBlock Text="&#xE8EF;" Style="{StaticResource GlifoIndicador}" /></Border>
+							<StackPanel>
+								<TextBlock FontSize="26" FontWeight="Bold" Foreground="{DynamicResource AccentBrush}"><Run Text="{Binding QuantidadeCalculadoras, Mode=OneWay}" /><Run Text=" calculadoras" FontSize="15" FontWeight="SemiBold" /></TextBlock>
+								<TextBlock Text="Trabalhistas, tributárias, previdenciárias, de pensão e de débitos judiciais, organizadas por assunto no menu." Style="{StaticResource TextoDica}" />
+							</StackPanel>
+						</DockPanel>
+					</Border>
+					<Border Style="{StaticResource Card}" Padding="20,18" Margin="8,0">
+						<DockPanel>
+							<Border Style="{StaticResource IconeIndicador}"><TextBlock Text="&#xE80A;" Style="{StaticResource GlifoIndicador}" /></Border>
+							<StackPanel>
+								<TextBlock FontSize="26" FontWeight="Bold" Foreground="{DynamicResource AccentBrush}"><Run Text="{Binding QuantidadeTabelas, Mode=OneWay}" /><Run Text=" tabelas" FontSize="15" FontWeight="SemiBold" /></TextBlock>
+								<TextBlock Text="INSS, IRRF, deduções e índices econômicos. Cada registro vale a partir da sua competência e pode ser atualizado pela internet." Style="{StaticResource TextoDica}" />
+							</StackPanel>
+						</DockPanel>
+					</Border>
+					<Border Style="{StaticResource Card}" Padding="20,18" Margin="8,0">
+						<DockPanel>
+							<Border Style="{StaticResource IconeIndicador}"><TextBlock Text="&#xE81C;" Style="{StaticResource GlifoIndicador}" /></Border>
+							<StackPanel>
+								<TextBlock Text="Histórico" FontSize="20" FontWeight="SemiBold" Margin="0,4,0,0" />
+								<TextBlock Text="Os cálculos salvos reabrem com os valores do formulário, já calculados." Style="{StaticResource TextoDica}" />
+								<Button Content="Abrir o histórico" Click="Historico_Click" Style="{StaticResource LinkButton}" HorizontalAlignment="Left" Margin="0,8,0,0" />
+							</StackPanel>
+						</DockPanel>
+					</Border>
+				</UniformGrid>
+				<!-- Recentes: os últimos cálculos salvos, para retomar o que se estava fazendo. -->
+				<Border Style="{StaticResource Card}" Padding="22,18" Margin="0,16,0,0">
+					<StackPanel>
+						<Grid Margin="0,0,0,12">
+							<TextBlock Text="Continuar de onde parou" FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center" />
+							<Button Content="Ver o histórico" Click="Historico_Click" Style="{StaticResource LinkButton}" HorizontalAlignment="Right" VerticalAlignment="Center"
+							        ToolTip="Abre o histórico, com todos os cálculos salvos, a busca e a comparação." />
+						</Grid>
+						<TextBlock Text="Nenhum cálculo salvo ainda. Em uma calculadora, use Salvar no histórico para retomá-lo depois por aqui.">
+							<TextBlock.Style>
+								<Style TargetType="TextBlock" BasedOn="{StaticResource TextoDica}">
+									<Style.Triggers><DataTrigger Binding="{Binding Historico.TemRecentes}" Value="True"><Setter Property="Visibility" Value="Collapsed" /></DataTrigger></Style.Triggers>
+								</Style>
+							</TextBlock.Style>
+						</TextBlock>
+						<ItemsControl ItemsSource="{Binding Historico.Recentes}" Focusable="False" AutomationProperties.Name="Cálculos recentes">
+							<ItemsControl.ItemTemplate>
+								<DataTemplate>
+									<Button Style="{StaticResource Atalho}" Margin="0,0,0,8" MinHeight="56" Padding="14,9"
+									        Command="{Binding DataContext.Historico.AbrirCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding}"
+									        ToolTip="{Binding Detalhe}" AutomationProperties.Name="{Binding Nome, StringFormat='Abrir o cálculo recente {0}'}">
+										<Grid>
+											<Grid.ColumnDefinitions><ColumnDefinition /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+											<StackPanel>
+												<TextBlock Text="{Binding Nome}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+												<TextBlock Text="{Binding Calculo.Calculadora}" Foreground="{DynamicResource MutedTextBrush}" FontSize="12" Margin="0,3,0,0" TextTrimming="CharacterEllipsis" />
+											</StackPanel>
+											<TextBlock Grid.Column="1" Text="{Binding Quando}" Foreground="{DynamicResource MutedTextBrush}" FontSize="12" VerticalAlignment="Center" Margin="16,0,0,0" />
+										</Grid>
+									</Button>
+								</DataTemplate>
+							</ItemsControl.ItemTemplate>
+						</ItemsControl>
+					</StackPanel>
+				</Border>
+				<Border Style="{StaticResource Card}" Padding="22,18" Margin="0,16,0,0">
+					<StackPanel>
+						<TextBlock Text="Primeiros passos" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,14" />
+						<UniformGrid Columns="2">
+							<DockPanel Margin="0,0,24,14">
+								<Border Style="{StaticResource IconeIndicador}" Width="36" Height="36" CornerRadius="18" Margin="0,0,12,0"><TextBlock Text="&#xE721;" Style="{StaticResource GlifoIndicador}" FontSize="15" /></Border>
+								<StackPanel><TextBlock Text="Procure pelo nome" Style="{StaticResource TituloDica}" /><TextBlock Text="Ctrl+F leva à busca do menu, que filtra calculadoras e tabelas pelo nome ou pela descrição." Style="{StaticResource TextoDica}" /></StackPanel>
+							</DockPanel>
+							<DockPanel Margin="0,0,0,14">
+								<Border Style="{StaticResource IconeIndicador}" Width="36" Height="36" CornerRadius="18" Margin="0,0,12,0"><TextBlock Text="&#xE734;" Style="{StaticResource GlifoIndicador}" FontSize="15" /></Border>
+								<StackPanel><TextBlock Text="Marque as favoritas" Style="{StaticResource TituloDica}" /><TextBlock Text="A estrela no fim de cada item do menu leva-o ao grupo Favoritas, no alto." Style="{StaticResource TextoDica}" /></StackPanel>
+							</DockPanel>
+							<DockPanel Margin="0,0,24,0">
+								<Border Style="{StaticResource IconeIndicador}" Width="36" Height="36" CornerRadius="18" Margin="0,0,12,0"><TextBlock Text="&#xE897;" Style="{StaticResource GlifoIndicador}" FontSize="15" /></Border>
+								<StackPanel><TextBlock Text="Consulte o manual" Style="{StaticResource TituloDica}" /><TextBlock Text="F1 ou Manual do usuário explicam as entradas, as premissas e os limites de cada cálculo." Style="{StaticResource TextoDica}" /></StackPanel>
+							</DockPanel>
+							<DockPanel>
+								<Border Style="{StaticResource IconeIndicador}" Width="36" Height="36" CornerRadius="18" Margin="0,0,12,0"><TextBlock Text="&#xE72B;" Style="{StaticResource GlifoIndicador}" FontSize="15" /></Border>
+								<StackPanel><TextBlock Text="Volte para esta tela" Style="{StaticResource TituloDica}" /><TextBlock Text="Esc ou o título no alto fecham o item aberto, com aviso se houver alterações não salvas." Style="{StaticResource TextoDica}" /></StackPanel>
+							</DockPanel>
+						</UniformGrid>
+					</StackPanel>
+				</Border>
+			</StackPanel>
+		</ScrollViewer>
+		<!-- Histórico: busca, lista dos cálculos salvos e as ações de cada um; a lista é lida de novo a cada abertura. -->
+		<Grid Grid.Row="1" Visibility="{Binding HistoricoAberto, Converter={StaticResource BooleanToVisibilityConverter}}">
+			<Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="*" /></Grid.RowDefinitions>
+			<StackPanel Margin="0,4,0,18">
+				<TextBlock Text="Histórico" FontSize="28" FontWeight="SemiBold" />
+				<TextBlock Text="Os cálculos salvos ficam neste computador e reabrem com os valores do formulário, já calculados." Foreground="{DynamicResource MutedTextBrush}" FontSize="14" TextWrapping="Wrap" Margin="0,6,0,0" />
+			</StackPanel>
+			<Border Grid.Row="1" Style="{StaticResource Card}" Padding="24,20,12,14">
+				<ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Focusable="False">
+					<StackPanel Margin="0,0,12,0">
+						<Grid Margin="0,0,0,14">
+							<Grid.ColumnDefinitions><ColumnDefinition Width="Auto" /><ColumnDefinition /></Grid.ColumnDefinitions>
+							<StackPanel>
+								<TextBlock Text="Procurar" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,6" />
+								<TextBox Width="380" Text="{Binding Historico.Filtro, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Procurar no histórico" ToolTip="Procura pelo nome do cálculo ou pela calculadora, sem diferenciar maiúsculas e acentos." />
+							</StackPanel>
+							<TextBlock Grid.Column="1" Text="{Binding Historico.Resumo}" Foreground="{DynamicResource MutedTextBrush}" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,0,10" />
+						</Grid>
+						<WrapPanel Margin="0,0,0,14">
+							<StackPanel Margin="0,0,12,8">
+								<TextBlock Text="Calculadora" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" />
+								<ComboBox Width="230" ItemsSource="{Binding Historico.CalculadorasDisponiveis}" SelectedItem="{Binding Historico.CalculadoraSelecionada}" AutomationProperties.Name="Filtrar histórico por calculadora" />
+							</StackPanel>
+							<StackPanel Margin="0,0,12,8">
+								<TextBlock Text="Data da alteração" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" />
+								<ComboBox Width="170" ItemsSource="{Binding Historico.Periodos}" SelectedItem="{Binding Historico.PeriodoSelecionado}" AutomationProperties.Name="Filtrar histórico por data de alteração" />
+							</StackPanel>
+							<StackPanel Margin="0,0,12,8">
+								<TextBlock Text="Ordenar por" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" />
+								<ComboBox Width="160" ItemsSource="{Binding Historico.Ordens}" SelectedItem="{Binding Historico.OrdemSelecionada}" AutomationProperties.Name="Ordenar histórico" />
+							</StackPanel>
+						</WrapPanel>
+						<WrapPanel Margin="0,0,0,14">
+							<Button Content="Comparar" Command="{Binding Historico.CompararCommand}" Margin="0,0,12,0" AutomationProperties.Name="Comparar os resultados e as entradas de dois cálculos salvos" />
+							<TextBlock Text="{Binding Historico.SituacaoComparacao}" TextWrapping="Wrap" VerticalAlignment="Center" Foreground="{DynamicResource MutedTextBrush}" />
+						</WrapPanel>
+						<TextBlock Text="{Binding Historico.MensagemVazia}" Foreground="{DynamicResource MutedTextBrush}" TextWrapping="Wrap" MaxWidth="520" HorizontalAlignment="Left" Margin="0,8,0,0">
 							<TextBlock.Style>
 								<Style TargetType="TextBlock">
-									<Setter Property="Visibility" Value="Collapsed" />
 									<Style.Triggers>
-										<DataTrigger Binding="{Binding Busca}" Value=""><Setter Property="Visibility" Value="Visible" /></DataTrigger>
+										<DataTrigger Binding="{Binding Historico.TemItens}" Value="True"><Setter Property="Visibility" Value="Collapsed" /></DataTrigger>
 									</Style.Triggers>
 								</Style>
 							</TextBlock.Style>
 						</TextBlock>
-						<Button Content="×" Width="28" Height="28" HorizontalAlignment="Right" Margin="0,0,4,0" Click="LimparBusca_Click"
-						        ToolTip="Limpar a busca" AutomationProperties.Name="Limpar a busca">
-							<Button.Template>
-								<ControlTemplate TargetType="Button">
-									<Border x:Name="Fundo" Background="Transparent" CornerRadius="6">
-										<TextBlock Text="×" FontSize="16" Foreground="{DynamicResource MutedTextBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,2" />
+						<ItemsControl ItemsSource="{Binding Historico.Itens}" Focusable="False">
+							<ItemsControl.ItemTemplate>
+								<DataTemplate>
+									<Border Padding="16,12" Margin="0,0,0,10" Background="{DynamicResource ResultBackgroundBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="10">
+										<Grid>
+										<Grid.ColumnDefinitions><ColumnDefinition Width="Auto" /><ColumnDefinition /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+										<CheckBox IsChecked="{Binding Selecionado}" VerticalAlignment="Center" Margin="0,0,12,0" AutomationProperties.Name="{Binding Nome, StringFormat='Selecionar {0} para comparação'}" />
+										<StackPanel Grid.Column="1" VerticalAlignment="Center">
+												<TextBlock Text="{Binding Nome}" FontSize="14" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+												<TextBlock Text="{Binding Detalhe}" Foreground="{DynamicResource MutedTextBrush}" FontSize="12" Margin="0,3,0,0" TextTrimming="CharacterEllipsis" />
+											</StackPanel>
+										<StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" Margin="16,0,0,0">
+												<Button Content="Excluir" Style="{StaticResource LinkButton}" Margin="0,0,16,0" VerticalAlignment="Center" AutomationProperties.Name="{Binding Nome, StringFormat='Excluir {0}'}"
+												        Command="{Binding DataContext.Historico.ExcluirCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" CommandParameter="{Binding}" />
+												<Button Content="Renomear" MinWidth="104" Margin="0,0,8,0" AutomationProperties.Name="{Binding Nome, StringFormat='Renomear {0}'}"
+												        Command="{Binding DataContext.Historico.RenomearCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" CommandParameter="{Binding}" />
+												<Button Content="Duplicar" MinWidth="104" Margin="0,0,8,0" ToolTip="Cria uma cópia com o nome seguido de (cópia), para refazer o cálculo com outros valores sem perder o original." AutomationProperties.Name="{Binding Nome, StringFormat='Duplicar {0}'}"
+												        Command="{Binding DataContext.Historico.DuplicarCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" CommandParameter="{Binding}" />
+												<Button Content="Abrir" Style="{StaticResource PrimaryButton}" MinWidth="104" AutomationProperties.Name="{Binding Nome, StringFormat='Abrir {0}'}"
+												        Command="{Binding DataContext.Historico.AbrirCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" CommandParameter="{Binding}" />
+											</StackPanel>
+										</Grid>
 									</Border>
-									<ControlTemplate.Triggers>
-										<Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Fundo" Property="Background" Value="{DynamicResource ButtonHoverBrush}" /></Trigger>
-										<Trigger Property="IsKeyboardFocused" Value="True"><Setter TargetName="Fundo" Property="Background" Value="{DynamicResource ButtonHoverBrush}" /><Setter TargetName="Fundo" Property="BorderBrush" Value="{DynamicResource AccentBrush}" /><Setter TargetName="Fundo" Property="BorderThickness" Value="1" /></Trigger>
-									</ControlTemplate.Triggers>
-								</ControlTemplate>
-							</Button.Template>
-							<Button.Style>
-								<Style TargetType="Button">
-									<Setter Property="Cursor" Value="Hand" />
-									<Style.Triggers>
-										<DataTrigger Binding="{Binding Busca}" Value=""><Setter Property="Visibility" Value="Collapsed" /></DataTrigger>
-									</Style.Triggers>
-								</Style>
-							</Button.Style>
-						</Button>
-					</Grid>
-					<Border Width="360" VerticalAlignment="Center" Background="{DynamicResource ButtonBackgroundBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="10" Padding="3">
-						<UniformGrid Rows="1">
-							<RadioButton x:Name="AbaCalculadoras" Style="{StaticResource AbaSegmentada}" Content="Calculadoras" GroupName="Inicio" IsChecked="True" ToolTip="Cada calculadora abre com a competência, o salário e os dependentes do último cálculo." />
-							<RadioButton x:Name="AbaTabelas" Style="{StaticResource AbaSegmentada}" Content="Tabelas" GroupName="Inicio" />
-							<!-- O histórico é lido de novo a cada vez que a aba fica ativa, pelo mouse ou pelo teclado, com os cálculos salvos nas outras janelas. -->
-							<RadioButton x:Name="AbaHistorico" Style="{StaticResource AbaSegmentada}" Content="Histórico" GroupName="Inicio" IsChecked="{Binding HistoricoAberto, Mode=TwoWay}" />
-						</UniformGrid>
-					</Border>
-					<Border Grid.Column="3" Background="{DynamicResource SelectionBrush}" BorderBrush="{DynamicResource AccentBrush}" BorderThickness="1" CornerRadius="10" Padding="12,5" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="20,0,0,0"
-					        Visibility="{Binding IsChecked, ElementName=AbaCalculadoras, Converter={StaticResource BooleanToVisibilityConverter}}">
-						<StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-							<TextBlock Text="{Binding QuantidadeCalculadoras}" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource AccentBrush}" VerticalAlignment="Center" />
-							<TextBlock Text="calculadoras disponíveis" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource AccentBrush}" VerticalAlignment="Center" Margin="8,0,0,0" />
-						</StackPanel>
-					</Border>
-					<TextBlock Grid.Column="2" Grid.ColumnSpan="2" HorizontalAlignment="Right" Text="As tabelas valem a partir da competência de cada registro e podem ser atualizadas pela internet." Foreground="{DynamicResource MutedTextBrush}" FontSize="12" TextWrapping="Wrap" TextAlignment="Right" VerticalAlignment="Center" MaxWidth="380" Margin="20,0,0,0"
-					           Visibility="{Binding IsChecked, ElementName=AbaTabelas, Converter={StaticResource BooleanToVisibilityConverter}}" />
-					<TextBlock Grid.Column="2" Grid.ColumnSpan="2" HorizontalAlignment="Right" Text="Os cálculos salvos ficam neste computador e reabrem com os valores do formulário, já calculados." Foreground="{DynamicResource MutedTextBrush}" FontSize="12" TextWrapping="Wrap" TextAlignment="Right" VerticalAlignment="Center" MaxWidth="380" Margin="20,0,0,0"
-					           Visibility="{Binding IsChecked, ElementName=AbaHistorico, Converter={StaticResource BooleanToVisibilityConverter}}" />
-				</Grid>
-				<ScrollViewer Grid.Row="1" Margin="0,20,0,0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-					<Grid Margin="-9,0,0,0">
-						<StackPanel Visibility="{Binding IsChecked, ElementName=AbaCalculadoras, Converter={StaticResource BooleanToVisibilityConverter}}">
-							<!-- Recentes: os últimos cálculos salvos, para retomar o que se estava fazendo; somem durante a busca. -->
-							<StackPanel Margin="0,0,0,8" Visibility="{Binding MostrarRecentes, Converter={StaticResource BooleanToVisibilityConverter}}">
-								<Grid Margin="11,0,9,10">
-									<StackPanel Orientation="Horizontal">
-										<TextBlock Text="&#xE81C;" FontFamily="Segoe MDL2 Assets" FontSize="13" Foreground="{DynamicResource AccentBrush}" VerticalAlignment="Center" Margin="0,1,7,0" />
-										<TextBlock Text="Recentes" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource MutedTextBrush}" VerticalAlignment="Center" />
-									</StackPanel>
-									<Button Content="Ver o histórico" Command="{Binding VerHistoricoCommand}" Style="{StaticResource LinkButton}" HorizontalAlignment="Right" VerticalAlignment="Center"
-									        ToolTip="Abre a aba Histórico, com todos os cálculos salvos, a busca e a comparação." />
-								</Grid>
-								<ItemsControl ItemsSource="{Binding Historico.Recentes}" Focusable="False" AutomationProperties.Name="Cálculos recentes">
-									<ItemsControl.ItemsPanel>
-										<ItemsPanelTemplate><UniformGrid Columns="{Binding DataContext.Calculadoras.Colunas, RelativeSource={RelativeSource AncestorType=Window}}" /></ItemsPanelTemplate>
-									</ItemsControl.ItemsPanel>
-									<ItemsControl.ItemTemplate>
-										<DataTemplate>
-											<Button Style="{StaticResource Atalho}" Margin="9,0,9,10" MinHeight="64" Padding="14,10"
-											        Command="{Binding DataContext.Historico.AbrirCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding}"
-											        ToolTip="{Binding Detalhe}" AutomationProperties.Name="{Binding Nome, StringFormat='Abrir o cálculo recente {0}'}">
-												<StackPanel>
-													<TextBlock Text="{Binding Nome}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
-													<TextBlock Foreground="{DynamicResource MutedTextBrush}" FontSize="12" Margin="0,3,0,0" TextTrimming="CharacterEllipsis">
-														<Run Text="{Binding Calculo.Calculadora, Mode=OneWay}" /><Run Text=" • " /><Run Text="{Binding Quando, Mode=OneWay}" />
-													</TextBlock>
-												</StackPanel>
-											</Button>
-										</DataTemplate>
-									</ItemsControl.ItemTemplate>
-								</ItemsControl>
-								<Border Height="1" Background="{DynamicResource BorderBrush}" Margin="9,0,9,16" />
-							</StackPanel>
-							<ContentControl Content="{Binding Calculadoras}" ContentTemplate="{StaticResource PainelDeAtalhos}" Focusable="False" />
-						</StackPanel>
-						<ContentControl Content="{Binding Tabelas}" ContentTemplate="{StaticResource PainelDeAtalhos}" Focusable="False"
-						                Visibility="{Binding IsChecked, ElementName=AbaTabelas, Converter={StaticResource BooleanToVisibilityConverter}}" />
-						<!-- Histórico: busca, lista dos cálculos salvos e as ações de cada um. -->
-						<StackPanel Margin="9,0,12,0" Visibility="{Binding IsChecked, ElementName=AbaHistorico, Converter={StaticResource BooleanToVisibilityConverter}}">
-							<Grid Margin="0,0,0,14">
-								<Grid.ColumnDefinitions><ColumnDefinition Width="Auto" /><ColumnDefinition /></Grid.ColumnDefinitions>
-								<StackPanel>
-									<TextBlock Text="Procurar" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,6" />
-									<TextBox Width="380" Text="{Binding Historico.Filtro, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Procurar no histórico" ToolTip="Procura pelo nome do cálculo ou pela calculadora, sem diferenciar maiúsculas e acentos." />
-								</StackPanel>
-								<TextBlock Grid.Column="1" Text="{Binding Historico.Resumo}" Foreground="{DynamicResource MutedTextBrush}" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,0,10" />
-							</Grid>
-							<WrapPanel Margin="0,0,0,14">
-								<StackPanel Margin="0,0,12,8">
-									<TextBlock Text="Calculadora" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" />
-									<ComboBox Width="230" ItemsSource="{Binding Historico.CalculadorasDisponiveis}" SelectedItem="{Binding Historico.CalculadoraSelecionada}" AutomationProperties.Name="Filtrar histórico por calculadora" />
-								</StackPanel>
-								<StackPanel Margin="0,0,12,8">
-									<TextBlock Text="Data da alteração" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" />
-									<ComboBox Width="170" ItemsSource="{Binding Historico.Periodos}" SelectedItem="{Binding Historico.PeriodoSelecionado}" AutomationProperties.Name="Filtrar histórico por data de alteração" />
-								</StackPanel>
-								<StackPanel Margin="0,0,12,8">
-									<TextBlock Text="Ordenar por" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" />
-									<ComboBox Width="160" ItemsSource="{Binding Historico.Ordens}" SelectedItem="{Binding Historico.OrdemSelecionada}" AutomationProperties.Name="Ordenar histórico" />
-								</StackPanel>
-							</WrapPanel>
-							<WrapPanel Margin="0,0,0,14">
-								<Button Content="Comparar" Command="{Binding Historico.CompararCommand}" Margin="0,0,12,0" AutomationProperties.Name="Comparar os resultados e as entradas de dois cálculos salvos" />
-								<TextBlock Text="{Binding Historico.SituacaoComparacao}" TextWrapping="Wrap" VerticalAlignment="Center" Foreground="{DynamicResource MutedTextBrush}" />
-							</WrapPanel>
-							<TextBlock Text="{Binding Historico.MensagemVazia}" Foreground="{DynamicResource MutedTextBrush}" TextWrapping="Wrap" MaxWidth="520" HorizontalAlignment="Left" Margin="0,8,0,0">
-								<TextBlock.Style>
-									<Style TargetType="TextBlock">
-										<Style.Triggers>
-											<DataTrigger Binding="{Binding Historico.TemItens}" Value="True"><Setter Property="Visibility" Value="Collapsed" /></DataTrigger>
-										</Style.Triggers>
-									</Style>
-								</TextBlock.Style>
-							</TextBlock>
-							<ItemsControl ItemsSource="{Binding Historico.Itens}" Focusable="False">
-								<ItemsControl.ItemTemplate>
-									<DataTemplate>
-										<Border Padding="16,12" Margin="0,0,0,10" Background="{DynamicResource ResultBackgroundBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="10">
-											<Grid>
-											<Grid.ColumnDefinitions><ColumnDefinition Width="Auto" /><ColumnDefinition /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
-											<CheckBox IsChecked="{Binding Selecionado}" VerticalAlignment="Center" Margin="0,0,12,0" AutomationProperties.Name="{Binding Nome, StringFormat='Selecionar {0} para comparação'}" />
-											<StackPanel Grid.Column="1" VerticalAlignment="Center">
-													<TextBlock Text="{Binding Nome}" FontSize="14" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
-													<TextBlock Text="{Binding Detalhe}" Foreground="{DynamicResource MutedTextBrush}" FontSize="12" Margin="0,3,0,0" TextTrimming="CharacterEllipsis" />
-												</StackPanel>
-											<StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" Margin="16,0,0,0">
-													<Button Content="Excluir" Style="{StaticResource LinkButton}" Margin="0,0,16,0" VerticalAlignment="Center" AutomationProperties.Name="{Binding Nome, StringFormat='Excluir {0}'}"
-													        Command="{Binding DataContext.Historico.ExcluirCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" CommandParameter="{Binding}" />
-													<Button Content="Renomear" MinWidth="104" Margin="0,0,8,0" AutomationProperties.Name="{Binding Nome, StringFormat='Renomear {0}'}"
-													        Command="{Binding DataContext.Historico.RenomearCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" CommandParameter="{Binding}" />
-													<Button Content="Duplicar" MinWidth="104" Margin="0,0,8,0" ToolTip="Cria uma cópia com o nome seguido de (cópia), para refazer o cálculo com outros valores sem perder o original." AutomationProperties.Name="{Binding Nome, StringFormat='Duplicar {0}'}"
-													        Command="{Binding DataContext.Historico.DuplicarCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" CommandParameter="{Binding}" />
-													<Button Content="Abrir" Style="{StaticResource PrimaryButton}" MinWidth="104" AutomationProperties.Name="{Binding Nome, StringFormat='Abrir {0}'}"
-													        Command="{Binding DataContext.Historico.AbrirCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" CommandParameter="{Binding}" />
-												</StackPanel>
-											</Grid>
-										</Border>
-									</DataTemplate>
-								</ItemsControl.ItemTemplate>
-							</ItemsControl>
-						</StackPanel>
-					</Grid>
+								</DataTemplate>
+							</ItemsControl.ItemTemplate>
+						</ItemsControl>
+					</StackPanel>
 				</ScrollViewer>
-			</Grid>
-		</Border>
+			</Border>
+		</Grid>
 
-		<Grid Grid.Row="3" Margin="0,18,0,0">
+		<Grid Grid.Row="2" Margin="0,18,0,0">
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition />
 				<ColumnDefinition Width="Auto" />
@@ -412,19 +468,13 @@
 			</TextBlock>
 		</Grid>
 		</Grid>
-		<Grid x:Name="ConteudoInterno" Grid.Column="1" Visibility="Collapsed">
+		<Grid x:Name="ConteudoInterno" Grid.Row="1" Grid.Column="1" Visibility="Collapsed">
 			<Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="*" /></Grid.RowDefinitions>
 			<Grid Margin="28,16,28,10">
-				<Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+				<Grid.ColumnDefinitions><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
 				<StackPanel VerticalAlignment="Center" Orientation="Horizontal">
 					<TextBlock x:Name="RotuloSecao" Text="Calculadoras / " Foreground="{DynamicResource AccentBrush}" FontSize="13" />
 					<TextBlock x:Name="TituloConteudo" Foreground="{DynamicResource MutedTextBrush}" FontSize="13" TextTrimming="CharacterEllipsis" />
-				</StackPanel>
-				<StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-					<ComboBox Width="120" ItemsSource="{Binding Temas}" SelectedItem="{Binding TemaSelecionado, Mode=TwoWay}">
-						<ComboBox.ItemTemplate><DataTemplate><TextBlock Text="{Binding Converter={StaticResource NomeTemaConverter}}" /></DataTemplate></ComboBox.ItemTemplate>
-					</ComboBox>
-					<Button Content="Manual do usuário" Command="ApplicationCommands.Help" Margin="10,0,0,0" ToolTip="Abrir o manual do usuário (F1)" />
 				</StackPanel>
 			</Grid>
 			<ContentControl x:Name="Hospedeiro" Grid.Row="1" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" />

@@ -142,17 +142,28 @@ public sealed class MainWindowViewModel : ViewModelBase
 
         Calculadoras = new PainelAtalhosViewModel(calculadoras, favoritos, "calculadora");
         Tabelas = new PainelAtalhosViewModel(tabelas, favoritos, "tabela");
-        VerHistoricoCommand = new RelayCommand(_ => HistoricoAberto = true);
-        historico.PropertyChanged += (_, argumentos) =>
-        {
-            if (argumentos.PropertyName == nameof(HistoricoViewModel.TemRecentes))
-                OnPropertyChanged(nameof(MostrarRecentes));
-        };
+        var trabalhistas = calculadoras[2].Todos.Concat(calculadoras[3].Todos).ToArray();
+        string[] destaques = ["Banco de horas", "Horas extras e adicionais", "Férias", "13º salário"];
+        var ordemTrabalhistas = destaques.Select(titulo => trabalhistas.Single(atalho => atalho.Titulo == titulo))
+            .Concat(trabalhistas.Where(atalho => !destaques.Contains(atalho.Titulo))).ToArray();
+        // As favoritas do menu reúnem as das duas abas; a tabela favorita sai do grupo Tabelas, como na central.
+        GruposMenuLateral =
+        [
+            new("Favoritas", "\uE734", () => Calculadoras.Favoritas.Concat(Tabelas.Favoritas), Calculadoras.Favoritas, Tabelas.Favoritas) { Expandido = true },
+            new("Trabalhistas", "\uE821", ordemTrabalhistas, calculadoras[2], calculadoras[3]),
+            new("Tributos", "\uE825", calculadoras[0].Todos, calculadoras[0]),
+            new("Pensão e débitos", "\uE716", calculadoras[1].Todos, calculadoras[1]),
+            new("FGTS e benefícios", "\uE7B8", calculadoras[4].Todos, calculadoras[4]),
+            new("Tabelas", "\uE80A", [.. tabelas.SelectMany(grupo => grupo.Todos)], tabelas)
+            {
+                Subgrupos = [.. tabelas.Select(grupo => new GrupoMenuLateralViewModel(grupo.Titulo, string.Empty, grupo.Todos, grupo) { Expandido = true })]
+            }
+        ];
+        // O item Histórico do menu usa o mesmo destaque de item ativo das calculadoras e das tabelas.
+        AtalhoHistorico = new AtalhoViewModel("Historico", "Histórico", "Cálculos salvos neste computador, com busca, filtros e comparação.", new RelayCommand(_ => HistoricoAberto = true));
     }
 
-    /// <summary>A seção Recentes some durante a busca, que procura só nos cartões.</summary>
-    public bool MostrarRecentes => Historico.TemRecentes && Busca.Trim().Length == 0;
-    public System.Windows.Input.ICommand VerHistoricoCommand { get; }
+    public AtalhoViewModel AtalhoHistorico { get; }
 
     /// <summary>Chamado ao abrir e sempre que a tela inicial volta a ficar ativa, como ao fechar uma calculadora.</summary>
     public async Task AtualizarRecentesAsync()
@@ -170,7 +181,10 @@ public sealed class MainWindowViewModel : ViewModelBase
 
     public PainelAtalhosViewModel Calculadoras { get; }
     public PainelAtalhosViewModel Tabelas { get; }
+    public IReadOnlyList<GrupoMenuLateralViewModel> GruposMenuLateral { get; }
+    public bool MenuLateralSemResultado => Calculadoras.SemResultado && Tabelas.SemResultado;
     public int QuantidadeCalculadoras => Calculadoras.Quantidade;
+    public int QuantidadeTabelas => Tabelas.Quantidade;
 
     public void DefinirAtivo(string? chave)
     {
@@ -178,9 +192,14 @@ public sealed class MainWindowViewModel : ViewModelBase
             atalho.Ativo = atalho.Chave == chave || (atalho.Chave == "Simulacao" && chave == "Calculadora.SimulacaoTributaria");
         foreach (var atalho in Tabelas.Grupos.SelectMany(grupo => grupo.Todos))
             atalho.Ativo = atalho.Chave == chave;
+        // Aberto pelo histórico ou por um aviso, o item pode estar num grupo recolhido.
+        var ativo = Calculadoras.Grupos.Concat(Tabelas.Grupos).SelectMany(grupo => grupo.Todos).FirstOrDefault(atalho => atalho.Ativo);
+        if (ativo is not null)
+            foreach (var grupo in GruposMenuLateral)
+                grupo.Revelar(ativo);
     }
 
-    /// <summary>Busca das abas Calculadoras e Tabelas; cada aba filtra os seus cartões.</summary>
+    /// <summary>Busca do menu lateral, que filtra as calculadoras e as tabelas.</summary>
     public string Busca
     {
         get => _busca;
@@ -188,7 +207,9 @@ public sealed class MainWindowViewModel : ViewModelBase
         {
             if (!SetProperty(ref _busca, value ?? string.Empty)) return;
             Calculadoras.Filtro = Tabelas.Filtro = _busca;
-            OnPropertyChanged(nameof(MostrarRecentes));
+            foreach (var grupo in GruposMenuLateral)
+                grupo.DefinirBusca(_busca.Length > 0);
+            OnPropertyChanged(nameof(MenuLateralSemResultado));
         }
     }
 
@@ -208,13 +229,15 @@ public sealed class MainWindowViewModel : ViewModelBase
     }
     public HistoricoViewModel Historico { get; }
 
-    /// <summary>Aba Histórico ativa: a lista é lida de novo cada vez que ela abre.</summary>
+    /// <summary>Tela do histórico aberta pelo menu: a lista é lida de novo cada vez que ela abre.</summary>
     public bool HistoricoAberto
     {
         get => _historicoAberto;
         set
         {
-            if (SetProperty(ref _historicoAberto, value) && value)
+            if (!SetProperty(ref _historicoAberto, value)) return;
+            AtalhoHistorico.Ativo = value;
+            if (value)
                 _ = Historico.CarregarAsync();
         }
     }

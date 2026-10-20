@@ -126,16 +126,24 @@ public sealed class HistoricoViewModel : ViewModelBase
         foreach (var item in _itens)
             item.PropertyChanged += (_, argumentos) => { if (argumentos.PropertyName == nameof(ItemHistoricoViewModel.Selecionado)) AtualizarComparacao(); };
         var tipos = _todos.Select(calculo => calculo.Calculadora).Distinct(StringComparer.CurrentCultureIgnoreCase).OrderBy(nome => nome).ToArray();
-        CalculadorasDisponiveis.Clear();
-        CalculadorasDisponiveis.Add("Todas as calculadoras");
-        foreach (var tipo in tipos)
-            CalculadorasDisponiveis.Add(tipo);
+        AtualizarCalculadorasDisponiveis(["Todas as calculadoras", .. tipos]);
         if (!CalculadorasDisponiveis.Contains(CalculadoraSelecionada))
             CalculadoraSelecionada = "Todas as calculadoras";
         Filtrar();
     }
 
-    /// <summary>Lê só os recentes, sem mexer na lista, nos filtros e nas seleções da aba Histórico.</summary>
+    // Ajusta a lista sem esvaziá-la: limpar e preencher de novo apagava a seleção do combo, que ficava em branco.
+    private void AtualizarCalculadorasDisponiveis(IReadOnlyList<string> desejadas)
+    {
+        for (var indice = CalculadorasDisponiveis.Count - 1; indice >= 0; indice--)
+            if (!desejadas.Contains(CalculadorasDisponiveis[indice]))
+                CalculadorasDisponiveis.RemoveAt(indice);
+        for (var indice = 0; indice < desejadas.Count; indice++)
+            if (indice >= CalculadorasDisponiveis.Count || CalculadorasDisponiveis[indice] != desejadas[indice])
+                CalculadorasDisponiveis.Insert(indice, desejadas[indice]);
+    }
+
+    /// <summary>Lê só os recentes, sem mexer na lista, nos filtros e nas seleções do histórico.</summary>
     public async Task AtualizarRecentesAsync() => MostrarRecentes(await _historico.ListarAsync(CancellationToken.None));
 
     private void MostrarRecentes(IReadOnlyList<CalculoSalvoDto> calculos)

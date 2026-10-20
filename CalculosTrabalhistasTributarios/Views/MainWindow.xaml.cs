@@ -57,6 +57,7 @@ public partial class MainWindow : Window
         };
         RotuloSecao.Text = chave.StartsWith("Tabela.", StringComparison.Ordinal) ? "Tabelas / " : "Calculadoras / ";
         _viewModel.DefinirAtivo(chave);
+        _viewModel.HistoricoAberto = false;
         Dashboard.Visibility = Visibility.Collapsed;
         ConteudoInterno.Visibility = Visibility.Visible;
         if (janela.DataContext is CalculadoraViewModel calculadora)
@@ -81,26 +82,18 @@ public partial class MainWindow : Window
     }
 
     private void Inicio_Click(object sender, RoutedEventArgs e) => MostrarInicio();
-    private void Tabelas_Click(object sender, RoutedEventArgs e)
-    {
-        if (MostrarInicio())
-        {
-            _viewModel.Busca = string.Empty;
-            AbaTabelas.IsChecked = true;
-        }
-    }
     private void Historico_Click(object sender, RoutedEventArgs e)
     {
-        if (MostrarInicio()) AbaHistorico.IsChecked = true;
+        if (MostrarInicio()) _viewModel.HistoricoAberto = true;
     }
 
     private bool MostrarInicio()
     {
         if (!LiberarConteudo()) return false;
         _viewModel.DefinirAtivo(null);
+        _viewModel.HistoricoAberto = false;
         ConteudoInterno.Visibility = Visibility.Collapsed;
         Dashboard.Visibility = Visibility.Visible;
-        AbaCalculadoras.IsChecked = true;
         return true;
     }
 
@@ -131,14 +124,8 @@ public partial class MainWindow : Window
             _viewModel.Busca = string.Empty;
             e.Handled = true;
         }
-        else if (ConteudoInterno.Visibility == Visibility.Visible)
+        else if (ConteudoInterno.Visibility == Visibility.Visible || _viewModel.HistoricoAberto)
             e.Handled = MostrarInicio();
-    }
-
-    private void LimparBusca_Click(object sender, RoutedEventArgs e)
-    {
-        _viewModel.Busca = string.Empty;
-        CampoBusca.Focus();
     }
 
     private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
