@@ -11,7 +11,7 @@ using System.Runtime.Versioning;
 
 namespace CalculosTrabalhistasTributarios.Presentation.ViewModels;
 
-/// <summary>Tela inicial: só os atalhos para as calculadoras e as tabelas; cada cálculo tem a sua janela.</summary>
+/// <summary>Atalhos e estado da navegação da janela principal.</summary>
 [SupportedOSPlatform("windows")]
 public sealed class MainWindowViewModel : ViewModelBase
 {
@@ -171,6 +171,14 @@ public sealed class MainWindowViewModel : ViewModelBase
     public PainelAtalhosViewModel Calculadoras { get; }
     public PainelAtalhosViewModel Tabelas { get; }
     public int QuantidadeCalculadoras => Calculadoras.Quantidade;
+
+    public void DefinirAtivo(string? chave)
+    {
+        foreach (var atalho in Calculadoras.Grupos.SelectMany(grupo => grupo.Todos))
+            atalho.Ativo = atalho.Chave == chave || (atalho.Chave == "Simulacao" && chave == "Calculadora.SimulacaoTributaria");
+        foreach (var atalho in Tabelas.Grupos.SelectMany(grupo => grupo.Todos))
+            atalho.Ativo = atalho.Chave == chave;
+    }
 
     /// <summary>Busca das abas Calculadoras e Tabelas; cada aba filtra os seus cartões.</summary>
     public string Busca

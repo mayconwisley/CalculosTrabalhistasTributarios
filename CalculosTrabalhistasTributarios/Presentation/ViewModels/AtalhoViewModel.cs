@@ -8,6 +8,7 @@ namespace CalculosTrabalhistasTributarios.Presentation.ViewModels;
 public sealed class AtalhoViewModel(string chave, string titulo, string descricao, ICommand abrir) : ViewModelBase
 {
     private bool _favorito;
+    private bool _ativo;
 
     public string Chave { get; } = chave;
     public string Titulo { get; } = titulo;
@@ -28,6 +29,8 @@ public sealed class AtalhoViewModel(string chave, string titulo, string descrica
                 OnPropertyChanged(nameof(DescricaoFavorito));
         }
     }
+
+    public bool Ativo { get => _ativo; internal set => SetProperty(ref _ativo, value); }
 
     /// <summary>Nome acessível e dica da estrela, que dizem o que o clique vai fazer.</summary>
     public string DescricaoFavorito => Favorito ? $"Remover {Titulo} das favoritas" : $"Marcar {Titulo} como favorita";

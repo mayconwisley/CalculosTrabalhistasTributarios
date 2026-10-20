@@ -17,19 +17,19 @@ public sealed class WpfWindowNavigator(
     IJornadaViewModelFactory jornadaViewModelFactory,
     IDebitoJudicialViewModelFactory debitoJudicialViewModelFactory) : IWindowNavigator
 {
-    public void AbrirTabela(TipoTabelaTributaria tipo) => Abrir(new TabelaManutencaoWindow(tabelaViewModelFactory.Criar(tipo)));
-    public void AbrirPensao() => Abrir(new PensaoWindow(pensaoViewModelFactory.Criar()));
-    public void AbrirPensaoAtraso() => Abrir(new PensaoAtrasoWindow(pensaoAtrasoViewModelFactory.Criar()));
-    public void AbrirEstabilidade() => Abrir(new EstabilidadeWindow(estabilidadeViewModelFactory.Criar()));
-    public void AbrirCalculadora(TipoCalculadora tipo) => Abrir(new CalculadoraWindow(CriarCalculadora(tipo)));
-    public void AbrirJornada() => Abrir(new JornadaWindow(jornadaViewModelFactory.Criar()));
-    public void AbrirDebitoJudicial() => Abrir(new DebitoJudicialWindow(debitoJudicialViewModelFactory.Criar()));
+    public void AbrirTabela(TipoTabelaTributaria tipo) => Abrir(new TabelaManutencaoWindow(tabelaViewModelFactory.Criar(tipo)), $"Tabela.{tipo}");
+    public void AbrirPensao() => Abrir(new PensaoWindow(pensaoViewModelFactory.Criar()), "Pensao");
+    public void AbrirPensaoAtraso() => Abrir(new PensaoAtrasoWindow(pensaoAtrasoViewModelFactory.Criar()), "PensaoAtraso");
+    public void AbrirEstabilidade() => Abrir(new EstabilidadeWindow(estabilidadeViewModelFactory.Criar()), "Estabilidade");
+    public void AbrirCalculadora(TipoCalculadora tipo) => Abrir(new CalculadoraWindow(CriarCalculadora(tipo)), $"Calculadora.{tipo}");
+    public void AbrirJornada() => Abrir(new JornadaWindow(jornadaViewModelFactory.Criar()), "Jornada");
+    public void AbrirDebitoJudicial() => Abrir(new DebitoJudicialWindow(debitoJudicialViewModelFactory.Criar()), "DebitoJudicial");
 
     public void AbrirCalculadora(TipoCalculadora tipo, IReadOnlyDictionary<string, string> valores)
     {
         var calculadora = CriarCalculadora(tipo);
         calculadora.ImportarCampos(valores);
-        Abrir(new CalculadoraWindow(calculadora));
+        Abrir(new CalculadoraWindow(calculadora), $"Calculadora.{tipo}");
     }
 
     private const string PrefixoCalculadora = "Calculadora.";
@@ -41,34 +41,34 @@ public sealed class WpfWindowNavigator(
             case "Pensao":
                 var pensao = pensaoViewModelFactory.Criar();
                 await pensao.Historico.CarregarAsync(salvo);
-                Abrir(new PensaoWindow(pensao));
+                Abrir(new PensaoWindow(pensao), "Pensao");
                 break;
             case "PensaoAtraso":
                 var atraso = pensaoAtrasoViewModelFactory.Criar();
                 await atraso.Historico.CarregarAsync(salvo);
-                Abrir(new PensaoAtrasoWindow(atraso));
+                Abrir(new PensaoAtrasoWindow(atraso), "PensaoAtraso");
                 break;
             case "Jornada":
                 var jornada = jornadaViewModelFactory.Criar();
                 await jornada.Historico.CarregarAsync(salvo);
-                Abrir(new JornadaWindow(jornada));
+                Abrir(new JornadaWindow(jornada), "Jornada");
                 break;
             case "DebitoJudicial":
                 var debito = debitoJudicialViewModelFactory.Criar();
                 await debito.Historico.CarregarAsync(salvo);
-                Abrir(new DebitoJudicialWindow(debito));
+                Abrir(new DebitoJudicialWindow(debito), "DebitoJudicial");
                 break;
             case "Estabilidade":
                 var estabilidade = estabilidadeViewModelFactory.Criar();
                 await estabilidade.Historico.CarregarAsync(salvo);
-                Abrir(new EstabilidadeWindow(estabilidade));
+                Abrir(new EstabilidadeWindow(estabilidade), "Estabilidade");
                 break;
             default:
                 if (!salvo.Tipo.StartsWith(PrefixoCalculadora, StringComparison.Ordinal) || !Enum.TryParse<TipoCalculadora>(salvo.Tipo[PrefixoCalculadora.Length..], out var tipo))
                     return Erro.NaoEncontrado($"O cálculo “{salvo.Nome}” é de uma calculadora que não existe nesta versão do aplicativo.");
                 var calculadora = CriarCalculadora(tipo);
                 await calculadora.Historico.CarregarAsync(salvo);
-                Abrir(new CalculadoraWindow(calculadora));
+                Abrir(new CalculadoraWindow(calculadora), $"Calculadora.{tipo}");
                 break;
         }
         return Result.Ok();
@@ -81,10 +81,13 @@ public sealed class WpfWindowNavigator(
         return calculadora;
     }
 
-    private static void Abrir(Window janela)
+    private static void Abrir(Window janela, string chave)
     {
-        // A janela aberta a partir de outra, como a calculadora aberta pela jornada, fica sobre ela.
         var aplicativo = System.Windows.Application.Current;
+        if (aplicativo.MainWindow is MainWindow principal && principal.Exibir(janela, chave))
+            return;
+        if (aplicativo.MainWindow is MainWindow)
+            return;
         janela.Owner = aplicativo.Windows.OfType<Window>().FirstOrDefault(aberta => aberta.IsActive) ?? aplicativo.MainWindow;
         janela.ShowDialog();
     }

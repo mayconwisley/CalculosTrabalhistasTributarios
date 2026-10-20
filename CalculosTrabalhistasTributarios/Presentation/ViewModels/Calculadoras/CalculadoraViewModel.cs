@@ -176,9 +176,9 @@ public sealed class CalculadoraViewModel : ViewModelBase, ICalculoSalvavel
 
     public bool TemAlteracoesNaoSalvas => _dadosSalvos is not null && !EquivalenciaFormulario.Equivalentes(_dadosSalvos, _calculadora.ExportarCampos());
 
-    /// <summary>Pede confirmação antes de fechar pelo Esc quando há dados que não estão no histórico.</summary>
+    /// <summary>Pede confirmação antes de sair da calculadora quando há dados que não estão no histórico.</summary>
     public bool ConfirmarFechamento() => !TemAlteracoesNaoSalvas ||
-        _notificador.Confirmar("Os dados deste formulário não foram salvos no histórico e serão perdidos ao fechar a janela.\n\nFechar mesmo assim?", "Fechar a calculadora");
+        _notificador.Confirmar("Os dados deste formulário não foram salvos no histórico e serão perdidos ao sair da calculadora.\n\nSair mesmo assim?", "Sair da calculadora");
 
     private void AoAlterarCampo(object? sender, PropertyChangedEventArgs argumentos)
     {

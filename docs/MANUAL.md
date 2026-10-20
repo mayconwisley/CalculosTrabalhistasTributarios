@@ -61,7 +61,7 @@ Ao atualizar uma instalação anterior, o instalador usa a pasta já instalada (
 
 ### Abrindo o aplicativo
 
-Abra **Cálculos Trabalhistas e Tributários** pelo Menu Iniciar ou pelo atalho da área de trabalho. A janela principal, **Central de cálculos**, mostra um cartão para cada calculadora e para cada tabela. A versão instalada aparece no rodapé da janela.
+Abra **Cálculos Trabalhistas e Tributários** pelo Menu Iniciar ou pelo atalho da área de trabalho. A janela principal reúne um menu lateral de calculadoras, a central com cartões, as tabelas e o histórico. Ao escolher uma calculadora, o formulário e o resultado aparecem na área central da mesma janela. A versão instalada aparece no rodapé da central.
 
 Na primeira execução, o aplicativo prepara o banco de dados local com as tabelas históricas de INSS e IRRF. Esse processo é automático e acontece uma única vez.
 
@@ -73,40 +73,25 @@ Para remover, use **Configurações do Windows > Aplicativos > Aplicativos insta
 
 ## 3. Conhecendo a tela principal
 
-![Tela principal com as áreas numeradas](imagens/01-tela-principal.png)
+![Janela principal com menu lateral e central de calculadoras](imagens/01-tela-principal.png)
 
-| Nº | Área | Para que serve |
-| --- | --- | --- |
-| 1 | Cabeçalho | Identifica a Central de cálculos. Ao lado ficam o seletor de **Tema** e o botão do manual. |
-| 2 | Manual do usuário | Abre este manual. Também pode ser aberto com a tecla **F1** em qualquer janela; numa calculadora, ele abre na seção dela. |
-| 3 | Calculadoras | Aba com as calculadoras, em cinco grupos: **Impostos e salário**, **Pensão e débitos judiciais**, **Remuneração e custos**, **Férias, 13º e desligamento** e **FGTS, afastamentos e benefícios**. |
-| 4 | Tabelas | Aba com as tabelas de INSS, IRRF, PLR, salário-família, salário mínimo, seguro-desemprego, os parâmetros usados nos cálculos e os índices INPC, IPCA, IPCA-E, taxa legal, Selic e TR. Veja a seção [Tabelas e parâmetros](#9-tabelas-e-parâmetros). |
-| 5 | Procurar | Busca pelo nome e pela descrição dos cartões da aba aberta, sem diferenciar maiúsculas e acentos. Atalho **Ctrl+F**; **Esc** ou **×** limpa a busca. |
-| 6 | Favoritas | Seção com os cartões marcados com a estrela, na ordem em que foram marcados. Só aparece quando há alguma favorita. |
-| 7 | Grupo | Título do grupo, que reúne os cartões de um mesmo assunto, com a quantidade de cartões exibidos. |
-| 8 | Cartão | Abre a calculadora em uma janela própria. Clique no cartão ou selecione-o com **Tab** e pressione **Enter**. |
-| 9 | Estrela | Marca o cartão como favorito, levando-o para a seção **Favoritas**; clicar de novo o devolve ao grupo. Pelo teclado, a estrela vem logo depois do cartão na ordem do **Tab**. |
-| 10 | Histórico | Aba com os cálculos salvos, para abrir, duplicar, renomear ou excluir. Veja a seção [Histórico de cálculos](#103-histórico-de-cálculos). |
+O **menu lateral** permanece visível durante o cálculo. Nele, as calculadoras aparecem por assunto e as favoritas ficam no alto. Use **Procurar calculadora** ou **Ctrl+F** para filtrar a lista; **Esc** limpa a busca quando ela está em foco. Os botões **Tabelas** e **Histórico** ficam no rodapé do menu. **Calculadoras**, no alto, volta à central de cartões.
 
-A tela principal só reúne os atalhos: cada cálculo, inclusive a simulação tributária, é feito na sua própria janela. Ao fechar a janela, você volta para a tela principal.
+Na **central**, os cartões continuam agrupados por assunto. Clique em um cartão ou selecione-o com **Tab** e pressione **Enter** para abrir o cálculo na área central da mesma janela. O seletor de tema e o botão **Manual do usuário** ficam no cabeçalho; **F1** abre a seção correspondente à calculadora atual.
+
+Ao trocar de calculadora ou voltar à central, o aplicativo confirma a saída se houver dados do formulário ainda não salvos no histórico. Os atalhos **Esc** e **Alt+F4** continuam disponíveis; **Esc** volta à central quando a calculadora está aberta.
 
 **Favoritas:** clique na estrela (☆) de um cartão para levá-lo à seção **Favoritas**, no alto da aba; a estrela fica preenchida (★). O cartão sai do grupo de origem, que mostra um aviso quando todos os seus cartões estão nas favoritas. Para desfazer, clique de novo na estrela. As favoritas valem para as abas **Calculadoras** e **Tabelas** e ficam gravadas neste computador, nas preferências do usuário, de uma abertura para outra.
 
 **Recentes:** no alto da aba **Calculadoras**, os cinco últimos cálculos salvos no histórico, do alterado mais recentemente para o mais antigo, com a calculadora e quando foram alterados. Clique em um para reabri-lo já calculado, como pelo botão **Abrir** do histórico; **Ver o histórico** abre a aba **Histórico**. A seção só aparece quando há cálculos salvos e fica oculta durante a busca.
 
-![Seção Recentes com dois cálculos salvos](imagens/97-recentes.png)
-
-**Procurar:** digite parte do nome ou da descrição, como `fgts`, `pensao` ou `13`. A busca não diferencia maiúsculas e acentos e, com várias palavras, mostra os cartões que têm todas. As favoritas e os grupos mostram só os cartões encontrados; um grupo sem resultado avisa **Nenhum cartão encontrado neste grupo**, e as colunas continuam no lugar. Na aba **Histórico**, a busca própria procura nos cálculos salvos.
-
-![Busca por "pensao" com uma favorita e o grupo Pensão e débitos judiciais](imagens/94-busca-calculadoras.png)
+**Procurar:** digite parte do nome ou da descrição, como `fgts`, `pensao` ou `13`. A busca lateral filtra as calculadoras e os cartões da central ao mesmo tempo, sem diferenciar maiúsculas e acentos. Com várias palavras, mostra os itens que têm todas. Na aba **Histórico**, a busca própria procura nos cálculos salvos.
 
 **Avisos ao abrir:** logo abaixo do cabeçalho, uma faixa avisa quando há uma versão nova publicada e quando as tabelas do ano ainda não foram cadastradas (a do INSS mais recente é de um ano anterior), com o botão **Abrir a tabela do INSS**. **Dispensar** esconde o aviso até a próxima abertura.
 
 **Atualizar agora:** baixa o instalador da nova versão direto do release do projeto no GitHub, confere se o arquivo é idêntico ao publicado (SHA-256) e o executa sem perguntas; o aplicativo fecha durante a instalação e abre de novo no fim. Antes de começar, o aplicativo pede confirmação: salve os cálculos abertos. Se o download falhar ou o arquivo não conferir, nada é instalado. **Ver novidades** abre a página do release com as mudanças. Quando o release não traz o instalador com o hash para conferência, o aviso mostra apenas **Baixar a nova versão**, que abre a página para baixar manualmente.
 
-![Aviso de versão nova na tela principal](imagens/73-aviso-nova-versao.png)
-
-**Rolagem nas calculadoras:** cada calculadora mostra o formulário no alto e o resultado logo abaixo. Quando o resultado não cabe na janela, a tela inteira rola, pela roda do mouse ou pela barra à direita, e o resultado aparece no seu tamanho, sem ficar espremido abaixo do formulário. Listas com barra própria, como a de beneficiários da pensão, rolam primeiro e, ao chegar ao fim, passam a rolagem para a tela.
+**Rolagem nas calculadoras:** cada calculadora mostra o formulário no alto e o resultado logo abaixo. Quando o resultado não cabe, a área central rola pela roda do mouse ou pela barra à direita, enquanto o menu lateral permanece no lugar. Listas com barra própria, como a de beneficiários da pensão, rolam primeiro e, ao chegar ao fim, passam a rolagem para a página.
 
 **Dados do último cálculo:** cada calculadora abre preenchida com a competência, o salário (ou valor bruto) e os dependentes do último cálculo feito em qualquer janela. Assim, depois de uma simulação tributária, a pensão alimentícia, as férias e as demais calculadoras já abrem com os mesmos valores. Cada calculadora aproveita só os dados que usa: o 13º salário, por exemplo, mantém a competência de dezembro, e a PLR aproveita apenas a competência. Esses dados ficam guardados enquanto o aplicativo estiver aberto.
 
@@ -125,7 +110,7 @@ Se algum dado estiver em formato inválido, o aplicativo exibe um aviso e não f
 
 ## 5. Simulação tributária
 
-Abra pelo cartão **Simulação tributária**, no grupo **Impostos e salário** da aba **Calculadoras**. Ela usa a mesma janela das demais calculadoras: os dados ficam no topo e o resultado logo abaixo, com **Preencher exemplo**, **Salvar no histórico**, **Gerar PDF** e **Gerar Excel**.
+Abra **Simulação tributária** no menu lateral ou pelo cartão do grupo **Impostos e salário** da central. Os dados ficam no topo da área central e o resultado logo abaixo, com **Preencher exemplo**, **Salvar no histórico**, **Gerar PDF** e **Gerar Excel**.
 
 ### 5.1 Preenchendo os dados
 
@@ -186,7 +171,7 @@ A simulação não considera pensão alimentícia, previdência complementar, ou
 
 ## 6. Pensão alimentícia e débitos judiciais
 
-Abra pelo cartão **Pensão alimentícia**, no grupo **Pensão e débitos judiciais** da aba **Calculadoras**. No mesmo grupo estão a [revisão de pensão](#64-revisão-de-pensão), a [pensão em atraso](#65-pensão-em-atraso) e os [débitos judiciais](#66-débitos-judiciais). A janela tem os próprios dados dos rendimentos, e não depende de uma simulação tributária feita antes. Se você acabou de fazer uma simulação, a competência, o valor bruto e os dependentes já vêm preenchidos com os dela.
+Abra **Pensão alimentícia** no menu lateral ou pelo cartão do grupo **Pensão e débitos judiciais** da central. No mesmo grupo estão a [revisão de pensão](#64-revisão-de-pensão), a [pensão em atraso](#65-pensão-em-atraso) e os [débitos judiciais](#66-débitos-judiciais). O formulário tem os próprios dados dos rendimentos e não depende de uma simulação tributária feita antes. Se você acabou de fazer uma simulação, a competência, o valor bruto e os dependentes já vêm preenchidos com os dela.
 
 ### 6.1 Calculando
 
@@ -405,7 +390,7 @@ O botão **Gerar PDF** cria um demonstrativo com as verbas, os dados considerado
 
 ## 8. Calculadoras trabalhistas
 
-Além da simulação tributária, da pensão, dos débitos judiciais, da estabilidade e da jornada pelo ponto, a aba **Calculadoras** reúne cálculos para o dia a dia do departamento pessoal e do imposto de renda. As calculadoras deste capítulo usam a mesma janela:
+Além da simulação tributária, da pensão, dos débitos judiciais, da estabilidade e da jornada pelo ponto, o menu lateral e a central reúnem cálculos para o dia a dia do departamento pessoal e do imposto de renda. As calculadoras deste capítulo usam o mesmo formato na área central:
 
 - **? e Preencher exemplo:** ao lado do título. O **?** (ou **F1**) abre este manual na seção da calculadora. **Preencher exemplo** substitui o formulário pelos dados fictícios do exemplo deste manual, depois de confirmar, e calcula: é uma forma de conhecer os campos antes de digitar o seu caso.
 - **Formulário:** os campos do cálculo. Passe o mouse sobre um campo para ver uma dica do que informar. Orientações essenciais também aparecem abaixo de alguns campos de rescisão, crédito e empréstimo. Ao abrir uma calculadora, a competência, o salário e os dependentes do último cálculo já vêm preenchidos. Alguns campos só aparecem quando a opção escolhida em outro campo exige.
@@ -425,7 +410,7 @@ Além da simulação tributária, da pensão, dos débitos judiciais, da estabil
 
 **Resultado desatualizado:** se você alterar o formulário depois de calcular, o resultado continua na tela com o aviso **O formulário mudou depois deste cálculo**. Use **Calcular** para atualizar a tela. Ao escolher **Gerar PDF** ou **Gerar Excel**, o aplicativo recalcula antes de salvar; se o novo cálculo falhar, não cria o arquivo com o resultado anterior. Ações que levam valores a outra calculadora ficam indisponíveis até o recálculo. Apenas passar pelo campo, que limpa o zero ou formata o número, não conta como alteração.
 
-**Atalhos:** **Ctrl+S** salva no histórico, **Ctrl+P** gera o PDF e **Ctrl+E** gera a planilha do Excel. **Esc** fecha a janela; se o formulário tiver dados que não estão no histórico, o aplicativo pergunta antes de fechar.
+**Atalhos:** **Ctrl+S** salva no histórico, **Ctrl+P** gera o PDF e **Ctrl+E** gera a planilha do Excel. **Esc** volta à central; se o formulário tiver dados que não estão no histórico, o aplicativo pergunta antes de sair.
 
 O INSS e o IRRF seguem as mesmas regras da simulação tributária, com as tabelas da competência informada: o IRRF aplica a modalidade mais vantajosa para o trabalhador (deduções legais ou desconto simplificado) e a redução mensal, quando prevista.
 
@@ -1593,7 +1578,7 @@ As tabelas definem as faixas e os valores usados em todos os cálculos. Elas já
 
 ![Aba Tabelas da tela principal](imagens/29-aba-tabelas.png)
 
-### 9.1 Conhecendo a janela de uma tabela
+### 9.1 Conhecendo a área de uma tabela
 
 ![Tabela INSS](imagens/10-tabela-inss.png)
 
@@ -1763,7 +1748,7 @@ No canto superior direito da tela principal, escolha o **Tema**:
 
 A escolha é salva automaticamente e restaurada na próxima abertura. As configurações ficam no arquivo `%LOCALAPPDATA%\CalculoIRRF\settings.json`.
 
-**Tamanho e posição das janelas:** cada calculadora, cada tabela, a tela principal e a comparação do histórico reabrem com o tamanho e a posição que tinham ao fechar, inclusive maximizadas. Se o monitor onde a janela estava não estiver mais conectado, ela abre na tela principal.
+**Tamanho e posição das janelas:** a janela principal e a comparação do histórico reabrem com o tamanho e a posição que tinham ao fechar, inclusive maximizadas. Se o monitor onde a janela estava não estiver mais conectado, ela abre na tela principal.
 
 **Escala do Windows:** com escala de 125% ou 150%, ou numa tela pequena, as janelas nunca ficam maiores que a área livre do monitor (sem a barra de tarefas): o tamanho mínimo é reduzido ao que cabe e a página da calculadora rola. As bordas e as linhas das grades são alinhadas aos pixels da tela, para ficarem nítidas também nas escalas fracionárias.
 
@@ -1868,8 +1853,8 @@ Use **Atualizar pela internet**, quando disponível, ou corrija os valores manua
 | **Enter** na pensão alimentícia | Executa **Calcular**, respeitando a opção **Exibir memória detalhada**. |
 | **Ctrl + S** nas calculadoras trabalhistas | Salva o formulário no histórico. |
 | **Ctrl + P** / **Ctrl + E** nas calculadoras trabalhistas | Recalcula se o formulário mudou e gera o PDF / a planilha do Excel. |
-| **Esc** nas calculadoras trabalhistas | Fecha a janela, perguntando antes se houver dados que não estão no histórico. Com uma lista aberta, só fecha a lista. |
-| **Alt + F4** | Fecha a janela atual. |
+| **Esc** nas calculadoras trabalhistas | Volta à central, perguntando antes se houver dados que não estão no histórico. Com uma lista aberta, só fecha a lista. |
+| **Alt + F4** | Fecha a janela principal. |
 
 ---
 
