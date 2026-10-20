@@ -14,7 +14,7 @@ public class ContratosEspeciaisTests
     public async Task Aprendiz_custa_fgts_de_2_por_cento()
     {
         var resultado = await new SimularCustoFuncionarioUseCase()
-            .ExecutarAsync(new SimularCustoFuncionarioRequest(1_000m, RegimeTributario.SimplesNacional, 2m, 1m, 0m, 0m, false, Aprendiz: true), default).Sucesso();
+            .ExecutarAsync(new SimularCustoFuncionarioRequest(1_000m, RegimeTributario.SimplesNacional, 2m, 1m, 0m, 0m, false, Aprendiz: true), TestContext.Current.CancellationToken).Sucesso();
 
         Assert.Equal(20m, Valor(resultado.Proventos, "FGTS do jovem aprendiz"));
         Assert.Equal(1_020m, resultado.Resultado);
@@ -29,7 +29,7 @@ public class ContratosEspeciaisTests
     {
         // 1.500,00 ÷ 30 x 10 = 500,00; com o auxílio de 200,00 e sem IRRF nessa faixa, líquido de 700,00.
         var resultado = await new SimularEstagioUseCase(await Ambiente.ConsultaAsync())
-            .ExecutarAsync(new SimularEstagioRequest(new DateOnly(2026, 9, 1), 1_500m, 200m, new DateOnly(2025, 10, 1), new DateOnly(2026, 9, 30), 10m, 0, DiasNoMes: 10), default).Sucesso();
+            .ExecutarAsync(new SimularEstagioRequest(new DateOnly(2026, 9, 1), 1_500m, 200m, new DateOnly(2025, 10, 1), new DateOnly(2026, 9, 30), 10m, 0, DiasNoMes: 10), TestContext.Current.CancellationToken).Sucesso();
 
         Assert.Equal(500m, Valor(resultado.Proventos, "Bolsa de estágio proporcional"));
         Assert.Equal("R$ 700,00", Texto.Normalizar(resultado.Destaques[0].Valor));
@@ -59,7 +59,7 @@ public class ContratosEspeciaisTests
     {
         // 40 h x 20,00 = 800,00; DSR 800,00 ÷ 5 x 1 = 160,00; férias e 13º de 960,00 ÷ 12 = 80,00; 1/3 = 26,67.
         var resultado = await new SimularIntermitenteUseCase(await Ambiente.ConsultaAsync())
-            .ExecutarAsync(new SimularIntermitenteRequest(new DateOnly(2026, 10, 1), 20m, 40m, 5, 1), default).Sucesso();
+            .ExecutarAsync(new SimularIntermitenteRequest(new DateOnly(2026, 10, 1), 20m, 40m, 5, 1), TestContext.Current.CancellationToken).Sucesso();
 
         Assert.Equal(160.00m, Valor(resultado.Proventos, "DSR"));
         Assert.Equal(26.67m, Valor(resultado.Proventos, "1/3"));

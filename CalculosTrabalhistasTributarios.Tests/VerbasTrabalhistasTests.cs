@@ -164,7 +164,7 @@ public class DecimoTerceiroTests
     public async Task Irrf_do_13o_e_descontado_mesmo_abaixo_de_dez_reais()
     {
         var resultado = await new SimularDecimoTerceiroUseCase(await Ambiente.ConsultaAsync())
-            .ExecutarAsync(new SimularDecimoTerceiroRequest(new DateOnly(2025, 12, 1), 3100m, 0m, 12, 0, AdiantamentoDecimoTerceiro.CinquentaPorCento, 0m), default).Sucesso();
+            .ExecutarAsync(new SimularDecimoTerceiroRequest(new DateOnly(2025, 12, 1), 3100m, 0m, 12, 0, AdiantamentoDecimoTerceiro.CinquentaPorCento, 0m), TestContext.Current.CancellationToken).Sucesso();
         Assert.Equal(4.80m, resultado.Descontos.Single(verba => verba.Descricao.StartsWith("IRRF")).Valor);
     }
 
@@ -172,7 +172,7 @@ public class DecimoTerceiroTests
     public async Task Avisa_quando_a_segunda_parcela_fica_negativa()
     {
         var resultado = await new SimularDecimoTerceiroUseCase(await Ambiente.ConsultaAsync())
-            .ExecutarAsync(new SimularDecimoTerceiroRequest(new DateOnly(2026, 12, 1), 8500m, 0m, 12, 0, AdiantamentoDecimoTerceiro.CinquentaPorCento, 0m, new RegraPensao(BasePensao.RendimentosBrutos, 50m, 0m)), default).Sucesso();
+            .ExecutarAsync(new SimularDecimoTerceiroRequest(new DateOnly(2026, 12, 1), 8500m, 0m, 12, 0, AdiantamentoDecimoTerceiro.CinquentaPorCento, 0m, new RegraPensao(BasePensao.RendimentosBrutos, 50m, 0m)), TestContext.Current.CancellationToken).Sucesso();
         Assert.StartsWith("A 2ª parcela ficou negativa", resultado.Observacoes[0]);
     }
 
@@ -223,12 +223,12 @@ public class FeriasTests
         var reaberto = new CalculosTrabalhistasTributarios.Presentation.ViewModels.Calculadoras.CalculadoraFerias(simulador);
         reaberto.ImportarCampos(formulario.ExportarCampos());
         Assert.Equal("20/01/2026", reaberto.ExportarCampos()["Início do gozo (opcional)"]);
-        Assert.Contains((await reaberto.CalcularAsync(default)).Sucesso().Memoria, item => item.Titulo == "Folha de 02/2026");
+        Assert.Contains((await reaberto.CalcularAsync(TestContext.Current.CancellationToken)).Sucesso().Memoria, item => item.Titulo == "Folha de 02/2026");
 
         var antigo = new CalculosTrabalhistasTributarios.Presentation.ViewModels.Calculadoras.CalculadoraFerias(simulador);
         antigo.ImportarCampos(new Dictionary<string, string> { ["Competência do pagamento"] = "10/2026", ["Salário"] = "3.000,00" });
         Assert.Equal("", antigo.ExportarCampos()["Início do gozo (opcional)"]);
-        Assert.DoesNotContain((await antigo.CalcularAsync(default)).Sucesso().Memoria, item => item.Titulo.StartsWith("Folha de "));
+        Assert.DoesNotContain((await antigo.CalcularAsync(TestContext.Current.CancellationToken)).Sucesso().Memoria, item => item.Titulo.StartsWith("Folha de "));
     }
 
     [Fact]
@@ -238,7 +238,7 @@ public class FeriasTests
         var gozo = new DateOnly(2026, 1, 5);
         var resultado = await new SimularFeriasUseCase(await Ambiente.ConsultaAsync())
             .ExecutarAsync(new SimularFeriasRequest(pagamento, 3000m, 0m, 0, 15, false, false, 0,
-                BaseSalarialForaFeriasNoMes: 1500m, InicioGozo: gozo), default).Sucesso();
+                BaseSalarialForaFeriasNoMes: 1500m, InicioGozo: gozo), TestContext.Current.CancellationToken).Sucesso();
 
         // Férias R$ 1.500 + terço R$ 500, ambos na folha de janeiro; IRRF permanece no mês do pagamento.
         var tabela2026 = new DateOnly(2026, 10, 1); // Mesmas faixas de INSS vigentes em janeiro.
@@ -256,7 +256,7 @@ public class FeriasTests
         var resultado = await new SimularFeriasUseCase(await Ambiente.ConsultaAsync())
             .ExecutarAsync(new SimularFeriasRequest(new DateOnly(2026, 1, 1), 3000m, 0m, 0, 20, false, false, 0,
                 BaseSalarialForaFeriasNoMes: 1800m, InicioGozo: new DateOnly(2026, 1, 20),
-                BaseForaFeriasMesSeguinte: 2200m), default).Sucesso();
+                BaseForaFeriasMesSeguinte: 2200m), TestContext.Current.CancellationToken).Sucesso();
 
         // Janeiro: 12 dias, férias R$ 1.200 + 1/3 R$ 400. Fevereiro: 8 dias, R$ 800 + R$ 266,67.
         var tabela2026 = new DateOnly(2026, 10, 1);
@@ -280,7 +280,7 @@ public class FeriasTests
     {
         var resultado = await new SimularFeriasUseCase(await Ambiente.ConsultaAsync())
             .ExecutarAsync(new SimularFeriasRequest(new DateOnly(2026, 1, 1), 3000m, 0m, 0, 30, false, false, 0,
-                InicioGozo: new DateOnly(2026, 1, 31)), default).Sucesso();
+                InicioGozo: new DateOnly(2026, 1, 31)), TestContext.Current.CancellationToken).Sucesso();
         Assert.Contains(resultado.Memoria, item => item.Titulo == "Folha de 01/2026");
         Assert.Contains(resultado.Memoria, item => item.Titulo == "Folha de 02/2026");
         Assert.Contains(resultado.Memoria, item => item.Titulo == "Folha de 03/2026");
@@ -293,9 +293,9 @@ public class FeriasTests
     {
         var caso = new SimularFeriasUseCase(await Ambiente.ConsultaAsync());
         Assert.True((await caso.ExecutarAsync(new SimularFeriasRequest(new DateOnly(2026, 1, 1), 3000m, 0m, 0, 15, false, false, 0,
-            BaseForaFeriasMesSeguinte: 100m), default)).Falhou);
+            BaseForaFeriasMesSeguinte: 100m), TestContext.Current.CancellationToken)).Falhou);
         Assert.True((await caso.ExecutarAsync(new SimularFeriasRequest(new DateOnly(2026, 1, 1), 3000m, 0m, 0, 15, false, false, 0,
-            InicioGozo: new DateOnly(2026, 1, 5), BaseForaFeriasMesSeguinte: 100m), default)).Falhou);
+            InicioGozo: new DateOnly(2026, 1, 5), BaseForaFeriasMesSeguinte: 100m), TestContext.Current.CancellationToken)).Falhou);
     }
 
     [Fact]
@@ -304,7 +304,7 @@ public class FeriasTests
         var competencia = new DateOnly(2026, 10, 1);
         var resultado = await new SimularFeriasUseCase(await Ambiente.ConsultaAsync())
             .ExecutarAsync(new SimularFeriasRequest(competencia, 6000m, 0m, 0, 15, false, false, 0,
-                BaseSalarialForaFeriasNoMes: 3000m), default).Sucesso();
+                BaseSalarialForaFeriasNoMes: 3000m), TestContext.Current.CancellationToken).Sucesso();
 
         // 15 dias: R$ 3.000 de férias + R$ 1.000 de terço; com R$ 3.000 de salário, base mensal R$ 7.000.
         var provisao = ModeloTributario.Calcular(competencia, 4000m, 0).Inss;
@@ -321,7 +321,7 @@ public class FeriasTests
     public async Task Concilia_ferias_sem_salario_fora_da_base_apenas_quando_informado()
     {
         var resultado = await new SimularFeriasUseCase(await Ambiente.ConsultaAsync())
-            .ExecutarAsync(new SimularFeriasRequest(new DateOnly(2026, 10, 1), 3000m, 0m, 0, 30, false, false, 0), default).Sucesso();
+            .ExecutarAsync(new SimularFeriasRequest(new DateOnly(2026, 10, 1), 3000m, 0m, 0, 30, false, false, 0), TestContext.Current.CancellationToken).Sucesso();
         Assert.DoesNotContain(resultado.Destaques, item => item.Rotulo == "INSS da folha do mês");
         Assert.Contains(resultado.Observacoes, texto => texto.Contains("confira o INSS da base reunida"));
     }
@@ -330,7 +330,7 @@ public class FeriasTests
     public async Task Previdencia_complementar_nas_ferias_deduzida_por_inteiro()
     {
         var resultado = await new SimularFeriasUseCase(await Ambiente.ConsultaAsync())
-            .ExecutarAsync(new SimularFeriasRequest(new DateOnly(2026, 10, 1), 6000m, 0m, 0, 0, false, false, 0, null, 600m), default).Sucesso();
+            .ExecutarAsync(new SimularFeriasRequest(new DateOnly(2026, 10, 1), 6000m, 0m, 0, 0, false, false, 0, null, 600m), TestContext.Current.CancellationToken).Sucesso();
 
         // Férias + 1/3 = 8.000,00; os 600,00 (7,5%) saem inteiros da base, sem o limite de 12% na fonte.
         var inss = ModeloTributario.Calcular(new DateOnly(2026, 10, 1), 8000m, 0).Inss;
@@ -346,9 +346,9 @@ public class FeriasTests
     {
         var consulta = await Ambiente.ConsultaAsync();
         await new SimularFeriasUseCase(consulta)
-            .ExecutarAsync(new SimularFeriasRequest(new DateOnly(2026, 10, 1), 3000m, 0m, 0, 0, false, false, 0, null, 5000m), default).Falha();
+            .ExecutarAsync(new SimularFeriasRequest(new DateOnly(2026, 10, 1), 3000m, 0m, 0, 0, false, false, 0, null, 5000m), TestContext.Current.CancellationToken).Falha();
         await new SimularFeriasUseCase(consulta)
-            .ExecutarAsync(new SimularFeriasRequest(new DateOnly(2026, 10, 1), 3000m, 0m, 0, 0, false, false, 0, null, -1m), default).Falha();
+            .ExecutarAsync(new SimularFeriasRequest(new DateOnly(2026, 10, 1), 3000m, 0m, 0, 0, false, false, 0, null, -1m), TestContext.Current.CancellationToken).Falha();
     }
 }
 
@@ -357,7 +357,7 @@ public class PlrTests
     [Fact]
     public async Task Imposto_ja_retido_no_ano_nao_e_confundido_com_faixa_isenta()
     {
-        var resultado = await new SimularPlrUseCase(await Ambiente.ConsultaAsync()).ExecutarAsync(new SimularPlrRequest(new DateOnly(2026, 10, 1), 1000m, 20_000m, 3000m), default).Sucesso();
+        var resultado = await new SimularPlrUseCase(await Ambiente.ConsultaAsync()).ExecutarAsync(new SimularPlrRequest(new DateOnly(2026, 10, 1), 1000m, 20_000m, 3000m), TestContext.Current.CancellationToken).Sucesso();
         Assert.Equal("O imposto do ano já foi retido nas parcelas anteriores", resultado.Destaques[1].Complemento);
     }
 
@@ -368,7 +368,7 @@ public class PlrTests
     [InlineData(20_000.00, 2333.20)]
     public async Task Usa_a_tabela_anual_da_plr(decimal valor, decimal imposto)
     {
-        var resultado = await new SimularPlrUseCase(await Ambiente.ConsultaAsync()).ExecutarAsync(new SimularPlrRequest(new DateOnly(2026, 10, 1), valor, 0m, 0m), default).Sucesso();
+        var resultado = await new SimularPlrUseCase(await Ambiente.ConsultaAsync()).ExecutarAsync(new SimularPlrRequest(new DateOnly(2026, 10, 1), valor, 0m, 0m), TestContext.Current.CancellationToken).Sucesso();
         Assert.Equal(imposto, resultado.Descontos.Sum(verba => verba.Valor));
     }
 }
@@ -378,7 +378,7 @@ public class CustoFuncionarioTests
     [Fact]
     public async Task Soma_encargos_e_provisoes_e_explica_o_rat_com_o_fap()
     {
-        var resultado = await new SimularCustoFuncionarioUseCase().ExecutarAsync(new SimularCustoFuncionarioRequest(3000m, RegimeTributario.LucroRealOuPresumido, 2m, 1.2345m, 5.8m, 0m, true), default).Sucesso();
+        var resultado = await new SimularCustoFuncionarioUseCase().ExecutarAsync(new SimularCustoFuncionarioRequest(3000m, RegimeTributario.LucroRealOuPresumido, 2m, 1.2345m, 5.8m, 0m, true), TestContext.Current.CancellationToken).Sucesso();
         var formulas = resultado.Memoria.SelectMany(grupo => grupo.Formulas).Select(formula => Texto.Normalizar(formula.Formula)).ToArray();
         Assert.Contains(formulas, formula => formula == "20% (patronal) + 2,469% (RAT 2% x FAP 1,2345) + 5,8% (terceiros) + 8% (FGTS) = 36,269%");
         Assert.Contains(formulas, formula => formula.EndsWith("= R$ 4.882,97"));
@@ -387,7 +387,7 @@ public class CustoFuncionarioTests
     [Fact]
     public async Task No_simples_so_entra_o_fgts()
     {
-        var resultado = await new SimularCustoFuncionarioUseCase().ExecutarAsync(new SimularCustoFuncionarioRequest(3000m, RegimeTributario.SimplesNacional, 2m, 1m, 0m, 0m, false), default).Sucesso();
+        var resultado = await new SimularCustoFuncionarioUseCase().ExecutarAsync(new SimularCustoFuncionarioRequest(3000m, RegimeTributario.SimplesNacional, 2m, 1m, 0m, 0m, false), TestContext.Current.CancellationToken).Sucesso();
         Assert.Contains(resultado.Memoria.SelectMany(grupo => grupo.Formulas), formula => formula.Formula == "8% (FGTS) = 8,00%");
     }
 }
@@ -400,7 +400,7 @@ public class SalarioFamiliaTests
     [InlineData(1900.00, 18, 81.05)]
     public async Task Cota_de_2026_ate_o_limite_proporcional_aos_dias(decimal remuneracao, int dias, decimal valor)
     {
-        var resultado = await new SimularSalarioFamiliaUseCase(await Ambiente.ConsultaAsync()).ExecutarAsync(new SimularSalarioFamiliaRequest(new DateOnly(2026, 10, 1), remuneracao, 2, dias), default).Sucesso();
+        var resultado = await new SimularSalarioFamiliaUseCase(await Ambiente.ConsultaAsync()).ExecutarAsync(new SimularSalarioFamiliaRequest(new DateOnly(2026, 10, 1), remuneracao, 2, dias), TestContext.Current.CancellationToken).Sucesso();
         Assert.Equal(valor, resultado.Proventos.Sum(verba => verba.Valor));
     }
 }

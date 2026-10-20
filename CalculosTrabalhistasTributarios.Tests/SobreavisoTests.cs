@@ -90,7 +90,7 @@ public class SobreavisoTests
     [Fact]
     public async Task Demonstrativo_separa_as_horas_e_soma_os_reflexos()
     {
-        var d = (await new SimularSobreavisoUseCase().ExecutarAsync(new SimularSobreavisoRequest(new EntradaSobreaviso(Meses(), 220m, true, Ativo)), default)).Sucesso();
+        var d = (await new SimularSobreavisoUseCase().ExecutarAsync(new SimularSobreavisoRequest(new EntradaSobreaviso(Meses(), 220m, true, Ativo)), TestContext.Current.CancellationToken)).Sucesso();
 
         Assert.Equal([("Horas de sobreaviso (1/3)", 800m), ("Horas de prontidão (2/3)", 240m)], d.Proventos.Take(2).Select(verba => (verba.Descricao, verba.Valor)));
         Assert.Equal(1432.75m, d.Resultado);

@@ -130,7 +130,7 @@ public class RraTests
     {
         var pagamento = Pagamento(new DateOnly(2026, 6, 1), [new(new DateOnly(ano, mes, 1), TipoParcelaRra.Mensal, 1_000m)], inssAno: ano == 2025 ? 100m : 0m);
 
-        var erro = (await new SimularRraUseCase(await Ambiente.ConsultaAsync()).ExecutarAsync(new SimularRraRequest(pagamento), default)).Falha();
+        var erro = (await new SimularRraUseCase(await Ambiente.ConsultaAsync()).ExecutarAsync(new SimularRraRequest(pagamento), TestContext.Current.CancellationToken)).Falha();
 
         Assert.Contains(trecho, erro.Mensagem);
     }
@@ -145,7 +145,7 @@ public class RraTests
             new(dezembro, TipoParcelaReajuste.Salario, 1_000m, 1_100m),
             new(dezembro, TipoParcelaReajuste.FeriasGozadas, 1_000m, 1_100m, 30),
             new(dezembro, TipoParcelaReajuste.DecimoTerceiro, 1_000m, 1_100m, 12)
-        ]), default)).Sucesso();
+        ]), TestContext.Current.CancellationToken)).Sucesso();
         var ferias = reajuste.Proventos.Single(verba => verba.Descricao.StartsWith("Férias")).Valor;
 
         var parcelas = Assert.IsAssignableFrom<IReadOnlyList<ParcelaRra>>(reajuste.ParcelasRra);

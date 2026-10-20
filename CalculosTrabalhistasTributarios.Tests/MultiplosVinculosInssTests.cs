@@ -151,7 +151,7 @@ public class MultiplosVinculosInssTests
         Assert.Equal(TipoVinculoInss.ContribuinteIndividual, campo.Ler().Sucesso()[1].Tipo);
         var salvo = calculadora.ExportarCampos();
         Assert.StartsWith("[", salvo["Vínculos em ordem de desconto"]);
-        Assert.True((await calculadora.CalcularAsync(default)).Sucesso().TotalDescontos > 0m);
+        Assert.True((await calculadora.CalcularAsync(TestContext.Current.CancellationToken)).Sucesso().TotalDescontos > 0m);
     }
 
     [Fact]
@@ -159,7 +159,7 @@ public class MultiplosVinculosInssTests
     {
         var request = new SimularMultiplosVinculosInssRequest(new DateOnly(2026, 10, 1),
             [new("A", TipoVinculoInss.Empregado, 3000m), new("B", TipoVinculoInss.ContribuinteIndividual, 2000m)]);
-        var resultado = (await new SimularMultiplosVinculosInssUseCase(await Ambiente.ConsultaAsync()).ExecutarAsync(request, default)).Sucesso();
+        var resultado = (await new SimularMultiplosVinculosInssUseCase(await Ambiente.ConsultaAsync()).ExecutarAsync(request, TestContext.Current.CancellationToken)).Sucesso();
 
         Assert.Equal(2, resultado.Descontos.Count);
         Assert.Equal(resultado.Descontos.Sum(item => item.Valor), resultado.TotalDescontos);

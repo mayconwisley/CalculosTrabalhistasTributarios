@@ -112,8 +112,8 @@ public class EmprestimoPessoalTests
         copia.ImportarCampos(dados.Campos);
         Assert.Equal(original.ExportarCampos(), copia.ExportarCampos());
         Assert.Equal(modo == "Informado pelo banco", copia.Campos.Single(c => c.Rotulo == "IOF informado (R$)").Visivel);
-        var a = await original.CalcularAsync(default).Sucesso();
-        var b = await copia.CalcularAsync(default).Sucesso();
+        var a = await original.CalcularAsync(TestContext.Current.CancellationToken).Sucesso();
+        var b = await copia.CalcularAsync(TestContext.Current.CancellationToken).Sucesso();
         Assert.Equal(a.Resultado, b.Resultado);
         Assert.Equal(a.Informativos, b.Informativos);
         Assert.Equal(a.Destaques, b.Destaques);

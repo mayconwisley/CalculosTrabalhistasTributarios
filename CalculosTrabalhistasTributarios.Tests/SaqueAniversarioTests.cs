@@ -14,7 +14,7 @@ public class SaqueAniversarioTests
     public async Task Componentes_do_extrato_sao_somados_e_multa_excluida()
     {
         // 3.000 livres + 6.000 bloqueados - 1.000 de multa incluída = base 8.000.
-        var dto = await new SimularSaqueAniversarioUseCase().ExecutarAsync(new(3000m, 4, 1800m, 6000m, 1000m), default).Sucesso();
+        var dto = await new SimularSaqueAniversarioUseCase().ExecutarAsync(new(3000m, 4, 1800m, 6000m, 1000m), TestContext.Current.CancellationToken).Sucesso();
         Assert.Equal(2250m, dto.TotalProventos);
         Assert.Equal(450m, dto.Resultado);
         Assert.Equal("R$ 5.750,00", dto.Destaques[1].Valor);
@@ -24,14 +24,14 @@ public class SaqueAniversarioTests
     [Fact]
     public async Task Saldo_integralmente_bloqueado_tambem_entra_na_base()
     {
-        var dto = await new SimularSaqueAniversarioUseCase().ExecutarAsync(new(0m, 4, 0m, 8000m), default).Sucesso();
+        var dto = await new SimularSaqueAniversarioUseCase().ExecutarAsync(new(0m, 4, 0m, 8000m), TestContext.Current.CancellationToken).Sucesso();
         Assert.Equal(2250m, dto.Resultado);
     }
 
     [Fact]
     public async Task Saldo_total_nao_soma_garantia_duplicada()
     {
-        var dto = await new SimularSaqueAniversarioUseCase().ExecutarAsync(new(9000m, 4, 1800m, 6000m, 1000m, true), default).Sucesso();
+        var dto = await new SimularSaqueAniversarioUseCase().ExecutarAsync(new(9000m, 4, 1800m, 6000m, 1000m, true), TestContext.Current.CancellationToken).Sucesso();
         Assert.Equal(2250m, dto.TotalProventos);
         Assert.Equal(450m, dto.Resultado);
     }
@@ -44,7 +44,7 @@ public class SaqueAniversarioTests
     [InlineData(1000000000000, 1000000000000, 0)]
     public async Task Componentes_invalidos_nao_geram_resultado(decimal saldo, decimal garantia, decimal multa)
     {
-        var resultado = await new SimularSaqueAniversarioUseCase().ExecutarAsync(new(saldo, 4, 0m, garantia, multa), default);
+        var resultado = await new SimularSaqueAniversarioUseCase().ExecutarAsync(new(saldo, 4, 0m, garantia, multa), TestContext.Current.CancellationToken);
         Assert.True(resultado.Falhou);
     }
 
@@ -62,7 +62,7 @@ public class SaqueAniversarioTests
         Assert.Equal(2250m, parcela.Valor);
         Assert.Equal(disponivel, parcela.Disponivel);
         var dto = await new SimularSaqueAniversarioUseCase()
-            .ExecutarAsync(new(8000m, 11, comprometida), default).Sucesso();
+            .ExecutarAsync(new(8000m, 11, comprometida), TestContext.Current.CancellationToken).Sucesso();
         Assert.Equal(2250m, dto.TotalProventos);
         Assert.Equal(comprometida, dto.TotalDescontos);
         Assert.Equal(disponivel, dto.Resultado);
@@ -106,14 +106,14 @@ public class SaqueAniversarioTests
         var dados = DadosFormulario.DeJson(new DadosFormulario(original.ExportarCampos()).ParaJson());
         reaberto.ImportarCampos(dados.Campos);
         Assert.Equal(original.ExportarCampos(), reaberto.ExportarCampos());
-        Assert.Equal(450m, (await reaberto.CalcularAsync(default)).Sucesso().Resultado);
+        Assert.Equal(450m, (await reaberto.CalcularAsync(TestContext.Current.CancellationToken)).Sucesso().Resultado);
 
         reaberto.ImportarCampos(new Dictionary<string, string>
         {
             ["Saldo do FGTS"] = "8.000,00",
             ["Mês de aniversário"] = "Novembro"
         });
-        Assert.Equal(2250m, (await reaberto.CalcularAsync(default)).Sucesso().Resultado);
+        Assert.Equal(2250m, (await reaberto.CalcularAsync(TestContext.Current.CancellationToken)).Sucesso().Resultado);
         Assert.Equal("0,00", reaberto.ExportarCampos()["Parcela ao banco (R$)"]);
         Assert.Equal("0,00", reaberto.ExportarCampos()["Garantia bloqueada (R$)"]);
         Assert.Equal("0,00", reaberto.ExportarCampos()["Multa incluída (R$)"]);

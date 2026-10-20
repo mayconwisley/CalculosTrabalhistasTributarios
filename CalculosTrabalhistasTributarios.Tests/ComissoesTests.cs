@@ -81,8 +81,7 @@ public class ComissoesTests
     [Fact]
     public async Task Simulacao_calcula_tributos_sobre_salario_comissoes_e_dsr()
     {
-        var resultado = (await new SimularComissoesUseCase(await Ambiente.ConsultaAsync()).ExecutarAsync(
-            new SimularComissoesRequest(Outubro2026, 3000m, 2600m, false, 1, 0, 0), default)).Sucesso();
+        var resultado = (await new SimularComissoesUseCase(await Ambiente.ConsultaAsync()).ExecutarAsync(new SimularComissoesRequest(Outubro2026, 3000m, 2600m, false, 1, 0, 0), TestContext.Current.CancellationToken)).Sucesso();
         var modelo = ModeloTributario.Calcular(Outubro2026, 6100m, 0);
         var semComissoes = ModeloTributario.Calcular(Outubro2026, 3000m, 0);
 
@@ -99,8 +98,7 @@ public class ComissoesTests
     [Fact]
     public async Task Comissionista_puro_recebe_complemento_ate_o_salario_minimo()
     {
-        var resultado = (await new SimularComissoesUseCase(await Ambiente.ConsultaAsync()).ExecutarAsync(
-            new SimularComissoesRequest(Outubro2026, 0m, 1000m, false, 0, 0, 0), default)).Sucesso();
+        var resultado = (await new SimularComissoesUseCase(await Ambiente.ConsultaAsync()).ExecutarAsync(new SimularComissoesRequest(Outubro2026, 0m, 1000m, false, 0, 0, 0), TestContext.Current.CancellationToken)).Sucesso();
 
         Assert.Equal(1000m, Valor(resultado.Proventos, "Comissões"));
         Assert.Equal(148.15m, Valor(resultado.Proventos, "DSR sobre comissões"));
@@ -117,9 +115,9 @@ public class ComissoesTests
         var simulador = new SimularComissoesUseCase(await Ambiente.ConsultaAsync());
         var pedido = new SimularComissoesRequest(Outubro2026, 0m, 1000m, false, 0, 0, 0, 10, 2);
 
-        Assert.True((await simulador.ExecutarAsync(pedido, default)).Falhou);
-        Assert.True((await simulador.ExecutarAsync(pedido with { DiasUteis = null, DiasDescanso = null, PisoGarantido = 1000m }, default)).Falhou);
-        Assert.True((await simulador.ExecutarAsync(pedido with { PisoGarantido = 1000m }, default)).Sucesso().TotalProventos > 1000m);
+        Assert.True((await simulador.ExecutarAsync(pedido, TestContext.Current.CancellationToken)).Falhou);
+        Assert.True((await simulador.ExecutarAsync(pedido with { DiasUteis = null, DiasDescanso = null, PisoGarantido = 1000m }, TestContext.Current.CancellationToken)).Falhou);
+        Assert.True((await simulador.ExecutarAsync(pedido with { PisoGarantido = 1000m }, TestContext.Current.CancellationToken)).Sucesso().TotalProventos > 1000m);
     }
 
     [Fact]
@@ -127,7 +125,7 @@ public class ComissoesTests
     {
         var pedido = new SimularHoleriteRequest(Outubro2026, 3000m, GrauInsalubridade.Nenhum, false, 0m,
             220m, 10m, 50m, 0m, 100m, 0m, 20m, 1, 0, 0, 0m, 0, 0, null, 0m, 0m, 0m, Comissoes: 2600m);
-        var resultado = (await new SimularHoleriteUseCase(await Ambiente.ConsultaAsync()).ExecutarAsync(pedido, default)).Sucesso();
+        var resultado = (await new SimularHoleriteUseCase(await Ambiente.ConsultaAsync()).ExecutarAsync(pedido, TestContext.Current.CancellationToken)).Sucesso();
 
         Assert.Equal(500m, Valor(resultado.Proventos, "DSR sobre comissões"));
         Assert.Contains(resultado.Proventos, verba => verba.Descricao.StartsWith("DSR sobre horas", StringComparison.Ordinal));
@@ -145,7 +143,7 @@ public class ComissoesTests
         var pedido = new SimularHoleriteRequest(Outubro2026, 3000m, GrauInsalubridade.Nenhum, false, 0m,
             220m, 0m, 50m, 0m, 100m, 0m, 20m, 1, 0, 0, 0m, 0, 0, null, 0m, 0m, 0m,
             Comissoes: 3100m, ComissoesIncluemDsr: true);
-        var resultado = (await new SimularHoleriteUseCase(await Ambiente.ConsultaAsync()).ExecutarAsync(pedido, default)).Sucesso();
+        var resultado = (await new SimularHoleriteUseCase(await Ambiente.ConsultaAsync()).ExecutarAsync(pedido, TestContext.Current.CancellationToken)).Sucesso();
 
         Assert.Equal(2600m, Valor(resultado.Proventos, "Comissões"));
         Assert.Equal(500m, Valor(resultado.Proventos, "DSR sobre comissões"));
@@ -158,14 +156,14 @@ public class ComissoesTests
         var pedido = new SimularHoleriteRequest(Outubro2026, 0m, GrauInsalubridade.Nenhum, false, 0m,
             220m, 0m, 50m, 0m, 100m, 0m, 20m, 0, 0, 0, 0m, 0, 0, null, 0m, 0m, 0m, Comissoes: 1000m);
         var simulador = new SimularHoleriteUseCase(await Ambiente.ConsultaAsync());
-        var resultado = (await simulador.ExecutarAsync(pedido, default)).Sucesso();
+        var resultado = (await simulador.ExecutarAsync(pedido, TestContext.Current.CancellationToken)).Sucesso();
 
         Assert.DoesNotContain(resultado.Proventos, verba => verba.Descricao == "Salário");
         Assert.Equal(1621m, resultado.TotalProventos);
         Assert.Equal(472.85m, Valor(resultado.Proventos, "Complemento da garantia mínima"));
-        Assert.True((await simulador.ExecutarAsync(pedido with { Comissoes = 0m }, default)).Falhou);
-        Assert.True((await simulador.ExecutarAsync(pedido with { Salario = -1m }, default)).Falhou);
-        Assert.True((await simulador.ExecutarAsync(pedido with { HorasFaixa1 = 2m }, default)).Falhou);
+        Assert.True((await simulador.ExecutarAsync(pedido with { Comissoes = 0m }, TestContext.Current.CancellationToken)).Falhou);
+        Assert.True((await simulador.ExecutarAsync(pedido with { Salario = -1m }, TestContext.Current.CancellationToken)).Falhou);
+        Assert.True((await simulador.ExecutarAsync(pedido with { HorasFaixa1 = 2m }, TestContext.Current.CancellationToken)).Falhou);
     }
 
     [Fact]
@@ -173,7 +171,7 @@ public class ComissoesTests
     {
         var pedido = new SimularHoleriteRequest(Outubro2026, 3000m, GrauInsalubridade.Nenhum, false, 0m,
             220m, 0m, 50m, 0m, 100m, 0m, 20m, 1, 1, 1, 0m, 0, 0, null, 0m, 0m, 0m, Comissoes: 2600m);
-        var resultado = (await new SimularHoleriteUseCase(await Ambiente.ConsultaAsync()).ExecutarAsync(pedido, default)).Sucesso();
+        var resultado = (await new SimularHoleriteUseCase(await Ambiente.ConsultaAsync()).ExecutarAsync(pedido, TestContext.Current.CancellationToken)).Sucesso();
 
         Assert.Equal(400m, Valor(resultado.Proventos, "DSR sobre comissões"));
         Assert.Equal(100m, Valor(resultado.Descontos, "DSR perdido"));

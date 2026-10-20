@@ -98,13 +98,13 @@ public class TransferenciaGorjetasTests
     [Fact]
     public async Task Demonstrativos_usam_a_mesma_apuracao()
     {
-        var t = (await new SimularTransferenciaUseCase().ExecutarAsync(new SimularTransferenciaRequest(new EntradaTransferencia(Transferencia(), 25m, Ativo, 1500m)), default)).Sucesso();
+        var t = (await new SimularTransferenciaUseCase().ExecutarAsync(new SimularTransferenciaRequest(new EntradaTransferencia(Transferencia(), 25m, Ativo, 1500m)), TestContext.Current.CancellationToken)).Sucesso();
         Assert.Equal(8069.44m, t.Resultado);
         Assert.Equal("Despesas da transferência (CLT, art. 470)", t.Proventos[^1].Descricao);
         Assert.Equal("R$ 4.000,00 x 25% x 15/30 dias = R$ 500,00", Texto.Normalizar(t.Memoria[0].Formulas[0].Formula));
 
         var meses = Enumerable.Range(5, 6).Select(mes => new MesGorjeta(new DateOnly(2026, mes, 1), 2000m)).ToArray();
-        var g = (await new SimularGorjetasUseCase().ExecutarAsync(new SimularGorjetasRequest(new EntradaGorjetas(meses, true, 20m, Ativo)), default)).Sucesso();
+        var g = (await new SimularGorjetasUseCase().ExecutarAsync(new SimularGorjetasRequest(new EntradaGorjetas(meses, true, 20m, Ativo)), TestContext.Current.CancellationToken)).Sucesso();
         Assert.Equal(11466.67m, g.Resultado);
         Assert.Equal([2400m, 917.33m], g.Informativos.Select(verba => verba.Valor));
         Assert.Equal("R$ 2.000,00 - 20% (R$ 400,00) = R$ 1.600,00", Texto.Normalizar(g.Memoria[0].Formulas[0].Formula));

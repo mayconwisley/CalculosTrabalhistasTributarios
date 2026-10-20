@@ -49,7 +49,7 @@ public class MediaSalariosTests
     public async Task Inpc_de_1994_da_tabela_de_indices()
     {
         // INPC de 07 a 12/1994 do IBGE: 7,75; 1,85; 1,40; 2,82; 2,96 e 1,70%. Produto: 1,198073; 1.000 x 1,198073 = 1.198,07.
-        var inpc = await (await Ambiente.IndicesAsync()).ObterAsync(IndiceEconomico.Inpc, default);
+        var inpc = await (await Ambiente.IndicesAsync()).ObterAsync(IndiceEconomico.Inpc, TestContext.Current.CancellationToken);
         var m = CalculadoraMediaSalarios.Calcular([new(Mes(1994, 7), Mes(1994, 7), 1000m)], new DateOnly(1995, 1, 10), inpc).Sucesso();
         Assert.Equal(1198.07m, m.Media);
     }
@@ -87,7 +87,7 @@ public class MediaSalariosTests
         var caso = new SimularAposentadoriaUseCase(await Ambiente.ConsultaAsync(), await Ambiente.IndicesAsync());
         var pedido = new SimularAposentadoriaRequest(SexoSegurado.Masculino, new DateOnly(1964, 3, 15), new DateOnly(2026, 10, 13), 396, 313, true, 0m, null,
             [new(Mes(2026, 6), Mes(2026, 8), 3000m)]);
-        var d = (await caso.ExecutarAsync(pedido, default)).Sucesso();
+        var d = (await caso.ExecutarAsync(pedido, TestContext.Current.CancellationToken)).Sucesso();
 
         Assert.Equal(("Média dos salários de contribuição", "R$ 2.991,60"), (d.Memoria[0].Titulo, Texto.Normalizar(d.Memoria[0].Destaque)));
         Assert.Equal("3 meses de R$ 3.000,00 x fatores de 0,998096 a 0,996800 = R$ 8.974,79", Texto.Normalizar(d.Memoria[0].Formulas[0].Formula));
@@ -95,7 +95,7 @@ public class MediaSalariosTests
         // 60% + 2 x 15 anos acima de 20 = 90% na idade progressiva: 2.991,60 x 90% = 2.692,44.
         Assert.Equal("R$ 2.692,44", Texto.Normalizar(d.Destaques[1].Valor));
 
-        var excesso = await caso.ExecutarAsync(pedido with { MesesContribuicao = 2 }, default);
+        var excesso = await caso.ExecutarAsync(pedido with { MesesContribuicao = 2 }, TestContext.Current.CancellationToken);
         Assert.Contains("mais que o tempo de contribuição informado", excesso.Erro.Mensagem);
     }
 
@@ -107,14 +107,14 @@ public class MediaSalariosTests
         var caso = new SimularPensaoMorteUseCase(await Ambiente.ConsultaAsync(), await Ambiente.IndicesAsync());
         var pedido = new SimularPensaoMorteRequest(new DateOnly(2026, 10, 13), SituacaoInstituidor.NaoAposentado, 0m, 0m, SexoSegurado.Masculino, 360,
             CausaObito.Comum, true, 40, true, 1, false, 0m, [new(Mes(2026, 6), Mes(2026, 8), 3000m)]);
-        var d = (await caso.ExecutarAsync(pedido, default)).Sucesso();
+        var d = (await caso.ExecutarAsync(pedido, TestContext.Current.CancellationToken)).Sucesso();
 
         Assert.Equal(("Média dos salários de contribuição", "R$ 2.991,60"), (d.Memoria[0].Titulo, Texto.Normalizar(d.Memoria[0].Destaque)));
         Assert.Equal(2393.28m, d.Informativos[0].Valor);
         Assert.Contains(d.Observacoes, texto => texto.Contains("09/2026 em diante"));
 
         // Do aposentado, a pensão parte da aposentadoria recebida e os salários são ignorados.
-        var aposentado = (await caso.ExecutarAsync(pedido with { Situacao = SituacaoInstituidor.Aposentado, ValorAposentadoria = 4000m }, default)).Sucesso();
+        var aposentado = (await caso.ExecutarAsync(pedido with { Situacao = SituacaoInstituidor.Aposentado, ValorAposentadoria = 4000m }, TestContext.Current.CancellationToken)).Sucesso();
         Assert.Equal(("Pensão por morte", 4000m), (aposentado.Memoria[0].Titulo, aposentado.Informativos[0].Valor));
     }
 }

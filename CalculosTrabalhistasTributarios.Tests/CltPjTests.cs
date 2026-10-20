@@ -75,7 +75,7 @@ public class CltPjTests
     [Fact]
     public async Task Custo_anual_do_funcionario_soma_13_salarios_e_um_terco()
     {
-        var resultado = await new SimularCustoFuncionarioUseCase().ExecutarAsync(new SimularCustoFuncionarioRequest(3000m, RegimeTributario.LucroRealOuPresumido, 2m, 1.2345m, 5.8m, 0m, true), default).Sucesso();
+        var resultado = await new SimularCustoFuncionarioUseCase().ExecutarAsync(new SimularCustoFuncionarioRequest(3000m, RegimeTributario.LucroRealOuPresumido, 2m, 1.2345m, 5.8m, 0m, true), TestContext.Current.CancellationToken).Sucesso();
         // 13,33 salários (40.000,00) com 36,269% de encargos, com o arredondamento das provisões.
         Assert.Equal("R$ 54.507,57", Texto.Normalizar(resultado.Destaques.Single(destaque => destaque.Rotulo == "Custo anual").Valor));
     }

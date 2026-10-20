@@ -28,7 +28,7 @@ public class CotacoesTrabalhoExteriorTests
     [Fact]
     public async Task Dolar_fiscal_usa_mes_do_recebimento_e_compra_da_Receita()
     {
-        var resultado = await Consulta().ConsultarAsync(new DateOnly(2026, 10, 6), "usd", default);
+        var resultado = await Consulta().ConsultarAsync(new DateOnly(2026, 10, 6), "usd", TestContext.Current.CancellationToken);
         Assert.True(resultado.Sucesso);
         Assert.Equal(5.1484m, resultado.Valor.DolarCompraFiscal);
         Assert.Equal(1m, resultado.Valor.DolaresPorUnidade);
@@ -37,7 +37,7 @@ public class CotacoesTrabalhoExteriorTests
     [Fact]
     public async Task Outra_moeda_usa_fechamentos_da_mesma_data_como_referencia()
     {
-        var resultado = await Consulta().ConsultarAsync(new DateOnly(2026, 10, 6), "EUR", default);
+        var resultado = await Consulta().ConsultarAsync(new DateOnly(2026, 10, 6), "EUR", TestContext.Current.CancellationToken);
         Assert.True(resultado.Sucesso);
         Assert.Equal(1.2m, resultado.Valor.DolaresPorUnidade);
         Assert.Equal(5.1484m, resultado.Valor.DolarCompraFiscal);
@@ -46,7 +46,7 @@ public class CotacoesTrabalhoExteriorTests
     [Fact]
     public async Task Sem_Ptax_mantem_apenas_dolar_fiscal_disponivel()
     {
-        var resultado = await Consulta(euro: "{\"value\":[]}").ConsultarAsync(new DateOnly(2026, 10, 6), "EUR", default);
+        var resultado = await Consulta(euro: "{\"value\":[]}").ConsultarAsync(new DateOnly(2026, 10, 6), "EUR", TestContext.Current.CancellationToken);
         Assert.True(resultado.Sucesso);
         Assert.Null(resultado.Valor.DolaresPorUnidade);
     }
@@ -54,7 +54,7 @@ public class CotacoesTrabalhoExteriorTests
     [Fact]
     public async Task Falha_na_fonte_Ptax_nao_descarta_cotacao_ja_lida_da_Receita()
     {
-        var resultado = await Consulta(euro: "{\"invalido\":true}").ConsultarAsync(new DateOnly(2026, 10, 6), "EUR", default);
+        var resultado = await Consulta(euro: "{\"invalido\":true}").ConsultarAsync(new DateOnly(2026, 10, 6), "EUR", TestContext.Current.CancellationToken);
         Assert.True(resultado.Sucesso);
         Assert.Equal(5.1484m, resultado.Valor.DolarCompraFiscal);
         Assert.Null(resultado.Valor.DolaresPorUnidade);
@@ -63,7 +63,7 @@ public class CotacoesTrabalhoExteriorTests
     [Fact]
     public async Task Mes_ainda_nao_publicado_nao_substitui_por_outra_competencia()
     {
-        var resultado = await Consulta().ConsultarAsync(new DateOnly(2026, 2, 6), "USD", default);
+        var resultado = await Consulta().ConsultarAsync(new DateOnly(2026, 2, 6), "USD", TestContext.Current.CancellationToken);
         Assert.True(resultado.Falhou);
         Assert.Contains("02/2026", resultado.Erro.Mensagem);
     }

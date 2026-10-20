@@ -27,7 +27,7 @@ public class AtualizacoesEDiagnosticoTests
     public async Task Avisa_da_versao_nova_e_das_tabelas_do_ano_sem_cadastro()
     {
         var avisos = await new VerificarAtualizacoesUseCase(new VersaoFixa(Versao170), new TabelaInss(new DateOnly(2026, 1, 1)))
-            .ExecutarAsync("1.6.1", consultarVersao: true, Hoje, default);
+            .ExecutarAsync("1.6.1", consultarVersao: true, Hoje, TestContext.Current.CancellationToken);
 
         Assert.Collection(avisos,
             tabelas => Assert.Equal(TipoAvisoAtualizacao.TabelasDesatualizadas, tabelas.Tipo),
@@ -44,7 +44,7 @@ public class AtualizacoesEDiagnosticoTests
     {
         var versoes = new VersaoFixa(Versao170);
         var avisos = await new VerificarAtualizacoesUseCase(versoes, new TabelaInss(new DateOnly(2027, 1, 1)))
-            .ExecutarAsync("1.6.1", consultarVersao: false, Hoje, default);
+            .ExecutarAsync("1.6.1", consultarVersao: false, Hoje, TestContext.Current.CancellationToken);
 
         Assert.Empty(avisos);
         Assert.Equal(0, versoes.Consultas);
@@ -54,7 +54,7 @@ public class AtualizacoesEDiagnosticoTests
     public async Task Github_fora_do_ar_nao_gera_aviso()
     {
         var avisos = await new VerificarAtualizacoesUseCase(new VersaoFixa(Erro.Indisponivel("fora do ar")), new TabelaInss(new DateOnly(2027, 1, 1)))
-            .ExecutarAsync("1.6.1", consultarVersao: true, Hoje, default);
+            .ExecutarAsync("1.6.1", consultarVersao: true, Hoje, TestContext.Current.CancellationToken);
 
         Assert.Empty(avisos);
     }

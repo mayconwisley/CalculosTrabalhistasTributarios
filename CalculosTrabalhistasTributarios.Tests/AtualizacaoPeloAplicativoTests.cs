@@ -21,7 +21,7 @@ public class AtualizacaoPeloAplicativoTests
     [Fact]
     public async Task Instalador_com_o_hash_publicado_e_entregue()
     {
-        var caminho = await Baixador().BaixarAsync(new VersaoPublicada("9.9.9", Pagina, Instalador, HashCorreto), null, default).Sucesso();
+        var caminho = await Baixador().BaixarAsync(new VersaoPublicada("9.9.9", Pagina, Instalador, HashCorreto), null, TestContext.Current.CancellationToken).Sucesso();
 
         Assert.Equal(Conteudo, File.ReadAllText(caminho));
         File.Delete(caminho);
@@ -30,7 +30,7 @@ public class AtualizacaoPeloAplicativoTests
     [Fact]
     public async Task Instalador_diferente_do_publicado_e_descartado()
     {
-        var erro = await Baixador().BaixarAsync(new VersaoPublicada("9.9.9", Pagina, Instalador, new string('0', 64)), null, default).Falha();
+        var erro = await Baixador().BaixarAsync(new VersaoPublicada("9.9.9", Pagina, Instalador, new string('0', 64)), null, TestContext.Current.CancellationToken).Falha();
 
         Assert.Contains("não confere", erro.Mensagem);
         Assert.False(File.Exists(Path.Combine(Path.GetTempPath(), "CalculosTrabalhistasTributarios", "CalculosTrabalhistasTributarios-9.9.9-setup.exe")));
@@ -41,7 +41,7 @@ public class AtualizacaoPeloAplicativoTests
     {
         var outroSite = new Uri("https://exemplo.com/CalculosTrabalhistasTributarios-9.9.9-setup.exe");
 
-        var erro = await Baixador().BaixarAsync(new VersaoPublicada("9.9.9", Pagina, outroSite, HashCorreto), null, default).Falha();
+        var erro = await Baixador().BaixarAsync(new VersaoPublicada("9.9.9", Pagina, outroSite, HashCorreto), null, TestContext.Current.CancellationToken).Falha();
 
         Assert.Contains("não é de um release", erro.Mensagem);
     }

@@ -30,7 +30,7 @@ public class PensaoAtrasoTests
     [InlineData("2024-09-30", "2024-12-03", 1.106753, 11.07)]
     public async Task Taxa_legal_e_proporcional_aos_dias_corridos_de_cada_mes(string vencimento, string calculo, decimal percentual, decimal juros)
     {
-        var resultado = await (await SimuladorAsync()).CalcularAsync(Uma(DateOnly.Parse(vencimento), DateOnly.Parse(calculo), JurosDeMora.TaxaLegal), default).Sucesso();
+        var resultado = await (await SimuladorAsync()).CalcularAsync(Uma(DateOnly.Parse(vencimento), DateOnly.Parse(calculo), JurosDeMora.TaxaLegal), TestContext.Current.CancellationToken).Sucesso();
         Assert.Equal(percentual, resultado.Parcelas[0].PercentualJuros);
         Assert.Equal(juros, resultado.Parcelas[0].Juros);
     }
@@ -38,7 +38,7 @@ public class PensaoAtrasoTests
     [Fact]
     public async Task Um_por_cento_vai_ate_29_de_agosto_de_2024_e_depois_vale_a_taxa_legal()
     {
-        var resultado = await (await SimuladorAsync()).CalcularAsync(Uma(new DateOnly(2024, 8, 10), new DateOnly(2024, 9, 10), JurosDeMora.UmPorCentoAteTaxaLegal), default).Sucesso();
+        var resultado = await (await SimuladorAsync()).CalcularAsync(Uma(new DateOnly(2024, 8, 10), new DateOnly(2024, 9, 10), JurosDeMora.UmPorCentoAteTaxaLegal), TestContext.Current.CancellationToken).Sucesso();
         // 19 dias a 1% ao mês (dias ÷ 30) + 2/31 da taxa de agosto (dias 30 e 31) + 10/30 da de setembro.
         var esperado = Math.Round(19m / 30m, 6) + Math.Round(0.605306m * 2m / 31m, 6) + Math.Round(0.676227m * 10m / 30m, 6);
         Assert.Equal(esperado, resultado.Parcelas[0].PercentualJuros);
@@ -47,7 +47,7 @@ public class PensaoAtrasoTests
     [Fact]
     public async Task Taxa_legal_avisa_quando_a_parcela_e_anterior_a_lei()
     {
-        var resultado = await (await SimuladorAsync()).CalcularAsync(Uma(new DateOnly(2024, 6, 10), new DateOnly(2024, 9, 10), JurosDeMora.TaxaLegal), default).Sucesso();
+        var resultado = await (await SimuladorAsync()).CalcularAsync(Uma(new DateOnly(2024, 6, 10), new DateOnly(2024, 9, 10), JurosDeMora.TaxaLegal), TestContext.Current.CancellationToken).Sucesso();
         Assert.Equal(Math.Round(0.605306m * 2m / 31m, 6) + Math.Round(0.676227m * 10m / 30m, 6), resultado.Parcelas[0].PercentualJuros);
         Assert.Contains(resultado.Observacoes, observacao => observacao.Contains("só existe desde 30/08/2024"));
     }
@@ -55,7 +55,7 @@ public class PensaoAtrasoTests
     [Fact]
     public async Task Mes_sem_taxa_legal_repete_a_ultima_com_aviso()
     {
-        var resultado = await (await SimuladorAsync()).CalcularAsync(Uma(new DateOnly(2026, 9, 10), new DateOnly(2026, 11, 15), JurosDeMora.TaxaLegal), default).Sucesso();
+        var resultado = await (await SimuladorAsync()).CalcularAsync(Uma(new DateOnly(2026, 9, 10), new DateOnly(2026, 11, 15), JurosDeMora.TaxaLegal), TestContext.Current.CancellationToken).Sucesso();
         var esperado = Math.Round(1.499119m * 20m / 30m, 6) + 0.37902m + Math.Round(0.37902m * 15m / 30m, 6);
         Assert.Equal(esperado, resultado.Parcelas[0].PercentualJuros);
         Assert.Contains(resultado.Observacoes, observacao => observacao.Contains("11/2026 ainda não está na tabela"));
@@ -66,8 +66,8 @@ public class PensaoAtrasoTests
     {
         var simulador = await SimuladorAsync();
         var calculo = new DateOnly(2026, 10, 3);
-        var parcelas = await simulador.GerarParcelasAsync(new GerarParcelasAtrasoRequest(BasePensao.ValorFixo, 1000m, 0m, new DateOnly(2024, 1, 1), new DateOnly(2026, 9, 1), 10), default).Sucesso();
-        var resultado = await simulador.CalcularAsync(new SimularPensaoAtrasoRequest(parcelas, calculo, null, CorrecaoMonetaria.Inpc, JurosDeMora.UmPorCentoAteTaxaLegal), default).Sucesso();
+        var parcelas = await simulador.GerarParcelasAsync(new GerarParcelasAtrasoRequest(BasePensao.ValorFixo, 1000m, 0m, new DateOnly(2024, 1, 1), new DateOnly(2026, 9, 1), 10), TestContext.Current.CancellationToken).Sucesso();
+        var resultado = await simulador.CalcularAsync(new SimularPensaoAtrasoRequest(parcelas, calculo, null, CorrecaoMonetaria.Inpc, JurosDeMora.UmPorCentoAteTaxaLegal), TestContext.Current.CancellationToken).Sucesso();
 
         Assert.Equal(33, resultado.Parcelas.Count);
         foreach (var parcela in resultado.Parcelas)
@@ -91,8 +91,8 @@ public class PensaoAtrasoTests
     public async Task Ritos_separam_as_tres_ultimas_parcelas_anteriores_ao_ajuizamento_e_as_seguintes()
     {
         var simulador = await SimuladorAsync();
-        var parcelas = await simulador.GerarParcelasAsync(new GerarParcelasAtrasoRequest(BasePensao.ValorFixo, 1000m, 0m, new DateOnly(2026, 1, 1), new DateOnly(2026, 9, 1), 10), default).Sucesso();
-        var resultado = await simulador.CalcularAsync(new SimularPensaoAtrasoRequest(parcelas, new DateOnly(2026, 10, 3), new DateOnly(2026, 5, 20), CorrecaoMonetaria.Nenhuma, JurosDeMora.Nenhum), default).Sucesso();
+        var parcelas = await simulador.GerarParcelasAsync(new GerarParcelasAtrasoRequest(BasePensao.ValorFixo, 1000m, 0m, new DateOnly(2026, 1, 1), new DateOnly(2026, 9, 1), 10), TestContext.Current.CancellationToken).Sucesso();
+        var resultado = await simulador.CalcularAsync(new SimularPensaoAtrasoRequest(parcelas, new DateOnly(2026, 10, 3), new DateOnly(2026, 5, 20), CorrecaoMonetaria.Nenhuma, JurosDeMora.Nenhum), TestContext.Current.CancellationToken).Sucesso();
         Assert.Equal(["03/2026", "04/2026", "05/2026", "06/2026", "07/2026", "08/2026", "09/2026"],
             resultado.Parcelas.Where(parcela => parcela.RitoPrisao).Select(parcela => parcela.Competencia.ToString("MM/yyyy")));
     }
@@ -105,8 +105,8 @@ public class PensaoAtrasoTests
     {
         // 7 parcelas de 1.000,00 sem correção nem juros: as 3 últimas são do rito da prisão e as 4 primeiras, da penhora.
         var simulador = await SimuladorAsync();
-        var parcelas = await simulador.GerarParcelasAsync(new GerarParcelasAtrasoRequest(BasePensao.ValorFixo, 1000m, 0m, new DateOnly(2026, 3, 1), new DateOnly(2026, 9, 1), 10), default).Sucesso();
-        var resultado = await simulador.CalcularAsync(new SimularPensaoAtrasoRequest(parcelas, new DateOnly(2026, 10, 3), null, CorrecaoMonetaria.Nenhuma, JurosDeMora.Nenhum, acrescimos), default).Sucesso();
+        var parcelas = await simulador.GerarParcelasAsync(new GerarParcelasAtrasoRequest(BasePensao.ValorFixo, 1000m, 0m, new DateOnly(2026, 3, 1), new DateOnly(2026, 9, 1), 10), TestContext.Current.CancellationToken).Sucesso();
+        var resultado = await simulador.CalcularAsync(new SimularPensaoAtrasoRequest(parcelas, new DateOnly(2026, 10, 3), null, CorrecaoMonetaria.Nenhuma, JurosDeMora.Nenhum, acrescimos), TestContext.Current.CancellationToken).Sucesso();
 
         Assert.Equal(4000m, resultado.TotalPenhora);
         Assert.Equal(multa, resultado.Multa);
@@ -119,8 +119,8 @@ public class PensaoAtrasoTests
     public async Task Sem_debito_na_penhora_a_multa_fica_em_zero_com_aviso()
     {
         var simulador = await SimuladorAsync();
-        var parcelas = await simulador.GerarParcelasAsync(new GerarParcelasAtrasoRequest(BasePensao.ValorFixo, 1000m, 0m, new DateOnly(2026, 7, 1), new DateOnly(2026, 9, 1), 10), default).Sucesso();
-        var resultado = await simulador.CalcularAsync(new SimularPensaoAtrasoRequest(parcelas, new DateOnly(2026, 10, 3), null, CorrecaoMonetaria.Nenhuma, JurosDeMora.Nenhum, AcrescimosPenhora.MultaEHonorarios), default).Sucesso();
+        var parcelas = await simulador.GerarParcelasAsync(new GerarParcelasAtrasoRequest(BasePensao.ValorFixo, 1000m, 0m, new DateOnly(2026, 7, 1), new DateOnly(2026, 9, 1), 10), TestContext.Current.CancellationToken).Sucesso();
+        var resultado = await simulador.CalcularAsync(new SimularPensaoAtrasoRequest(parcelas, new DateOnly(2026, 10, 3), null, CorrecaoMonetaria.Nenhuma, JurosDeMora.Nenhum, AcrescimosPenhora.MultaEHonorarios), TestContext.Current.CancellationToken).Sucesso();
 
         Assert.False(resultado.TemAcrescimos);
         Assert.Contains(resultado.Observacoes, observacao => observacao.Contains("não se aplicam ao rito da prisão"));
@@ -129,7 +129,7 @@ public class PensaoAtrasoTests
     [Fact]
     public async Task Gera_parcelas_pelo_salario_minimo_de_cada_mes_desde_2015()
     {
-        var parcelas = await (await SimuladorAsync()).GerarParcelasAsync(new GerarParcelasAtrasoRequest(BasePensao.SalarioMinimo, 0m, 150m, new DateOnly(2015, 12, 1), new DateOnly(2016, 2, 1), 31), default).Sucesso();
+        var parcelas = await (await SimuladorAsync()).GerarParcelasAsync(new GerarParcelasAtrasoRequest(BasePensao.SalarioMinimo, 0m, 150m, new DateOnly(2015, 12, 1), new DateOnly(2016, 2, 1), 31), TestContext.Current.CancellationToken).Sucesso();
         Assert.Equal([1182.00m, 1320.00m, 1320.00m], parcelas.Select(parcela => parcela.Devido));
         Assert.Equal(new DateOnly(2016, 2, 29), parcelas[2].Vencimento);
     }

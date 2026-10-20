@@ -69,7 +69,7 @@ public class AtualizacaoMonetariaTests
     {
         // IPCA de 01 a 12/2025: fator 1,042644. Juros de 1% x 12 meses e multa de 2% sobre 1.042,64.
         var resultado = await new SimularCorrecaoValorUseCase(await Ambiente.IndicesAsync())
-            .ExecutarAsync(new SimularCorrecaoValorRequest(1_000m, new DateOnly(2025, 1, 1), new DateOnly(2026, 1, 1), IndiceEconomico.Ipca, 1m, 2m), default).Sucesso();
+            .ExecutarAsync(new SimularCorrecaoValorRequest(1_000m, new DateOnly(2025, 1, 1), new DateOnly(2026, 1, 1), IndiceEconomico.Ipca, 1m, 2m), TestContext.Current.CancellationToken).Sucesso();
 
         Assert.Equal(42.64m, Verba(resultado, "Correção"));
         Assert.Equal(125.12m, Verba(resultado, "Juros"));
@@ -88,7 +88,7 @@ public class AtualizacaoMonetariaTests
     public async Task Correcao_exige_mes_final_posterior()
     {
         var erro = await new SimularCorrecaoValorUseCase(await Ambiente.IndicesAsync())
-            .ExecutarAsync(new SimularCorrecaoValorRequest(1_000m, new DateOnly(2025, 1, 1), new DateOnly(2025, 1, 1), IndiceEconomico.Ipca, 0m, 0m), default).Falha();
+            .ExecutarAsync(new SimularCorrecaoValorRequest(1_000m, new DateOnly(2025, 1, 1), new DateOnly(2025, 1, 1), IndiceEconomico.Ipca, 0m, 0m), TestContext.Current.CancellationToken).Falha();
 
         Assert.Equal(TipoErro.Validacao, erro.Tipo);
     }

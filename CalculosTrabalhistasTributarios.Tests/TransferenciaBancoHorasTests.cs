@@ -32,7 +32,7 @@ public class TransferenciaBancoHorasTests
         var request = new SimularHoleriteRequest(new DateOnly(2026, 10, 1), 2200m, GrauInsalubridade.Nenhum,
             false, 0m, 220m, 0m, 50m, 0m, 100m, 0m, 20m, 0, 0, 0, 0m, 0, 0,
             null, 0m, 0m, 0m, QuitacaoBancoHoras: quitacao);
-        var resultado = (await new SimularHoleriteUseCase(await Ambiente.ConsultaAsync()).ExecutarAsync(request, default)).Sucesso();
+        var resultado = (await new SimularHoleriteUseCase(await Ambiente.ConsultaAsync()).ExecutarAsync(request, TestContext.Current.CancellationToken)).Sucesso();
         var parcelas = resultado.Proventos.Where(p => p.Descricao.StartsWith("Quitação do banco de horas")).ToArray();
         Assert.Equal([("0:30", 7.50m), ("1:00", 20m)], parcelas.Select(p => (p.Referencia, p.Valor)));
         Assert.Equal(2227.50m, resultado.Informativos.Single(p => p.Descricao == "Base do INSS e do FGTS").Valor);
@@ -52,8 +52,8 @@ public class TransferenciaBancoHorasTests
             MotivoRescisao.PedidoDeDemissao, CumprimentoAvisoPrevio.TrabalhadoOuDispensado,
             2200m, 0m, 0, 0, 0m, 0m, 0, QuitacaoBancoHoras: quitacao);
         var simulador = new SimularRescisaoUseCase(await Ambiente.ConsultaAsync());
-        var comQuitacao = (await simulador.ExecutarAsync(request, default)).Sucesso();
-        var semQuitacao = (await simulador.ExecutarAsync(request with { QuitacaoBancoHoras = null }, default)).Sucesso();
+        var comQuitacao = (await simulador.ExecutarAsync(request, TestContext.Current.CancellationToken)).Sucesso();
+        var semQuitacao = (await simulador.ExecutarAsync(request with { QuitacaoBancoHoras = null }, TestContext.Current.CancellationToken)).Sucesso();
         Assert.Equal([7.50m, 20m], comQuitacao.Proventos.Where(p => p.Descricao.StartsWith("Quitação do banco de horas")).Select(p => p.Valor));
         Assert.Equal(27.50m, comQuitacao.TotalProventos - semQuitacao.TotalProventos);
         Assert.Equal(2.20m, comQuitacao.Informativos.Single(p => p.Descricao.StartsWith("Depósito do FGTS")).Valor
@@ -73,10 +73,10 @@ public class TransferenciaBancoHorasTests
         Assert.Equal("10/2026", campos["Competência"]);
         Assert.Equal("2.200,00", campos["Salário"]);
         Assert.Equal("220,00", campos["Divisor de horas"]);
-        Assert.Contains("Confira as incidências", (await holerite.CalcularAsync(default)).Falha().Mensagem);
+        Assert.Contains("Confira as incidências", (await holerite.CalcularAsync(TestContext.Current.CancellationToken)).Falha().Mensagem);
 
         holerite.Campos.OfType<CampoQuitacaoBancoHorasViewModel>().Single().Confirmado = true;
-        var resultado = (await holerite.CalcularAsync(default)).Sucesso();
+        var resultado = (await holerite.CalcularAsync(TestContext.Current.CancellationToken)).Sucesso();
         Assert.Equal([("Quitação do banco de horas (50%)", 7.50m), ("Quitação do banco de horas (100%)", 20m)],
             resultado.Proventos.Where(p => p.Descricao.StartsWith("Quitação do banco de horas")).Select(p => (p.Descricao, p.Valor)));
         Assert.Contains(resultado.Memoria, grupo => grupo.Titulo == "Quitação do banco de horas");
@@ -92,7 +92,7 @@ public class TransferenciaBancoHorasTests
         Assert.Equal("31/10/2026", rescisao.ExportarCampos()["Data de desligamento"]);
 
         rescisao.Campos.OfType<CampoQuitacaoBancoHorasViewModel>().Single().Confirmado = true;
-        var resultado = (await rescisao.CalcularAsync(default)).Sucesso();
+        var resultado = (await rescisao.CalcularAsync(TestContext.Current.CancellationToken)).Sucesso();
         Assert.Equal([7.50m, 20m], resultado.Proventos.Where(p => p.Descricao.StartsWith("Quitação do banco de horas")).Select(p => p.Valor));
     }
 

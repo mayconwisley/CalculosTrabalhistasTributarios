@@ -46,7 +46,7 @@ public sealed class AtualizacaoTabelasTests : IDisposable
     public async Task Debit_le_a_tabela_mais_recente_do_historico()
     {
         using var cliente = PaginasFixas.Cliente(("www.debit.com.br", PaginaDebit(2026, Faixas2026) + PaginaDebit(2025, [new(2_138.76m, 80m, 0m), new(3_564.96m, 50m, 1_711.01m), new(AcimaDe, 0m, 2_424.11m)])));
-        var tabela = await new FonteSeguroDesempregoDebit().ObterAsync(cliente, default);
+        var tabela = await new FonteSeguroDesempregoDebit().ObterAsync(cliente, TestContext.Current.CancellationToken);
 
         tabela.Validar();
         Assert.Equal(new DateOnly(2026, 1, 1), tabela.Competencia);
@@ -57,7 +57,7 @@ public sealed class AtualizacaoTabelasTests : IDisposable
     public async Task Idinheiro_le_o_ano_mais_recente_com_os_mesmos_valores_do_debit()
     {
         using var cliente = PaginasFixas.Cliente(("www.idinheiro.com.br", PaginaIdinheiro(2025, 2_313.74m) + PaginaIdinheiro(2026, 2_518.65m)));
-        var tabela = await new FonteSeguroDesempregoIdinheiro().ObterAsync(cliente, default);
+        var tabela = await new FonteSeguroDesempregoIdinheiro().ObterAsync(cliente, TestContext.Current.CancellationToken);
 
         tabela.Validar();
         Assert.Equal(new DateOnly(2026, 1, 1), tabela.Competencia);
@@ -68,7 +68,7 @@ public sealed class AtualizacaoTabelasTests : IDisposable
     public async Task Ministerio_do_trabalho_le_a_vigencia_abaixo_da_tabela()
     {
         using var cliente = PaginasFixas.Cliente(("www.gov.br", PaginaMinisterio));
-        var tabela = await new FonteSeguroDesempregoGovBr().ObterAsync(cliente, default);
+        var tabela = await new FonteSeguroDesempregoGovBr().ObterAsync(cliente, TestContext.Current.CancellationToken);
 
         tabela.Validar();
         Assert.Equal(new DateOnly(2024, 1, 1), tabela.Competencia);
@@ -92,7 +92,7 @@ public sealed class AtualizacaoTabelasTests : IDisposable
             () => PaginasFixas.Cliente(("www.gov.br", PaginaMinisterio), ("www.debit.com.br", PaginaDebit(2027, Faixas2027)), ("www.idinheiro.com.br", PaginaIdinheiro(2027, Faixas2027))),
             [new FonteSeguroDesempregoGovBr(), new FonteSeguroDesempregoDebit(), new FonteSeguroDesempregoIdinheiro()], banco, _cache);
 
-        var resultado = await atualizador.AtualizarAsync(default);
+        var resultado = await atualizador.AtualizarAsync(TestContext.Current.CancellationToken);
 
         Assert.Equal(new DateOnly(2027, 1, 1), resultado.Competencia);
         Assert.False(resultado.Oficial);
@@ -106,7 +106,7 @@ public sealed class AtualizacaoTabelasTests : IDisposable
     public async Task Planalto_le_o_art_67_em_vigor_e_o_inicio_dos_efeitos_da_lei()
     {
         using var cliente = PaginasFixas.ClienteLatin1("www.planalto.gov.br", PaginaLei(RedacaoRevogada + Artigo67("R$ 10,00 (dez reais)")));
-        var publicado = await new FonteDescontoMinimoPlanalto().ObterAsync(cliente, default);
+        var publicado = await new FonteDescontoMinimoPlanalto().ObterAsync(cliente, TestContext.Current.CancellationToken);
 
         Assert.Equal(new DescontoMinimoPublicado(new DateOnly(1997, 1, 1), 10m, "art. 67 da Lei 9.430/1996"), publicado);
     }
@@ -118,7 +118,7 @@ public sealed class AtualizacaoTabelasTests : IDisposable
         // a leitura da página sem o charset: lida como UTF-8, ela viraria "Reda��o" e a alteração passaria despercebida.
         using var cliente = PaginasFixas.ClienteLatin1("www.planalto.gov.br", PaginaLei(Artigo67("R$ 20,00 (vinte reais)", " (Redação dada pela Lei nº 15.999, de 2027)")));
 
-        var erro = await Assert.ThrowsAsync<InvalidOperationException>(() => new FonteDescontoMinimoPlanalto().ObterAsync(cliente, default));
+        var erro = await Assert.ThrowsAsync<InvalidOperationException>(() => new FonteDescontoMinimoPlanalto().ObterAsync(cliente, TestContext.Current.CancellationToken));
         Assert.Contains("nova redação (Lei nº 15.999, de 2027)", erro.Message);
     }
 
@@ -128,7 +128,7 @@ public sealed class AtualizacaoTabelasTests : IDisposable
         var banco = await CriarBancoAsync();
         var antes = await ListarDescontoMinimoAsync(banco);
 
-        var resultado = await AtualizadorDescontoMinimo(banco).AtualizarAsync(default);
+        var resultado = await AtualizadorDescontoMinimo(banco).AtualizarAsync(TestContext.Current.CancellationToken);
 
         Assert.Equal(0, resultado.QuantidadeFaixas);
         Assert.True(resultado.Oficial);
@@ -146,7 +146,7 @@ public sealed class AtualizacaoTabelasTests : IDisposable
         await ExecutarAsync(banco, "UPDATE DescontoMinimo SET Valor = 15");
         await ExecutarAsync(banco, "INSERT INTO DescontoMinimo (Competencia, Valor) VALUES ($competencia, 20)", ("$competencia", new DateTime(2099, 1, 1)));
 
-        var resultado = await AtualizadorDescontoMinimo(banco).AtualizarAsync(default);
+        var resultado = await AtualizadorDescontoMinimo(banco).AtualizarAsync(TestContext.Current.CancellationToken);
 
         Assert.Equal(competencias.Length, resultado.QuantidadeFaixas);
         Assert.Equal([.. competencias.Select(competencia => (competencia, 10m)), (new DateOnly(2099, 1, 1), 20m)], await ListarDescontoMinimoAsync(banco));
@@ -159,7 +159,7 @@ public sealed class AtualizacaoTabelasTests : IDisposable
         var banco = await CriarBancoAsync();
         await ExecutarAsync(banco, "DELETE FROM DescontoMinimo");
 
-        var resultado = await AtualizadorDescontoMinimo(banco).AtualizarAsync(default);
+        var resultado = await AtualizadorDescontoMinimo(banco).AtualizarAsync(TestContext.Current.CancellationToken);
 
         Assert.Equal(1, resultado.QuantidadeFaixas);
         Assert.Equal([(new DateOnly(1997, 1, 1), 10m)], await ListarDescontoMinimoAsync(banco));

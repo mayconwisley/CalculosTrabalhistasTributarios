@@ -28,12 +28,19 @@ public sealed partial class FonteTaxaLegalCajud : IFonteIndice
         var valores = new List<ValorMensalPublicado>();
         foreach (var tabela in documento.DocumentNode.SelectNodes("//table[caption]") ?? Enumerable.Empty<HtmlAgilityPack.HtmlNode>())
         {
-            var ano = TituloDoAno.Match(LeituraDePagina.Normalizar(tabela.SelectSingleNode("caption").InnerText));
+            var legenda = tabela.SelectSingleNode("caption");
+            if (legenda is null)
+                continue;
+
+            var ano = TituloDoAno.Match(LeituraDePagina.Normalizar(legenda.InnerText));
             if (!ano.Success)
                 continue;
             foreach (var linha in tabela.SelectNodes(".//tr[th[@scope='row']]") ?? Enumerable.Empty<HtmlAgilityPack.HtmlNode>())
             {
                 var cabecalho = linha.SelectSingleNode("th");
+                if (cabecalho is null)
+                    continue;
+
                 var nomeDoMes = cabecalho.SelectSingleNode(".//abbr")?.GetAttributeValue("title", "") is { Length: > 0 } titulo ? titulo : cabecalho.InnerText;
                 var celula = linha.SelectSingleNode("td");
                 if (LeituraDePagina.ObterMes(nomeDoMes.Trim()) is { } mes && celula is not null

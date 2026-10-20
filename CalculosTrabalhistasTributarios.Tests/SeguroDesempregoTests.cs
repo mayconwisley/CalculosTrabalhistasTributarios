@@ -64,7 +64,7 @@ public class SeguroDesempregoTests
     {
         var resultado = await new SimularSeguroDesempregoUseCase(await Ambiente.ConsultaAsync())
             .ExecutarAsync(new SimularSeguroDesempregoRequest(new DateOnly(2026, 10, 15), [3000m], solicitacao, total,
-                MesesNoPeriodoCarencia: carencia), default).Sucesso();
+                MesesNoPeriodoCarencia: carencia), TestContext.Current.CancellationToken).Sucesso();
 
         Assert.Empty(resultado.Proventos);
         Assert.Equal("Sem direito", resultado.Destaques[1].Valor);
@@ -82,7 +82,7 @@ public class SeguroDesempregoTests
             ["Meses trabalhados"] = "24", ["Solicitação"] = "1ª solicitação"
         });
 
-        var erro = (await calculadora.CalcularAsync(default)).Falha();
+        var erro = (await calculadora.CalcularAsync(TestContext.Current.CancellationToken)).Falha();
         Assert.Contains("Meses com salário (18)", erro.Mensagem);
         Assert.Equal(string.Empty, ((CampoTextoViewModel)calculadora.Campos.Single(campo => campo.Rotulo == "Meses com salário (18)")).Valor);
     }
@@ -95,7 +95,7 @@ public class SeguroDesempregoTests
     {
         var erro = await new SimularSeguroDesempregoUseCase(await Ambiente.ConsultaAsync())
             .ExecutarAsync(new SimularSeguroDesempregoRequest(new DateOnly(2026, 10, 15), [3000m], solicitacao, total,
-                MesesNoPeriodoCarencia: carencia), default).Falha();
+                MesesNoPeriodoCarencia: carencia), TestContext.Current.CancellationToken).Falha();
 
         Assert.Contains("Meses com salário", erro.Mensagem);
     }

@@ -21,7 +21,7 @@ public class FeriasFracionadasTests
     [InlineData(14, new[] { 8 })]        // sobram 8 para o terceiro período
     [InlineData(10, new[] { 6 })]        // sobram 14, que formam o terceiro período com os 14 dias
     public async Task Divisao_valida_das_ferias(int dias, int[] outros) =>
-        Assert.True((await (await CasoAsync()).ExecutarAsync(Pedido(dias, outros), default)).Sucesso);
+        Assert.True((await (await CasoAsync()).ExecutarAsync(Pedido(dias, outros), TestContext.Current.CancellationToken)).Sucesso);
 
     [Theory]
     [InlineData(10, new[] { 10, 10 }, "14 dias")]      // nenhum período de 14 dias
@@ -31,7 +31,7 @@ public class FeriasFracionadasTests
     [InlineData(14, new[] { 10, 5 }, "Sobram 1 dia(s)")] // três períodos e ainda sobra 1 dia
     public async Task Divisao_invalida_das_ferias(int dias, int[] outros, string trecho)
     {
-        var resultado = await (await CasoAsync()).ExecutarAsync(Pedido(dias, outros), default);
+        var resultado = await (await CasoAsync()).ExecutarAsync(Pedido(dias, outros), TestContext.Current.CancellationToken);
         Assert.True(resultado.Falhou);
         Assert.Contains(trecho, resultado.Erro.Mensagem);
     }
@@ -39,7 +39,7 @@ public class FeriasFracionadasTests
     [Fact]
     public async Task Memoria_mostra_os_tres_periodos()
     {
-        var demonstrativo = await (await CasoAsync()).ExecutarAsync(Pedido(10, [14, 6]), default).Sucesso();
+        var demonstrativo = await (await CasoAsync()).ExecutarAsync(Pedido(10, [14, 6]), TestContext.Current.CancellationToken).Sucesso();
         Assert.Contains(demonstrativo.Memoria[0].Formulas, formula => formula.Formula.Contains("períodos de 10 + 14 + 6 = 30 dias"));
     }
 
@@ -48,8 +48,8 @@ public class FeriasFracionadasTests
     {
         var caso = await CasoAsync();
         // Gozo de 20/10/2026 a 18/11/2026; o período concessivo terminou em 31/10/2026: 18 dias em dobro.
-        var emDobro = await caso.ExecutarAsync(Pedido(30, [], new DateOnly(2026, 10, 20), new DateOnly(2026, 10, 31)), default).Sucesso();
-        var noPrazo = await caso.ExecutarAsync(Pedido(30, [], new DateOnly(2026, 10, 20)), default).Sucesso();
+        var emDobro = await caso.ExecutarAsync(Pedido(30, [], new DateOnly(2026, 10, 20), new DateOnly(2026, 10, 31)), TestContext.Current.CancellationToken).Sucesso();
+        var noPrazo = await caso.ExecutarAsync(Pedido(30, [], new DateOnly(2026, 10, 20)), TestContext.Current.CancellationToken).Sucesso();
 
         // 3.000,00 ÷ 30 x 18 = 1.800,00; o terço, 600,00.
         Assert.Contains(emDobro.Proventos, verba => verba.Descricao == "Dobra das férias fora do período concessivo" && verba.Valor == 1800m && verba.Referencia == "18 dias");
@@ -63,7 +63,7 @@ public class FeriasFracionadasTests
     public async Task Gozo_dentro_do_prazo_nao_tem_dobra_e_inicio_na_sexta_e_avisado()
     {
         // 23/10/2026 é sexta-feira; o gozo de 10 dias termina em 01/11/2026, dentro do prazo até 30/11/2026.
-        var demonstrativo = await (await CasoAsync()).ExecutarAsync(Pedido(10, [], new DateOnly(2026, 10, 23), new DateOnly(2026, 11, 30)), default).Sucesso();
+        var demonstrativo = await (await CasoAsync()).ExecutarAsync(Pedido(10, [], new DateOnly(2026, 10, 23), new DateOnly(2026, 11, 30)), TestContext.Current.CancellationToken).Sucesso();
         Assert.DoesNotContain(demonstrativo.Proventos, verba => verba.Descricao.StartsWith("Dobra"));
         Assert.Contains(demonstrativo.Observacoes, observacao => observacao.Contains("não há dobra"));
         Assert.Contains(demonstrativo.Observacoes, observacao => observacao.Contains("art. 134, § 3º"));
@@ -72,7 +72,7 @@ public class FeriasFracionadasTests
     [Fact]
     public async Task Fim_do_periodo_concessivo_exige_o_inicio_do_gozo()
     {
-        var resultado = await (await CasoAsync()).ExecutarAsync(Pedido(30, [], fimConcessivo: new DateOnly(2026, 10, 31)), default);
+        var resultado = await (await CasoAsync()).ExecutarAsync(Pedido(30, [], fimConcessivo: new DateOnly(2026, 10, 31)), TestContext.Current.CancellationToken);
         Assert.Contains("início do gozo", resultado.Erro.Mensagem);
     }
 

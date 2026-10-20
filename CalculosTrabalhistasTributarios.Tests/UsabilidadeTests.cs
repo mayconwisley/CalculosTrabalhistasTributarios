@@ -54,8 +54,8 @@ public class UsabilidadeTests
         var titulos = File.ReadAllLines(Path.Combine(Raiz(), "docs", "MANUAL.md"))
             .Select(linha => Regex.Match(linha, @"^#{2,4} (\d+(?:\.\d+)*)\.? ")).Where(titulo => titulo.Success).Select(titulo => titulo.Groups[1].Value).ToHashSet();
 
-        Assert.Empty(Enum.GetValues<TipoCalculadora>().Where(tipo => SecoesDoManual.Numero($"Calculadora.{tipo}") is null));
-        Assert.Empty(SecoesDoManual.Chaves.Select(SecoesDoManual.Numero).Where(numero => !titulos.Contains(numero!)));
+        Assert.DoesNotContain(Enum.GetValues<TipoCalculadora>(), tipo => SecoesDoManual.Numero($"Calculadora.{tipo}") is null);
+        Assert.DoesNotContain(SecoesDoManual.Chaves, chave => SecoesDoManual.Numero(chave) is not { } numero || !titulos.Contains(numero));
         Assert.Equal("9", SecoesDoManual.Numero("Tabela.Inss"));
         Assert.Null(SecoesDoManual.Numero("Principal"));
     }

@@ -17,7 +17,7 @@ public class TabelasTests
     [InlineData("2023-05", 1320.00)]
     [InlineData("2026-10", 1621.00)]
     public async Task Salario_minimo_de_cada_competencia(string mes, decimal valor) =>
-        Assert.Equal(valor, await (await Ambiente.ConsultaAsync()).ObterSalarioMinimoAsync(DateOnly.ParseExact(mes + "-01", "yyyy-MM-dd"), default));
+        Assert.Equal(valor, await (await Ambiente.ConsultaAsync()).ObterSalarioMinimoAsync(DateOnly.ParseExact(mes + "-01", "yyyy-MM-dd"), TestContext.Current.CancellationToken));
 
     [Theory]
     [InlineData("2023-04", null)]
@@ -29,7 +29,7 @@ public class TabelasTests
     [InlineData("2026-10", 607.20)]
     public async Task Desconto_simplificado_muda_na_vigencia_certa(string mes, double? valor)
     {
-        var perfil = await (await Ambiente.ConsultaAsync()).ObterPerfilAsync(DateOnly.ParseExact(mes + "-01", "yyyy-MM-dd"), default).Sucesso();
+        var perfil = await (await Ambiente.ConsultaAsync()).ObterPerfilAsync(DateOnly.ParseExact(mes + "-01", "yyyy-MM-dd"), TestContext.Current.CancellationToken).Sucesso();
         // Antes de 05/2023 a tabela guarda zero, e o cálculo trata a modalidade como inexistente.
         Assert.Equal(valor is null ? 0m : (decimal)valor, perfil.DeducaoSimplificada);
         Assert.Equal(10m, perfil.DescontoMinimo);
@@ -39,7 +39,7 @@ public class TabelasTests
     [Fact]
     public async Task Taxa_legal_vem_do_banco_central_desde_agosto_de_2024()
     {
-        var taxas = await (await Ambiente.IndicesAsync()).ObterAsync(IndiceEconomico.TaxaLegal, default);
+        var taxas = await (await Ambiente.IndicesAsync()).ObterAsync(IndiceEconomico.TaxaLegal, TestContext.Current.CancellationToken);
         Assert.Equal(new DateOnly(2024, 8, 1), taxas.Keys.Min());
         Assert.Equal(0.605306m, taxas[new DateOnly(2024, 8, 1)]);
         Assert.Equal(0m, taxas[new DateOnly(2025, 3, 1)]);
@@ -50,7 +50,7 @@ public class TabelasTests
     [Fact]
     public async Task Salario_familia_e_reducao_de_2026()
     {
-        var perfil = await (await Ambiente.ConsultaAsync()).ObterPerfilAsync(new DateOnly(2026, 10, 1), default).Sucesso();
+        var perfil = await (await Ambiente.ConsultaAsync()).ObterPerfilAsync(new DateOnly(2026, 10, 1), TestContext.Current.CancellationToken).Sucesso();
         Assert.Equal((1980.38m, 67.54m), (perfil.FaixasSalarioFamilia![0].LimiteRemuneracao, perfil.FaixasSalarioFamilia[0].Cota));
         Assert.Equal([(5000m, 0m, 312.89m), (7350m, 0.133145m, 978.62m)], perfil.ReducoesMensaisIrrf.Select(regra => (regra.LimiteRendimentos, regra.Multiplicador, regra.ValorBase)));
     }
@@ -58,7 +58,7 @@ public class TabelasTests
     [Fact]
     public async Task Competencia_antes_das_tabelas_explica_desde_quando_ha_dados()
     {
-        var erro = await (await Ambiente.ConsultaAsync()).ObterPerfilAsync(new DateOnly(2016, 6, 1), default).Falha();
+        var erro = await (await Ambiente.ConsultaAsync()).ObterPerfilAsync(new DateOnly(2016, 6, 1), TestContext.Current.CancellationToken).Falha();
         Assert.Contains("as tabelas começam em 01/2017", erro.Mensagem);
     }
 }

@@ -92,7 +92,7 @@ public class ResgatePrevidenciaTests
     public async Task Demonstrativo_mostra_o_regime_escolhido_e_compara_o_outro()
     {
         var d = (await new SimularResgatePrevidenciaUseCase().ExecutarAsync(new SimularResgatePrevidenciaRequest(
-            new(TipoPlanoPrevidencia.Pgbl, RegimeTributacaoPrevidencia.Regressivo, Aportes(), Resgate)), default)).Sucesso();
+            new(TipoPlanoPrevidencia.Pgbl, RegimeTributacaoPrevidencia.Regressivo, Aportes(), Resgate)), TestContext.Current.CancellationToken)).Sucesso();
 
         Assert.Equal(38200m, d.Resultado);
         Assert.Equal("20,42% da base", Texto.Normalizar(d.Descontos[0].Referencia));   // 9.800 ÷ 48.000

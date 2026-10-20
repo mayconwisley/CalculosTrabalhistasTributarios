@@ -87,7 +87,7 @@ public class MemoriaTributariaDetalhadaTests
     public async Task Ferias_mostram_as_faixas_do_desconto_simplificado()
     {
         var resultado = await new SimularFeriasUseCase(await Ambiente.ConsultaAsync())
-            .ExecutarAsync(new SimularFeriasRequest(new DateOnly(2025, 10, 1), 3000m, 0m, 0, 30, false, false, 0), default).Sucesso();
+            .ExecutarAsync(new SimularFeriasRequest(new DateOnly(2025, 10, 1), 3000m, 0m, 0, 30, false, false, 0), TestContext.Current.CancellationToken).Sucesso();
 
         // Em 2025, sem a redução mensal. Férias + 1/3 = 4.000,00; INSS da faixa 3: (4.000,00 - 2.793,88) x 12% = 144,7344 → 144,73.
         var inss = resultado.Memoria.Single(grupo => grupo.Titulo.StartsWith("INSS") && grupo.Formulas.Any(formula => formula.Titulo == "Faixa 3 (12%)"));
@@ -105,7 +105,7 @@ public class MemoriaTributariaDetalhadaTests
     public async Task Decimo_terceiro_mostra_as_faixas_do_inss_e_do_irrf()
     {
         var resultado = await new SimularDecimoTerceiroUseCase(await Ambiente.ConsultaAsync())
-            .ExecutarAsync(new SimularDecimoTerceiroRequest(new DateOnly(2025, 12, 1), 3100m, 0m, 12, 0, AdiantamentoDecimoTerceiro.CinquentaPorCento, 0m), default).Sucesso();
+            .ExecutarAsync(new SimularDecimoTerceiroRequest(new DateOnly(2025, 12, 1), 3100m, 0m, 12, 0, AdiantamentoDecimoTerceiro.CinquentaPorCento, 0m), TestContext.Current.CancellationToken).Sucesso();
 
         // Em 2025, sem a redução mensal. INSS: 113,85 + 114,82 + (3.100,00 - 2.793,88) x 12% = 36,7344 → 36,73; total 265,40.
         Assert.Equal("R$ 113,85 + R$ 114,82 + R$ 36,73 = R$ 265,40", Formula(resultado, "INSS sobre o 13º", "Total"));

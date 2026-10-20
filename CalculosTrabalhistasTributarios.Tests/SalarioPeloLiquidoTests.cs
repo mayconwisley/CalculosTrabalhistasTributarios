@@ -24,7 +24,7 @@ public class SalarioPeloLiquidoTests
     {
         var competencia = DateOnly.ParseExact(mes + "-01", "yyyy-MM-dd");
         var consulta = await Ambiente.ConsultaAsync();
-        var demonstrativo = await new SimularSalarioPeloLiquidoUseCase(consulta).ExecutarAsync(new SimularSalarioPeloLiquidoRequest(competencia, liquido, dependentes), default).Sucesso();
+        var demonstrativo = await new SimularSalarioPeloLiquidoUseCase(consulta).ExecutarAsync(new SimularSalarioPeloLiquidoRequest(competencia, liquido, dependentes), TestContext.Current.CancellationToken).Sucesso();
         var bruto = demonstrativo.Proventos[0].Valor;
         Assert.Equal(brutoEsperado, bruto);
 

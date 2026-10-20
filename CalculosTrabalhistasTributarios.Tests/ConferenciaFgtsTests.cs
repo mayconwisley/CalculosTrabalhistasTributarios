@@ -51,7 +51,7 @@ public class ConferenciaFgtsTests
     [Fact]
     public async Task Demonstrativo_separa_mensal_e_rescisorio_e_leva_os_devidos_a_rescisao()
     {
-        var d = (await new SimularConferenciaFgtsUseCase().ExecutarAsync(new SimularConferenciaFgtsRequest(CategoriaFgts.Empregado, Lancamentos(), Desligamento), default)).Sucesso();
+        var d = (await new SimularConferenciaFgtsUseCase().ExecutarAsync(new SimularConferenciaFgtsRequest(CategoriaFgts.Empregado, Lancamentos(), Desligamento), TestContext.Current.CancellationToken)).Sucesso();
 
         Assert.Equal(440m, d.Resultado); // 1.120 devidos - 680 informados.
         Assert.Equal(176m, d.Informativos.Single(verba => verba.Descricao.StartsWith("Reflexo")).Valor); // (40 + 400) × 40%.

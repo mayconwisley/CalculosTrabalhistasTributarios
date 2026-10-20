@@ -67,7 +67,7 @@ public class AntecipacaoFgtsTests
     [Fact]
     public async Task Demonstrativo_separa_analise_de_credito_do_saque_anual()
     {
-        var dto = await new SimularSaqueAniversarioUseCase().ExecutarAsync(new(18000m, 4, 0m, 10000m, 0m, true, Entrada()), default).Sucesso();
+        var dto = await new SimularSaqueAniversarioUseCase().ExecutarAsync(new(18000m, 4, 0m, 10000m, 0m, true, Entrada()), TestContext.Current.CancellationToken).Sucesso();
         Assert.Equal("Nova antecipação", dto.Destaques[0].Rotulo);
         Assert.Equal("Não confirmada", dto.Destaques[0].Valor);
         Assert.Equal(3700m, dto.Resultado); // 18.000 × 10% + 1.900; não representa crédito liberado.

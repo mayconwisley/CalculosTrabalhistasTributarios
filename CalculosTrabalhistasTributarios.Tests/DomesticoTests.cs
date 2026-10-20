@@ -24,8 +24,8 @@ public class DomesticoTests
     public async Task Dae_soma_os_encargos_de_20_por_cento_e_as_retencoes()
     {
         var resultado = await new SimularDomesticoUseCase(await Ambiente.ConsultaAsync())
-            .ExecutarAsync(new SimularDomesticoRequest(Outubro2026, 2_000m, 0m, 0, 0, 0m), default).Sucesso();
-        var tabelas = await (await Ambiente.ConsultaAsync()).ObterTabelasAsync(Outubro2026, default).Sucesso();
+            .ExecutarAsync(new SimularDomesticoRequest(Outubro2026, 2_000m, 0m, 0, 0, 0m), TestContext.Current.CancellationToken).Sucesso();
+        var tabelas = await (await Ambiente.ConsultaAsync()).ObterTabelasAsync(Outubro2026, TestContext.Current.CancellationToken).Sucesso();
         var inss = tabelas.CalcularInss(2_000m).Valor;
 
         Assert.Equal(160.00m, Valor(resultado.Informativos, "DAE: contribuição patronal"));
@@ -44,7 +44,7 @@ public class DomesticoTests
     public async Task Vale_transporte_desconta_ate_6_por_cento_do_salario(decimal custo, decimal desconto)
     {
         var resultado = await new SimularDomesticoUseCase(await Ambiente.ConsultaAsync())
-            .ExecutarAsync(new SimularDomesticoRequest(Outubro2026, 2_000m, 0m, 0, 0, custo), default).Sucesso();
+            .ExecutarAsync(new SimularDomesticoRequest(Outubro2026, 2_000m, 0m, 0, 0, custo), TestContext.Current.CancellationToken).Sucesso();
 
         Assert.Equal(desconto, Valor(resultado.Descontos, "Vale-transporte"));
     }
@@ -53,7 +53,7 @@ public class DomesticoTests
     public async Task Custo_do_empregador_domestico_tem_20_por_cento_de_encargos()
     {
         var resultado = await new SimularCustoFuncionarioUseCase()
-            .ExecutarAsync(new SimularCustoFuncionarioRequest(2_000m, RegimeTributario.EmpregadorDomestico, 2m, 1m, 5.8m, 0m, false), default).Sucesso();
+            .ExecutarAsync(new SimularCustoFuncionarioRequest(2_000m, RegimeTributario.EmpregadorDomestico, 2m, 1m, 5.8m, 0m, false), TestContext.Current.CancellationToken).Sucesso();
 
         Assert.Equal(2_400.00m, resultado.Resultado);
         Assert.Equal(64.00m, Valor(resultado.Proventos, "Indenização compensatória"));
@@ -111,7 +111,7 @@ public class DomesticoTests
     public async Task Seguro_desemprego_do_domestico_e_de_um_salario_minimo(int meses, int parcelas)
     {
         var resultado = await new SimularSeguroDesempregoUseCase(await Ambiente.ConsultaAsync())
-            .ExecutarAsync(new SimularSeguroDesempregoRequest(new DateOnly(2026, 10, 15), [], SolicitacaoSeguroDesemprego.Primeira, meses, Domestico: true), default).Sucesso();
+            .ExecutarAsync(new SimularSeguroDesempregoRequest(new DateOnly(2026, 10, 15), [], SolicitacaoSeguroDesemprego.Primeira, meses, Domestico: true), TestContext.Current.CancellationToken).Sucesso();
 
         Assert.Equal(1_621m * parcelas, resultado.Proventos.Sum(verba => verba.Valor));
     }

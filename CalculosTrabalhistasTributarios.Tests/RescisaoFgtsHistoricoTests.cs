@@ -71,7 +71,7 @@ public class RescisaoFgtsHistoricoTests
         var pedido = new SimularRescisaoRequest(new DateOnly(2026, 1, 1), new DateOnly(2026, 4, 15),
             MotivoRescisao.DispensaSemJustaCausa, CumprimentoAvisoPrevio.TrabalhadoOuDispensado,
             3000m, 0m, 0, 0, 900m, 0m, 0, DepositosFgts: Historico);
-        var demonstrativo = (await caso.ExecutarAsync(pedido, default)).Valor;
+        var demonstrativo = (await caso.ExecutarAsync(pedido, TestContext.Current.CancellationToken)).Valor;
         Assert.Equal(750m, demonstrativo.Informativos.Single(item => item.Descricao.StartsWith("Depósitos históricos")).Valor);
         Assert.Contains(demonstrativo.Memoria.SelectMany(grupo => grupo.Formulas), formula => formula.Formula.Contains("R$ 900,00 (saldo informado) - R$ 750,00"));
     }

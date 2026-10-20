@@ -39,7 +39,7 @@ public class SimulacaoTributariaTests
         for (var bruto = 0m; bruto <= 12_000m; bruto += 7.31m)
             foreach (var dependentes in new[] { 0, 1, 3 })
             {
-                var app = await simulador.ExecutarAsync(new SimularImpostoRequest(competencia, bruto, bruto, dependentes), default).Sucesso();
+                var app = await simulador.ExecutarAsync(new SimularImpostoRequest(competencia, bruto, bruto, dependentes), TestContext.Current.CancellationToken).Sucesso();
                 var esperado = ModeloTributario.Calcular(competencia, bruto, dependentes);
                 if (Inss(app) != esperado.Inss || ImpostoDaModalidade(app, 0) != Moeda(esperado.ImpostoNormal) || Irrf(app) != esperado.IrrfRetido || app.Resultado != esperado.Liquido
                     || esperado.ImpostoSimplificado is { } simplificado && ImpostoDaModalidade(app, 1) != Moeda(simplificado))
@@ -273,7 +273,7 @@ public class SimulacaoTributariaTests
         Assert.True(sessentaECinco.Visivel && rendimento.Visivel);
         // A base de INSS acompanhou o valor bruto, mas fica oculta e não vai para o cálculo.
         Assert.Equal("8.000,00", baseInss.Valor);
-        var resultado = await calculadora.CalcularAsync(default);
+        var resultado = await calculadora.CalcularAsync(TestContext.Current.CancellationToken);
         Assert.Equal("R$ 433,73", Destaque(resultado.Valor, "IRRF"));
 
         vinculo.Selecionada = vinculo.Opcoes[0];
@@ -288,7 +288,7 @@ public class SimulacaoTributariaTests
         var bruto = (CampoTextoViewModel)calculadora.Campos[1];
         bruto.Valor = "abc";
 
-        var resultado = await calculadora.CalcularAsync(default);
+        var resultado = await calculadora.CalcularAsync(TestContext.Current.CancellationToken);
 
         Assert.True(resultado.Falhou);
         Assert.Contains("\"Valor bruto\"", resultado.Erro.Mensagem);
@@ -315,11 +315,11 @@ public class SimulacaoTributariaTests
         // A janela própria salvava os campos pelo nome da propriedade e o tipo "SimulacaoTributaria".
         var dados = new DadosFormulario(new() { ["Competencia"] = "06/2025", ["ValorBruto"] = "3.100,00", ["BaseInss"] = "3.000,00", ["Dependentes"] = "1" }).ParaJson();
         var historico = await Ambiente.HistoricoAsync();
-        var id = await historico.SalvarAsync(null, "SimulacaoTributaria", "Simulação tributária", "Simulação antiga", dados, default);
+        var id = await historico.SalvarAsync(null, "SimulacaoTributaria", "Simulação tributária", "Simulação antiga", dados, TestContext.Current.CancellationToken);
 
         // Um novo acesso ao banco, como ao abrir o aplicativo atualizado, migra o tipo.
         var banco = new BancoTributario($"Data Source={System.IO.Path.Combine(AppContext.BaseDirectory, "BancoDados", "calculoIrrf.db")}");
-        var reaberto = await new SqliteHistoricoCalculos(banco).ObterAsync(id, default);
+        var reaberto = await new SqliteHistoricoCalculos(banco).ObterAsync(id, TestContext.Current.CancellationToken);
         Assert.Equal("Calculadora.SimulacaoTributaria", reaberto!.Tipo);
 
         var calculadora = new CalculadoraSimulacaoTributaria(new SimularImpostoUseCase(await Ambiente.ConsultaAsync()));
@@ -330,8 +330,8 @@ public class SimulacaoTributariaTests
         Assert.Equal("3.000,00", exportados["Base de INSS"]);
         Assert.Equal("1", exportados["Dependentes"]);
         Assert.Equal("Empregado (FGTS 8%)", exportados["Tipo de vínculo"]);
-        Assert.True((await calculadora.CalcularAsync(default)).Sucesso);
-        await historico.ExcluirAsync(id, default);
+        Assert.True((await calculadora.CalcularAsync(TestContext.Current.CancellationToken)).Sucesso);
+        await historico.ExcluirAsync(id, TestContext.Current.CancellationToken);
     }
 
     private static string Formula(DemonstrativoDto demonstrativo, string grupo, string titulo) =>

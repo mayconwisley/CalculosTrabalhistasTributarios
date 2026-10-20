@@ -24,7 +24,7 @@ public class BeneficiosTests
     [Fact]
     public async Task Saque_aniversario_mostra_o_periodo_e_o_saldo_restante()
     {
-        var resultado = await new SimularSaqueAniversarioUseCase().ExecutarAsync(new SimularSaqueAniversarioRequest(8_000m, 11), default).Sucesso();
+        var resultado = await new SimularSaqueAniversarioUseCase().ExecutarAsync(new SimularSaqueAniversarioRequest(8_000m, 11), TestContext.Current.CancellationToken).Sucesso();
 
         Assert.Equal(2_250m, resultado.Resultado);
         Assert.Equal("Novembro a janeiro", resultado.Destaques[2].Valor);

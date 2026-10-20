@@ -40,7 +40,7 @@ public class FormularioCalculadoraTests
         CampoViewModel? focado = null;
         janela.CampoComErro += campo => focado = campo;
         calculadora.Salario.Valor = "abc";
-        calculadora.Competencia.Valor = "00/2026";
+        calculadora.EntradaCompetencia.Valor = "00/2026";
 
         janela.CalcularCommand.Execute(null);
 
@@ -52,7 +52,7 @@ public class FormularioCalculadoraTests
         // O aviso fica enquanto houver um campo apontado e sai quando o último é corrigido.
         calculadora.Salario.Valor = "3.000,00";
         Assert.True(janela.TemAviso);
-        calculadora.Competencia.Valor = "03/2026";
+        calculadora.EntradaCompetencia.Valor = "03/2026";
         Assert.False(janela.TemAviso);
     }
 
@@ -240,7 +240,7 @@ public class FormularioCalculadoraTests
     private sealed class CalculadoraFalsa : CalculadoraBase
     {
         public CampoTextoViewModel Salario { get; } = Moeda("Salário (R$)");
-        public CampoTextoViewModel Competencia { get; } = Competencia();
+        public CampoTextoViewModel EntradaCompetencia { get; } = Competencia();
         public CampoOpcaoViewModel Opcao { get; } = CampoOpcaoViewModel.SimNao("Adiantamento", false);
         public Erro? Falha { get; set; }
 
@@ -249,14 +249,14 @@ public class FormularioCalculadoraTests
         public override string Titulo => "Teste";
         public override string Descricao => string.Empty;
         public override string InstrucaoInicial => string.Empty;
-        public override IReadOnlyList<CampoViewModel> Campos => [Salario, Competencia, Opcao];
+        public override IReadOnlyList<CampoViewModel> Campos => [Salario, EntradaCompetencia, Opcao];
         public override string NomeArquivoPdf => "teste";
 
         public override Task<Result<DemonstrativoDto>> CalcularAsync(CancellationToken cancellationToken)
         {
             var leitor = new LeitorFormulario();
             var salario = leitor.Moeda(Salario);
-            leitor.Competencia(Competencia);
+            leitor.Competencia(EntradaCompetencia);
             if (leitor.Erro is { } erro)
                 return Task.FromResult<Result<DemonstrativoDto>>(erro);
             if (Falha is { } falha)

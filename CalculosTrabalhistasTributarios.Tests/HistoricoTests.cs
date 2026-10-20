@@ -28,42 +28,42 @@ public class HistoricoTests
     public async Task Salva_altera_duplica_renomeia_e_exclui()
     {
         var historico = await Ambiente.HistoricoAsync();
-        var id = await historico.SalvarAsync(null, "Calculadora.Rescisao", "Rescisão", "João da Silva", """{"Campos":{"Salário":"3.000,00"}}""", default);
+        var id = await historico.SalvarAsync(null, "Calculadora.Rescisao", "Rescisão", "João da Silva", """{"Campos":{"Salário":"3.000,00"}}""", TestContext.Current.CancellationToken);
 
-        var salvo = await historico.ObterAsync(id, default);
+        var salvo = await historico.ObterAsync(id, TestContext.Current.CancellationToken);
         Assert.NotNull(salvo);
         Assert.Equal("João da Silva", salvo.Nome);
         Assert.Equal("Rescisão", salvo.Calculadora);
 
         // Salvar com o mesmo id substitui o cálculo, sem criar outro.
-        Assert.Equal(id, await historico.SalvarAsync(id, "Calculadora.Rescisao", "Rescisão", "João da Silva", """{"Campos":{"Salário":"3.500,00"}}""", default));
-        Assert.Contains("3.500,00", (await historico.ObterAsync(id, default))!.Dados);
+        Assert.Equal(id, await historico.SalvarAsync(id, "Calculadora.Rescisao", "Rescisão", "João da Silva", """{"Campos":{"Salário":"3.500,00"}}""", TestContext.Current.CancellationToken));
+        Assert.Contains("3.500,00", (await historico.ObterAsync(id, TestContext.Current.CancellationToken))!.Dados);
 
-        var copia = await historico.DuplicarAsync(id, default).Sucesso();
+        var copia = await historico.DuplicarAsync(id, TestContext.Current.CancellationToken).Sucesso();
         Assert.NotEqual(id, copia);
-        Assert.Equal("João da Silva (cópia)", (await historico.ObterAsync(copia, default))!.Nome);
+        Assert.Equal("João da Silva (cópia)", (await historico.ObterAsync(copia, TestContext.Current.CancellationToken))!.Nome);
 
-        await historico.RenomearAsync(copia, "Maria Souza", default);
-        var lista = await historico.ListarAsync(default);
+        await historico.RenomearAsync(copia, "Maria Souza", TestContext.Current.CancellationToken);
+        var lista = await historico.ListarAsync(TestContext.Current.CancellationToken);
         Assert.Equal("Maria Souza", lista.First(calculo => calculo.Id == copia).Nome);
 
-        await historico.ExcluirAsync(id, default);
-        await historico.ExcluirAsync(copia, default);
-        Assert.Null(await historico.ObterAsync(id, default));
+        await historico.ExcluirAsync(id, TestContext.Current.CancellationToken);
+        await historico.ExcluirAsync(copia, TestContext.Current.CancellationToken);
+        Assert.Null(await historico.ObterAsync(id, TestContext.Current.CancellationToken));
 
         // Um cálculo excluído enquanto estava aberto volta como novo ao ser salvo.
-        var novo = await historico.SalvarAsync(id, "Calculadora.Rescisao", "Rescisão", "João da Silva", "{}", default);
+        var novo = await historico.SalvarAsync(id, "Calculadora.Rescisao", "Rescisão", "João da Silva", "{}", TestContext.Current.CancellationToken);
         Assert.NotEqual(id, novo);
-        await historico.ExcluirAsync(novo, default);
+        await historico.ExcluirAsync(novo, TestContext.Current.CancellationToken);
     }
 
     [Fact]
     public async Task Historico_filtra_por_calculadora_e_ordena_por_nome()
     {
         var historico = await Ambiente.HistoricoAsync();
-        await historico.SalvarAsync(null, "Calculadora.Rescisao", "Rescisão", "Zeta", "{}", default);
-        await historico.SalvarAsync(null, "Calculadora.Ferias", "Férias", "Alfa", "{}", default);
-        await historico.SalvarAsync(null, "Calculadora.Rescisao", "Rescisão", "Beta", "{}", default);
+        await historico.SalvarAsync(null, "Calculadora.Rescisao", "Rescisão", "Zeta", "{}", TestContext.Current.CancellationToken);
+        await historico.SalvarAsync(null, "Calculadora.Ferias", "Férias", "Alfa", "{}", TestContext.Current.CancellationToken);
+        await historico.SalvarAsync(null, "Calculadora.Rescisao", "Rescisão", "Beta", "{}", TestContext.Current.CancellationToken);
         var tela = new HistoricoViewModel(historico, null!, null!, null!, null!);
 
         await tela.CarregarAsync();

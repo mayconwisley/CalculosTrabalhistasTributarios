@@ -175,7 +175,7 @@ public class CreditoTrabalhadorTests
     public async Task Caso_de_uso_apura_tributos_e_distingue_credito_de_salario()
     {
         var dto = await new SimularCreditoTrabalhadorUseCase(await Ambiente.ConsultaAsync())
-            .ExecutarAsync(new(new DateOnly(2026, 10, 1), 1000m, 0m, 0, 0m, 0m, Entrada()), default).Sucesso();
+            .ExecutarAsync(new(new DateOnly(2026, 10, 1), 1000m, 0m, 0, 0m, 0m, Entrada()), TestContext.Current.CancellationToken).Sucesso();
         Assert.Equal("R$ 323,75", dto.Destaques.Single(d => d.Rotulo == "Margem livre").Valor); // (1.000 - INSS 75 - IR zero) × 35%.
         Assert.Equal(1000m, dto.Resultado);
         Assert.Equal("Crédito líquido na liberação", dto.RotuloResultado);

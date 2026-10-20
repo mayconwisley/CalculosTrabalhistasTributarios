@@ -19,7 +19,7 @@ public class QuadroFaixasPensaoPlrTests
     public async Task Plr_mostra_a_tabela_anual_faixa_a_faixa()
     {
         var demonstrativo = await new SimularPlrUseCase(await Ambiente.ConsultaAsync())
-            .ExecutarAsync(new SimularPlrRequest(new DateOnly(2026, 10, 1), 20_000m, 0m, 0m), default).Sucesso();
+            .ExecutarAsync(new SimularPlrRequest(new DateOnly(2026, 10, 1), 20_000m, 0m, 0m), TestContext.Current.CancellationToken).Sucesso();
 
         var grupo = Assert.Single(demonstrativo.Memoria, item => item.Titulo == "IRRF do ano por faixas da tabela anual");
         Assert.Equal("IRRF do ano: R$ 2.333,20", Texto.Normalizar(grupo.Destaque));
@@ -45,12 +45,12 @@ public class QuadroFaixasPensaoPlrTests
     public async Task Plr_isenta_tem_so_a_primeira_faixa_e_sem_base_nao_tem_quadro()
     {
         var consulta = await Ambiente.ConsultaAsync();
-        var isenta = await new SimularPlrUseCase(consulta).ExecutarAsync(new SimularPlrRequest(new DateOnly(2026, 10, 1), 5_000m, 0m, 0m), default).Sucesso();
+        var isenta = await new SimularPlrUseCase(consulta).ExecutarAsync(new SimularPlrRequest(new DateOnly(2026, 10, 1), 5_000m, 0m, 0m), TestContext.Current.CancellationToken).Sucesso();
         var quadro = Assert.IsType<QuadroFaixasDto>(Assert.Single(isenta.Memoria, item => item.Quadro is not null).Quadro);
         Assert.Equal([5_000m, 0m, 0m, 0m, 0m], quadro.Faixas.Select(faixa => faixa.ParteDaBase));
         Assert.Equal(0m, quadro.Valor);
 
-        var semBase = await new SimularPlrUseCase(consulta).ExecutarAsync(new SimularPlrRequest(new DateOnly(2026, 10, 1), 0m, 0m, 0m), default).Sucesso();
+        var semBase = await new SimularPlrUseCase(consulta).ExecutarAsync(new SimularPlrRequest(new DateOnly(2026, 10, 1), 0m, 0m, 0m), TestContext.Current.CancellationToken).Sucesso();
         Assert.DoesNotContain(semBase.Memoria, item => item.Quadro is not null);
     }
 
@@ -92,7 +92,7 @@ public class QuadroFaixasPensaoPlrTests
     public async Task Pensao_antes_de_marco_de_2020_nao_tem_quadro_do_inss()
     {
         var simulacao = await new SimularPensaoUseCase(await Ambiente.ConsultaAsync())
-            .ExecutarAsync(new SimularPensaoRequest(new DateOnly(2019, 6, 1), 6_000m, 6_000m, 0, new RegraPensao(BasePensao.ValorFixo, 0m, 1_000m), 0m), default).Sucesso();
+            .ExecutarAsync(new SimularPensaoRequest(new DateOnly(2019, 6, 1), 6_000m, 6_000m, 0, new RegraPensao(BasePensao.ValorFixo, 0m, 1_000m), 0m), TestContext.Current.CancellationToken).Sucesso();
         Assert.Null(simulacao.QuadroInss);
         Assert.NotNull(simulacao.Normal.QuadroIrrf);
     }
@@ -105,8 +105,8 @@ public class QuadroFaixasPensaoPlrTests
         var caminho = Path.Combine(Path.GetTempPath(), $"planilha-pensao-{Guid.NewGuid():N}.xlsx");
         try
         {
-            await new ClosedXmlPlanilhaService().GerarPensaoAsync(simulacao, entrada, caminho, default);
-            using var pasta = new XLWorkbook(new MemoryStream(await File.ReadAllBytesAsync(caminho)));
+            await new ClosedXmlPlanilhaService().GerarPensaoAsync(simulacao, entrada, caminho, TestContext.Current.CancellationToken);
+            using var pasta = new XLWorkbook(new MemoryStream(await File.ReadAllBytesAsync(caminho, TestContext.Current.CancellationToken)));
             var memoria = pasta.Worksheet("Memória de cálculo");
             var cabecalhos = memoria.RowsUsed().Where(linha => linha.Cell(1).GetString() == "Faixa" && linha.Cell(7).GetString() == "Valor considerado").ToList();
             // INSS, deduções legais e desconto simplificado.

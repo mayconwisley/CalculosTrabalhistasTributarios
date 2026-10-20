@@ -28,7 +28,7 @@ public class SimplesNacionalTests
         // Faltam 240.000 × 28% - 60.000 = 7.200 em 12 meses: 600,00 por mês. INSS do sócio: 11% de 3.000 → de 3.600 = + 66,00;
         // IRRF zero nos dois casos pela redução de 2026. Saldo: 1.765,00 - 66,00 = 1.699,00.
         var demonstrativo = (await new SimularSimplesNacionalUseCase(await Ambiente.ConsultaAsync()).ExecutarAsync(new SimularSimplesNacionalRequest(
-            Entrada(new DateOnly(2026, 10, 1), Meses(new DateOnly(2025, 10, 1), 12, 20_000m, 5_000m)), 3_000m, 0), default)).Sucesso();
+            Entrada(new DateOnly(2026, 10, 1), Meses(new DateOnly(2025, 10, 1), 12, 20_000m, 5_000m)), 3_000m, 0), TestContext.Current.CancellationToken)).Sucesso();
 
         Assert.Equal(3_225m, demonstrativo.Descontos.Single().Valor);
         Assert.Equal("25,00%", demonstrativo.Destaques.Single(item => item.Rotulo == "Fator r").Valor);

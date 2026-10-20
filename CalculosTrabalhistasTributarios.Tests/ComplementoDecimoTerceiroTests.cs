@@ -78,7 +78,7 @@ public class ComplementoDecimoTerceiroTests
 
         Assert.False(calculadora.Campos.Single(campo => campo.Rotulo == "1ª parcela (adiantamento)").Visivel);
         Assert.False(calculadora.Campos.Single(campo => campo.Rotulo == "Percentual da pensão").Visivel);
-        Assert.Equal(88m, (await calculadora.CalcularAsync(default)).Sucesso().Resultado);
+        Assert.Equal(88m, (await calculadora.CalcularAsync(TestContext.Current.CancellationToken)).Sucesso().Resultado);
 
         calculadora.ImportarCampos(new Dictionary<string, string> { ["Cálculo"] = "1ª e 2ª parcelas" });
         Assert.True(calculadora.Campos.Single(campo => campo.Rotulo == "Percentual da pensão").Visivel);

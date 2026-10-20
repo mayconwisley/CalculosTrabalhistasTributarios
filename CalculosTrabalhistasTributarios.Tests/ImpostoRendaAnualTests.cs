@@ -81,7 +81,7 @@ public class ImpostoRendaAnualTests
     [InlineData(10_000.00, true, 1_000.00)]    // no exterior, sobre qualquer valor
     public async Task Dividendos_retem_10_por_cento_do_total_acima_de_50_mil(decimal valor, bool exterior, decimal retencao)
     {
-        var resultado = await new SimularDividendosUseCase().ExecutarAsync(new SimularDividendosRequest(new DateOnly(2026, 10, 1), valor, 0m, 0m, exterior), default).Sucesso();
+        var resultado = await new SimularDividendosUseCase().ExecutarAsync(new SimularDividendosRequest(new DateOnly(2026, 10, 1), valor, 0m, 0m, exterior), TestContext.Current.CancellationToken).Sucesso();
         Assert.Equal(retencao, resultado.TotalDescontos);
     }
 
@@ -89,9 +89,9 @@ public class ImpostoRendaAnualTests
     public async Task Dividendos_no_mesmo_mes_descontam_o_ja_retido()
     {
         // 30 mil no dia 5 sem retenção; mais 30 mil no dia 20: 6 mil sobre os 60 mil do mês.
-        var resultado = await new SimularDividendosUseCase().ExecutarAsync(new SimularDividendosRequest(new DateOnly(2026, 10, 1), 60_000m, 0m, 0m, false), default).Sucesso();
+        var resultado = await new SimularDividendosUseCase().ExecutarAsync(new SimularDividendosRequest(new DateOnly(2026, 10, 1), 60_000m, 0m, 0m, false), TestContext.Current.CancellationToken).Sucesso();
         Assert.Equal(6_000m, resultado.TotalDescontos);
-        var transicao = await new SimularDividendosUseCase().ExecutarAsync(new SimularDividendosRequest(new DateOnly(2026, 10, 1), 60_000m, 20_000m, 0m, false), default).Sucesso();
+        var transicao = await new SimularDividendosUseCase().ExecutarAsync(new SimularDividendosRequest(new DateOnly(2026, 10, 1), 60_000m, 20_000m, 0m, false), TestContext.Current.CancellationToken).Sucesso();
         Assert.Equal(0m, transicao.TotalDescontos);
     }
 

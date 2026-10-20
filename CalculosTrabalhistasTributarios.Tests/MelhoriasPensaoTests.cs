@@ -43,8 +43,7 @@ public class MelhoriasPensaoTests
     public async Task Rejeita_valores_fora_dos_limites(string texto)
     {
         var valor = decimal.Parse(texto, System.Globalization.CultureInfo.InvariantCulture);
-        var resultado = await new SimularPensaoUseCase(await Ambiente.ConsultaAsync()).ExecutarAsync(
-            new(new DateOnly(2026, 10, 1), valor, 0m, 0, RegraPensao.PercentualDosLiquidos(30m), 0m), default);
+        var resultado = await new SimularPensaoUseCase(await Ambiente.ConsultaAsync()).ExecutarAsync(new(new DateOnly(2026, 10, 1), valor, 0m, 0, RegraPensao.PercentualDosLiquidos(30m), 0m), TestContext.Current.CancellationToken);
         Assert.True(resultado.Falhou);
         Assert.Contains("Valor bruto", resultado.Erro.Mensagem);
     }

@@ -130,8 +130,8 @@ public class CustoFuncionarioDetalhadoTests
         var outro = new Presentation.ViewModels.Calculadoras.CalculadoraCustoFuncionario(new SimularCustoFuncionarioUseCase());
         Assert.True(outro.TentarImportarCampos(salvo).Sucesso);
         Assert.Equal(salvo.OrderBy(x => x.Key), outro.ExportarCampos().OrderBy(x => x.Key));
-        var antes = await c.CalcularAsync(default);
-        var depois = await outro.CalcularAsync(default);
+        var antes = await c.CalcularAsync(TestContext.Current.CancellationToken);
+        var depois = await outro.CalcularAsync(TestContext.Current.CancellationToken);
         Assert.Equal(antes.Valor.Resultado, depois.Valor.Resultado);
         Assert.Equal(5846.16m, depois.Valor.Resultado);
         Assert.Contains(depois.Valor.Proventos, v => v.Descricao == "Benefício: Alimentação" && v.Valor == 480m);

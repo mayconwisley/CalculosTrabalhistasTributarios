@@ -17,7 +17,7 @@ public class PlanilhaTests
     {
         var dto = await new SimularCustoFuncionarioUseCase().ExecutarAsync(new(3000m,
             Domain.Tributacao.RegimeTributario.LucroRealOuPresumido, 2m, 1m, 5.8m, 500m, true,
-            BeneficiosDetalhados: [new("Alimentação", 600m, 120m)]), default).Sucesso();
+            BeneficiosDetalhados: [new("Alimentação", 600m, 120m)]), TestContext.Current.CancellationToken).Sucesso();
         using var pasta = await GerarAsync(caminho => new ClosedXmlPlanilhaService().GerarDemonstrativoAsync(dto, caminho, default));
         var beneficio = Linha(pasta.Worksheet(1), "Benefício: Alimentação").Cell(3);
         Assert.Equal(XLDataType.Number, beneficio.DataType);
@@ -34,7 +34,7 @@ public class PlanilhaTests
     public async Task Emprestimo_pessoal_exporta_iof_seguro_e_liquido_numericos(bool financiar)
     {
         var dto = await new SimularEmprestimoPessoalUseCase().ExecutarAsync(new(new(
-            1000m, 1, 10m, new(2026, 1, 1), false, 20m, financiar, 50m, 30m, 100m)), default).Sucesso();
+            1000m, 1, 10m, new(2026, 1, 1), false, 20m, financiar, 50m, 30m, 100m)), TestContext.Current.CancellationToken).Sucesso();
         using var pasta = await GerarAsync(caminho => new ClosedXmlPlanilhaService().GerarDemonstrativoAsync(dto, caminho, default));
         var aba = pasta.Worksheet(1);
         Assert.Equal(20m, Linha(aba, "IOF da operação").Cell(3).GetValue<decimal>());
@@ -51,7 +51,7 @@ public class PlanilhaTests
             1000m, 1, 0m, 0m, 0m, 0m, 0m, 0m, IofAutomatico: true,
             DataLiberacao: new(2026, 1, 1), PrimeiroVencimento: new(2026, 2, 1));
         var dto = await new SimularCreditoTrabalhadorUseCase(await Ambiente.ConsultaAsync())
-            .ExecutarAsync(new(new DateOnly(2026, 1, 1), 5000m, 0m, 0, 0m, 0m, entrada), default).Sucesso();
+            .ExecutarAsync(new(new DateOnly(2026, 1, 1), 5000m, 0m, 0, 0m, 0m, entrada), TestContext.Current.CancellationToken).Sucesso();
         using var pasta = await GerarAsync(caminho => new ClosedXmlPlanilhaService().GerarDemonstrativoAsync(dto, caminho, default));
         Assert.Equal(6.38d, Linha(pasta.Worksheet(1), "IOF financiado").Cell(3).GetDouble());
         Assert.Equal(1006.38d, Linha(pasta.Worksheet(1), "Principal financiado").Cell(3).GetDouble());
@@ -67,8 +67,7 @@ public class PlanilhaTests
         var regra = new RegraPensao(BasePensao.ValorFixo, 0m, 500m);
         var entrada = new EntradaPensaoDto(new DateOnly(2026, 10, 1), bruto, 0m, 0,
             [new BeneficiarioPensao("Beneficiário", regra)], 0m);
-        var simulacao = await new SimularPensaoUseCase(await Ambiente.ConsultaAsync()).ExecutarAsync(
-            new(entrada.Competencia, bruto, 0m, 0, regra, 0m), default).Sucesso();
+        var simulacao = await new SimularPensaoUseCase(await Ambiente.ConsultaAsync()).ExecutarAsync(new(entrada.Competencia, bruto, 0m, 0, regra, 0m), TestContext.Current.CancellationToken).Sucesso();
         using var pasta = await GerarAsync(caminho => new ClosedXmlPlanilhaService().GerarPensaoAsync(simulacao, entrada, caminho, default));
         var celula = Linha(pasta.Worksheet(1), "Líquido de quem paga").Cell(2);
         if (bruto == 0)
@@ -104,7 +103,7 @@ public class PlanilhaTests
     {
         var entrada = new EntradaCreditoTrabalhador(ObjetivoCreditoTrabalhador.ValorDesejado, 1000m, 1, 10m, 50m, 50m, 100m, 0m, 0m);
         var dto = await new SimularCreditoTrabalhadorUseCase(await Ambiente.ConsultaAsync())
-            .ExecutarAsync(new(new DateOnly(2026, 10, 1), 4000m, 0m, 0, 0m, 0m, entrada), default).Sucesso();
+            .ExecutarAsync(new(new DateOnly(2026, 10, 1), 4000m, 0m, 0, 0m, 0m, entrada), TestContext.Current.CancellationToken).Sucesso();
         using var pasta = await GerarAsync(caminho => new ClosedXmlPlanilhaService().GerarDemonstrativoAsync(dto, caminho, default));
         var aba = pasta.Worksheet(1);
         Assert.Equal(1000d, Linha(aba, "Crédito antes dos custos da liberação").Cell(3).GetDouble());
@@ -119,7 +118,7 @@ public class PlanilhaTests
         var pedido = new SimularTrabalhoExteriorRequest(new DateOnly(2026, 10, 15), "Estados Unidos", "USD",
             new EntradaTrabalhoExterior(VinculoTrabalhoExterior.EmpregoAssalariado, 10_000m, 50m, 2_000m,
                 10m, 5m, 20m, 1m, 5m, 4.8m), true, 0m, 0, 0m, 0m);
-        var demonstrativo = await new SimularTrabalhoExteriorUseCase(await Ambiente.ConsultaAsync()).ExecutarAsync(pedido, default).Sucesso();
+        var demonstrativo = await new SimularTrabalhoExteriorUseCase(await Ambiente.ConsultaAsync()).ExecutarAsync(pedido, TestContext.Current.CancellationToken).Sucesso();
         using var pasta = await GerarAsync(caminho => new ClosedXmlPlanilhaService().GerarDemonstrativoAsync(demonstrativo, caminho, default));
         var aba = pasta.Worksheet(1);
         Assert.Equal(48_000d, Linha(aba, "Remuneração convertida").Cell(3).GetDouble());
@@ -132,7 +131,7 @@ public class PlanilhaTests
     public async Task Saque_aniversario_exporta_bruto_repasse_e_disponivel_numericos()
     {
         var demonstrativo = await new SimularSaqueAniversarioUseCase()
-            .ExecutarAsync(new(8000m, 11, 1800m), default).Sucesso();
+            .ExecutarAsync(new(8000m, 11, 1800m), TestContext.Current.CancellationToken).Sucesso();
         using var pasta = await GerarAsync(caminho => new ClosedXmlPlanilhaService().GerarDemonstrativoAsync(demonstrativo, caminho, default));
         var aba = pasta.Worksheet(1);
         Assert.Equal(2250d, Linha(aba, "Saque-aniversário").Cell(3).GetDouble());
@@ -145,7 +144,7 @@ public class PlanilhaTests
     {
         var analise = new EntradaAnaliseAntecipacaoFgts(new DateOnly(2026, 10, 7), ConfirmacaoAntecipacaoFgts.Sim,
             ConfirmacaoAntecipacaoFgts.Sim, ConfirmacaoAntecipacaoFgts.Sim);
-        var dto = await new SimularSaqueAniversarioUseCase().ExecutarAsync(new(18000m, 4, 0m, 10000m, 0m, true, analise), default).Sucesso();
+        var dto = await new SimularSaqueAniversarioUseCase().ExecutarAsync(new(18000m, 4, 0m, 10000m, 0m, true, analise), TestContext.Current.CancellationToken).Sucesso();
         using var pasta = await GerarAsync(caminho => new ClosedXmlPlanilhaService().GerarDemonstrativoAsync(dto, caminho, default));
         Assert.Contains(pasta.Worksheet(1).CellsUsed(), celula => celula.GetString() == "Impedimento informado");
         Assert.Equal(8000d, Linha(pasta.Worksheet(1), "Saldo fora da garantia informada").Cell(3).GetDouble());
@@ -185,7 +184,7 @@ public class PlanilhaTests
     public async Task Demonstrativo_tem_os_valores_como_numeros_e_a_memoria_em_outra_aba()
     {
         var demonstrativo = await new SimularHoleriteUseCase(await Ambiente.ConsultaAsync()).ExecutarAsync(new SimularHoleriteRequest(
-            new DateOnly(2026, 10, 1), 3000m, GrauInsalubridade.Nenhum, false, 0m, 220m, 10m, 50m, 0m, 100m, 0m, 20m, 1, 0, 0, 0m, 0, 0, null, 0m, 0m, 0m), default).Sucesso();
+            new DateOnly(2026, 10, 1), 3000m, GrauInsalubridade.Nenhum, false, 0m, 220m, 10m, 50m, 0m, 100m, 0m, 20m, 1, 0, 0, 0m, 0, 0, null, 0m, 0m, 0m), TestContext.Current.CancellationToken).Sucesso();
         using var pasta = await GerarAsync(caminho => new ClosedXmlPlanilhaService().GerarDemonstrativoAsync(demonstrativo, caminho, default));
 
         var aba = pasta.Worksheet(1);
@@ -210,8 +209,8 @@ public class PlanilhaTests
     public async Task Parcelas_em_atraso_com_datas_fator_e_juros_numericos()
     {
         var simulador = new SimularPensaoAtrasoUseCase(await Ambiente.ConsultaAsync(), await Ambiente.IndicesAsync());
-        var parcelas = await simulador.GerarParcelasAsync(new GerarParcelasAtrasoRequest(BasePensao.ValorFixo, 1000m, 0m, new DateOnly(2026, 1, 1), new DateOnly(2026, 6, 1), 10), default).Sucesso();
-        var resultado = await simulador.CalcularAsync(new SimularPensaoAtrasoRequest(parcelas, new DateOnly(2026, 10, 3), null, CorrecaoMonetaria.Inpc, JurosDeMora.TaxaLegal, AcrescimosPenhora.MultaEHonorarios), default).Sucesso();
+        var parcelas = await simulador.GerarParcelasAsync(new GerarParcelasAtrasoRequest(BasePensao.ValorFixo, 1000m, 0m, new DateOnly(2026, 1, 1), new DateOnly(2026, 6, 1), 10), TestContext.Current.CancellationToken).Sucesso();
+        var resultado = await simulador.CalcularAsync(new SimularPensaoAtrasoRequest(parcelas, new DateOnly(2026, 10, 3), null, CorrecaoMonetaria.Inpc, JurosDeMora.TaxaLegal, AcrescimosPenhora.MultaEHonorarios), TestContext.Current.CancellationToken).Sucesso();
         using var pasta = await GerarAsync(caminho => new ClosedXmlPlanilhaService().GerarPensaoAtrasoAsync(resultado, caminho, default));
 
         var aba = pasta.Worksheet(1);
