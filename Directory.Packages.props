@@ -8,9 +8,9 @@
     <PackageVersion Include="ClosedXML" Version="0.105.0" />
     <PackageVersion Include="HtmlAgilityPack" Version="1.11.74" />
     <PackageVersion Include="Markdig" Version="0.41.3" />
-    <PackageVersion Include="Microsoft.Data.Sqlite" Version="9.0.2" />
-    <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="9.0.2" />
-    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.2" />
+    <PackageVersion Include="Microsoft.Data.Sqlite" Version="10.0.13" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="10.0.13" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.13" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
     <PackageVersion Include="QuestPDF" Version="2025.12.1" />
     <PackageVersion Include="xunit" Version="2.9.3" />
