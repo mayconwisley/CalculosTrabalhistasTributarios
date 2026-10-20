@@ -279,14 +279,14 @@ dotnet run --project .\CalculosTrabalhistasTributarios\CalculosTrabalhistasTribu
 Para verificar uma feature durante o desenvolvimento, substitua o filtro pelo nome da classe de testes pertinente:
 
 ```powershell
-dotnet test .\CalculosTrabalhistasTributarios.Tests\CalculosTrabalhistasTributarios.Tests.csproj --no-restore --filter FullyQualifiedName~BancoHorasTests
+dotnet test .\CalculosTrabalhistasTributarios.Tests\CalculosTrabalhistasTributarios.Tests.csproj --no-restore --filter-class CalculosTrabalhistasTributarios.Tests.BancoHorasTests
 ```
 
 Validação equivalente à configuração principal do CI:
 
 ```powershell
 dotnet build .\CalculosTrabalhistasTributarios.sln -c Release --no-restore
-dotnet test .\CalculosTrabalhistasTributarios.Tests -c Release --no-build --logger "trx;LogFileName=resultados.trx" --results-directory TestResults
+dotnet test .\CalculosTrabalhistasTributarios.Tests -c Release --no-build --report-xunit-trx --report-xunit-trx-filename resultados.trx --results-directory TestResults
 ```
 
 Use `--no-restore` apenas depois de restaurar dependências compatíveis com os arquivos atuais. Use `--no-build` apenas depois de compilar a mesma configuração e versão do código. Não apresente resultado de um binário antigo como validação das alterações atuais.
