@@ -36,6 +36,7 @@ public static class ThemeManager
         var resources = System.Windows.Application.Current.Resources;
         foreach (var (key, value) in isDarkTheme ? DarkResources.Value : LightResources.Value)
             resources[key] = value;
+        BarraDeTitulo.Aplicar(isDarkTheme);
     }
 
     private static void OnUserPreferenceChanged(object sender, UserPreferenceChangedEventArgs e)

@@ -636,7 +636,7 @@
                     </DataTemplate></ItemsControl.ItemTemplate>
                 </ItemsControl>
                 <TextBlock Text="{Binding TotalTexto}" FontWeight="SemiBold" Margin="0,2,0,7" />
-                <CheckBox IsChecked="{Binding Confirmado, Mode=TwoWay}" Content="Conferi as incidências e os valores; incluir estas parcelas no cálculo" AutomationProperties.Name="Confirmar incidências e valores do banco de horas" />
+                <CheckBox IsChecked="{Binding Confirmado, Mode=TwoWay}" Foreground="{DynamicResource TextBrush}" Content="Conferi as incidências e os valores; incluir estas parcelas no cálculo" AutomationProperties.Name="Confirmar incidências e valores do banco de horas" />
             </StackPanel>
         </DataTemplate>
         <DataTemplate DataType="{x:Type calculadoras:CampoBancoHorasViewModel}">
@@ -754,7 +754,7 @@
                         <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
                         <ItemsControl x:Name="Formulario" ItemsSource="{Binding CamposDoFormulario}" Focusable="False">
                             <ItemsControl.Style>
-                                <Style TargetType="ItemsControl">
+                                <Style TargetType="ItemsControl" BasedOn="{StaticResource {x:Type ItemsControl}}">
                                     <Setter Property="ItemsPanel" Value="{StaticResource CamposEmLinhas}" />
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding UsaFormularioLarguraTotal}" Value="True">

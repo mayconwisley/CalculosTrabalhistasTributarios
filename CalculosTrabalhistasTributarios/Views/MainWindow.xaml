@@ -171,7 +171,7 @@
 				<StackPanel Visibility="{Binding Expandido, Converter={StaticResource BooleanToVisibilityConverter}}">
 					<ItemsControl ItemsSource="{Binding Atalhos}" ItemTemplate="{StaticResource AtalhoMenuLateral}">
 						<ItemsControl.Tag><Thickness>17,0,36,0</Thickness></ItemsControl.Tag>
-						<ItemsControl.Style><Style TargetType="ItemsControl"><Style.Triggers><DataTrigger Binding="{Binding TemSubgrupos}" Value="True"><Setter Property="Visibility" Value="Collapsed" /></DataTrigger></Style.Triggers></Style></ItemsControl.Style>
+						<ItemsControl.Style><Style TargetType="ItemsControl" BasedOn="{StaticResource {x:Type ItemsControl}}"><Style.Triggers><DataTrigger Binding="{Binding TemSubgrupos}" Value="True"><Setter Property="Visibility" Value="Collapsed" /></DataTrigger></Style.Triggers></Style></ItemsControl.Style>
 					</ItemsControl>
 					<ItemsControl ItemsSource="{Binding Subgrupos}" ItemTemplate="{StaticResource SubgrupoMenuLateral}" />
 				</StackPanel>
