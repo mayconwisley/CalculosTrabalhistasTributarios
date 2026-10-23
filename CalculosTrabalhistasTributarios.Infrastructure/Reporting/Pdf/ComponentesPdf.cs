@@ -1,4 +1,5 @@
 using CalculosTrabalhistasTributarios.Application.DTOs;
+using CalculosTrabalhistasTributarios.Application.Demonstrativos;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
@@ -64,8 +65,8 @@ internal static class ComponentesPdf
             rodape.Item().Background(AzulClaro).Border(1).BorderColor(CinzaBorda).Padding(8).Column(aviso =>
             {
                 aviso.Spacing(3);
-                aviso.Item().Text("CÁLCULO SIMULADO - VALORES ESTIMADOS").SemiBold().FontColor(AzulPrimario);
-                aviso.Item().Text("Este documento apresenta uma simulação. Procure um profissional especializado neste cálculo para apurar e validar os valores aplicáveis ao seu caso antes de utilizá-los.");
+                aviso.Item().Text(AvisoSimulacao.Titulo).SemiBold().FontColor(AzulPrimario);
+                aviso.Item().Text(AvisoSimulacao.Orientacao);
             });
             rodape.Item().Row(informacoes =>
             {

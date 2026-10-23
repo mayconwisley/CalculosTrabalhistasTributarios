@@ -32,7 +32,7 @@
 
 ### Versão móvel em desenvolvimento
 
-A solução [CalculosTrabalhistasTributarios.Mobile.sln](CalculosTrabalhistasTributarios.Mobile.sln) contém a base Android em .NET MAUI 10, com apresentação MVVM testável e reutilização de Domain e Application. A primeira tela é o saque-aniversário do FGTS, executado offline. Histórico, PDF, Excel, atualização de tabelas e demais calculadoras ainda não foram portados.
+A solução [CalculosTrabalhistasTributarios.Mobile.sln](CalculosTrabalhistasTributarios.Mobile.sln) contém a base Android em .NET MAUI 10, com apresentação MVVM testável e reutilização de Domain e Application. A primeira tela é o saque-aniversário do FGTS, executado offline, com cartões adaptados ao celular e compartilhamento de PDF pelo menu nativo (WhatsApp, e-mail e outros aplicativos). O móvel oferece somente PDF, sem Excel. Histórico, atualização de tabelas e demais calculadoras ainda não foram portados.
 
 A solução principal `CalculosTrabalhistasTributarios.sln` inclui os projetos WPF e MAUI no mesmo Solution Explorer. Para trabalhar apenas no desktop sem exigir o SDK Android, use o filtro `CalculosTrabalhistasTributarios.Desktop.slnf`. A solução `CalculosTrabalhistasTributarios.Mobile.sln` permite abrir somente a parte móvel. Consulte [docs/MAUI.md](docs/MAUI.md) para requisitos, comandos e regras de extensão.
 

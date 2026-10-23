@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
+using CalculosTrabalhistasTributarios.Mobile.Presentation.Interfaces;
 
 namespace CalculosTrabalhistasTributarios.Mobile.Tests;
 
@@ -102,7 +103,7 @@ public sealed class SaqueAniversarioViewModelTests
     public async Task Falha_inesperada_e_registrada_e_nao_vira_resultado_zero()
     {
         var logger = new LoggerDeTeste();
-        var vm = new SaqueAniversarioViewModel(new SimulacaoComFalha(), logger) { Saldo = "8000", IndiceMes = 0 };
+        var vm = new SaqueAniversarioViewModel(new SimulacaoComFalha(), logger, new CompartilhamentoDeTeste()) { Saldo = "8000", IndiceMes = 0 };
         await vm.CalcularCommand.ExecuteAsync(null);
         Assert.IsType<InvalidOperationException>(logger.Excecao);
         Assert.NotNull(vm.Mensagem);
@@ -113,6 +114,7 @@ public sealed class SaqueAniversarioViewModelTests
     public void Composicao_valida_escopos_e_cria_formularios_independentes()
     {
         var servicos = new ServiceCollection().AddSaqueAniversario().AddPresentation();
+        servicos.AddSingleton<ICompartilhamentoPdf, CompartilhamentoDeTeste>();
         servicos.AddSingleton<ILogger<SaqueAniversarioViewModel>>(NullLogger<SaqueAniversarioViewModel>.Instance);
         using var provider = servicos.BuildServiceProvider(new ServiceProviderOptions { ValidateOnBuild = true, ValidateScopes = true });
         using var scope = provider.CreateScope();
@@ -128,8 +130,13 @@ public sealed class SaqueAniversarioViewModelTests
     }
 
     private static SaqueAniversarioViewModel Criar(ISimularDemonstrativoUseCase<SimularSaqueAniversarioRequest>? simular = null) =>
-        new(simular ?? new SimularSaqueAniversarioUseCase(), NullLogger<SaqueAniversarioViewModel>.Instance)
+        new(simular ?? new SimularSaqueAniversarioUseCase(), NullLogger<SaqueAniversarioViewModel>.Instance, new CompartilhamentoDeTeste())
         { Saldo = "8.000,00", IndiceMes = 3 };
+
+    private sealed class CompartilhamentoDeTeste : ICompartilhamentoPdf
+    {
+        public Task CompartilharAsync(DemonstrativoDto demonstrativo, CancellationToken cancellationToken) => Task.CompletedTask;
+    }
 
     private sealed class SimulacaoCancelavel : ISimularDemonstrativoUseCase<SimularSaqueAniversarioRequest>
     {

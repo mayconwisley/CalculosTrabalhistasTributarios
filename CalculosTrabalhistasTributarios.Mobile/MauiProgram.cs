@@ -3,6 +3,8 @@ using CalculosTrabalhistasTributarios.Mobile.Presentation;
 using CalculosTrabalhistasTributarios.Mobile.Features.SaqueAniversario;
 using Microsoft.Extensions.Logging;
 using System.Globalization;
+using CalculosTrabalhistasTributarios.Mobile.Presentation.Interfaces;
+using CalculosTrabalhistasTributarios.Mobile.Services;
 
 namespace CalculosTrabalhistasTributarios.Mobile;
 
@@ -24,6 +26,9 @@ public static class MauiProgram
             });
 
         builder.Services.AddSaqueAniversario().AddPresentation();
+        builder.Services.AddSingleton<IShare>(Share.Default);
+        builder.Services.AddSingleton<IFileSystem>(FileSystem.Current);
+        builder.Services.AddSingleton<ICompartilhamentoPdf, CompartilhamentoPdf>();
         builder.Services.AddTransient<SaqueAniversarioPage>();
         builder.Services.AddSingleton<Func<Window>>(provider => () =>
         {

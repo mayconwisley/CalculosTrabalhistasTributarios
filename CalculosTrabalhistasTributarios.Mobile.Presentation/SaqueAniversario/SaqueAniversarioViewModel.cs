@@ -5,6 +5,7 @@ using CalculosTrabalhistasTributarios.Presentation;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
+using CalculosTrabalhistasTributarios.Mobile.Presentation.Interfaces;
 
 namespace CalculosTrabalhistasTributarios.Mobile.Presentation.SaqueAniversario;
 
@@ -12,12 +13,14 @@ public sealed partial class SaqueAniversarioViewModel : ObservableObject
 {
     private readonly ISimularDemonstrativoUseCase<SimularSaqueAniversarioRequest> _simular;
     private readonly ILogger<SaqueAniversarioViewModel> _logger;
+    private readonly ICompartilhamentoPdf _compartilhamento;
 
     public SaqueAniversarioViewModel(ISimularDemonstrativoUseCase<SimularSaqueAniversarioRequest> simular,
-        ILogger<SaqueAniversarioViewModel> logger)
+        ILogger<SaqueAniversarioViewModel> logger, ICompartilhamentoPdf compartilhamento)
     {
         _simular = simular;
         _logger = logger;
+        _compartilhamento = compartilhamento;
     }
 
     public IReadOnlyList<string> Meses { get; } = CultureInfo.GetCultureInfo("pt-BR")
@@ -29,8 +32,27 @@ public sealed partial class SaqueAniversarioViewModel : ObservableObject
     [ObservableProperty] private string _parcelaComprometida = "0,00";
     [ObservableProperty] private bool _saldoIncluiGarantia;
     [ObservableProperty] private int _indiceMes = -1;
-    [ObservableProperty] private string? _mensagem;
-    [ObservableProperty] private DemonstrativoDto? _demonstrativo;
+    [ObservableProperty] private bool _exibirDetalhes;
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(TemMensagem))]
+    private string? _mensagem;
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(CompartilharPdfCommand))]
+    [NotifyPropertyChangedFor(nameof(TemResultado))]
+    private DemonstrativoDto? _demonstrativo;
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(CalcularCommand))]
+    [NotifyCanExecuteChangedFor(nameof(CompartilharPdfCommand))]
+    private bool _ocupado;
+
+    public bool TemResultado => Demonstrativo is not null;
+    public bool TemMensagem => !string.IsNullOrWhiteSpace(Mensagem);
+
+    public string ResultadoFormatado => Demonstrativo is { } demonstrativo
+        ? demonstrativo.Resultado.ToString("C2", CultureInfo.GetCultureInfo("pt-BR"))
+        : string.Empty;
+
+    partial void OnDemonstrativoChanged(DemonstrativoDto? value) => OnPropertyChanged(nameof(ResultadoFormatado));
 
     // Qualquer edição invalida a apuração anterior para não associar valores antigos ao formulário atual.
     protected override void OnPropertyChanged(System.ComponentModel.PropertyChangedEventArgs e)
@@ -44,7 +66,7 @@ public sealed partial class SaqueAniversarioViewModel : ObservableObject
         }
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(PodeCalcular))]
     private async Task CalcularAsync(CancellationToken cancellationToken)
     {
         Demonstrativo = null;
@@ -58,6 +80,7 @@ public sealed partial class SaqueAniversarioViewModel : ObservableObject
         var pedido = new SimularSaqueAniversarioRequest(saldo, IndiceMes + 1, parcela, garantia, multa, SaldoIncluiGarantia);
         try
         {
+            Ocupado = true;
             cancellationToken.ThrowIfCancellationRequested();
             var resultado = await _simular.ExecutarAsync(pedido, cancellationToken);
             cancellationToken.ThrowIfCancellationRequested();
@@ -74,6 +97,38 @@ public sealed partial class SaqueAniversarioViewModel : ObservableObject
         {
             _logger.LogError(exception, "Falha ao simular saque-aniversário no aplicativo móvel.");
             Mensagem = "Não foi possível concluir a simulação. Tente novamente.";
+        }
+        finally
+        {
+            Ocupado = false;
+        }
+    }
+
+    private bool PodeCalcular() => !Ocupado;
+    private bool PodeCompartilharPdf() => Demonstrativo is not null && !Ocupado;
+
+    [RelayCommand(CanExecute = nameof(PodeCompartilharPdf))]
+    private async Task CompartilharPdfAsync(CancellationToken cancellationToken)
+    {
+        if (Demonstrativo is not { } demonstrativo)
+            return;
+        Mensagem = null;
+        Ocupado = true;
+        try
+        {
+            await _compartilhamento.CompartilharAsync(demonstrativo, cancellationToken);
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+        }
+        catch (Exception exception)
+        {
+            _logger.LogError(exception, "Falha ao gerar ou compartilhar PDF da simulação móvel.");
+            Mensagem = "Não foi possível compartilhar o PDF. Confira o espaço disponível e tente novamente.";
+        }
+        finally
+        {
+            Ocupado = false;
         }
     }
 
