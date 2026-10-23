@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:CalculosTrabalhistasTributarios.Mobile.Presentation.SaqueAniversario;assembly=CalculosTrabalhistasTributarios.Mobile.Presentation"
+             xmlns:dto="clr-namespace:CalculosTrabalhistasTributarios.Application.DTOs;assembly=CalculosTrabalhistasTributarios.Application"
+             xmlns:comportamentos="clr-namespace:CalculosTrabalhistasTributarios.Mobile.Comportamentos"
+             x:Class="CalculosTrabalhistasTributarios.Mobile.Features.SaqueAniversario.SaqueAniversarioPage"
+             x:DataType="vm:SaqueAniversarioViewModel"
+             Title="Saque-aniversário do FGTS">
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="20" MaximumWidthRequest="640" HorizontalOptions="Fill">
+            <VerticalStackLayout Spacing="6">
+                <Label Text="Cálculos no celular" FontSize="14" />
+                <Label Text="Saque-aniversário do FGTS" FontSize="26" FontAttributes="Bold" SemanticProperties.HeadingLevel="Level1" />
+                <Label Text="Simule o saque anual a partir do extrato. O cálculo é feito neste aparelho, sem conexão com a internet." />
+                <Label Text="Versão inicial: sem histórico, exportação ou análise de nova antecipação. Confirme a disponibilidade no aplicativo FGTS." />
+            </VerticalStackLayout>
+            <Border>
+                <VerticalStackLayout Spacing="10">
+                    <VerticalStackLayout.Triggers>
+                        <DataTrigger TargetType="VerticalStackLayout" Binding="{Binding CalcularCommand.IsRunning}" Value="True">
+                            <Setter Property="IsEnabled" Value="False" />
+                        </DataTrigger>
+                    </VerticalStackLayout.Triggers>
+                    <Label Text="Saldo do extrato (R$)" />
+                    <Entry Text="{Binding Saldo}" AutomationId="Saldo" SemanticProperties.Description="Saldo do extrato em reais">
+                        <Entry.Behaviors><comportamentos:EntradaMonetariaBehavior /></Entry.Behaviors>
+                    </Entry>
+                    <Label Text="Garantia bloqueada (R$)" />
+                    <Entry Text="{Binding GarantiaBloqueada}" SemanticProperties.Description="Garantia bloqueada em reais">
+                        <Entry.Behaviors><comportamentos:EntradaMonetariaBehavior /></Entry.Behaviors>
+                    </Entry>
+                    <Label Text="Informe 0,00 quando não houver garantia bloqueada." />
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                        <Label Text="O saldo do extrato já inclui a garantia bloqueada" VerticalOptions="Center" />
+                        <Switch Grid.Column="1" IsToggled="{Binding SaldoIncluiGarantia}" SemanticProperties.Description="Saldo do extrato já inclui a garantia bloqueada" />
+                    </Grid>
+                    <Label Text="Multa rescisória incluída no saldo (R$)" />
+                    <Entry Text="{Binding MultaIncluida}" SemanticProperties.Description="Multa rescisória incluída no saldo em reais">
+                        <Entry.Behaviors><comportamentos:EntradaMonetariaBehavior /></Entry.Behaviors>
+                    </Entry>
+                    <Label Text="A multa é excluída da base. Informe 0,00 quando não estiver incluída." />
+                    <Label Text="Parcela deste saque comprometida com o banco (R$)" />
+                    <Entry Text="{Binding ParcelaComprometida}" SemanticProperties.Description="Parcela deste saque comprometida com o banco em reais">
+                        <Entry.Behaviors><comportamentos:EntradaMonetariaBehavior /></Entry.Behaviors>
+                    </Entry>
+                    <Label Text="Informe apenas o repasse deste saque anual; use 0,00 quando não houver. Não informe o total do empréstimo." />
+                    <Label Text="Mês de aniversário" />
+                    <Picker Title="Selecione o mês" ItemsSource="{Binding Meses}" SelectedIndex="{Binding IndiceMes}" SemanticProperties.Description="Mês de aniversário" />
+                </VerticalStackLayout>
+            </Border>
+            <Label Text="{Binding Mensagem}" TextColor="{AppThemeBinding Light={StaticResource ErroClaro}, Dark={StaticResource ErroEscuro}}" SemanticProperties.Description="Aviso da simulação">
+                <Label.Triggers>
+                    <DataTrigger TargetType="Label" Binding="{Binding Mensagem}" Value="{x:Null}"><Setter Property="IsVisible" Value="False" /></DataTrigger>
+                </Label.Triggers>
+            </Label>
+            <Button Text="Calcular" Command="{Binding CalcularCommand}" AutomationId="Calcular" SemanticProperties.Description="Calcular saque-aniversário" />
+            <ActivityIndicator IsRunning="{Binding CalcularCommand.IsRunning}" IsVisible="{Binding CalcularCommand.IsRunning}" />
+            <Border>
+                <Border.Triggers>
+                    <DataTrigger TargetType="Border" Binding="{Binding Demonstrativo}" Value="{x:Null}"><Setter Property="IsVisible" Value="False" /></DataTrigger>
+                </Border.Triggers>
+                <VerticalStackLayout Spacing="16">
+                    <Label Text="Resultado da simulação" FontSize="22" FontAttributes="Bold" SemanticProperties.HeadingLevel="Level2" />
+                    <Label Text="{Binding Demonstrativo.Referencia}" />
+                    <VerticalStackLayout Spacing="14" BindableLayout.ItemsSource="{Binding Demonstrativo.Destaques}">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="dto:DestaqueDto">
+                                <VerticalStackLayout Spacing="3">
+                                    <Label Text="{Binding Rotulo}" FontAttributes="Bold" />
+                                    <Label Text="{Binding Valor}" FontSize="22" />
+                                    <Label Text="{Binding Complemento}" />
+                                </VerticalStackLayout>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+                    <Label Text="{Binding Demonstrativo.RotuloProventos}" FontAttributes="Bold" />
+                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding Demonstrativo.Proventos}">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="dto:VerbaDto">
+                                <VerticalStackLayout Spacing="3" Padding="0,4">
+                                    <Label Text="{Binding Descricao}" />
+                                    <Label Text="{Binding Referencia}" />
+                                    <Label Text="{Binding Valor, StringFormat='R$ {0:N2}'}" FontAttributes="Bold" />
+                                </VerticalStackLayout>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+                    <Label Text="Descontos" FontAttributes="Bold" />
+                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding Demonstrativo.Descontos}" BindableLayout.EmptyView="Sem descontos informados.">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="dto:VerbaDto">
+                                <VerticalStackLayout Spacing="3">
+                                    <Label Text="{Binding Descricao}" />
+                                    <Label Text="{Binding Referencia}" />
+                                    <Label Text="{Binding Valor, StringFormat='R$ {0:N2}'}" />
+                                </VerticalStackLayout>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+                    <Label Text="{Binding Demonstrativo.RotuloResultado}" FontAttributes="Bold" />
+                    <Label Text="{Binding Demonstrativo.Resultado, StringFormat='R$ {0:N2}'}" FontSize="24" FontAttributes="Bold" />
+                    <Label Text="Memória de cálculo" FontSize="20" FontAttributes="Bold" SemanticProperties.HeadingLevel="Level2" />
+                    <VerticalStackLayout Spacing="14" BindableLayout.ItemsSource="{Binding Demonstrativo.Memoria}">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="dto:GrupoMemoriaDto">
+                                <VerticalStackLayout Spacing="6">
+                                    <Label Text="{Binding Titulo}" FontAttributes="Bold" />
+                                    <Label Text="{Binding Destaque}" />
+                                    <VerticalStackLayout Spacing="8" BindableLayout.ItemsSource="{Binding Formulas}">
+                                        <BindableLayout.ItemTemplate>
+                                            <DataTemplate x:DataType="dto:FormulaDto">
+                                                <VerticalStackLayout Spacing="2">
+                                                    <Label Text="{Binding Titulo}" FontAttributes="Bold" />
+                                                    <Label Text="{Binding Formula}" />
+                                                </VerticalStackLayout>
+                                            </DataTemplate>
+                                        </BindableLayout.ItemTemplate>
+                                    </VerticalStackLayout>
+                                </VerticalStackLayout>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+                    <Label Text="Premissas e limites" FontSize="20" FontAttributes="Bold" SemanticProperties.HeadingLevel="Level2" />
+                    <VerticalStackLayout Spacing="10" BindableLayout.ItemsSource="{Binding Demonstrativo.Observacoes}">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="x:String"><Label Text="{Binding .}" /></DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+            <Label Text="Cálculo simulado, com valores estimados. Procure um profissional especializado para apurar e validar os valores." FontAttributes="Italic" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+    <Style TargetType="ContentPage">
+        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource FundoClaro}, Dark={StaticResource FundoEscuro}}" />
+    </Style>
+    <Style TargetType="Label">
+        <Setter Property="FontFamily" Value="OpenSansRegular" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource TextoClaro}, Dark={StaticResource TextoEscuro}}" />
+    </Style>
+    <Style TargetType="Entry">
+        <Setter Property="MinimumHeightRequest" Value="52" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource TextoClaro}, Dark={StaticResource TextoEscuro}}" />
+        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource CartaoClaro}, Dark={StaticResource CartaoEscuro}}" />
+        <Setter Property="HorizontalTextAlignment" Value="End" />
+        <Setter Property="Keyboard" Value="Numeric" />
+        <Setter Property="MaxLength" Value="24" />
+    </Style>
+    <Style TargetType="Picker">
+        <Setter Property="MinimumHeightRequest" Value="52" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource TextoClaro}, Dark={StaticResource TextoEscuro}}" />
+        <Setter Property="TitleColor" Value="{AppThemeBinding Light={StaticResource TextoClaro}, Dark={StaticResource TextoEscuro}}" />
+        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource CartaoClaro}, Dark={StaticResource CartaoEscuro}}" />
+    </Style>
+    <Style TargetType="Button">
+        <Setter Property="MinimumHeightRequest" Value="52" />
+        <Setter Property="BackgroundColor" Value="{StaticResource Primaria}" />
+        <Setter Property="TextColor" Value="White" />
+        <Setter Property="CornerRadius" Value="12" />
+        <Setter Property="FontFamily" Value="OpenSansSemibold" />
+    </Style>
+    <Style TargetType="Border">
+        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource CartaoClaro}, Dark={StaticResource CartaoEscuro}}" />
+        <Setter Property="StrokeThickness" Value="0" />
+        <Setter Property="Padding" Value="16" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 12" />
+    </Style>
+</ResourceDictionary>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+    <Color x:Key="FundoClaro">#F2F5F8</Color>
+    <Color x:Key="FundoEscuro">#101820</Color>
+    <Color x:Key="CartaoClaro">#FFFFFF</Color>
+    <Color x:Key="CartaoEscuro">#1C2A36</Color>
+    <Color x:Key="TextoClaro">#142F43</Color>
+    <Color x:Key="TextoEscuro">#F1F5F9</Color>
+    <Color x:Key="Primaria">#174A67</Color>
+    <Color x:Key="ErroClaro">#9E1929</Color>
+    <Color x:Key="ErroEscuro">#FFB4AB</Color>
+</ResourceDictionary>

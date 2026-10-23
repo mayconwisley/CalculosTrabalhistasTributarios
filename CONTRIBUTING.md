@@ -26,7 +26,7 @@ O [Inno Setup 6](https://jrsoftware.org/isdl.php) e o GitHub CLI só são necess
 ```powershell
 git clone https://github.com/mayconwisley/CalculosTrabalhistasTributarios.git
 cd CalculosTrabalhistasTributarios
-dotnet build .\CalculosTrabalhistasTributarios.sln
+dotnet build .\CalculosTrabalhistasTributarios.Desktop.slnf
 dotnet test .\CalculosTrabalhistasTributarios.Tests
 dotnet run --project .\CalculosTrabalhistasTributarios
 ```

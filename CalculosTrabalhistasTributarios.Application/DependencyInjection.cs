@@ -40,7 +40,7 @@ public static class DependencyInjection
         .AddScoped<ISimularDemonstrativoUseCase<SimularCorrecaoValorRequest>, SimularCorrecaoValorUseCase>()
         .AddScoped<ISimularDemonstrativoUseCase<SimularDomesticoRequest>, SimularDomesticoUseCase>()
         .AddScoped<ISimularDemonstrativoUseCase<SimularAfastamentoRequest>, SimularAfastamentoUseCase>()
-        .AddScoped<ISimularDemonstrativoUseCase<SimularSaqueAniversarioRequest>, SimularSaqueAniversarioUseCase>()
+        .AddSaqueAniversario()
         .AddScoped<ISimularDemonstrativoUseCase<SimularAbonoSalarialRequest>, SimularAbonoSalarialUseCase>()
         .AddScoped<ISimularDemonstrativoUseCase<SimularCarneLeaoRequest>, SimularCarneLeaoUseCase>()
         .AddScoped<ISimularDemonstrativoUseCase<SimularTrabalhoExteriorRequest>, SimularTrabalhoExteriorUseCase>()
@@ -62,4 +62,8 @@ public static class DependencyInjection
         .AddScoped<ISimularDemonstrativoUseCase<SimularPensaoMorteRequest>, SimularPensaoMorteUseCase>()
         .AddScoped<IVerificarAtualizacoesUseCase, VerificarAtualizacoesUseCase>()
         .AddScoped<IAtualizarTodasTabelasUseCase, AtualizarTodasTabelasUseCase>();
+
+    /// <summary>Registra a simulação autônoma usada também pelo aplicativo móvel, sem exigir banco ou relatórios.</summary>
+    public static IServiceCollection AddSaqueAniversario(this IServiceCollection services) => services
+        .AddScoped<ISimularDemonstrativoUseCase<SimularSaqueAniversarioRequest>, SimularSaqueAniversarioUseCase>();
 }

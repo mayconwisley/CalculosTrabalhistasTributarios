@@ -1,0 +1,12 @@
+{
+  "solution": {
+    "path": "CalculosTrabalhistasTributarios.sln",
+    "projects": [
+      "CalculosTrabalhistasTributarios\\CalculosTrabalhistasTributarios.csproj",
+      "CalculosTrabalhistasTributarios.Application\\CalculosTrabalhistasTributarios.Application.csproj",
+      "CalculosTrabalhistasTributarios.Domain\\CalculosTrabalhistasTributarios.Domain.csproj",
+      "CalculosTrabalhistasTributarios.Infrastructure\\CalculosTrabalhistasTributarios.Infrastructure.csproj",
+      "CalculosTrabalhistasTributarios.Tests\\CalculosTrabalhistasTributarios.Tests.csproj"
+    ]
+  }
+}

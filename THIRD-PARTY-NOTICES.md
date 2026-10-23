@@ -4,6 +4,10 @@ Cálculos Trabalhistas e Tributários é distribuído sob a [licença MIT](LICEN
 
 | Componente | Versão | Licença | Copyright ou autores | Código-fonte |
 | --- | --- | --- | --- | --- |
+| .NET MAUI (aplicativo móvel) | 10.0.110 | MIT | © Microsoft Corporation. All rights reserved. | <https://github.com/dotnet/maui> |
+| CommunityToolkit.Mvvm (apresentação móvel) | 8.4.2 | MIT | © .NET Foundation and Contributors | <https://github.com/CommunityToolkit/dotnet> |
+| Microsoft.Extensions.Logging (aplicativo móvel) | 10.0.13 | MIT | © Microsoft Corporation. All rights reserved. | <https://github.com/dotnet/runtime> |
+| Open Sans (fontes do aplicativo móvel) | — | Apache-2.0 | Copyright 2010-2011 Google Corporation | <https://github.com/dotnet/maui/tree/main/src/Templates/src/templates/maui-mobile/Resources/Fonts> |
 | .NET Runtime e Windows Desktop Runtime | 9 | MIT | Copyright (c) .NET Foundation and Contributors | <https://github.com/dotnet/runtime> |
 | ClosedXML | 0.105.0 | MIT | Jan Havlíček, Francois Botha, Aleksei Pankratev, Manuel de Leon, Amir Ghezelbash | <https://github.com/ClosedXML/ClosedXML> |
 | ClosedXML.Parser | 2.0.0 | MIT | Jan Havlíček | <https://github.com/ClosedXML/ClosedXML.Parser> |

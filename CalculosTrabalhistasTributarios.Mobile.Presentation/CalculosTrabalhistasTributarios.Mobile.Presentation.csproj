@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+    <ProjectReference Include="..\CalculosTrabalhistasTributarios.Application\CalculosTrabalhistasTributarios.Application.csproj" />
+    <!-- Mesma implementação do desktop, sem referência ao assembly WPF. -->
+    <Compile Include="..\CalculosTrabalhistasTributarios\Presentation\LeituraNumerica.cs" Link="Comum\LeituraNumerica.cs" />
+  </ItemGroup>
+</Project>

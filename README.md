@@ -30,6 +30,14 @@
 
 ## Instalação
 
+### Versão móvel em desenvolvimento
+
+A solução [CalculosTrabalhistasTributarios.Mobile.sln](CalculosTrabalhistasTributarios.Mobile.sln) contém a base Android em .NET MAUI 10, com apresentação MVVM testável e reutilização de Domain e Application. A primeira tela é o saque-aniversário do FGTS, executado offline. Histórico, PDF, Excel, atualização de tabelas e demais calculadoras ainda não foram portados.
+
+A solução principal `CalculosTrabalhistasTributarios.sln` inclui os projetos WPF e MAUI no mesmo Solution Explorer. Para trabalhar apenas no desktop sem exigir o SDK Android, use o filtro `CalculosTrabalhistasTributarios.Desktop.slnf`. A solução `CalculosTrabalhistasTributarios.Mobile.sln` permite abrir somente a parte móvel. Consulte [docs/MAUI.md](docs/MAUI.md) para requisitos, comandos e regras de extensão.
+
+### Aplicativo Windows
+
 Baixe o instalador **CalculosTrabalhistasTributarios-X.Y.Z-setup.exe** na página de [Releases](https://github.com/mayconwisley/CalculosTrabalhistasTributarios/releases) e execute-o.
 
 - A instalação é feita para o usuário atual, em `%LOCALAPPDATA%\Programs\Cálculos Trabalhistas e Tributários`, e não pede permissão de administrador.
@@ -231,8 +239,8 @@ CalculosTrabalhistasTributarios/                 Aplicativo WPF (MVVM)
 No diretório raiz da solução:
 
 ```powershell
-dotnet restore
-dotnet build .\CalculosTrabalhistasTributarios.sln
+dotnet restore .\CalculosTrabalhistasTributarios.Desktop.slnf
+dotnet build .\CalculosTrabalhistasTributarios.Desktop.slnf --no-restore
 dotnet run --project .\CalculosTrabalhistasTributarios\CalculosTrabalhistasTributarios.csproj
 ```
 
