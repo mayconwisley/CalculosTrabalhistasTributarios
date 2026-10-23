@@ -166,6 +166,29 @@ dotnet build .\CalculosTrabalhistasTributarios.Mobile\CalculosTrabalhistasTribut
 
 Os testes de apresentação podem rodar sem Android SDK. Para compilar somente o desktop sem workloads móveis, use `dotnet build .\CalculosTrabalhistasTributarios.Desktop.slnf`, como no README e no CI. A compilação da solução principal completa exige também o ambiente MAUI Android.
 
+## Publicação do APK
+
+O APK é publicado no mesmo release do instalador do Windows, ao enviar a tag `vX.Y.Z` (veja "Publicar uma nova versão" no README). `instalador\gerar-apk.ps1` roda os testes do mobile e publica o projeto em Release com a versão da tag; o código de versão do Android é calculado dela (maior × 10000 + menor × 100 + correção; `v1.20.0` vira `12000`), por isso cada tag precisa ser maior que a anterior. Os valores de `ApplicationDisplayVersion` e `ApplicationVersion` no `.csproj` valem só para as compilações locais.
+
+O Android só aceita uma atualização assinada com a mesma chave da versão instalada. Com outra chave, o usuário precisa desinstalar o app e perde os cálculos salvos e as tabelas editadas. Crie a chave uma única vez, guarde o arquivo e a senha com cópia de segurança e nunca a coloque no repositório:
+
+```powershell
+New-Item -ItemType Directory -Force "$env:USERPROFILE\chaves"
+& "C:\Program Files\Android\openjdk\jdk-21.0.8\bin\keytool.exe" -genkeypair -v -keystore "$env:USERPROFILE\chaves\calculadora-android.keystore" -alias calculadora -keyalg RSA -keysize 2048 -validity 10000
+```
+
+O `keytool` pede a senha e os dados do certificado; ele acompanha o JDK instalado com o Android SDK. Depois, informe a chave em variáveis de ambiente do usuário e abra um terminal novo:
+
+```powershell
+[Environment]::SetEnvironmentVariable('CALCULADORA_ANDROID_KEYSTORE', "$env:USERPROFILE\chaves\calculadora-android.keystore", 'User')
+[Environment]::SetEnvironmentVariable('CALCULADORA_ANDROID_ALIAS', 'calculadora', 'User')
+[Environment]::SetEnvironmentVariable('CALCULADORA_ANDROID_SENHA', '<senha da chave>', 'User')
+```
+
+A senha segue para o MSBuild pelo prefixo `env:`, sem aparecer na linha de comando nem no log; ela fica, porém, gravada nas variáveis do usuário do Windows. Para gerar só o APK, sem publicar: `.\instalador\gerar-apk.ps1 -Versao 1.20.0`. O arquivo sai em `artefatos\CalculosTrabalhistasTributarios-<versão>-android.apk`.
+
+Os APKs gerados antes da chave de publicação, nos testes e no emulador, foram assinados com a chave de depuração do SDK. Um aparelho com um deles precisa desinstalar o app antes de instalar o APK publicado.
+
 ## Regras para ampliar
 
 1. Reutilize ou implemente o caso de uso na Application, com regras exclusivamente no Domain. Não copie fórmulas para ViewModels ou XAML.

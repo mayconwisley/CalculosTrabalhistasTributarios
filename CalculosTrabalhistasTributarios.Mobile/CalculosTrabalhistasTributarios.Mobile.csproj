@@ -10,8 +10,8 @@
     <MauiStrictXamlCompilation>true</MauiStrictXamlCompilation>
     <ApplicationTitle>Cálculos Trabalhistas e Tributários</ApplicationTitle>
     <ApplicationId>br.com.mayconwisley.calculostrabalhistastributarios</ApplicationId>
-    <!-- Mesma versão da última tag do desktop. O código de versão do Android (maior × 10000 + menor × 100 + correção)
-         precisa crescer a cada publicação para o aparelho aceitar a atualização. -->
+    <!-- Compilações locais: mesma versão da última tag do desktop. Na publicação, instalador\gerar-apk.ps1 usa a versão da
+         tag e calcula o código do Android (maior × 10000 + menor × 100 + correção), que precisa crescer a cada versão. -->
     <ApplicationDisplayVersion>1.19.1</ApplicationDisplayVersion>
     <ApplicationVersion>11901</ApplicationVersion>
     <SupportedOSPlatformVersion>24.0</SupportedOSPlatformVersion>

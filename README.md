@@ -278,18 +278,21 @@ O instalador é gerado localmente com o Inno Setup. O script publica o aplicativ
 | --- | --- |
 | `instalador\CalculosTrabalhistasTributarios.iss` | Definição do instalador: instalação por usuário, atalhos, idioma e preservação do banco. |
 | `instalador\gerar-instalador.ps1` | Publica o aplicativo e compila o instalador. |
-| `instalador\publicar-release.ps1` | Gera o instalador de uma tag e o publica no GitHub Releases. |
+| `instalador\gerar-apk.ps1` | Publica o aplicativo Android e gera o APK assinado com a chave de publicação. |
+| `instalador\publicar-release.ps1` | Gera o instalador e o APK de uma tag e os publica no GitHub Releases. |
 | `.githooks\pre-push` | Aciona a publicação quando uma tag de versão é enviada. |
 
 ## Publicar uma nova versão
 
-Esta seção é para o mantenedor. A publicação acontece ao enviar uma tag no formato `vX.Y.Z`. Todo o processo roda na sua máquina; o GitHub recebe apenas a tag e o instalador pronto.
+Esta seção é para o mantenedor. A publicação acontece ao enviar uma tag no formato `vX.Y.Z`. Todo o processo roda na sua máquina; o GitHub recebe apenas a tag, o instalador e o APK do Android prontos.
 
 Ative os hooks do repositório uma única vez por clone:
 
 ```powershell
 git config core.hooksPath .githooks
 ```
+
+O APK precisa da chave de publicação do Android, criada uma única vez e informada por variáveis de ambiente; sem ela, o push da tag é cancelado. O passo a passo está em [docs/MAUI.md](docs/MAUI.md#publicação-do-apk).
 
 Depois, para cada versão:
 
@@ -300,13 +303,13 @@ git push origin master v1.2.0
 
 Durante o push, o hook:
 
-1. Compila o aplicativo a partir de uma cópia isolada do código da tag (`git worktree`), com a versão da tag gravada no executável.
-2. Gera o instalador com o Inno Setup. Se algo falhar, **o push é cancelado** e nenhuma versão quebrada chega ao GitHub.
-3. Deixa um processo em segundo plano aguardando a tag chegar ao GitHub. Em seguida, ele cria o release com o instalador, as instruções de instalação e o SHA-256 do arquivo. O resultado é avisado em uma janela e registrado em `artefatos\release-vX.Y.Z.log`.
+1. Compila o aplicativo a partir de uma cópia isolada do código da tag (`git worktree`), com a versão da tag gravada no executável e no APK.
+2. Roda os testes do mobile e gera o APK assinado; depois roda os testes dos cálculos e gera o instalador com o Inno Setup. Se algo falhar, **o push é cancelado** e nenhuma versão quebrada chega ao GitHub.
+3. Deixa um processo em segundo plano aguardando a tag chegar ao GitHub. Em seguida, ele cria o release com o instalador, o APK, as instruções de instalação e o SHA-256 de cada arquivo. O resultado é avisado em uma janela e registrado em `artefatos\release-vX.Y.Z.log`.
 
 Pushes sem tag de versão não são afetados. Tags com sufixo, como `v1.2.0-beta.1`, são publicadas como *pré-lançamento*.
 
-Para testar o processo sem enviar nada, use a simulação, que gera o instalador e mostra o que seria publicado:
+Para testar o processo sem enviar nada, use a simulação, que gera o instalador e o APK e mostra o que seria publicado. Sem a chave de publicação, o APK da simulação é assinado com a chave de depuração e não serve para distribuir:
 
 ```powershell
 $env:CALCULADORA_SIMULAR_RELEASE = '1'

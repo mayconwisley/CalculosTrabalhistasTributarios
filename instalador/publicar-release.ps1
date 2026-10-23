@@ -1,13 +1,14 @@
 ﻿<#
 .SYNOPSIS
-Gera o instalador de uma tag de versão e o publica no GitHub Releases.
+Gera o instalador do Windows e o APK do Android de uma tag de versão e os publica no GitHub Releases.
 
 .DESCRIPTION
 Executado pelo hook .githooks\pre-push quando uma tag vX.Y.Z é enviada:
-  1. Durante o push, gera o instalador a partir de uma cópia isolada (git worktree) do código da tag.
-     Se a compilação falhar, o push é cancelado e nenhuma versão quebrada chega ao GitHub.
+  1. Durante o push, gera o APK e o instalador a partir de uma cópia isolada (git worktree) do código da tag.
+     Se a compilação falhar, o push é cancelado e nenhuma versão quebrada chega ao GitHub. O APK exige a chave de
+     publicação do Android (veja instalador\gerar-apk.ps1); tags anteriores ao mobile publicam só o instalador.
   2. O pre-push roda antes de a tag existir no GitHub, e o release depende dela. Por isso a publicação
-     fica com um processo em segundo plano, que aguarda a tag chegar e cria o release com o instalador.
+     fica com um processo em segundo plano, que aguarda a tag chegar e cria o release com o instalador e o APK.
      O resultado é avisado em uma janela e registrado em artefatos\release-<tag>.log.
 
 Também pode ser executado manualmente para publicar (ou republicar) uma tag que já está no GitHub.
@@ -23,12 +24,14 @@ git push origin v1.2.0
 
 .EXAMPLE
 $env:CALCULADORA_SIMULAR_RELEASE = '1'; git push origin v1.2.0 --dry-run
-# Simulação: gera o instalador e mostra o que seria publicado, sem enviar nada.
+# Simulação: gera o instalador e o APK e mostra o que seria publicado, sem enviar nada. Sem a chave de
+# publicação do Android, o APK da simulação é assinado com a chave de depuração.
 #>
 param(
     [string] $Remoto = 'origin',
     [string[]] $Tag = @(),
     [string] $Instalador,
+    [string] $Apk,
     [switch] $AguardarTag,
     [switch] $Simular
 )
@@ -76,21 +79,30 @@ function Get-RepositorioGitHub {
     $Matches['repositorio']
 }
 
-function New-InstaladorDaTag([string] $nome) {
+# Devolve o instalador e o APK da tag; o APK fica vazio em tags anteriores ao aplicativo Android.
+function New-ArquivosDaTag([string] $nome) {
     $copia = Join-Path ([IO.Path]::GetTempPath()) ("CalculosTrabalhistasTributarios-$nome-" + [Guid]::NewGuid().ToString('N').Substring(0, 8))
     Write-Host "==> Preparando uma cópia isolada do código da tag $nome..."
     Invoke-Nativo "Preparar a cópia da tag $nome" { git -C $raiz worktree add --detach $copia $nome }
     try {
+        # O APK vem antes porque a falta da chave de assinatura é descoberta logo no início, sem esperar o instalador.
+        $apk = $null
+        $geradorApk = Join-Path $copia 'instalador\gerar-apk.ps1'
+        if (Test-Path $geradorApk) {
+            $apk = & $geradorApk -Versao $nome.Substring(1) -Raiz $copia -Saida $artefatos -PermitirChaveDeDepuracao:$Simular | Select-Object -Last 1
+        }
+        else { Write-Warning "A tag $nome não contém instalador\gerar-apk.ps1: o release terá só o instalador do Windows." }
         $gerador = Join-Path $copia 'instalador\gerar-instalador.ps1'
         if (-not (Test-Path $gerador)) { throw "A tag $nome não contém instalador\gerar-instalador.ps1." }
-        & $gerador -Versao $nome.Substring(1) -Raiz $copia -Saida $artefatos | Select-Object -Last 1
+        $instalador = & $gerador -Versao $nome.Substring(1) -Raiz $copia -Saida $artefatos | Select-Object -Last 1
+        [pscustomobject]@{ Instalador = $instalador; Apk = $apk }
     }
     finally {
         Invoke-Nativo 'Remover a cópia da tag' { git -C $raiz worktree remove --force $copia }
     }
 }
 
-function Write-Notas([string] $nome, [string] $arquivo) {
+function Write-Notas([string] $nome, [string] $arquivo, [string] $apk) {
     $versao = $nome.Substring(1)
     $hash = (Get-FileHash $arquivo -Algorithm SHA256).Hash.ToLowerInvariant()
     $repositorio = Get-RepositorioGitHub
@@ -108,15 +120,32 @@ O manual do usuário acompanha o aplicativo (botão **Manual do usuário** ou te
 SHA-256 do instalador: ``$hash``
 
 "@
+    if ($apk) {
+        $hashApk = (Get-FileHash $apk -Algorithm SHA256).Hash.ToLowerInvariant()
+        $notas += @"
+
+## Android
+
+1. No celular, baixe **$(Split-Path $apk -Leaf)** em *Assets*.
+2. Abra o arquivo baixado. Na primeira vez, o Android pede permissão para instalar apps desta origem (o navegador ou o gerenciador de arquivos): permita e volte à instalação.
+3. Para atualizar, instale o APK da versão nova por cima da anterior. Os cálculos salvos e as tabelas editadas no aparelho são preservados.
+
+O aplicativo requer Android 7.0 ou superior e não é distribuído pela Play Store; o Play Protect pode pedir confirmação antes de instalar.
+
+SHA-256 do APK: ``$hashApk``
+
+"@
+    }
     $caminho = Join-Path $artefatos "notas-$nome.md"
     [IO.File]::WriteAllText($caminho, $notas, (New-Object Text.UTF8Encoding $false))
     $caminho
 }
 
-function Publish-Release([string] $nome, [string] $arquivo) {
+function Publish-Release([string] $nome, [string] $arquivo, [string] $apk) {
     $repositorio = Get-RepositorioGitHub
-    $argumentos = @('release', 'create', $nome, $arquivo, '--repo', $repositorio, '--verify-tag',
-        '--title', "Cálculos Trabalhistas e Tributários $($nome.Substring(1))", '--notes-file', (Write-Notas $nome $arquivo), '--generate-notes')
+    $anexos = @($arquivo) + @($apk | Where-Object { $_ })
+    $argumentos = @('release', 'create', $nome) + $anexos + @('--repo', $repositorio, '--verify-tag',
+        '--title', "Cálculos Trabalhistas e Tributários $($nome.Substring(1))", '--notes-file', (Write-Notas $nome $arquivo $apk), '--generate-notes')
     if ($nome -like '*-*') { $argumentos += '--prerelease' }
     if ($Simular) {
         Write-Host "==> Simulação: gh $($argumentos -join ' ')"
@@ -149,10 +178,15 @@ if ($Tag.Count -gt 0) {
         $log = Join-Path $artefatos "release-$nome.log"
         if ($AguardarTag) { Start-Transcript -Path $log -Force | Out-Null }
         try {
-            if (-not $Instalador) { $Instalador = New-InstaladorDaTag $nome }
-            $url = Publish-Release $nome $Instalador
+            if (-not $Instalador) {
+                $arquivos = New-ArquivosDaTag $nome
+                $Instalador = $arquivos.Instalador
+                $Apk = $arquivos.Apk
+            }
+            $url = Publish-Release $nome $Instalador $Apk
             if ($Simular) { Write-Host "==> Simulação concluída; nada foi enviado ao GitHub ($url)." } else { Write-Host "==> Release publicado: $url" }
-            if ($AguardarTag -and -not $Simular) { Show-Aviso "Release $nome publicado com o instalador.`n`n$url" $false }
+            $publicados = if ($Apk) { 'o instalador e o APK' } else { 'o instalador' }
+            if ($AguardarTag -and -not $Simular) { Show-Aviso "Release $nome publicado com $publicados.`n`n$url" $false }
         }
         catch {
             Write-Host "ERRO: $_"
@@ -162,6 +196,7 @@ if ($Tag.Count -gt 0) {
         finally {
             if ($AguardarTag) { Stop-Transcript | Out-Null }
             $Instalador = $null
+            $Apk = $null
         }
     }
     exit 0
@@ -184,8 +219,9 @@ try {
         if (-not $Simular -and (Test-Nativo { gh release view $nome --repo $repositorio })) {
             throw "Já existe um release $nome no GitHub. Use uma nova versão."
         }
-        $arquivo = New-InstaladorDaTag $nome
-        $comando = "-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File `"$PSCommandPath`" -Remoto `"$Remoto`" -Tag $nome -Instalador `"$arquivo`" -AguardarTag"
+        $arquivos = New-ArquivosDaTag $nome
+        $comando = "-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File `"$PSCommandPath`" -Remoto `"$Remoto`" -Tag $nome -Instalador `"$($arquivos.Instalador)`" -AguardarTag"
+        if ($arquivos.Apk) { $comando += " -Apk `"$($arquivos.Apk)`"" }
         if ($Simular) {
             # Executa a mesma etapa de segundo plano, mas aguardando e sem criar o release.
             Write-Host "==> Simulação da publicação em segundo plano:"
@@ -193,7 +229,7 @@ try {
             continue
         }
         Start-Process -FilePath 'powershell.exe' -ArgumentList $comando -WindowStyle Hidden
-        Write-Host "==> Instalador pronto. O release $nome será publicado assim que a tag chegar ao GitHub (acompanhe em artefatos\release-$nome.log)."
+        Write-Host "==> Arquivos prontos. O release $nome será publicado assim que a tag chegar ao GitHub (acompanhe em artefatos\release-$nome.log)."
     }
     exit 0
 }
