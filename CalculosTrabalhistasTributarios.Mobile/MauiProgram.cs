@@ -11,6 +11,8 @@ using CalculosTrabalhistasTributarios.Application.Interfaces;
 using CalculosTrabalhistasTributarios.Mobile.Features.Inicio;
 using CalculosTrabalhistasTributarios.Mobile.Features.Tributacao;
 using CalculosTrabalhistasTributarios.Mobile.Presentation.Inicio;
+using CalculosTrabalhistasTributarios.Mobile.Presentation.Trabalhista;
+using CalculosTrabalhistasTributarios.Mobile.Features.Trabalhista;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace CalculosTrabalhistasTributarios.Mobile;
@@ -32,7 +34,7 @@ public static class MauiProgram
                 fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
             });
 
-        builder.Services.AddSaqueAniversario().AddSimulacaoTributaria().AddPresentation();
+        builder.Services.AddSaqueAniversario().AddSimulacaoTributaria().AddTrabalhistasMobile().AddPresentation();
         var caminhoBanco = Path.Combine(FileSystem.Current.AppDataDirectory, "BancoDados", "calculoIrrf.db");
         builder.Services.AddInfrastructureLocal(caminhoBanco);
         builder.Services.AddSingleton(provider => new PreparadorBancoLocal(caminhoBanco,
@@ -50,6 +52,10 @@ public static class MauiProgram
         {
             TipoCalculadoraMobile.SimulacaoTributaria => provider.GetRequiredService<SimulacaoTributariaPage>(),
             TipoCalculadoraMobile.SaqueAniversario => provider.GetRequiredService<SaqueAniversarioPage>(),
+            TipoCalculadoraMobile.DecimoTerceiro => new CalculadoraTrabalhistaPage(provider.GetRequiredService<DecimoTerceiroMobileViewModel>()),
+            TipoCalculadoraMobile.Ferias => new CalculadoraTrabalhistaPage(provider.GetRequiredService<FeriasMobileViewModel>()),
+            TipoCalculadoraMobile.HorasExtras => new CalculadoraTrabalhistaPage(provider.GetRequiredService<HorasExtrasMobileViewModel>()),
+            TipoCalculadoraMobile.Rescisao => new CalculadoraTrabalhistaPage(provider.GetRequiredService<RescisaoMobileViewModel>()),
             _ => throw new ArgumentOutOfRangeException(nameof(tipo))
         });
         builder.Services.AddScoped<NavegadorCalculadoras>();

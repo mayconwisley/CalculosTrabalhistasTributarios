@@ -69,4 +69,11 @@ public static class DependencyInjection
 
     public static IServiceCollection AddSimulacaoTributaria(this IServiceCollection services) => services
         .AddScoped<ISimularDemonstrativoUseCase<SimularImpostoRequest>, SimularImpostoUseCase>();
+
+    public static IServiceCollection AddTrabalhistasMobile(this IServiceCollection services) => services
+        .AddScoped<ISimularDemonstrativoUseCase<SimularDecimoTerceiroRequest>, SimularDecimoTerceiroUseCase>()
+        .AddScoped<ISimularDemonstrativoUseCase<SimularComplementoDecimoTerceiroRequest>, SimularComplementoDecimoTerceiroUseCase>()
+        .AddScoped<ISimularDemonstrativoUseCase<SimularFeriasRequest>, SimularFeriasUseCase>()
+        .AddScoped<ISimularDemonstrativoUseCase<SimularHorasExtrasRequest>, SimularHorasExtrasUseCase>()
+        .AddScoped<ISimularDemonstrativoUseCase<SimularRescisaoRequest>, SimularRescisaoUseCase>();
 }

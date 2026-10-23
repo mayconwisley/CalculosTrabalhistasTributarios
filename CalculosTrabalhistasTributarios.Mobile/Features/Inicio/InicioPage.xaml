@@ -14,6 +14,27 @@
                     <Button Text="Simular impostos e salário" Command="{Binding AbrirTributariaCommand}" AutomationId="AbrirTributaria" />
                 </VerticalStackLayout>
             </Border>
+            <Label Text="Cálculos trabalhistas" Style="{StaticResource TituloSecao}" SemanticProperties.HeadingLevel="Level2" />
+            <Border><VerticalStackLayout Spacing="12">
+                <Label Text="13º salário" Style="{StaticResource TituloSecao}" />
+                <Label Text="Parcelas e complemento das médias, com INSS e IRRF." />
+                <Button Text="Calcular 13º salário" Command="{Binding AbrirDecimoTerceiroCommand}" AutomationId="AbrirDecimoTerceiro" />
+            </VerticalStackLayout></Border>
+            <Border><VerticalStackLayout Spacing="12">
+                <Label Text="Férias" Style="{StaticResource TituloSecao}" />
+                <Label Text="Recibo, abono, fracionamento e bases por mês de gozo." />
+                <Button Text="Calcular férias" Command="{Binding AbrirFeriasCommand}" AutomationId="AbrirFerias" />
+            </VerticalStackLayout></Border>
+            <Border><VerticalStackLayout Spacing="12">
+                <Label Text="Horas extras e adicionais" Style="{StaticResource TituloSecao}" />
+                <Label Text="Horas extras, adicional noturno e reflexo no DSR." />
+                <Button Text="Calcular horas extras" Command="{Binding AbrirHorasExtrasCommand}" AutomationId="AbrirHorasExtras" />
+            </VerticalStackLayout></Border>
+            <Border><VerticalStackLayout Spacing="12">
+                <Label Text="Rescisão" Style="{StaticResource TituloSecao}" />
+                <Label Text="Verbas do desligamento, aviso, férias, 13º e FGTS." />
+                <Button Text="Calcular rescisão" Command="{Binding AbrirRescisaoCommand}" AutomationId="AbrirRescisao" />
+            </VerticalStackLayout></Border>
             <Label Text="FGTS, afastamentos e benefícios" Style="{StaticResource TituloSecao}" SemanticProperties.HeadingLevel="Level2" />
             <Border>
                 <VerticalStackLayout Spacing="12">

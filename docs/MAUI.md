@@ -4,13 +4,13 @@
 
 O aplicativo Android é uma apresentação adicional para o mesmo núcleo de cálculo. A solução principal `CalculosTrabalhistasTributarios.sln` inclui os projetos desktop e móveis. O WPF mantém o fluxo de publicação existente. Não há backend ou sincronização com o computador.
 
-O catálogo inicial segue os grupos do WPF e contém **Simulação tributária** (Impostos e salário) e **Saque-aniversário do FGTS** (FGTS, afastamentos e benefícios). Cada abertura cria um formulário independente; voltar à tela inicial não salva um histórico.
+O catálogo segue os grupos do WPF e contém **Simulação tributária**, **Saque-aniversário do FGTS**, **13º salário**, **Férias**, **Horas extras e adicionais** e **Rescisão**. Cada abertura cria um formulário independente; voltar à tela inicial não salva um histórico.
 
 No saque-aniversário, informe: saldo do extrato, garantia bloqueada, indicação de garantia já incluída, multa incluída, parcela anual comprometida e mês de aniversário. O resultado apresenta os destaques, proventos, descontos, total, memória e observações devolvidos pelo caso de uso existente.
 
 O resultado pode ser compartilhado em PDF pelo menu nativo do Android (WhatsApp, e-mail e outros aplicativos compatíveis instalados). O documento contém destaques, verbas, total, memória, observações e o aviso de simulação em todas as páginas. Não há exportação Excel no aplicativo móvel nem dependência de ClosedXML ou QuestPDF.
 
-Não estão disponíveis nesta etapa: análise de nova antecipação, histórico, importação de formulários, atualização online de tabelas e demais calculadoras. Os dados do formulário permanecem somente na sessão; não há permissão de rede solicitada pelo manifesto da aplicação. O aplicativo destinatário do compartilhamento gerencia o envio e sua conexão.
+Não estão disponíveis nesta etapa: análise de nova antecipação, histórico, importação de formulários, atualização online de tabelas e demais calculadoras. A rescisão permite digitar ou gerar os depósitos históricos de FGTS, mas a transferência de quitação do banco de horas depende de portar a calculadora de banco de horas. Os dados do formulário permanecem somente na sessão; não há permissão de rede solicitada pelo manifesto da aplicação. O aplicativo destinatário do compartilhamento gerencia o envio e sua conexão.
 
 ## Simulação tributária e tabelas locais
 
@@ -24,9 +24,16 @@ O Android inclui o banco distribuído como recurso e copia-o uma única vez para
 
 Nesta etapa, não há atualização tributária pela internet nem tela de manutenção no celular. As tabelas disponíveis são as distribuídas e suas sementes, consultadas pela competência informada; a política de vigência é a mesma do WPF. Novas versões devem evoluir as sementes pelo procedimento existente, sem sobrescrever o banco privado. Não use bancos pessoais como recurso do pacote.
 
-A sequência de próximas calculadoras permanece: 13º salário, férias, horas extras e rescisão.
+## Calculadoras trabalhistas
 
-## Compartilhar PDF
+- **13º salário:** simula as duas parcelas ou o complemento das médias de dezembro, com adiantamento, pensão, previdência complementar, INSS e IRRF da competência informada.
+- **Férias:** recebe dias de gozo e outros períodos, abono, adiantamento do 13º, início do descanso, fim concessivo e bases fora das férias por mês.
+- **Horas extras:** aceita horas de relógio (`10:30`) ou decimais (`10,5`), duas faixas de adicional, horas noturnas urbanas ou rurais e feriados para o DSR.
+- **Rescisão:** recebe motivo, vínculo, aviso, datas, verbas, descontos e depósitos históricos do FGTS em linhas editáveis. **Gerar meses do contrato** preserva valores já digitados para as competências geradas.
+
+Todas usam os casos de uso compartilhados da Application e as tabelas locais da competência. As entradas de uma calculadora não são transferidas automaticamente para outra. O demonstrativo na tela e o PDF consomem a mesma apuração; FGTS aparece como informativo quando assim definido pelo caso de uso.
+
+## Compartilhar PDF do saque-aniversário
 
 1. Preencha o saldo, o mês de aniversário e os ajustes do extrato que se aplicarem.
 2. Toque em **Calcular meu saque** e confira o valor estimado.
@@ -52,6 +59,8 @@ Conferência realizada em emulador Android x86_64 com densidade de 420 dpi, em 1
 
 Na simulação tributária, foram conferidos catálogo, navegação, primeira preparação do SQLite e cálculo de outubro de 2026 com bruto de R$ 8.000,00 e dois dependentes: INSS R$ 921,50, IRRF R$ 933,58, líquido R$ 6.144,92 e FGTS informativo de R$ 640,00. O comparativo foi verificado também em 320 × 640 DIPs no tema escuro. Os testes de paridade usam competências históricas e os quatro vínculos. O compartilhamento foi conferido até o menu com o PDF anexado, sem envio a destinatários.
 
+Na ampliação trabalhista, as quatro telas foram abertas no emulador. A rescisão foi conferida com edição do salário, adição e remoção de linha de FGTS e cálculo com resultado exibido. O formulário e a lista de FGTS foram inspecionados em 1080 × 2400 no tema claro e em 840 × 1680 no tema escuro; a lista tem rolagem própria. O PDF das novas calculadoras não foi inspecionado visualmente em aparelho físico.
+
 ## Estrutura e dependências
 
 ```text
@@ -61,20 +70,22 @@ CalculosTrabalhistasTributarios.Mobile.sln
 ├── Infrastructure.Local           # SQLite e sementes compartilhados, sem bibliotecas de relatório
 ├── Mobile.Presentation            # net10.0: ViewModels por funcionalidade, sem MAUI/WPF
 │   ├── DependencyInjection.cs
-│   └── SaqueAniversario/
+│   ├── SaqueAniversario/
+│   └── Trabalhista/                 # formulários e leitura das quatro calculadoras
 ├── Mobile                         # net10.0-android: composição e controles nativos
 │   ├── MauiProgram.cs
 │   ├── App.xaml
 │   ├── Comportamentos/
 │   ├── Features/SaqueAniversario/
+│   ├── Features/Trabalhista/        # formulário comum das quatro calculadoras
 │   ├── Platforms/Android/
 │   └── Resources/
 └── Mobile.Tests                   # net10.0: testes sem dispositivo ou workload MAUI
 ```
 
-Fluxo: página → binding/command do ViewModel → `ISimularDemonstrativoUseCase<SimularSaqueAniversarioRequest>` → domínio → `DemonstrativoDto` → página.
+Fluxo: página → binding/command do ViewModel → `ISimularDemonstrativoUseCase<TRequest>` → domínio → `DemonstrativoDto` → página.
 
-- `MauiProgram` é o ponto de composição. Registra somente os serviços necessários, usando `AddSaqueAniversario` e `AddSimulacaoTributaria` da Application e `AddPresentation` da apresentação móvel.
+- `MauiProgram` é o ponto de composição. Registra somente os serviços necessários, usando `AddSaqueAniversario`, `AddSimulacaoTributaria` e `AddTrabalhistasMobile` da Application e `AddPresentation` da apresentação móvel.
 - Cada janela possui um escopo de DI, descartado em `Window.Destroying`. Página e ViewModel são transient; não compartilhe formulários mutáveis em singletons.
 - `Mobile.Presentation` usa CommunityToolkit.Mvvm para notificações e comandos assíncronos. Não depende de controles MAUI, WPF ou Infrastructure.
 - `LeituraNumerica.cs` é incluído como fonte vinculada da apresentação existente. Há uma única implementação do parser, sem carregar o assembly WPF. Ao alterá-lo, execute os testes de ambas as apresentações. Se mais componentes independentes precisarem ser compartilhados, avalie uma biblioteca comum de apresentação, sem mover parsing de formulário para o domínio.
@@ -108,7 +119,7 @@ Os testes de apresentação podem rodar sem Android SDK. Para compilar somente o
 3. Crie o ViewModel em `Mobile.Presentation/<Funcionalidade>` e a página em `Mobile/Features/<Funcionalidade>`. Mantenha code-behind limitado ao ciclo de vida e comportamento visual.
 4. Crie portas novas somente para necessidades reais e coloque interfaces em `Interfaces` da camada responsável. Não crie novos projetos Domain ou Application exclusivos do celular.
 5. Para SQLite, adapte o caminho ao armazenamento privado (`FileSystem.AppDataDirectory`), inicialize em local gravável e preserve sementes, transações e compatibilidade. Não referencie a Infrastructure inteira apenas para usar um serviço: primeiro valide e separe as dependências incompatíveis.
-6. Ao ampliar o relatório móvel para outra calculadora, inclua explicitamente quadros, comparativos ou outros dados especializados do DTO: o gerador atual atende saque-aniversário e simulação tributária, incluindo quadros de faixas e comparação de modalidades do IRRF. Preserve o aviso em cada página, os valores da tela e a quebra de textos longos. Valide PDF renderizado, compartilhamento, trimming e execução Release em aparelhos.
+6. Ao ampliar o relatório móvel para outra calculadora, inclua explicitamente quadros, comparativos ou outros dados especializados do DTO: o gerador consome destaques, verbas, informativos, memória, quadros de faixas e comparação de modalidades do IRRF. Preserve o aviso em cada página, os valores da tela e a quebra de textos longos. Valide PDF renderizado, compartilhamento, trimming e execução Release em aparelhos.
 7. Para iOS, acrescente alvo, inicializadores e recursos da plataforma em uma etapa própria, com compilação no Mac, assinatura e verificação real. iOS e Windows MAUI não estão configurados nesta base.
 8. Cubra mapeamento de entradas, validações, falhas e ciclo de vida dos comandos. Verifique no dispositivo temas claro/escuro, teclado, rolagem, fonte ampliada, valores grandes e orientação. Compilação não comprova usabilidade.
 9. Antes de publicar, defina o identificador definitivo da aplicação, assinatura, versionamento, ícones finais, política de dados e diagnóstico. O identificador atual é `br.com.mayconwisley.calculostrabalhistastributarios`; não o altere após a primeira distribuição sem planejar a continuidade dos dados.

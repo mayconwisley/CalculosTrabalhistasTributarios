@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:CalculosTrabalhistasTributarios.Mobile.Presentation.Trabalhista;assembly=CalculosTrabalhistasTributarios.Mobile.Presentation"
+             xmlns:views="clr-namespace:CalculosTrabalhistasTributarios.Mobile.Views"
+             xmlns:comportamentos="clr-namespace:CalculosTrabalhistasTributarios.Mobile.Comportamentos"
+             x:Class="CalculosTrabalhistasTributarios.Mobile.Features.Trabalhista.CalculadoraTrabalhistaPage"
+             x:DataType="vm:CalculadoraTrabalhistaViewModel" Title="Calculadora trabalhista">
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="20" MaximumWidthRequest="640">
+            <Label Text="{Binding Titulo}" FontSize="30" FontFamily="OpenSansSemibold" SemanticProperties.HeadingLevel="Level1" />
+            <Label Text="{Binding Descricao}" Style="{StaticResource TextoSecundario}" />
+            <Border>
+                <VerticalStackLayout Spacing="14" BindableLayout.ItemsSource="{Binding Campos}">
+                    <VerticalStackLayout.Triggers>
+                        <DataTrigger TargetType="VerticalStackLayout" Binding="{Binding Ocupado}" Value="True"><Setter Property="IsEnabled" Value="False" /></DataTrigger>
+                    </VerticalStackLayout.Triggers>
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="vm:CampoMobile">
+                            <VerticalStackLayout Spacing="6" IsVisible="{Binding Visivel}">
+                                <Label Text="{Binding Rotulo}" Style="{StaticResource RotuloCampo}" />
+                                <Border Style="{StaticResource CaixaCampo}" IsVisible="{Binding EhTexto}">
+                                    <Entry Text="{Binding Valor}" FontSize="18" MaxLength="40" SemanticProperties.Description="{Binding Rotulo}" />
+                                </Border>
+                                <Border Style="{StaticResource CaixaCampo}" IsVisible="{Binding EhMoeda}">
+                                    <Entry Text="{Binding Valor}" MaxLength="40" SemanticProperties.Description="{Binding Rotulo}">
+                                        <Entry.Behaviors><comportamentos:EntradaMonetariaBehavior /></Entry.Behaviors>
+                                    </Entry>
+                                </Border>
+                                <Border Style="{StaticResource CaixaCampo}" IsVisible="{Binding EhOpcao}">
+                                    <Picker ItemsSource="{Binding Opcoes}" SelectedIndex="{Binding Indice}" Title="Selecione" SemanticProperties.Description="{Binding Rotulo}" />
+                                </Border>
+                                <Switch IsVisible="{Binding EhSimNao}" IsToggled="{Binding Marcado}" HorizontalOptions="Start" SemanticProperties.Description="{Binding Rotulo}" />
+                                <Label Text="{Binding Dica}" Style="{StaticResource TextoSecundario}">
+                                    <Label.Triggers><DataTrigger TargetType="Label" Binding="{Binding Dica}" Value=""><Setter Property="IsVisible" Value="False" /></DataTrigger></Label.Triggers>
+                                </Label>
+                            </VerticalStackLayout>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </VerticalStackLayout>
+            </Border>
+            <Border IsVisible="{Binding ExibirHistoricoFgts}">
+                <VerticalStackLayout Spacing="12">
+                    <VerticalStackLayout.Triggers>
+                        <DataTrigger TargetType="VerticalStackLayout" Binding="{Binding Ocupado}" Value="True"><Setter Property="IsEnabled" Value="False" /></DataTrigger>
+                    </VerticalStackLayout.Triggers>
+                    <Label Text="Depósitos históricos do FGTS" Style="{StaticResource TituloSecao}" />
+                    <Label Text="Informe os depósitos devidos antes do mês do desligamento. Valores já digitados são preservados ao gerar os meses novamente." Style="{StaticResource TextoSecundario}" />
+                    <Button Text="Gerar meses do contrato" Command="{Binding GerarDepositosCommand}" AutomationId="GerarDepositosFgts" />
+                    <Button Text="+ Mês" Command="{Binding AdicionarDepositoCommand}" AutomationId="AdicionarDepositoFgts" />
+                    <Label Text="{Binding AvisoHistorico}" Style="{StaticResource TextoSecundario}" />
+                    <CollectionView ItemsSource="{Binding DepositosFgts}" IsVisible="{Binding TemDepositosFgts}" HeightRequest="360">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="vm:LinhaDepositoFgtsMobile">
+                                <VerticalStackLayout Spacing="6">
+                                    <Label Text="Competência" Style="{StaticResource RotuloCampo}" />
+                                    <Border Style="{StaticResource CaixaCampo}"><Entry Text="{Binding Competencia}" Placeholder="MM/yyyy" MaxLength="7" SemanticProperties.Description="Competência do depósito do FGTS" /></Border>
+                                    <Label Text="Depósito (R$)" Style="{StaticResource RotuloCampo}" />
+                                    <Border Style="{StaticResource CaixaCampo}"><Entry Text="{Binding Valor}" SemanticProperties.Description="Valor devido do depósito do FGTS" /></Border>
+                                    <Button Text="Remover mês" HorizontalOptions="End" Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CalculadoraTrabalhistaViewModel}}, Path=RemoverDepositoCommand}" CommandParameter="{Binding .}" SemanticProperties.Description="Remover depósito do FGTS" />
+                                </VerticalStackLayout>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+            </Border>
+            <Label Text="{Binding Mensagem}" IsVisible="{Binding TemMensagem}" TextColor="{AppThemeBinding Light={StaticResource ErroClaro}, Dark={StaticResource ErroEscuro}}" />
+            <Button Text="Calcular" Command="{Binding CalcularCommand}" AutomationId="CalcularTrabalhista" />
+            <ActivityIndicator IsVisible="{Binding Ocupado}" IsRunning="{Binding Ocupado}" />
+            <views:ResultadoSimulacaoView Demonstrativo="{Binding Demonstrativo}" CompartilharPdfCommand="{Binding CompartilharPdfCommand}" />
+            <Label Text="Simulação com valores estimados. Confira as premissas no demonstrativo e procure um profissional especializado para validar os valores." Style="{StaticResource TextoSecundario}" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

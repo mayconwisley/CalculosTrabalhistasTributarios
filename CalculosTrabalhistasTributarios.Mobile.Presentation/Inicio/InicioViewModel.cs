@@ -11,6 +11,10 @@ public sealed partial class InicioViewModel(INavegacaoCalculadoras navegacao, IL
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(AbrirTributariaCommand))]
     [NotifyCanExecuteChangedFor(nameof(AbrirSaqueAniversarioCommand))]
+    [NotifyCanExecuteChangedFor(nameof(AbrirDecimoTerceiroCommand))]
+    [NotifyCanExecuteChangedFor(nameof(AbrirFeriasCommand))]
+    [NotifyCanExecuteChangedFor(nameof(AbrirHorasExtrasCommand))]
+    [NotifyCanExecuteChangedFor(nameof(AbrirRescisaoCommand))]
     private bool _ocupado;
 
     private bool PodeAbrir() => !Ocupado;
@@ -18,6 +22,14 @@ public sealed partial class InicioViewModel(INavegacaoCalculadoras navegacao, IL
     private Task AbrirTributariaAsync() => AbrirAsync(TipoCalculadoraMobile.SimulacaoTributaria);
     [RelayCommand(CanExecute = nameof(PodeAbrir))]
     private Task AbrirSaqueAniversarioAsync() => AbrirAsync(TipoCalculadoraMobile.SaqueAniversario);
+    [RelayCommand(CanExecute = nameof(PodeAbrir))]
+    private Task AbrirDecimoTerceiroAsync() => AbrirAsync(TipoCalculadoraMobile.DecimoTerceiro);
+    [RelayCommand(CanExecute = nameof(PodeAbrir))]
+    private Task AbrirFeriasAsync() => AbrirAsync(TipoCalculadoraMobile.Ferias);
+    [RelayCommand(CanExecute = nameof(PodeAbrir))]
+    private Task AbrirHorasExtrasAsync() => AbrirAsync(TipoCalculadoraMobile.HorasExtras);
+    [RelayCommand(CanExecute = nameof(PodeAbrir))]
+    private Task AbrirRescisaoAsync() => AbrirAsync(TipoCalculadoraMobile.Rescisao);
 
     private async Task AbrirAsync(TipoCalculadoraMobile tipo)
     {

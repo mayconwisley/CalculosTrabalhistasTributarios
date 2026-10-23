@@ -69,6 +69,18 @@
                     </VerticalStackLayout>
                     <Label Text="{Binding Demonstrativo.RotuloResultado}" FontAttributes="Bold" />
                     <Label Text="{Binding Demonstrativo.Resultado, StringFormat='R$ {0:N2}'}" FontSize="24" FontAttributes="Bold" />
+                    <Label Text="Informativos (fora do resultado)" FontAttributes="Bold" />
+                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding Demonstrativo.Informativos}" BindableLayout.EmptyView="Sem valores informativos.">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="dto:VerbaDto">
+                                <VerticalStackLayout Spacing="3">
+                                    <Label Text="{Binding Descricao}" />
+                                    <Label Text="{Binding Referencia}" />
+                                    <Label Text="{Binding Valor, StringFormat='R$ {0:N2}'}" />
+                                </VerticalStackLayout>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
                     <Label Text="Memória de cálculo" FontSize="20" FontAttributes="Bold" SemanticProperties.HeadingLevel="Level2" />
                     <VerticalStackLayout Spacing="14" BindableLayout.ItemsSource="{Binding Demonstrativo.Memoria}">
                         <BindableLayout.ItemTemplate>

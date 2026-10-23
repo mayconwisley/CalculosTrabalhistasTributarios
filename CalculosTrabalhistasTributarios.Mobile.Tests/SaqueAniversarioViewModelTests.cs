@@ -113,7 +113,7 @@ public sealed class SaqueAniversarioViewModelTests
     [Fact]
     public void Composicao_valida_escopos_e_cria_formularios_independentes()
     {
-        var servicos = new ServiceCollection().AddSaqueAniversario().AddSimulacaoTributaria().AddPresentation();
+        var servicos = new ServiceCollection().AddSaqueAniversario().AddSimulacaoTributaria().AddTrabalhistasMobile().AddPresentation();
         servicos.AddSingleton<ICompartilhamentoPdf, CompartilhamentoDeTeste>();
         servicos.AddSingleton<ILogger<SaqueAniversarioViewModel>>(NullLogger<SaqueAniversarioViewModel>.Instance);
         servicos.AddSingleton(typeof(ILogger<>), typeof(NullLogger<>));
