@@ -2,6 +2,8 @@ using System.Globalization;
 using CalculosTrabalhistasTributarios.Application.DTOs;
 using CalculosTrabalhistasTributarios.Application.Interfaces;
 using CalculosTrabalhistasTributarios.Mobile.Presentation.Interfaces;
+using CalculosTrabalhistasTributarios.Mobile.Presentation.Historico;
+using CalculosTrabalhistasTributarios.Domain.Comum;
 using CalculosTrabalhistasTributarios.Presentation;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -12,9 +14,36 @@ namespace CalculosTrabalhistasTributarios.Mobile.Presentation.Tributacao;
 public sealed partial class SimulacaoTributariaViewModel(
     ISimularDemonstrativoUseCase<SimularImpostoRequest> simular,
     ICompartilhamentoPdf compartilhamento,
-    ILogger<SimulacaoTributariaViewModel> logger) : ObservableObject
+    ILogger<SimulacaoTributariaViewModel> logger) : ObservableObject, IFormularioHistoricoMobile
 {
     private static readonly CultureInfo Cultura = CultureInfo.GetCultureInfo("pt-BR");
+    public string Titulo => "Simulação tributária";
+    public long? HistoricoId { get; set; }
+    public DadosFormularioMobile ExportarDados() => new(1, new Dictionary<string, ValorCampoMobile>
+    {
+        [nameof(Competencia)] = new(Competencia, 0, false), [nameof(ValorBruto)] = new(ValorBruto, 0, false),
+        [nameof(BaseInss)] = new(BaseInss, 0, false), [nameof(Dependentes)] = new(Dependentes, 0, false),
+        [nameof(UsarBrutoComoBase)] = new("", 0, UsarBrutoComoBase), [nameof(IndiceVinculo)] = new("", IndiceVinculo, false),
+        [nameof(SessentaECincoAnos)] = new("", 0, SessentaECincoAnos), [nameof(DecimoTerceiro)] = new("", 0, DecimoTerceiro)
+    }, new Dictionary<string, IReadOnlyList<IReadOnlyDictionary<string, ValorCampoMobile>>>());
+
+    public Result TentarImportarDados(DadosFormularioMobile dados)
+    {
+        var campos = dados.Campos;
+        if (dados.Versao != 1 || campos is null || dados.Grades is null || dados.Grades.Count != 0
+            || !campos.TryGetValue(nameof(Competencia), out var competencia) || !campos.TryGetValue(nameof(ValorBruto), out var bruto)
+            || !campos.TryGetValue(nameof(BaseInss), out var baseInss) || !campos.TryGetValue(nameof(Dependentes), out var dependentes)
+            || !campos.TryGetValue(nameof(UsarBrutoComoBase), out var usarBruto) || !campos.TryGetValue(nameof(IndiceVinculo), out var vinculo)
+            || !campos.TryGetValue(nameof(SessentaECincoAnos), out var idade) || !campos.TryGetValue(nameof(DecimoTerceiro), out var decimo)
+            || !new[] { competencia, bruto, baseInss, dependentes }.All(valor => valor is not null && valor.Valor is { Length: <= 40 })
+            || vinculo is null || vinculo.Indice is < 0 or > 3 || usarBruto is null || idade is null || decimo is null)
+            return Erro.Validacao("Formulário salvo: confira a competência, os valores e o tipo de vínculo.");
+        Competencia = competencia.Valor; ValorBruto = bruto.Valor; BaseInss = baseInss.Valor; Dependentes = dependentes.Valor;
+        UsarBrutoComoBase = usarBruto.Marcado; IndiceVinculo = vinculo.Indice;
+        SessentaECincoAnos = idade.Marcado; DecimoTerceiro = decimo.Marcado;
+        Demonstrativo = null;
+        return Result.Ok();
+    }
     public IReadOnlyList<string> Vinculos { get; } = ["Empregado", "Aprendiz", "Empregado doméstico", "Aposentadoria ou pensão"];
     [ObservableProperty] private string _competencia = DateTime.Today.ToString("MM/yyyy", Cultura);
     [ObservableProperty] private string _valorBruto = "0,00";

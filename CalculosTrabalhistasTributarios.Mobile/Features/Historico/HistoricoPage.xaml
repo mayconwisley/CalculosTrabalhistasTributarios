@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:dto="clr-namespace:CalculosTrabalhistasTributarios.Application.DTOs;assembly=CalculosTrabalhistasTributarios.Application"
+             x:Class="CalculosTrabalhistasTributarios.Mobile.Features.Historico.HistoricoPage" Title="Histórico">
+    <Grid Padding="16" RowDefinitions="Auto,*">
+        <VerticalStackLayout Spacing="6" Margin="0,0,0,16">
+            <Label Text="Cálculos salvos" FontSize="27" FontFamily="OpenSansSemibold" SemanticProperties.HeadingLevel="Level1" />
+            <Label Text="Formulários guardados neste aparelho. Abra para recalcular com as tabelas disponíveis." Style="{StaticResource TextoSecundario}" />
+            <Label x:Name="Aviso" IsVisible="False" />
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                <Picker x:Name="Primeiro" Title="Primeiro cálculo" ItemDisplayBinding="{Binding Nome}" />
+                <Picker x:Name="Segundo" Grid.Column="1" Title="Segundo cálculo" ItemDisplayBinding="{Binding Nome}" />
+            </Grid>
+            <Button Text="Comparar selecionados" Clicked="Comparar" AutomationId="CompararHistorico" />
+        </VerticalStackLayout>
+        <CollectionView x:Name="Lista" Grid.Row="1" SelectionMode="None" EmptyView="Nenhum cálculo salvo ainda.">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="dto:CalculoSalvoDto">
+                    <Border Margin="0,0,0,12" Padding="16">
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="{Binding Nome}" FontSize="20" FontFamily="OpenSansSemibold" />
+                            <Label Text="{Binding Calculadora}" Style="{StaticResource TextoSecundario}" />
+                            <Label Text="{Binding AlteradoEm, StringFormat='Atualizado em {0:dd/MM/yyyy HH:mm}'}" Style="{StaticResource TextoSecundario}" />
+                            <Button Text="Abrir" Clicked="Abrir" AutomationId="AbrirHistorico" />
+                            <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                                <Button Text="Duplicar" Clicked="Duplicar" />
+                                <Button Grid.Column="1" Text="Renomear" Clicked="Renomear" />
+                            </Grid>
+                            <Button Text="Excluir" Clicked="Excluir" />
+                        </VerticalStackLayout>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+</ContentPage>

@@ -15,4 +15,7 @@ public sealed partial class LinhaRegistroTabelaMobile(RegistroTabelaDto registro
     public string Valor { get; } = valor;
     public string Aliquota { get; } = aliquota;
     public string Deducao { get; } = deducao;
+    public bool TemFaixa => Faixa.Length > 0;
+    public bool TemAliquota => Aliquota.Length > 0;
+    public bool TemDeducao => Deducao.Length > 0;
 }

@@ -14,6 +14,11 @@ using CalculosTrabalhistasTributarios.Mobile.Presentation.Inicio;
 using CalculosTrabalhistasTributarios.Mobile.Presentation.Trabalhista;
 using CalculosTrabalhistasTributarios.Mobile.Features.Trabalhista;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using CalculosTrabalhistasTributarios.Infrastructure.Tabelas;
+using CalculosTrabalhistasTributarios.Mobile.Features.Abertura;
+using CalculosTrabalhistasTributarios.Mobile.Features.Configuracoes;
+using CalculosTrabalhistasTributarios.Mobile.Features.Tabelas;
+using CalculosTrabalhistasTributarios.Mobile.Features.Historico;
 
 namespace CalculosTrabalhistasTributarios.Mobile;
 
@@ -34,9 +39,12 @@ public static class MauiProgram
                 fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
             });
 
-        builder.Services.AddCalculadoras().AddSaqueAniversario().AddPresentation();
+        builder.Services.AddCalculadoras().AddSaqueAniversario().AddAtualizacaoTodasTabelas().AddPresentation();
         var caminhoBanco = Path.Combine(FileSystem.Current.AppDataDirectory, "BancoDados", "calculoIrrf.db");
         builder.Services.AddInfrastructureLocal(caminhoBanco);
+        builder.Services.AddSingleton<IHistoricoCalculos, SqliteHistoricoCalculos>();
+        builder.Services.AddAtualizacaoTabelas();
+        builder.Services.AddSingleton<IConsultaCotacoesTrabalhoExterior, CalculosTrabalhistasTributarios.Infrastructure.Tributacao.ConsultaCotacoesTrabalhoExterior>();
         builder.Services.AddSingleton(provider => new PreparadorBancoLocal(caminhoBanco,
             _ => FileSystem.Current.OpenAppPackageFileAsync("calculoIrrf.db"),
             new InicializadorBancoTributario(provider.GetRequiredService<BancoTributario>()),
@@ -45,26 +53,46 @@ public static class MauiProgram
         builder.Services.AddSingleton<IShare>(Share.Default);
         builder.Services.AddSingleton<IFileSystem>(FileSystem.Current);
         builder.Services.AddSingleton<ICompartilhamentoPdf, CompartilhamentoPdf>();
+        builder.Services.AddSingleton<IPreferenciasMobile, PreferenciasMobile>();
+        builder.Services.AddSingleton<IPlataformaMobile, PlataformaMobile>();
         builder.Services.AddTransient<SaqueAniversarioPage>();
         builder.Services.AddTransient<SimulacaoTributariaPage>();
         builder.Services.AddTransient<InicioPage>();
+        builder.Services.AddTransient<MenuPage>();
+        builder.Services.AddTransient<AberturaPage>();
+        builder.Services.AddTransient<ConfiguracoesPage>();
+        builder.Services.AddTransient<HistoricoPage>();
         builder.Services.AddScoped<Func<TipoCalculadoraMobile, Page>>(provider => tipo => tipo switch
         {
             TipoCalculadoraMobile.SimulacaoTributaria => provider.GetRequiredService<SimulacaoTributariaPage>(),
             TipoCalculadoraMobile.SaqueAniversario => provider.GetRequiredService<SaqueAniversarioPage>(),
-            _ => new CalculadoraTrabalhistaPage((CalculadoraTrabalhistaViewModel)provider.GetRequiredService(CatalogoCalculadorasMobile.TipoViewModel(tipo)))
+            _ => new CalculadoraTrabalhistaPage((CalculadoraTrabalhistaViewModel)provider.GetRequiredService(CatalogoCalculadorasMobile.TipoViewModel(tipo)),
+                tipo, provider.GetRequiredService<HistoricoMobileService>(), provider.GetRequiredService<ManualMobileService>())
         });
         builder.Services.AddScoped<NavegadorCalculadoras>();
         builder.Services.AddScoped<INavegacaoCalculadoras>(provider => provider.GetRequiredService<NavegadorCalculadoras>());
+        builder.Services.AddScoped<INavegacaoTransferenciasMobile>(provider => provider.GetRequiredService<NavegadorCalculadoras>());
+        builder.Services.AddScoped<NavegadorMenu>();
+        builder.Services.AddScoped<HistoricoMobileService>();
+        builder.Services.AddSingleton<ManualMobileService>();
+        builder.Services.AddScoped<INavegacaoMenu>(provider => provider.GetRequiredService<NavegadorMenu>());
         builder.Services.AddSingleton<Func<Window>>(provider => () =>
         {
             var scope = provider.CreateScope();
             try
             {
-                var page = scope.ServiceProvider.GetRequiredService<InicioPage>();
-                var navigation = new NavigationPage(page);
-                scope.ServiceProvider.GetRequiredService<NavegadorCalculadoras>().Configurar(navigation.Navigation);
-                var window = new Window(navigation);
+                var abertura = scope.ServiceProvider.GetRequiredService<AberturaPage>();
+                var window = new Window(abertura);
+                abertura.Preparada += (_, _) =>
+                {
+                    var inicio = scope.ServiceProvider.GetRequiredService<InicioPage>();
+                    var menu = scope.ServiceProvider.GetRequiredService<MenuPage>();
+                    var navigation = new NavigationPage(inicio);
+                    var flyout = new FlyoutPage { Title = "Menu", Flyout = menu, Detail = navigation };
+                    scope.ServiceProvider.GetRequiredService<NavegadorCalculadoras>().Configurar(navigation.Navigation, flyout);
+                    scope.ServiceProvider.GetRequiredService<NavegadorMenu>().Configurar(navigation.Navigation, flyout);
+                    window.Page = flyout;
+                };
                 window.Destroying += (_, _) => scope.Dispose();
                 return window;
             }

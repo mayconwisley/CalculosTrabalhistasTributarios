@@ -11,5 +11,7 @@
     <!-- Mesma implementação do desktop, sem referência ao assembly WPF. -->
     <Compile Include="..\CalculosTrabalhistasTributarios\Presentation\LeituraNumerica.cs" Link="Comum\LeituraNumerica.cs" />
     <Compile Include="..\CalculosTrabalhistasTributarios\Presentation\ViewModels\LeituraDeHoras.cs" Link="Comum\LeituraDeHoras.cs" />
+    <Compile Include="..\CalculosTrabalhistasTributarios\Presentation\ViewModels\Historico\ComparacaoResultados.cs" Link="Historico\ComparacaoResultados.cs" />
+    <Compile Include="..\CalculosTrabalhistasTributarios\Presentation\ViewModels\Historico\LinhaResultadoComparadoViewModel.cs" Link="Historico\LinhaResultadoComparadoViewModel.cs" />
   </ItemGroup>
 </Project>

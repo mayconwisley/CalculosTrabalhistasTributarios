@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:CalculosTrabalhistasTributarios.Mobile.Presentation.Inicio;assembly=CalculosTrabalhistasTributarios.Mobile.Presentation"
+             x:Class="CalculosTrabalhistasTributarios.Mobile.Features.Inicio.MenuPage" x:DataType="vm:InicioViewModel" Title="Menu">
+    <ScrollView><VerticalStackLayout Padding="16,32" Spacing="12">
+        <Label Text="Cálculos" FontSize="26" FontFamily="OpenSansSemibold" />
+        <Border Style="{StaticResource CaixaCampo}"><Entry Text="{Binding Busca}" Placeholder="Buscar cálculos e tabelas" Keyboard="Text" HorizontalTextAlignment="Start" AutomationId="BuscaMenu" /></Border>
+        <Button Text="Início" Command="{Binding VoltarAoInicioCommand}" />
+        <Button Text="Configurações" Command="{Binding AbrirConfiguracoesCommand}" />
+        <Button Text="Histórico" Clicked="AbrirHistorico" AutomationId="HistoricoMenu" />
+        <Button Text="Manual do usuário" Clicked="AbrirManual" AutomationId="ManualMenu" />
+        <Label Text="{Binding MensagemSemResultado}" IsVisible="{Binding SemResultado}" />
+        <VerticalStackLayout IsVisible="{Binding TemFavoritas}" Spacing="8"><Label Text="Favoritas" Style="{StaticResource TituloSecao}" />
+            <VerticalStackLayout BindableLayout.ItemsSource="{Binding Favoritas.Atalhos}" Spacing="4"><BindableLayout.ItemTemplate><DataTemplate x:DataType="vm:AtalhoMobile">
+                <Button Text="{Binding Titulo}" CommandParameter="{Binding .}" Command="{Binding AbrirCommand, Source={RelativeSource AncestorType={x:Type vm:InicioViewModel}}, x:DataType=vm:InicioViewModel}" />
+            </DataTemplate></BindableLayout.ItemTemplate></VerticalStackLayout>
+        </VerticalStackLayout>
+        <Label Text="Calculadoras" Style="{StaticResource TituloSecao}" />
+        <VerticalStackLayout BindableLayout.ItemsSource="{Binding Grupos}" Spacing="6"><BindableLayout.ItemTemplate><DataTemplate x:DataType="vm:GrupoAtalhosMobile">
+            <VerticalStackLayout IsVisible="{Binding Visivel}" Spacing="4"><Button Text="{Binding Titulo}" Command="{Binding AlternarCommand}" />
+                <VerticalStackLayout BindableLayout.ItemsSource="{Binding ItensMenu}" Spacing="4"><BindableLayout.ItemTemplate><DataTemplate x:DataType="vm:AtalhoMobile">
+                    <Button Text="{Binding Titulo}" CommandParameter="{Binding .}" Command="{Binding AbrirCommand, Source={RelativeSource AncestorType={x:Type vm:InicioViewModel}}, x:DataType=vm:InicioViewModel}" />
+                </DataTemplate></BindableLayout.ItemTemplate></VerticalStackLayout>
+            </VerticalStackLayout>
+        </DataTemplate></BindableLayout.ItemTemplate></VerticalStackLayout>
+        <Label Text="Tabelas" Style="{StaticResource TituloSecao}" />
+        <VerticalStackLayout BindableLayout.ItemsSource="{Binding GruposTabelas}" Spacing="6"><BindableLayout.ItemTemplate><DataTemplate x:DataType="vm:GrupoAtalhosMobile">
+            <VerticalStackLayout IsVisible="{Binding Visivel}" Spacing="4"><Button Text="{Binding Titulo}" Command="{Binding AlternarCommand}" />
+                <VerticalStackLayout BindableLayout.ItemsSource="{Binding ItensMenu}" Spacing="4"><BindableLayout.ItemTemplate><DataTemplate x:DataType="vm:AtalhoMobile">
+                    <Button Text="{Binding Titulo}" CommandParameter="{Binding .}" Command="{Binding AbrirCommand, Source={RelativeSource AncestorType={x:Type vm:InicioViewModel}}, x:DataType=vm:InicioViewModel}" />
+                </DataTemplate></BindableLayout.ItemTemplate></VerticalStackLayout>
+            </VerticalStackLayout>
+        </DataTemplate></BindableLayout.ItemTemplate></VerticalStackLayout>
+    </VerticalStackLayout></ScrollView>
+</ContentPage>

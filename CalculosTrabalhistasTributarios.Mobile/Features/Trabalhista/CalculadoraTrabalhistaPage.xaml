@@ -68,6 +68,8 @@
         <VerticalStackLayout Padding="20" Spacing="20" MaximumWidthRequest="640">
             <Label Text="{Binding Titulo}" FontSize="30" FontFamily="OpenSansSemibold" SemanticProperties.HeadingLevel="Level1" />
             <Label Text="{Binding Descricao}" Style="{StaticResource TextoSecundario}" />
+            <Button Text="Consultar cotações oficiais" Command="{Binding ConsultaCotacoesCommand}" IsVisible="{Binding ExibirConsultaCotacoes}"
+                    AutomationId="ConsultarCotacoes" SemanticProperties.Description="Consultar dólar fiscal da Receita Federal e cotação de referência do Banco Central" />
             <Border>
                 <VerticalStackLayout Spacing="14" BindableLayout.ItemsSource="{Binding Campos}" BindableLayout.ItemTemplateSelector="{StaticResource ModeloCampo}">
                     <VerticalStackLayout.Triggers>
@@ -212,6 +214,14 @@
             <views:ResultadoSimulacaoView Demonstrativo="{Binding Demonstrativo}" CompartilharPdfCommand="{Binding CompartilharPdfCommand}" />
             <Button Text="Usar no holerite" Command="{Binding UsarNoHoleriteCommand}" IsVisible="{Binding PodeUsarNoHolerite}" AutomationId="UsarNoHolerite" SemanticProperties.Description="Abrir o holerite com a quitação do banco de horas" />
             <Button Text="Usar na rescisão" Command="{Binding UsarNaRescisaoCommand}" IsVisible="{Binding PodeUsarNaRescisao}" AutomationId="UsarNaRescisao" SemanticProperties.Description="Abrir a rescisão com a quitação do banco de horas" />
+            <Button Text="Calcular o IR (RRA)" Command="{Binding CalcularRraCommand}" IsVisible="{Binding PodeCalcularRra}"
+                    AutomationId="CalcularRra" SemanticProperties.Description="Levar as diferenças por competência para o cálculo de RRA" />
+            <Button Text="Usar na rescisão" Command="{Binding LevarFgtsRescisaoCommand}" IsVisible="{Binding PodeLevarFgtsRescisao}"
+                    AutomationId="LevarFgtsRescisao" SemanticProperties.Description="Levar depósitos históricos conferidos para a rescisão" />
+            <Button Text="Usar no holerite" Command="{Binding JornadaParaHoleriteCommand}" IsVisible="{Binding PodeTransferirJornada}"
+                    AutomationId="JornadaParaHolerite" SemanticProperties.Description="Levar horas e faltas do ponto para o holerite" />
+            <Button Text="Usar nas horas extras" Command="{Binding JornadaParaHorasExtrasCommand}" IsVisible="{Binding PodeTransferirJornada}"
+                    AutomationId="JornadaParaHorasExtras" SemanticProperties.Description="Levar horas do ponto para a calculadora de horas extras" />
             <Label Text="Simulação com valores estimados. Confira as premissas no demonstrativo e procure um profissional especializado para validar os valores." Style="{StaticResource TextoSecundario}" />
         </VerticalStackLayout>
     </ScrollView>

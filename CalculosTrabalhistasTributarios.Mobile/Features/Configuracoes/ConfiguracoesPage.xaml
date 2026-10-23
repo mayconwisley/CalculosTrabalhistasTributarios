@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:CalculosTrabalhistasTributarios.Mobile.Presentation.Configuracoes;assembly=CalculosTrabalhistasTributarios.Mobile.Presentation"
+             x:Class="CalculosTrabalhistasTributarios.Mobile.Features.Configuracoes.ConfiguracoesPage" x:DataType="vm:ConfiguracoesMobileViewModel" Title="Configurações">
+    <ScrollView><VerticalStackLayout Padding="20" Spacing="16" MaximumWidthRequest="640">
+        <Label Text="Configurações" FontSize="28" FontFamily="OpenSansSemibold" SemanticProperties.HeadingLevel="Level1" />
+        <Border><VerticalStackLayout Spacing="8"><Label Text="Aparência" Style="{StaticResource TituloSecao}" />
+            <Label Text="Tema" Style="{StaticResource RotuloCampo}" />
+            <Picker ItemsSource="{Binding Temas}" SelectedIndex="{Binding IndiceTema}" AutomationId="TemaMobile" />
+            <Label Text="O modo automático acompanha a preferência do aparelho." Style="{StaticResource TextoSecundario}" />
+        </VerticalStackLayout></Border>
+        <Border><VerticalStackLayout Spacing="10"><Label Text="Tabelas" Style="{StaticResource TituloSecao}" />
+            <HorizontalStackLayout Spacing="10"><Switch IsToggled="{Binding AtualizarTabelasAoAbrir}" AutomationId="AtualizarAoAbrir" />
+                <Label Text="Atualizar pela internet ao abrir" VerticalOptions="Center" /></HorizontalStackLayout>
+            <Label Text="A atualização automática ocorre uma vez por dia. Uma falha preserva os dados locais." Style="{StaticResource TextoSecundario}" />
+            <Label Text="{Binding SituacaoTabelas}" />
+            <Button Text="Atualizar agora" Command="{Binding AtualizarAgoraCommand}" AutomationId="AtualizarTodasTabelas" />
+            <VerticalStackLayout IsVisible="{Binding Atualizacao.Iniciada}" Spacing="8"><ActivityIndicator IsRunning="{Binding Atualizacao.Atualizando}" />
+                <Label Text="{Binding Atualizacao.Mensagem}" /><ProgressBar Progress="{Binding Atualizacao.Progresso}" />
+                <Label Text="{Binding Atualizacao.Detalhe}" Style="{StaticResource TextoSecundario}" />
+                <Button Text="{Binding Atualizacao.TextoInterromper}" Command="{Binding Atualizacao.InterromperCommand}" IsVisible="{Binding Atualizacao.Atualizando}" />
+            </VerticalStackLayout>
+            <Label Text="{Binding Pendencias}" IsVisible="{Binding TemPendencias}" />
+            <Button Text="Ver detalhes das pendências" Command="{Binding VerDetalhesCommand}" IsVisible="{Binding TemPendencias}" />
+        </VerticalStackLayout></Border>
+        <Label Text="{Binding Versao}" Style="{StaticResource TextoSecundario}" />
+        <Button Text="Abrir projeto" Command="{Binding AbrirProjetoCommand}" />
+    </VerticalStackLayout></ScrollView>
+</ContentPage>

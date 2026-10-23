@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:CalculosTrabalhistasTributarios.Mobile.Presentation.Tabelas;assembly=CalculosTrabalhistasTributarios.Mobile.Presentation"
+             xmlns:views="clr-namespace:CalculosTrabalhistasTributarios.Mobile.Views"
+             x:Class="CalculosTrabalhistasTributarios.Mobile.Features.Tabelas.TabelaPage" x:DataType="vm:TabelaMobileViewModel" Title="Tabela">
+    <ScrollView><VerticalStackLayout Padding="20" Spacing="16" MaximumWidthRequest="640">
+        <Label Text="{Binding Titulo}" Style="{StaticResource TituloSecao}" SemanticProperties.HeadingLevel="Level1" />
+        <Label Text="{Binding Descricao}" Style="{StaticResource TextoSecundario}" />
+        <Border><VerticalStackLayout Spacing="12">
+            <Label Text="Consultar e editar" Style="{StaticResource TituloSecao}" />
+            <Label Text="Competência (MM/yyyy)" Style="{StaticResource RotuloCampo}" />
+            <Border Style="{StaticResource CaixaCampo}"><Entry Text="{Binding Competencia}" Keyboard="Text" HorizontalTextAlignment="Start" AutomationId="CompetenciaTabela" /></Border>
+            <VerticalStackLayout Spacing="6" IsVisible="{Binding ExibeFaixa}"><Label Text="Faixa" Style="{StaticResource RotuloCampo}" />
+                <Border Style="{StaticResource CaixaCampo}"><Entry Text="{Binding Faixa}" AutomationId="FaixaTabela" /></Border></VerticalStackLayout>
+            <Label Text="{Binding LabelValor}" Style="{StaticResource RotuloCampo}" />
+            <Border Style="{StaticResource CaixaCampo}"><Entry Text="{Binding Valor}" AutomationId="ValorTabela" /></Border>
+            <VerticalStackLayout Spacing="6" IsVisible="{Binding ExibeAliquota}"><Label Text="{Binding LabelAliquota}" Style="{StaticResource RotuloCampo}" />
+                <Border Style="{StaticResource CaixaCampo}"><Entry Text="{Binding Aliquota}" AutomationId="AliquotaTabela" /></Border></VerticalStackLayout>
+            <VerticalStackLayout Spacing="6" IsVisible="{Binding ExibeDeducao}"><Label Text="{Binding LabelDeducao}" Style="{StaticResource RotuloCampo}" />
+                <Border Style="{StaticResource CaixaCampo}"><Entry Text="{Binding Deducao}" AutomationId="DeducaoTabela" /></Border></VerticalStackLayout>
+            <Button Text="{Binding TextoSalvar}" Command="{Binding SalvarCommand}" AutomationId="SalvarTabela" />
+            <Button Text="Novo registro" Command="{Binding NovoCommand}" />
+            <Button Text="Excluir selecionado" Command="{Binding ExcluirCommand}" IsVisible="{Binding TemSelecionado}" AutomationId="ExcluirTabela" />
+            <Label Text="{Binding Mensagem}" IsVisible="{Binding TemMensagem}" TextColor="{AppThemeBinding Light={StaticResource ErroClaro}, Dark={StaticResource ErroEscuro}}" />
+        </VerticalStackLayout></Border>
+        <Border><VerticalStackLayout Spacing="10"><Label Text="Atualização" Style="{StaticResource TituloSecao}" />
+            <Label Text="{Binding StatusAtualizacao}" Style="{StaticResource TextoSecundario}" />
+            <Button Text="Atualizar pela internet" Command="{Binding AtualizarPelaInternetCommand}" AutomationId="AtualizarTabela" />
+            <Button Text="{Binding TextoFonteOficial}" Command="{Binding AbrirFonteOficialCommand}" />
+        </VerticalStackLayout></Border>
+        <Label Text="{Binding TituloLista}" Style="{StaticResource TituloSecao}" />
+        <ActivityIndicator IsRunning="{Binding Carregando}" IsVisible="{Binding Carregando}" />
+        <Label Text="Nenhum registro nesta tabela." IsVisible="{Binding SemRegistros}" />
+        <VerticalStackLayout Spacing="8" BindableLayout.ItemsSource="{Binding Pagina.Exibidas}"><BindableLayout.ItemTemplate>
+            <DataTemplate x:DataType="vm:LinhaRegistroTabelaMobile"><Border><VerticalStackLayout Spacing="4">
+                <Label Text="{Binding Competencia}" Style="{StaticResource RotuloCampo}" />
+                <Label Text="{Binding Faixa, StringFormat='Faixa: {0}'}" IsVisible="{Binding TemFaixa}" /><Label Text="{Binding Valor, StringFormat='Valor: {0}'}" />
+                <Label Text="{Binding Aliquota, StringFormat='Alíquota: {0}'}" IsVisible="{Binding TemAliquota}" /><Label Text="{Binding Deducao, StringFormat='Dedução: {0}'}" IsVisible="{Binding TemDeducao}" />
+                <Button Text="Editar este registro" CommandParameter="{Binding .}" Command="{Binding SelecionarCommand, Source={RelativeSource AncestorType={x:Type vm:TabelaMobileViewModel}}, x:DataType=vm:TabelaMobileViewModel}" />
+            </VerticalStackLayout></Border></DataTemplate>
+        </BindableLayout.ItemTemplate></VerticalStackLayout>
+        <views:PaginadorLinhas BindingContext="{Binding Pagina}" />
+    </VerticalStackLayout></ScrollView>
+</ContentPage>

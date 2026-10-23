@@ -4,6 +4,9 @@ using CalculosTrabalhistasTributarios.Domain.Comum;
 using CalculosTrabalhistasTributarios.Domain.Trabalhista;
 using CalculosTrabalhistasTributarios.Mobile.Presentation.Interfaces;
 using CommunityToolkit.Mvvm.Input;
+using CalculosTrabalhistasTributarios.Mobile.Presentation.Historico;
+using CalculosTrabalhistasTributarios.Mobile.Presentation.Inicio;
+using System.Windows.Input;
 using Microsoft.Extensions.Logging;
 
 namespace CalculosTrabalhistasTributarios.Mobile.Presentation.Trabalhista;
@@ -19,14 +22,20 @@ public sealed class ReajusteRetroativoMobileViewModel : CalculadoraTrabalhistaVi
     private readonly ISimularDemonstrativoUseCase<SimularReajusteRetroativoRequest> _simulador;
     private readonly GradeMobile _meses;
     private readonly GradeMobile _reflexos;
+    private readonly INavegacaoTransferenciasMobile? _transferencias;
+    public override bool PodeCalcularRra => Demonstrativo?.ParcelasRra is { Count: > 0 } && _transferencias is not null;
+    public override ICommand CalcularRraCommand { get; }
 
     public override string Titulo => "Diferenças de reajuste retroativo";
     public override string Descricao => "Compare o que foi pago com o salário reajustado em cada mês e apure os reflexos informados em 13º e férias.";
 
     public ReajusteRetroativoMobileViewModel(ISimularDemonstrativoUseCase<SimularReajusteRetroativoRequest> simulador,
-        ICompartilhamentoPdf compartilhamento, ILogger<ReajusteRetroativoMobileViewModel> logger) : base(compartilhamento, logger)
+        ICompartilhamentoPdf compartilhamento, ILogger<ReajusteRetroativoMobileViewModel> logger,
+        INavegacaoTransferenciasMobile? transferencias = null) : base(compartilhamento, logger)
     {
         _simulador = simulador;
+        _transferencias = transferencias;
+        CalcularRraCommand = new AsyncRelayCommand(CalcularRraAsync);
         Secao("periodo", "1. Gere as competências");
         Adicionar("inicio", "Início (MM/yyyy)", TipoCampoMobile.Competencia, DateTime.Today.AddMonths(-3).ToString("MM/yyyy", Cultura),
             "Primeiro mês com direito ao reajuste.");
@@ -59,6 +68,20 @@ public sealed class ReajusteRetroativoMobileViewModel : CalculadoraTrabalhistaVi
                 new("quantidade", "Avos (13º) ou dias (férias)", TipoCampoMobile.Inteiro, AvosDecimoTerceiro,
                     "13º: de 1 a 12 avos. Férias: de 1 a 30 dias.")
             ], AjustarReflexo);
+    }
+
+    private async Task CalcularRraAsync()
+    {
+        if (_transferencias is null || Demonstrativo?.ParcelasRra is not { Count: > 0 } parcelas) return;
+        var linhas = parcelas.Select(parcela => (IReadOnlyDictionary<string, ValorCampoMobile>)new Dictionary<string, ValorCampoMobile>
+        {
+            ["tipo"] = new("", (int)parcela.Tipo, false),
+            ["competencia"] = new(parcela.Competencia.ToString("MM/yyyy", Cultura), 0, false),
+            ["valor"] = new(parcela.Valor.ToString("N2", Cultura), 0, false)
+        }).ToArray();
+        await _transferencias.AbrirComDadosAsync(TipoCalculadoraMobile.Rra, new DadosFormularioMobile(1,
+            new Dictionary<string, ValorCampoMobile>(), new Dictionary<string, IReadOnlyList<IReadOnlyDictionary<string, ValorCampoMobile>>>
+            { ["parcelas"] = linhas }));
     }
 
     private void GerarMeses()

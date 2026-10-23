@@ -6,6 +6,9 @@ using CalculosTrabalhistasTributarios.Domain.Trabalhista;
 using CalculosTrabalhistasTributarios.Mobile.Presentation.Interfaces;
 using CalculosTrabalhistasTributarios.Presentation.ViewModels;
 using CommunityToolkit.Mvvm.Input;
+using CalculosTrabalhistasTributarios.Mobile.Presentation.Historico;
+using CalculosTrabalhistasTributarios.Mobile.Presentation.Inicio;
+using System.Windows.Input;
 using Microsoft.Extensions.Logging;
 
 namespace CalculosTrabalhistasTributarios.Mobile.Presentation.Trabalhista;
@@ -20,15 +23,24 @@ public sealed class JornadaMobileViewModel : CalculadoraTrabalhistaViewModel
     private const int SeisPorUm = 1;
     private const int DozePorTrintaESeis = 2;
     private readonly IApurarJornadaUseCase _apuracao;
+    private readonly INavegacaoTransferenciasMobile? _transferencias;
+    private SimulacaoJornadaDto? _ultimaApuracao;
+    public override bool PodeTransferirJornada => Demonstrativo is not null && _ultimaApuracao is not null && _transferencias is not null;
+    public override ICommand JornadaParaHoleriteCommand { get; }
+    public override ICommand JornadaParaHorasExtrasCommand { get; }
     private DateOnly _ultimaCompetencia;
 
     public override string Titulo => "Jornada pelo ponto";
     public override string Descricao => "Apure horas extras, noturnas, faltas, atrasos e intervalos pelas marcações de entrada e saída do período do ponto.";
 
-    public JornadaMobileViewModel(IApurarJornadaUseCase apuracao, ICompartilhamentoPdf compartilhamento, ILogger<JornadaMobileViewModel> logger)
+    public JornadaMobileViewModel(IApurarJornadaUseCase apuracao, ICompartilhamentoPdf compartilhamento, ILogger<JornadaMobileViewModel> logger,
+        INavegacaoTransferenciasMobile? transferencias = null)
         : base(compartilhamento, logger)
     {
         _apuracao = apuracao;
+        _transferencias = transferencias;
+        JornadaParaHoleriteCommand = new AsyncRelayCommand(() => TransferirJornadaAsync(TipoCalculadoraMobile.Holerite));
+        JornadaParaHorasExtrasCommand = new AsyncRelayCommand(() => TransferirJornadaAsync(TipoCalculadoraMobile.HorasExtras));
         _ultimaCompetencia = new DateOnly(DateTime.Today.Year, DateTime.Today.Month, 1);
         var (inicio, fim) = MesInteiro(_ultimaCompetencia);
         Secao("periodo", "Período do ponto");
@@ -163,6 +175,7 @@ public sealed class JornadaMobileViewModel : CalculadoraTrabalhistaViewModel
 
     protected override Task<Result<DemonstrativoDto>> ApurarAsync(CancellationToken cancellationToken)
     {
+        _ultimaApuracao = null;
         var grade = Grade("dias");
         // Como o Apurar do desktop: sem dias, gera o período antes de apurar.
         if (grade.Linhas.Count == 0)
@@ -174,7 +187,35 @@ public sealed class JornadaMobileViewModel : CalculadoraTrabalhistaViewModel
         var apuracao = _apuracao.Apurar(new ApurarJornadaRequest(mes, (TrabalhoNoturno)Opcao("noturno"), marcacoes, Opcao("escala") == DozePorTrintaESeis));
         if (apuracao.Falhou)
             return Task.FromResult<Result<DemonstrativoDto>>(apuracao.Erro);
+        _ultimaApuracao = apuracao.Valor;
         return Task.FromResult<Result<DemonstrativoDto>>(DemonstrativoJornada.Montar(apuracao.Valor, marcacoes));
+    }
+
+    private async Task TransferirJornadaAsync(TipoCalculadoraMobile destino)
+    {
+        if (_transferencias is null || Demonstrativo is null || _ultimaApuracao is not { } apuracao) return;
+        var totais = apuracao.Totais;
+        static ValorCampoMobile Valor(string valor) => new(valor, 0, false);
+        static string Horas(int minutos) => $"{minutos / 60}:{minutos % 60:00}";
+        var campos = new Dictionary<string, ValorCampoMobile>
+        {
+            ["competencia"] = Valor(apuracao.Competencia.ToString("MM/yyyy", Cultura)),
+            ["horas1"] = Valor(Horas(totais.ExtrasFaixa1)), ["horas2"] = Valor(Horas(totais.ExtrasFaixa2)),
+            ["trabalho"] = new("", apuracao.Noturno == TrabalhoNoturno.Urbano ? 0 : 1, false),
+            ["extrasNoturnas"] = Valor(Horas(totais.ExtrasNoturnas)),
+            ["feriados"] = Valor(totais.Feriados.ToString(Cultura))
+        };
+        campos[destino == TipoCalculadoraMobile.Holerite ? "horasNoturnas" : "noturnas"] = Valor(Horas(totais.Noturnas));
+        if (destino == TipoCalculadoraMobile.Holerite)
+        {
+            campos["faltas"] = Valor(totais.Faltas.ToString(Cultura));
+            campos["descansos"] = Valor(totais.DescansosPerdidos.ToString(Cultura));
+            campos["atrasos"] = Valor(Horas(totais.Faltantes));
+            campos["intervaloIntra"] = Valor(Horas(totais.IntervaloSuprimido));
+            campos["intervaloInter"] = Valor(Horas(totais.InterjornadaSuprimida));
+        }
+        await _transferencias.AbrirComDadosAsync(destino, new DadosFormularioMobile(1, campos,
+            new Dictionary<string, IReadOnlyList<IReadOnlyDictionary<string, ValorCampoMobile>>>()));
     }
 
     private static MarcacaoDia LerDia(LinhaGradeMobile linha)

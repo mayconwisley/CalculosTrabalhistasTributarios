@@ -49,6 +49,7 @@ public sealed partial class GradeMobile : ObservableObject
     public string Descricao { get; }
     public string NomeLinha { get; }
     public int Limite { get; }
+    public IReadOnlyList<ColunaGradeMobile> Colunas => _colunas;
     public string RotuloAdicionar => $"+ {NomeLinha}";
     public string RotuloRemover => $"Remover {NomeLinha.ToLowerInvariant()}";
     public ObservableCollection<LinhaGradeMobile> Linhas { get; } = [];

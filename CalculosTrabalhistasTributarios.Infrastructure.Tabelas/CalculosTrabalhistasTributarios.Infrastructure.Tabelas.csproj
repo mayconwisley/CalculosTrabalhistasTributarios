@@ -6,6 +6,7 @@
     <Description>Atualização das tabelas e dos índices pelas fontes oficiais, compartilhada pelo desktop e pelo celular.</Description>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="..\CalculosTrabalhistasTributarios.Infrastructure\Tributacao\ConsultaCotacoesTrabalhoExterior.cs" Link="Tributacao\ConsultaCotacoesTrabalhoExterior.cs" />
     <PackageReference Include="HtmlAgilityPack" />
     <PackageReference Include="Microsoft.Data.Sqlite" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" />

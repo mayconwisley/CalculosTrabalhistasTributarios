@@ -1,6 +1,6 @@
 # Aplicativo móvel — .NET MAUI
 
-## Escopo inicial
+## Escopo
 
 O aplicativo Android é uma apresentação adicional para o mesmo núcleo de cálculo. A solução principal `CalculosTrabalhistasTributarios.sln` inclui os projetos desktop e móveis. O WPF mantém o fluxo de publicação existente. Não há backend ou sincronização com o computador.
 
@@ -10,7 +10,9 @@ No saque-aniversário, informe: saldo do extrato, garantia bloqueada, indicaçã
 
 O resultado pode ser compartilhado em PDF pelo menu nativo do Android (WhatsApp, e-mail e outros aplicativos compatíveis instalados). O documento contém destaques, verbas, total quando aplicável, comparativo, memória, observações e o aviso de simulação em todas as páginas. Não há exportação Excel no aplicativo móvel nem dependência de ClosedXML ou QuestPDF.
 
-Não estão disponíveis nesta etapa: análise de nova antecipação, histórico, importação de formulários, botão "Preencher exemplo", atualização online de tabelas, índices e cotações, e as transferências entre calculadoras do desktop, exceto a quitação do banco de horas (por exemplo, jornada para horas extras ou holerite, diferenças para o RRA e depósitos da conferência do FGTS para a rescisão). A rescisão permite digitar ou gerar os depósitos históricos de FGTS. Os dados do formulário permanecem somente na sessão; não há permissão de rede solicitada pelo manifesto da aplicação. O aplicativo destinatário do compartilhamento gerencia o envio e sua conexão.
+O menu e a tela inicial permitem buscar calculadoras e tabelas por nome ou descrição e marcar favoritas, gravadas no aparelho. As tabelas locais podem ser consultadas, editadas, excluídas e atualizadas pela internet. A abertura prepara o banco e verifica as tabelas uma vez por dia quando essa opção está ligada; é possível pular a consulta. Em Configurações, há escolha do tema, atualização automática e o botão **Atualizar agora**. Falhas de rede preservam os dados locais.
+
+Não estão disponíveis nesta etapa: análise de nova antecipação, histórico, importação de formulários, botão "Preencher exemplo", atualização de cotações de trabalho no exterior e as transferências entre calculadoras do desktop, exceto a quitação do banco de horas (por exemplo, jornada para horas extras ou holerite, diferenças para o RRA e depósitos da conferência do FGTS para a rescisão). A rescisão permite digitar ou gerar os depósitos históricos de FGTS. Os dados do formulário permanecem somente na sessão. O aplicativo destinatário do compartilhamento gerencia o envio e sua conexão.
 
 Essas calculadoras reutilizam a apuração e as tabelas locais do desktop. No **salário-família**, informe a remuneração do mês completo e os dias trabalhados; a remuneração de um mês parcial não deve ser proporcionalizada na entrada. Em **insalubridade e periculosidade**, escolha o grau e a base da insalubridade; o valor de base só aparece quando necessário. Em **comissões e DSR**, é possível usar o calendário da competência ou informar os dias do período. No **seguro-desemprego**, a solicitação define a janela de carência; o empregado doméstico usa o cálculo próprio da LC 150/2015.
 
@@ -29,7 +31,7 @@ Meses, vínculos, parcelas, aportes e marcações usam a grade comum da tela de 
 - **Salário bruto pelo líquido, IRPF anual, carnê-leão, dividendos e ganho de capital:** usam as tabelas locais da competência ou do ano informado. O IRPF anual atende declarações a partir de 2026.
 - **Contribuição do autônomo e do facultativo:** escolha a categoria e o plano (20%, 11% ou 5%); o resultado mostra código, vencimento e complementação quando aplicável.
 - **Crédito do Trabalhador e empréstimo pessoal:** a margem livre vazia é diferente de zero. O empréstimo pessoal usa a tabela Price, com liberação entre 2025 e 2100.
-- **Correção de valores, tributo em atraso, débitos judiciais, aposentadoria e pensão por morte:** dependem dos índices (IPCA, IPCA-E, INPC, Selic, TR, taxa legal) do banco distribuído. Sem atualização pela internet no celular, um período além das sementes devolve a mensagem de índice ausente do caso de uso, em vez de um valor estimado.
+- **Correção de valores, tributo em atraso, débitos judiciais, aposentadoria e pensão por morte:** dependem dos índices (IPCA, IPCA-E, INPC, Selic, TR, taxa legal) do banco local. Se uma fonte não confirmar o índice necessário, o caso de uso informa a ausência em vez de estimar um valor.
 - **Abono salarial:** informe o ano-base, os meses trabalhados e a remuneração média; limite 0,00 usa o valor publicado.
 - **Afastamentos e licenças:** informe tipo, início, remuneração e dias; um afastamento anterior pela mesma doença em 60 dias soma-se ao novo (Decreto 3.048/1999, art. 75).
 - **INSS em múltiplos vínculos:** informe os vínculos na ordem de desconto; ela define quem usa cada faixa e o teto restante. Para mudar a ordem, remova e inclua a linha novamente.
@@ -58,7 +60,7 @@ A biblioteca `Infrastructure.Local` contém a persistência extraída da Infrast
 
 O Android inclui o banco distribuído como recurso e copia-o uma única vez para `AppDataDirectory/BancoDados/calculoIrrf.db`, via arquivo temporário e renomeação atômica. Depois aplica o inicializador transacional e invalida o cache. Inicializações concorrentes são serializadas. Bancos existentes são preservados; uma falha permite nova tentativa. O trabalho SQLite é executado fora da thread de interface, pois o provedor possui operações síncronas internamente.
 
-Nesta etapa, não há atualização tributária pela internet nem tela de manutenção no celular. As tabelas disponíveis são as distribuídas e suas sementes, consultadas pela competência informada; a política de vigência é a mesma do WPF. Novas versões devem evoluir as sementes pelo procedimento existente, sem sobrescrever o banco privado. Não use bancos pessoais como recurso do pacote.
+As tabelas distribuídas e suas sementes são consultadas pela competência informada; a política de vigência é a mesma do WPF. A manutenção e a atualização pelas fontes externas usam os serviços compartilhados de `Infrastructure.Tabelas`. Novas versões devem evoluir as sementes pelo procedimento existente, sem sobrescrever o banco privado. Não use bancos pessoais como recurso do pacote.
 
 ## Calculadoras trabalhistas
 
@@ -99,6 +101,8 @@ Na ampliação trabalhista, as quatro telas foram abertas no emulador. A rescis�
 
 Na ampliação para todas as calculadoras, a conferência no emulador Android (API 36, 1080 × 2400, 420 dpi, tema claro) abriu cada tela nova pelo catálogo e acionou **Calcular** com os valores iniciais; todas exibiram a mensagem de validação esperada ou um resultado. Com dados, foram conferidos: gorjetas (Gerar meses com 12 linhas, R$ 1.500,00 em um mês: média R$ 125,00, total R$ 1.791,67 e FGTS R$ 143,33), jornada pelo ponto (geração dos dias e 196:00 horas em 10/2026) e correção de valores pelo IPCA de 01/2025 a 01/2026 (R$ 1.000,00 para R$ 1.042,64). O PDF da jornada chegou ao menu nativo de compartilhamento, sem envio e sem inspeção visual das páginas. Datas, competências, horas e textos usam o teclado de texto, porque o estilo padrão das entradas é numérico e descartaria "/", ":" e letras. Depois da troca das listas com rolagem própria pela grade paginada, o gesto sobre as linhas passou a rolar a página; na compilação Release, gerar 720 competências na conferência do FGTS levou cerca de 3 s, contra cerca de 5 s para 60 linhas exibidas todas de uma vez, e **Próximas** no paginador inferior levou a tela ao início da página seguinte.
 
+Na ampliação da navegação, foram conferidos no emulador o progresso e o botão **Pular** na abertura, o catálogo, o menu lateral, Configurações e a leitura dos registros locais da Tabela INSS. A tela inicial foi inspecionada em 1080 × 2400 no tema claro e 840 × 1680 no tema escuro; os testes automatizados cobrem a busca, as favoritas, a política diária de atualização e a edição da tabela com uma fonte simulada. O emulador não confirmou uma atualização real de fonte externa nem a distribuição Release desta ampliação.
+
 ## Estrutura e dependências
 
 ```text
@@ -106,16 +110,21 @@ CalculosTrabalhistasTributarios.Mobile.sln
 ├── Domain                         # regras existentes, independentes de interface
 ├── Application                    # casos de uso e contratos existentes
 ├── Infrastructure.Local           # SQLite e sementes compartilhados, sem bibliotecas de relatório
+├── Infrastructure.Tabelas          # manutenção e fontes de atualização compartilhadas
 ├── Mobile.Presentation            # net10.0: ViewModels por funcionalidade, sem MAUI/WPF
 │   ├── DependencyInjection.cs
 │   ├── SaqueAniversario/
-│   ├── Inicio/                      # catálogo e grupos da tela inicial
+│   ├── Inicio/                      # catálogos, busca e favoritas
+│   ├── Abertura/ e Configuracoes/   # atualização diária e preferências
+│   ├── Tabelas/                    # edição e consulta por competência
 │   └── Trabalhista/                 # formulários da tela comum, campos e grades
 ├── Mobile                         # net10.0-android: composição e controles nativos
 │   ├── MauiProgram.cs
 │   ├── App.xaml
 │   ├── Comportamentos/
 │   ├── Features/SaqueAniversario/
+│   ├── Features/Inicio/ e Tabelas/  # menu e manutenção
+│   ├── Features/Abertura/ e Configuracoes/
 │   ├── Features/Trabalhista/        # tela comum de cálculo
 │   ├── Platforms/Android/
 │   └── Resources/
@@ -124,7 +133,8 @@ CalculosTrabalhistasTributarios.Mobile.sln
 
 Fluxo: página → binding/command do ViewModel → `ISimularDemonstrativoUseCase<TRequest>` → domínio → `DemonstrativoDto` → página.
 
-- `MauiProgram` é o ponto de composição. Registra somente os serviços necessários, usando `AddCalculadoras` da Application (os casos de uso de cálculo, sem a atualização online), `AddInfrastructureLocal` (tabelas e índices do SQLite) e `AddPresentation` da apresentação móvel, que registra os formulários do catálogo.
+- `MauiProgram` é o ponto de composição. Registra `AddCalculadoras`, `AddAtualizacaoTodasTabelas`, `AddInfrastructureLocal`, `AddAtualizacaoTabelas` e `AddPresentation`. A atualização compartilha fontes e critérios com o desktop.
+- `AberturaPage` prepara o SQLite antes da navegação e mostra progresso ou falha; `FlyoutPage` mantém o menu lateral, a busca e as favoritas da mesma janela. As preferências ficam no armazenamento privado do Android. O manifesto declara acesso à internet para atualizar tabelas e abrir a fonte oficial.
 - Calculadoras com resultado próprio no desktop (estabilidade, pensão alimentícia, pensão em atraso, débitos judiciais, jornada) são apresentadas pelos montadores de `Application/Demonstrativos`, que reorganizam o resultado apurado em `DemonstrativoDto` sem recalcular.
 - Cada janela possui um escopo de DI, descartado em `Window.Destroying`. Página e ViewModel são transient; não compartilhe formulários mutáveis em singletons.
 - `Mobile.Presentation` usa CommunityToolkit.Mvvm para notificações e comandos assíncronos. Não depende de controles MAUI, WPF ou Infrastructure.

@@ -6,10 +6,13 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
 using CalculosTrabalhistasTributarios.Mobile.Presentation.Interfaces;
+using CalculosTrabalhistasTributarios.Mobile.Presentation.Historico;
+using CalculosTrabalhistasTributarios.Domain.Comum;
+using CalculosTrabalhistasTributarios.Domain.Trabalhista;
 
 namespace CalculosTrabalhistasTributarios.Mobile.Presentation.SaqueAniversario;
 
-public sealed partial class SaqueAniversarioViewModel : ObservableObject
+public sealed partial class SaqueAniversarioViewModel : ObservableObject, IFormularioHistoricoMobile
 {
     private readonly ISimularDemonstrativoUseCase<SimularSaqueAniversarioRequest> _simular;
     private readonly ILogger<SaqueAniversarioViewModel> _logger;
@@ -25,6 +28,43 @@ public sealed partial class SaqueAniversarioViewModel : ObservableObject
 
     public IReadOnlyList<string> Meses { get; } = CultureInfo.GetCultureInfo("pt-BR")
         .DateTimeFormat.MonthNames.Take(12).ToArray();
+    public string Titulo => "Saque-aniversário do FGTS";
+    public long? HistoricoId { get; set; }
+
+    public DadosFormularioMobile ExportarDados() => new(1, new Dictionary<string, ValorCampoMobile>
+    {
+        [nameof(Saldo)] = new(Saldo, 0, false), [nameof(GarantiaBloqueada)] = new(GarantiaBloqueada, 0, false),
+        [nameof(MultaIncluida)] = new(MultaIncluida, 0, false), [nameof(ParcelaComprometida)] = new(ParcelaComprometida, 0, false),
+        [nameof(SaldoIncluiGarantia)] = new("", 0, SaldoIncluiGarantia), [nameof(IndiceMes)] = new("", IndiceMes, false),
+        [nameof(DataAnalise)] = new(DataAnalise, 0, false), [nameof(IndiceCarencia)] = new("", IndiceCarencia, false),
+        [nameof(IndiceContratoNovo)] = new("", IndiceContratoNovo, false), [nameof(IndiceProximoCedido)] = new("", IndiceProximoCedido, false)
+    }, new Dictionary<string, IReadOnlyList<IReadOnlyDictionary<string, ValorCampoMobile>>>());
+
+    public Result TentarImportarDados(DadosFormularioMobile dados)
+    {
+        var campos = dados.Campos;
+        if (dados.Versao != 1 || campos is null || dados.Grades is null || dados.Grades.Count != 0
+            || !campos.TryGetValue(nameof(Saldo), out var saldo) || !campos.TryGetValue(nameof(GarantiaBloqueada), out var garantia)
+            || !campos.TryGetValue(nameof(MultaIncluida), out var multa) || !campos.TryGetValue(nameof(ParcelaComprometida), out var parcela)
+            || !campos.TryGetValue(nameof(SaldoIncluiGarantia), out var inclui) || !campos.TryGetValue(nameof(IndiceMes), out var mes)
+            || !new[] { saldo, garantia, multa, parcela }.All(valor => valor is not null && valor.Valor is { Length: <= 40 })
+            || inclui is null || mes is null || mes.Indice is < -1 or > 11
+            || (campos.TryGetValue(nameof(DataAnalise), out var data) && (data?.Valor is not { Length: <= 20 }))
+            || !IndiceValido(campos, nameof(IndiceCarencia)) || !IndiceValido(campos, nameof(IndiceContratoNovo))
+            || !IndiceValido(campos, nameof(IndiceProximoCedido)))
+            return Erro.Validacao("Formulário salvo: confira os valores e o mês de aniversário.");
+        Saldo = saldo.Valor; GarantiaBloqueada = garantia.Valor; MultaIncluida = multa.Valor;
+        ParcelaComprometida = parcela.Valor; SaldoIncluiGarantia = inclui.Marcado; IndiceMes = mes.Indice;
+        if (campos.TryGetValue(nameof(DataAnalise), out var dataSalva)) DataAnalise = dataSalva.Valor;
+        if (campos.TryGetValue(nameof(IndiceCarencia), out var carencia)) IndiceCarencia = carencia.Indice;
+        if (campos.TryGetValue(nameof(IndiceContratoNovo), out var contrato)) IndiceContratoNovo = contrato.Indice;
+        if (campos.TryGetValue(nameof(IndiceProximoCedido), out var cedido)) IndiceProximoCedido = cedido.Indice;
+        Demonstrativo = null;
+        return Result.Ok();
+    }
+
+    private static bool IndiceValido(IReadOnlyDictionary<string, ValorCampoMobile> campos, string chave) =>
+        !campos.TryGetValue(chave, out var valor) || valor is not null && valor.Indice is >= 0 and <= 2;
 
     [ObservableProperty] private string _saldo = "0,00";
     [ObservableProperty] private string _garantiaBloqueada = "0,00";
@@ -32,6 +72,11 @@ public sealed partial class SaqueAniversarioViewModel : ObservableObject
     [ObservableProperty] private string _parcelaComprometida = "0,00";
     [ObservableProperty] private bool _saldoIncluiGarantia;
     [ObservableProperty] private int _indiceMes = -1;
+    public IReadOnlyList<string> Confirmacoes { get; } = ["Não informado", "Sim", "Não"];
+    [ObservableProperty] private string _dataAnalise = DateTime.Today.ToString("dd/MM/yyyy", CultureInfo.GetCultureInfo("pt-BR"));
+    [ObservableProperty] private int _indiceCarencia;
+    [ObservableProperty] private int _indiceContratoNovo;
+    [ObservableProperty] private int _indiceProximoCedido;
     [ObservableProperty] private bool _exibirDetalhes;
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(TemMensagem))]
@@ -59,7 +104,8 @@ public sealed partial class SaqueAniversarioViewModel : ObservableObject
     {
         base.OnPropertyChanged(e);
         if (e.PropertyName is nameof(Saldo) or nameof(GarantiaBloqueada) or nameof(MultaIncluida)
-            or nameof(ParcelaComprometida) or nameof(SaldoIncluiGarantia) or nameof(IndiceMes))
+            or nameof(ParcelaComprometida) or nameof(SaldoIncluiGarantia) or nameof(IndiceMes)
+            or nameof(DataAnalise) or nameof(IndiceCarencia) or nameof(IndiceContratoNovo) or nameof(IndiceProximoCedido))
         {
             Demonstrativo = null;
             Mensagem = null;
@@ -77,7 +123,14 @@ public sealed partial class SaqueAniversarioViewModel : ObservableObject
             || !LerValor(ParcelaComprometida, "Parcela comprometida", out var parcela))
             return;
 
-        var pedido = new SimularSaqueAniversarioRequest(saldo, IndiceMes + 1, parcela, garantia, multa, SaldoIncluiGarantia);
+        if (!DateOnly.TryParseExact(DataAnalise, "dd/MM/yyyy", CultureInfo.GetCultureInfo("pt-BR"), DateTimeStyles.None, out var dataAnalise))
+        {
+            Mensagem = "Data da análise: informe uma data no formato dd/MM/yyyy.";
+            return;
+        }
+        var analise = new EntradaAnaliseAntecipacaoFgts(dataAnalise, Confirmacao(IndiceCarencia), Confirmacao(IndiceContratoNovo),
+            Confirmacao(IndiceProximoCedido));
+        var pedido = new SimularSaqueAniversarioRequest(saldo, IndiceMes + 1, parcela, garantia, multa, SaldoIncluiGarantia, analise);
         try
         {
             Ocupado = true;
@@ -105,6 +158,12 @@ public sealed partial class SaqueAniversarioViewModel : ObservableObject
     }
 
     private bool PodeCalcular() => !Ocupado;
+    private static ConfirmacaoAntecipacaoFgts Confirmacao(int indice) => indice switch
+    {
+        1 => ConfirmacaoAntecipacaoFgts.Sim,
+        2 => ConfirmacaoAntecipacaoFgts.Nao,
+        _ => ConfirmacaoAntecipacaoFgts.NaoInformado
+    };
     private bool PodeCompartilharPdf() => Demonstrativo is not null && !Ocupado;
 
     [RelayCommand(CanExecute = nameof(PodeCompartilharPdf))]

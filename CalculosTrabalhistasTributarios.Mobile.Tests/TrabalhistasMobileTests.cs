@@ -14,6 +14,36 @@ namespace CalculosTrabalhistasTributarios.Mobile.Tests;
 public sealed class TrabalhistasMobileTests
 {
     [Fact]
+    public async Task Trabalho_exterior_consulta_cotacoes_e_preserva_cambio_do_comprovante()
+    {
+        var fonte = new CotacoesTeste();
+        var vm = new TrabalhoExteriorMobileViewModel(new Captura<SimularTrabalhoExteriorRequest>(), new PdfTeste(),
+            NullLogger<TrabalhoExteriorMobileViewModel>.Instance, fonte);
+        Alterar(vm, "recebimento", "10/10/2026");
+        Alterar(vm, "moeda", "EUR");
+        Alterar(vm, "cambioEfetivo", "6,20");
+
+        await vm.ConsultarCotacoesCommand.ExecuteAsync(null);
+
+        Assert.Equal(new DateOnly(2026, 10, 10), fonte.Data);
+        Assert.Equal("EUR", fonte.Moeda);
+        Assert.Equal("5,1234", Assert.Single(vm.Campos, campo => campo.Chave == "dolarFiscal").Valor);
+        Assert.Equal("1,081234", Assert.Single(vm.Campos, campo => campo.Chave == "usdPorUnidade").Valor);
+        Assert.Equal("6,20", Assert.Single(vm.Campos, campo => campo.Chave == "cambioEfetivo").Valor);
+    }
+
+    private sealed class CotacoesTeste : IConsultaCotacoesTrabalhoExterior
+    {
+        public DateOnly Data { get; private set; }
+        public string? Moeda { get; private set; }
+        public Task<Result<CotacoesTrabalhoExteriorDto>> ConsultarAsync(DateOnly recebimento, string moeda, CancellationToken cancellationToken)
+        {
+            Data = recebimento; Moeda = moeda;
+            return Task.FromResult<Result<CotacoesTrabalhoExteriorDto>>(new CotacoesTrabalhoExteriorDto(5.1234m, 1.081234m, recebimento));
+        }
+    }
+
+    [Fact]
     public async Task Decimo_terceiro_encaminha_parcelas_e_complemento_aos_casos_corretos()
     {
         var parcelas = new Captura<SimularDecimoTerceiroRequest>();
@@ -252,6 +282,64 @@ public sealed class TrabalhistasMobileTests
         Assert.Equal(0m, captura.Pedido?.ValorPj);
         Assert.Equal(RegimeTributario.SimplesNacionalAnexoIV, captura.Pedido?.RegimeEmpresa);
         Assert.Equal(TributacaoPj.AnexoV, captura.Pedido?.Tributacao);
+    }
+
+    [Fact]
+    public async Task Holerite_encaminha_verbas_e_opcoes_condicionais()
+    {
+        var captura = new Captura<SimularHoleriteRequest>();
+        var vm = new HoleriteMobileViewModel(captura, new PdfTeste(), NullLogger<HoleriteMobileViewModel>.Instance);
+        Assert.False(Assert.Single(vm.Campos, campo => campo.Chave == "diasUteisComissoes").Visivel);
+        Assert.False(Assert.Single(vm.Campos, campo => campo.Chave == "pensaoPercentual").Visivel);
+        Assert.Contains(vm.Campos, campo => campo.EhSecao && campo.Rotulo == "Comissões e DSR");
+
+        Alterar(vm, "competencia", "10/2026");
+        Alterar(vm, "salario", "3.500,00");
+        Opcao(vm, "insalubridade", 3);
+        Assert.Single(vm.Campos, campo => campo.Chave == "periculosidade").Marcado = true;
+        Alterar(vm, "horas1", "10:30");
+        Opcao(vm, "trabalho", 1);
+        Assert.Equal("25", Assert.Single(vm.Campos, campo => campo.Chave == "percentualNoturno").Valor);
+        Alterar(vm, "percentualNoturno", "30");
+        Alterar(vm, "horasNoturnas", "5:15");
+        Alterar(vm, "comissoes", "1.200,00");
+        Assert.Single(vm.Campos, campo => campo.Chave == "diasComissoesManuais").Marcado = true;
+        Alterar(vm, "diasUteisComissoes", "22");
+        Alterar(vm, "diasDescansoComissoes", "8");
+        Opcao(vm, "pensaoBase", 2);
+        Assert.True(Assert.Single(vm.Campos, campo => campo.Chave == "pensaoPercentual").Visivel);
+        Alterar(vm, "pensaoPercentual", "15");
+        Alterar(vm, "valeTransporte", "240,00");
+        Alterar(vm, "planoSaude", "180,00");
+        await vm.CalcularCommand.ExecuteAsync(null);
+
+        var pedido = Assert.IsType<SimularHoleriteRequest>(captura.Pedido);
+        Assert.Equal(new DateOnly(2026, 10, 1), pedido.Competencia);
+        Assert.Equal(3500m, pedido.Salario);
+        Assert.Equal(GrauInsalubridade.Maximo, pedido.Insalubridade);
+        Assert.True(pedido.Periculosidade);
+        Assert.Equal(10.5m, pedido.HorasFaixa1);
+        Assert.True(pedido.Rural);
+        Assert.Equal(5.25m, pedido.HorasNoturnas);
+        Assert.Equal(30m, pedido.PercentualNoturno);
+        Assert.Equal(1200m, pedido.Comissoes);
+        Assert.Equal(22, pedido.DiasUteisComissoes);
+        Assert.Equal(8, pedido.DiasDescansoComissoes);
+        Assert.Equal(BasePensao.RendimentosBrutos, pedido.Pensao?.Base);
+        Assert.Equal(15m, pedido.Pensao?.Percentual);
+        Assert.Equal(240m, pedido.CustoValeTransporte);
+        Assert.Equal(180m, pedido.PlanoSaude);
+        Assert.Null(pedido.QuitacaoBancoHoras);
+
+        Opcao(vm, "trabalho", 0);
+        Assert.Equal("30", Assert.Single(vm.Campos, campo => campo.Chave == "percentualNoturno").Valor);
+        Assert.Single(vm.Campos, campo => campo.Chave == "diasComissoesManuais").Marcado = false;
+        Opcao(vm, "pensaoBase", 3);
+        Alterar(vm, "pensaoValor", "500,00");
+        await vm.CalcularCommand.ExecuteAsync(null);
+        Assert.Null(captura.Pedido?.DiasUteisComissoes);
+        Assert.Equal(BasePensao.ValorFixo, captura.Pedido?.Pensao?.Base);
+        Assert.Equal(500m, captura.Pedido?.Pensao?.Valor);
     }
 
     [Fact]

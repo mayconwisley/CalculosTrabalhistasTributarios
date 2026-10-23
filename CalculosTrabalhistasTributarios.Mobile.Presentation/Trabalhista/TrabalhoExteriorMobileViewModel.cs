@@ -4,14 +4,15 @@ using CalculosTrabalhistasTributarios.Domain.Comum;
 using CalculosTrabalhistasTributarios.Domain.Trabalhista;
 using CalculosTrabalhistasTributarios.Mobile.Presentation.Interfaces;
 using Microsoft.Extensions.Logging;
+using CommunityToolkit.Mvvm.Input;
+using System.Windows.Input;
 
 namespace CalculosTrabalhistasTributarios.Mobile.Presentation.Trabalhista;
 
 /// <summary>
-/// Trabalho no exterior do residente fiscal no Brasil. A consulta online do dólar fiscal e da PTAX do desktop não existe no
-/// aplicativo móvel, que não acessa a internet: as cotações são digitadas a partir das fontes oficiais.
+/// Trabalho no exterior do residente fiscal no Brasil, com a mesma consulta de referência do desktop.
 /// </summary>
-public sealed class TrabalhoExteriorMobileViewModel : CalculadoraTrabalhistaViewModel
+public sealed partial class TrabalhoExteriorMobileViewModel : CalculadoraTrabalhistaViewModel
 {
     // Mesma lista e ordem do desktop; a moeda vazia é "Outro país", que pede o nome e a moeda.
     private static readonly (string Pais, string Moeda)[] Paises =
@@ -27,15 +28,22 @@ public sealed class TrabalhoExteriorMobileViewModel : CalculadoraTrabalhistaView
     ];
 
     private readonly ISimularDemonstrativoUseCase<SimularTrabalhoExteriorRequest> _simulador;
+    private readonly IConsultaCotacoesTrabalhoExterior? _cotacoes;
+    private readonly ILogger<TrabalhoExteriorMobileViewModel> _logger;
 
     public override string Titulo => "Trabalho no exterior — residente no Brasil";
+    public override bool ExibirConsultaCotacoes => true;
+    public override ICommand ConsultaCotacoesCommand => ConsultarCotacoesCommand;
     public override string Descricao => "Simule salário ou serviços recebidos de fonte estrangeira como pessoa física residente fiscal no Brasil. " +
         "Informe o dólar fiscal, a cotação da moeda e o câmbio efetivo e os encargos do comprovante bancário.";
 
     public TrabalhoExteriorMobileViewModel(ISimularDemonstrativoUseCase<SimularTrabalhoExteriorRequest> simulador,
-        ICompartilhamentoPdf compartilhamento, ILogger<TrabalhoExteriorMobileViewModel> logger) : base(compartilhamento, logger)
+        ICompartilhamentoPdf compartilhamento, ILogger<TrabalhoExteriorMobileViewModel> logger,
+        IConsultaCotacoesTrabalhoExterior? cotacoes = null) : base(compartilhamento, logger)
     {
         _simulador = simulador;
+        _cotacoes = cotacoes;
+        _logger = logger;
         Secao("secaoRendimento", "Rendimento");
         Adicionar("recebimento", "Recebimento", TipoCampoMobile.Data, DateTime.Today.ToString("dd/MM/yyyy", Cultura),
             "Data em que o rendimento foi recebido; define o mês do carnê-leão.");
@@ -53,7 +61,7 @@ public sealed class TrabalhoExteriorMobileViewModel : CalculadoraTrabalhistaView
             "Juros de mora efetivamente recebidos pelo atraso do pagamento. Zero quando não houver.");
         Adicionar("impostoExterior", "IR exterior retido (moeda)", TipoCampoMobile.Moeda, "0,00",
             "Imposto de renda sobre a remuneração tributável no Brasil, retido no mesmo recebimento. Não inclua contribuições sociais.");
-        Secao("secaoCotacoes", "Cotações (informe manualmente)");
+        Secao("secaoCotacoes", "Cotações (consulte ou informe manualmente)");
         Adicionar("usdPorUnidade", "USD por unidade", TipoCampoMobile.Numero, "1",
             "Cotação oficial da moeda de origem em dólares dos EUA na data do recebimento (PTAX do Banco Central). Para USD, use 1. Até seis casas decimais.");
         Adicionar("dolarFiscal", "Dólar compra fiscal (R$/USD)", TipoCampoMobile.Numero, "0",
@@ -98,6 +106,34 @@ public sealed class TrabalhoExteriorMobileViewModel : CalculadoraTrabalhistaView
 
     private void AtualizarVinculo() =>
         Campo("livroCaixa").Visivel = (VinculoTrabalhoExterior)Opcao("vinculo") == VinculoTrabalhoExterior.ServicoPessoaFisica;
+
+    [RelayCommand]
+    private async Task ConsultarCotacoesAsync(CancellationToken cancellationToken)
+    {
+        if (_cotacoes is null)
+        {
+            Mensagem = "Consulta de cotações indisponível. Informe as cotações manualmente.";
+            return;
+        }
+        try
+        {
+            var resultado = await _cotacoes.ConsultarAsync(Data("recebimento"), Texto("moeda"), cancellationToken);
+            if (resultado.Falhou) { Mensagem = resultado.Erro.Mensagem; return; }
+            Campo("dolarFiscal").Valor = resultado.Valor.DolarCompraFiscal.ToString("0.######", Cultura);
+            if (resultado.Valor.DolaresPorUnidade is { } cruzada)
+                Campo("usdPorUnidade").Valor = cruzada.ToString("0.######", Cultura);
+            Mensagem = resultado.Valor.DolaresPorUnidade is null
+                ? "Dólar fiscal encontrado. Confira e informe USD por unidade na fonte monetária do país de origem."
+                : "Cotações de referência preenchidas. Confira a moeda, a data, o câmbio efetivo e os comprovantes antes de calcular.";
+        }
+        catch (EntradaInvalidaException erro) { Mensagem = erro.Message; }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested) { }
+        catch (Exception erro)
+        {
+            _logger.LogError(erro, "Falha ao consultar cotações do trabalho no exterior no mobile.");
+            Mensagem = "Não foi possível consultar as cotações. Tente novamente ou informe-as manualmente.";
+        }
+    }
 
     protected override Task<Result<DemonstrativoDto>> ApurarAsync(CancellationToken cancellationToken)
     {
