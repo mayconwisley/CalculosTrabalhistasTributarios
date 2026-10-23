@@ -10,7 +10,7 @@ namespace CalculosTrabalhistasTributarios.Mobile.Presentation.Configuracoes;
 /// <summary>Preferências do aplicativo, gravadas no aparelho, e a atualização das tabelas na hora.</summary>
 public sealed partial class ConfiguracoesMobileViewModel : ObservableObject
 {
-    private static readonly Uri Projeto = new("https://github.com/mayconwisley/CalculosTrabalhistasTributarios");
+    internal static readonly Uri Projeto = new("https://github.com/mayconwisley/CalculosTrabalhistasTributarios");
     private readonly IPreferenciasMobile _preferencias;
     private readonly IPlataformaMobile _plataforma;
     private readonly IRegistroDeErros _registroDeErros;

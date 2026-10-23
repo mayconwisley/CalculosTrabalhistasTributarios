@@ -49,6 +49,11 @@
             </VerticalStackLayout>
             <Label Text="{Binding Mensagem}" TextColor="{AppThemeBinding Light={StaticResource ErroClaro}, Dark={StaticResource ErroEscuro}}" />
             <Label Text="Valores estimados. Procure um profissional especializado para conferir os valores aplicáveis ao seu caso." Style="{StaticResource TextoSecundario}" />
+            <!-- Assinatura e versão, como o rodapé da tela inicial do desktop. -->
+            <VerticalStackLayout Spacing="0">
+                <Label Text="{Binding Assinatura}" Style="{StaticResource TextoSecundario}" AutomationId="AssinaturaInicio" />
+                <Button Text="Projeto no GitHub" Style="{StaticResource BotaoLink}" Command="{Binding AbrirProjetoCommand}" SemanticProperties.Hint="Abre a página do projeto no navegador" />
+            </VerticalStackLayout>
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

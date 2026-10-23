@@ -107,6 +107,9 @@ public sealed partial class InicioViewModel : ObservableObject
     public bool TemAvisoTabelas => AvisoTabelas is not null;
     public bool ExibeBoasVindas => !EmBusca;
 
+    /// <summary>Assinatura do rodapé da tela inicial do desktop, com a versão instalada.</summary>
+    public string Assinatura => $"Cálculos Trabalhistas e Tributários {_plataforma.Versao} • Dados processados no aparelho • Desenvolvido por: Maycon Wisley";
+
     /// <summary>Quantos cálculos a seção "Continuar de onde parou" mostra, como no desktop.</summary>
     public const int QuantidadeRecentes = 5;
     public ObservableCollection<CalculoRecenteMobile> Recentes { get; } = [];
@@ -178,6 +181,9 @@ public sealed partial class InicioViewModel : ObservableObject
 
     [RelayCommand]
     private Task AbrirManual() => _menu.AbrirManualAsync();
+
+    [RelayCommand]
+    private Task AbrirProjeto() => _plataforma.AbrirEnderecoAsync(Configuracoes.ConfiguracoesMobileViewModel.Projeto);
 
     [RelayCommand]
     private void AbrirMenu() => _menu.AbrirMenu();

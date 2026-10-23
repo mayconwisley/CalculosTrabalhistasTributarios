@@ -183,6 +183,7 @@ public sealed class SaqueAniversarioViewModelTests
         Assert.Equal(50, vm.QuantidadeCalculadoras);
         Assert.Equal(16, vm.QuantidadeTabelas);
         Assert.True(vm.ExibeBoasVindas);
+        Assert.Equal("Cálculos Trabalhistas e Tributários 1.0 • Dados processados no aparelho • Desenvolvido por: Maycon Wisley", vm.Assinatura);
         vm.Busca = "salario familia";
         Assert.False(vm.ExibeBoasVindas);
         var calculadora = Assert.Single(vm.Grupos.SelectMany(grupo => grupo.Atalhos), atalho => atalho.Titulo == "Salário-família");

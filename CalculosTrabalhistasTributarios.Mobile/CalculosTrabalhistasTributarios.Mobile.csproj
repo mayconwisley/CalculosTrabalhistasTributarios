@@ -10,8 +10,10 @@
     <MauiStrictXamlCompilation>true</MauiStrictXamlCompilation>
     <ApplicationTitle>Cálculos Trabalhistas e Tributários</ApplicationTitle>
     <ApplicationId>br.com.mayconwisley.calculostrabalhistastributarios</ApplicationId>
-    <ApplicationDisplayVersion>0.1.0</ApplicationDisplayVersion>
-    <ApplicationVersion>1</ApplicationVersion>
+    <!-- Mesma versão da última tag do desktop. O código de versão do Android (maior × 10000 + menor × 100 + correção)
+         precisa crescer a cada publicação para o aparelho aceitar a atualização. -->
+    <ApplicationDisplayVersion>1.19.1</ApplicationDisplayVersion>
+    <ApplicationVersion>11901</ApplicationVersion>
     <SupportedOSPlatformVersion>24.0</SupportedOSPlatformVersion>
   </PropertyGroup>
   <ItemGroup>
