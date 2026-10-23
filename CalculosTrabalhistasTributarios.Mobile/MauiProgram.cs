@@ -34,7 +34,7 @@ public static class MauiProgram
                 fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
             });
 
-        builder.Services.AddSaqueAniversario().AddSimulacaoTributaria().AddTrabalhistasMobile().AddPresentation();
+        builder.Services.AddCalculadoras().AddSaqueAniversario().AddPresentation();
         var caminhoBanco = Path.Combine(FileSystem.Current.AppDataDirectory, "BancoDados", "calculoIrrf.db");
         builder.Services.AddInfrastructureLocal(caminhoBanco);
         builder.Services.AddSingleton(provider => new PreparadorBancoLocal(caminhoBanco,
@@ -52,11 +52,7 @@ public static class MauiProgram
         {
             TipoCalculadoraMobile.SimulacaoTributaria => provider.GetRequiredService<SimulacaoTributariaPage>(),
             TipoCalculadoraMobile.SaqueAniversario => provider.GetRequiredService<SaqueAniversarioPage>(),
-            TipoCalculadoraMobile.DecimoTerceiro => new CalculadoraTrabalhistaPage(provider.GetRequiredService<DecimoTerceiroMobileViewModel>()),
-            TipoCalculadoraMobile.Ferias => new CalculadoraTrabalhistaPage(provider.GetRequiredService<FeriasMobileViewModel>()),
-            TipoCalculadoraMobile.HorasExtras => new CalculadoraTrabalhistaPage(provider.GetRequiredService<HorasExtrasMobileViewModel>()),
-            TipoCalculadoraMobile.Rescisao => new CalculadoraTrabalhistaPage(provider.GetRequiredService<RescisaoMobileViewModel>()),
-            _ => throw new ArgumentOutOfRangeException(nameof(tipo))
+            _ => new CalculadoraTrabalhistaPage((CalculadoraTrabalhistaViewModel)provider.GetRequiredService(CatalogoCalculadorasMobile.TipoViewModel(tipo)))
         });
         builder.Services.AddScoped<NavegadorCalculadoras>();
         builder.Services.AddScoped<INavegacaoCalculadoras>(provider => provider.GetRequiredService<NavegadorCalculadoras>());

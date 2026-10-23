@@ -113,11 +113,12 @@ public sealed class SaqueAniversarioViewModelTests
     [Fact]
     public void Composicao_valida_escopos_e_cria_formularios_independentes()
     {
-        var servicos = new ServiceCollection().AddSaqueAniversario().AddSimulacaoTributaria().AddTrabalhistasMobile().AddPresentation();
+        var servicos = new ServiceCollection().AddCalculadoras().AddPresentation();
         servicos.AddSingleton<ICompartilhamentoPdf, CompartilhamentoDeTeste>();
         servicos.AddSingleton<ILogger<SaqueAniversarioViewModel>>(NullLogger<SaqueAniversarioViewModel>.Instance);
         servicos.AddSingleton(typeof(ILogger<>), typeof(NullLogger<>));
         servicos.AddSingleton<ITributacaoConsulta>(new CalculosTrabalhistasTributarios.Infrastructure.Persistence.SqliteTributacaoConsulta(new CalculosTrabalhistasTributarios.Infrastructure.Persistence.BancoTributario("Data Source=:memory:")));
+        servicos.AddSingleton<CalculosTrabalhistasTributarios.Application.Interfaces.IIndicesEconomicos>(new CalculosTrabalhistasTributarios.Infrastructure.Persistence.SqliteIndicesEconomicos(new CalculosTrabalhistasTributarios.Infrastructure.Persistence.BancoTributario("Data Source=:memory:")));
         servicos.AddSingleton<INavegacaoCalculadoras>(new NavegacaoDeTeste());
         using var provider = servicos.BuildServiceProvider(new ServiceProviderOptions { ValidateOnBuild = true, ValidateScopes = true });
         using var scope = provider.CreateScope();
@@ -127,6 +128,8 @@ public sealed class SaqueAniversarioViewModelTests
         Assert.NotSame(primeiro, segundo);
         Assert.Equal("0,00", segundo.Saldo);
         Assert.Equal(-1, segundo.IndiceMes);
+        foreach (var cartao in CalculosTrabalhistasTributarios.Mobile.Presentation.Inicio.CatalogoCalculadorasMobile.Cartoes.Where(cartao => cartao.ViewModel is not null))
+            Assert.NotSame(scope.ServiceProvider.GetRequiredService(cartao.ViewModel!), scope.ServiceProvider.GetRequiredService(cartao.ViewModel!));
         var referencias = typeof(SaqueAniversarioViewModel).Assembly.GetReferencedAssemblies();
         Assert.DoesNotContain(referencias, r => r.Name is "CalculosTrabalhistasTributarios" or "CalculosTrabalhistasTributarios.Infrastructure"
             || (r.Name?.StartsWith("Microsoft.Maui", StringComparison.Ordinal) ?? false));
@@ -139,6 +142,8 @@ public sealed class SaqueAniversarioViewModelTests
     private sealed class NavegacaoDeTeste : INavegacaoCalculadoras
     {
         public Task AbrirAsync(CalculosTrabalhistasTributarios.Mobile.Presentation.Inicio.TipoCalculadoraMobile calculadora) => Task.CompletedTask;
+        public Task AbrirAsync(CalculosTrabalhistasTributarios.Mobile.Presentation.Inicio.TipoCalculadoraMobile calculadora,
+            CalculosTrabalhistasTributarios.Domain.Trabalhista.QuitacaoBancoHoras quitacao) => Task.CompletedTask;
     }
     private sealed class CompartilhamentoDeTeste : ICompartilhamentoPdf
     {

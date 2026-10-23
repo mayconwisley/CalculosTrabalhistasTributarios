@@ -6,43 +6,29 @@
         <VerticalStackLayout Padding="20" Spacing="20" MaximumWidthRequest="640">
             <Label Text="Seus cálculos,&#10;em qualquer lugar." FontSize="30" FontFamily="OpenSansSemibold" SemanticProperties.HeadingLevel="Level1" />
             <Label Text="Simulações locais, memória de cálculo e PDF para compartilhar." Style="{StaticResource TextoSecundario}" FontSize="14" />
-            <Label Text="Impostos e salário" Style="{StaticResource TituloSecao}" SemanticProperties.HeadingLevel="Level2" />
-            <Border>
-                <VerticalStackLayout Spacing="12">
-                    <Label Text="Simulação tributária" Style="{StaticResource TituloSecao}" />
-                    <Label Text="INSS por faixas, IRRF nas duas modalidades, salário líquido e FGTS por competência." />
-                    <Button Text="Simular impostos e salário" Command="{Binding AbrirTributariaCommand}" AutomationId="AbrirTributaria" />
-                </VerticalStackLayout>
-            </Border>
-            <Label Text="Cálculos trabalhistas" Style="{StaticResource TituloSecao}" SemanticProperties.HeadingLevel="Level2" />
-            <Border><VerticalStackLayout Spacing="12">
-                <Label Text="13º salário" Style="{StaticResource TituloSecao}" />
-                <Label Text="Parcelas e complemento das médias, com INSS e IRRF." />
-                <Button Text="Calcular 13º salário" Command="{Binding AbrirDecimoTerceiroCommand}" AutomationId="AbrirDecimoTerceiro" />
-            </VerticalStackLayout></Border>
-            <Border><VerticalStackLayout Spacing="12">
-                <Label Text="Férias" Style="{StaticResource TituloSecao}" />
-                <Label Text="Recibo, abono, fracionamento e bases por mês de gozo." />
-                <Button Text="Calcular férias" Command="{Binding AbrirFeriasCommand}" AutomationId="AbrirFerias" />
-            </VerticalStackLayout></Border>
-            <Border><VerticalStackLayout Spacing="12">
-                <Label Text="Horas extras e adicionais" Style="{StaticResource TituloSecao}" />
-                <Label Text="Horas extras, adicional noturno e reflexo no DSR." />
-                <Button Text="Calcular horas extras" Command="{Binding AbrirHorasExtrasCommand}" AutomationId="AbrirHorasExtras" />
-            </VerticalStackLayout></Border>
-            <Border><VerticalStackLayout Spacing="12">
-                <Label Text="Rescisão" Style="{StaticResource TituloSecao}" />
-                <Label Text="Verbas do desligamento, aviso, férias, 13º e FGTS." />
-                <Button Text="Calcular rescisão" Command="{Binding AbrirRescisaoCommand}" AutomationId="AbrirRescisao" />
-            </VerticalStackLayout></Border>
-            <Label Text="FGTS, afastamentos e benefícios" Style="{StaticResource TituloSecao}" SemanticProperties.HeadingLevel="Level2" />
-            <Border>
-                <VerticalStackLayout Spacing="12">
-                    <Label Text="Saque-aniversário do FGTS" Style="{StaticResource TituloSecao}" />
-                    <Label Text="Valor do saque anual, saldo restante e parcela comprometida com o banco." />
-                    <Button Text="Simular saque-aniversário" Command="{Binding AbrirSaqueAniversarioCommand}" AutomationId="AbrirSaque" />
-                </VerticalStackLayout>
-            </Border>
+            <VerticalStackLayout Spacing="20" BindableLayout.ItemsSource="{Binding Grupos}">
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate x:DataType="vm:GrupoCalculadorasMobile">
+                        <VerticalStackLayout Spacing="20">
+                            <Label Text="{Binding Titulo}" Style="{StaticResource TituloSecao}" SemanticProperties.HeadingLevel="Level2" />
+                            <VerticalStackLayout Spacing="20" BindableLayout.ItemsSource="{Binding Cartoes}">
+                                <BindableLayout.ItemTemplate>
+                                    <DataTemplate x:DataType="vm:CartaoCalculadoraMobile">
+                                        <Border>
+                                            <VerticalStackLayout Spacing="12">
+                                                <Label Text="{Binding Titulo}" Style="{StaticResource TituloSecao}" />
+                                                <Label Text="{Binding Descricao}" />
+                                                <Button Text="{Binding TextoBotao}" AutomationId="{Binding IdAutomacao}" CommandParameter="{Binding Tipo}"
+                                                        Command="{Binding AbrirCommand, Source={RelativeSource AncestorType={x:Type vm:InicioViewModel}}, x:DataType=vm:InicioViewModel}" />
+                                            </VerticalStackLayout>
+                                        </Border>
+                                    </DataTemplate>
+                                </BindableLayout.ItemTemplate>
+                            </VerticalStackLayout>
+                        </VerticalStackLayout>
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+            </VerticalStackLayout>
             <Label Text="{Binding Mensagem}" TextColor="{AppThemeBinding Light={StaticResource ErroClaro}, Dark={StaticResource ErroEscuro}}" />
             <Label Text="Valores estimados. Procure um profissional especializado para conferir os valores aplicáveis ao seu caso." Style="{StaticResource TextoSecundario}" />
         </VerticalStackLayout>

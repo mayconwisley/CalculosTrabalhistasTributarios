@@ -10,5 +10,6 @@
     <ProjectReference Include="..\CalculosTrabalhistasTributarios.Application\CalculosTrabalhistasTributarios.Application.csproj" />
     <!-- Mesma implementação do desktop, sem referência ao assembly WPF. -->
     <Compile Include="..\CalculosTrabalhistasTributarios\Presentation\LeituraNumerica.cs" Link="Comum\LeituraNumerica.cs" />
+    <Compile Include="..\CalculosTrabalhistasTributarios\Presentation\ViewModels\LeituraDeHoras.cs" Link="Comum\LeituraDeHoras.cs" />
   </ItemGroup>
 </Project>

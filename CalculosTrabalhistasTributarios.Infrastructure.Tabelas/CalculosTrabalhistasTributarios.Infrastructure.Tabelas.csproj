@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <RootNamespace>CalculosTrabalhistasTributarios.Infrastructure</RootNamespace>
+    <Description>Atualização das tabelas e dos índices pelas fontes oficiais, compartilhada pelo desktop e pelo celular.</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="HtmlAgilityPack" />
+    <PackageReference Include="Microsoft.Data.Sqlite" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+    <ProjectReference Include="..\CalculosTrabalhistasTributarios.Infrastructure.Local\CalculosTrabalhistasTributarios.Infrastructure.Local.csproj" />
+    <ProjectReference Include="..\CalculosTrabalhistasTributarios.Application\CalculosTrabalhistasTributarios.Application.csproj" />
+    <!-- A consulta de cotações do desktop reutiliza a leitura de páginas. -->
+    <InternalsVisibleTo Include="CalculosTrabalhistasTributarios.Infrastructure" />
+  </ItemGroup>
+</Project>

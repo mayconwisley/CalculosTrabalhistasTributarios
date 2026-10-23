@@ -4,6 +4,7 @@ using System.Windows.Input;
 using CalculosTrabalhistasTributarios.Application.DTOs;
 using CalculosTrabalhistasTributarios.Domain.Comum;
 using CalculosTrabalhistasTributarios.Domain.Pensao;
+using CalculosTrabalhistasTributarios.Domain.Trabalhista;
 using CalculosTrabalhistasTributarios.Mobile.Presentation.Interfaces;
 using CalculosTrabalhistasTributarios.Presentation;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -30,15 +31,81 @@ public abstract partial class CalculadoraTrabalhistaViewModel(ICompartilhamentoP
     public abstract string Descricao { get; }
     public IReadOnlyList<CampoMobile> Campos => _campos.Values.ToArray();
     public ObservableCollection<LinhaDepositoFgtsMobile> DepositosFgts { get; } = [];
+    public PaginaLinhas<LinhaDepositoFgtsMobile> PaginaDepositosFgts => field ??= new(DepositosFgts);
     public virtual bool ExibirHistoricoFgts => false;
     public virtual bool TemDepositosFgts => false;
     public virtual ICommand? AdicionarDepositoCommand => null;
     public virtual ICommand? RemoverDepositoCommand => null;
     public virtual ICommand? GerarDepositosCommand => null;
     public virtual string? AvisoHistorico => null;
+    public ObservableCollection<LinhaBeneficioMobile> BeneficiosDetalhados { get; } = [];
+    public virtual bool ExibirBeneficiosDetalhados => false;
+    public virtual bool TemBeneficiosDetalhados => false;
+    public virtual ICommand? AdicionarBeneficioCommand => null;
+    public virtual ICommand? RemoverBeneficioCommand => null;
+    public ObservableCollection<GradeMobile> Grades { get; } = [];
+    public ObservableCollection<LinhaLancamentoBancoHorasMobile> LancamentosBancoHoras { get; } = [];
+    public PaginaLinhas<LinhaLancamentoBancoHorasMobile> PaginaLancamentosBancoHoras => field ??= new(LancamentosBancoHoras);
+    public virtual bool ExibirLancamentosBancoHoras => false;
+    public virtual bool TemLancamentosBancoHoras => false;
+    public virtual ICommand? AdicionarLancamentoCommand => null;
+    public virtual ICommand? RemoverLancamentoCommand => null;
+    public virtual ICommand? UsarNoHoleriteCommand => null;
+    public virtual ICommand? UsarNaRescisaoCommand => null;
+    public bool PodeUsarNoHolerite => UsarNoHoleriteCommand is not null && Demonstrativo?.QuitacaoBancoHoras?.Situacao == SituacaoBancoHoras.Fechamento;
+    public bool PodeUsarNaRescisao => UsarNaRescisaoCommand is not null && Demonstrativo?.QuitacaoBancoHoras?.Situacao == SituacaoBancoHoras.Rescisao;
+    public bool TemQuitacaoBancoHoras => QuitacaoBancoHoras is not null;
+    public string QuitacaoBancoHorasTexto => QuitacaoBancoHoras is not { } quitacao ? string.Empty : string.Join("\n",
+        [
+            $"Fim do ciclo: {quitacao.FimCiclo.ToString("dd/MM/yyyy", Cultura)}",
+            $"Salário de referência: {quitacao.SalarioReferencia.ToString("C2", Cultura)} • divisor {quitacao.Divisor.ToString("N2", Cultura)}",
+            .. quitacao.Parcelas.Select(parcela => $"{parcela.Minutos / 60}:{parcela.Minutos % 60:00} h a {parcela.Adicional.ToString("N2", Cultura)}%: {parcela.Valor.ToString("C2", Cultura)}"),
+            $"Total transferido: {quitacao.Total.ToString("C2", Cultura)} (INSS, IRRF e FGTS: sim)"
+        ]);
     public bool TemResultado => Demonstrativo is not null;
     public bool TemMensagem => !string.IsNullOrWhiteSpace(Mensagem);
     partial void OnMensagemChanged(string? value) => OnPropertyChanged(nameof(TemMensagem));
+    partial void OnDemonstrativoChanged(DemonstrativoDto? value)
+    {
+        OnPropertyChanged(nameof(PodeUsarNoHolerite));
+        OnPropertyChanged(nameof(PodeUsarNaRescisao));
+    }
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(TemQuitacaoBancoHoras))]
+    [NotifyPropertyChangedFor(nameof(QuitacaoBancoHorasTexto))]
+    private QuitacaoBancoHoras? _quitacaoBancoHoras;
+    [ObservableProperty] private bool _quitacaoConfirmada;
+    partial void OnQuitacaoBancoHorasChanged(QuitacaoBancoHoras? value) => Demonstrativo = null;
+    partial void OnQuitacaoConfirmadaChanged(bool value)
+    {
+        Demonstrativo = null;
+        Mensagem = null;
+    }
+
+    /// <summary>Recebe a quitação apurada no banco de horas; o usuário confirma as incidências antes de calcular.</summary>
+    public void ReceberQuitacao(QuitacaoBancoHoras quitacao)
+    {
+        QuitacaoBancoHoras = quitacao;
+        QuitacaoConfirmada = false;
+        PreencherComQuitacao(quitacao);
+    }
+
+    protected virtual void PreencherComQuitacao(QuitacaoBancoHoras quitacao) { }
+
+    protected QuitacaoBancoHoras? LerQuitacao() => QuitacaoBancoHoras switch
+    {
+        null => null,
+        { } quitacao when QuitacaoConfirmada => quitacao,
+        _ => throw new EntradaInvalidaException("Confira as incidências de INSS, IRRF e FGTS da quitação do banco de horas e marque a confirmação, ou descarte a transferência.")
+    };
+
+    [RelayCommand]
+    private void DescartarQuitacao()
+    {
+        QuitacaoBancoHoras = null;
+        QuitacaoConfirmada = false;
+    }
 
     protected CampoMobile Adicionar(string chave, string rotulo, TipoCampoMobile tipo, string valor = "", string dica = "", IReadOnlyList<string>? opcoes = null)
     {
@@ -56,53 +123,35 @@ public abstract partial class CalculadoraTrabalhistaViewModel(ICompartilhamentoP
         return campo;
     }
 
+    /// <summary>Título que agrupa os campos seguintes; não é lido no cálculo.</summary>
+    protected CampoMobile Secao(string chave, string titulo) => Adicionar(chave, titulo, TipoCampoMobile.Secao);
+
     protected virtual void AoAlterar(CampoMobile campo) { }
     protected CampoMobile Campo(string chave) => _campos[chave];
     protected string Texto(string chave) => Campo(chave).Valor.Trim();
     protected bool Sim(string chave) => Campo(chave).Marcado;
-    protected int Opcao(string chave)
+    protected int Opcao(string chave) => LeituraCampoMobile.Opcao(Campo(chave));
+    protected decimal Numero(string chave) => LeituraCampoMobile.Numero(Campo(chave));
+    protected int Inteiro(string chave) => LeituraCampoMobile.Inteiro(Campo(chave));
+    protected decimal Horas(string chave) => LeituraCampoMobile.Horas(Campo(chave));
+    protected DateOnly Data(string chave) => LeituraCampoMobile.Data(Campo(chave));
+    protected DateOnly? DataOpcional(string chave) => LeituraCampoMobile.DataOpcional(Campo(chave));
+    protected DateOnly Competencia(string chave) => LeituraCampoMobile.Competencia(Campo(chave));
+
+    protected GradeMobile AdicionarGrade(string chave, string titulo, string descricao, string nomeLinha, int limite,
+        IReadOnlyList<ColunaGradeMobile> colunas, Action<LinhaGradeMobile>? aoAlterarLinha = null)
     {
-        var campo = Campo(chave);
-        if (campo.Indice < 0 || campo.Indice >= campo.Opcoes.Count)
-            throw new EntradaInvalidaException($"{campo.Rotulo}: selecione uma opção válida.");
-        return campo.Indice;
-    }
-    protected decimal Numero(string chave)
-    {
-        var campo = Campo(chave);
-        if (!LeituraNumerica.TentarLer(campo.Valor, out var valor))
-            throw new EntradaInvalidaException($"{campo.Rotulo}: informe um número, por exemplo 3.500,00.");
-        return valor;
-    }
-    protected int Inteiro(string chave)
-    {
-        var campo = Campo(chave);
-        if (!int.TryParse(campo.Valor.Trim(), NumberStyles.Integer, Cultura, out var valor))
-            throw new EntradaInvalidaException($"{campo.Rotulo}: informe um número inteiro.");
-        return valor;
-    }
-    protected decimal Horas(string chave)
-    {
-        var texto = Texto(chave);
-        var partes = texto.Split(':');
-        if (partes.Length == 2 && int.TryParse(partes[0], out var horas) && int.TryParse(partes[1], out var minutos)
-            && horas >= 0 && minutos is >= 0 and < 60)
-            return horas + minutos / 60m;
-        if (LeituraNumerica.TentarLer(texto, out var decimais)) return decimais;
-        throw new EntradaInvalidaException($"{Campo(chave).Rotulo}: use horas de relógio como 10:30 ou horas decimais como 10,5.");
-    }
-    protected DateOnly Data(string chave)
-    {
-        if (DateOnly.TryParseExact(Texto(chave), "dd/MM/yyyy", Cultura, DateTimeStyles.None, out var data)) return data;
-        throw new EntradaInvalidaException($"{Campo(chave).Rotulo}: informe uma data em dd/MM/yyyy.");
-    }
-    protected DateOnly? DataOpcional(string chave) => Texto(chave).Length == 0 ? null : Data(chave);
-    protected DateOnly Competencia(string chave)
-    {
-        if (DateOnly.TryParseExact("01/" + Texto(chave), "dd/MM/yyyy", Cultura, DateTimeStyles.None, out var data)) return data;
-        throw new EntradaInvalidaException($"{Campo(chave).Rotulo}: informe mês e ano em MM/yyyy.");
+        var grade = new GradeMobile(chave, titulo, descricao, nomeLinha, limite, colunas, aoAlterarLinha);
+        grade.Alterada += (_, _) =>
+        {
+            Demonstrativo = null;
+            Mensagem = null;
+        };
+        Grades.Add(grade);
+        return grade;
     }
 
+    protected GradeMobile Grade(string chave) => Grades.First(grade => grade.Chave == chave);
     protected void AdicionarPensao()
     {
         Adicionar("pensaoBase", "Pensão alimentícia", TipoCampoMobile.Opcao, dica: "Selecione a base definida na decisão ou no acordo.",

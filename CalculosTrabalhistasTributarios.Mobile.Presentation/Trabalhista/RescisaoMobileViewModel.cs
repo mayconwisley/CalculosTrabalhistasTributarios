@@ -94,7 +94,14 @@ public sealed class RescisaoMobileViewModel : CalculadoraTrabalhistaViewModel
             Campo("saldoFgts").Visivel ? Numero("saldoFgts") : 0m, Numero("adiantamento13"), Inteiro("dependentes"),
             Pensao(), DataOpcional("pagamento"), Campo("fimPrevisto").Visivel ? DataOpcional("fimPrevisto") : null,
             dataBase == 0 ? null : dataBase, Numero("outrosProventos"), Inteiro("faltasMes"), (TipoVinculo)Opcao("vinculo"),
-            Inteiro("semanasFalta"), Numero("outrosDescontos"), Numero("indenizatorias"), historico), cancellationToken);
+            Inteiro("semanasFalta"), Numero("outrosDescontos"), Numero("indenizatorias"), historico, LerQuitacao()), cancellationToken);
+    }
+
+    // A rescisão do banco de horas usa o fim do ciclo como data de desligamento e o salário de referência.
+    protected override void PreencherComQuitacao(QuitacaoBancoHoras quitacao)
+    {
+        Campo("desligamento").Valor = quitacao.FimCiclo.ToString("dd/MM/yyyy", Cultura);
+        Campo("salario").Valor = quitacao.SalarioReferencia.ToString("N2", Cultura);
     }
 
     private void AdicionarLinha()
@@ -103,6 +110,7 @@ public sealed class RescisaoMobileViewModel : CalculadoraTrabalhistaViewModel
         var linha = new LinhaDepositoFgtsMobile();
         linha.PropertyChanged += (_, _) => Demonstrativo = null;
         DepositosFgts.Add(linha);
+        PaginaDepositosFgts.Exibir(linha);
     }
 
     private void GerarMeses()
@@ -136,9 +144,12 @@ public sealed class RescisaoMobileViewModel : CalculadoraTrabalhistaViewModel
         var valores = new List<DepositoFgtsHistorico>(DepositosFgts.Count);
         foreach (var linha in DepositosFgts)
         {
-            if (!DateOnly.TryParseExact("01/" + linha.Competencia.Trim(), "dd/MM/yyyy", Cultura, DateTimeStyles.None, out var competencia))
+            var competenciaValida = DateOnly.TryParseExact("01/" + linha.Competencia.Trim(), "dd/MM/yyyy", Cultura, DateTimeStyles.None, out var competencia);
+            var valorValido = LeituraNumerica.TentarLer(linha.Valor, out var valor);
+            if (!competenciaValida || !valorValido) PaginaDepositosFgts.Exibir(linha);
+            if (!competenciaValida)
                 throw new EntradaInvalidaException($"FGTS {linha.Competencia}: informe a competência em MM/yyyy.");
-            if (!LeituraNumerica.TentarLer(linha.Valor, out var valor))
+            if (!valorValido)
                 throw new EntradaInvalidaException($"FGTS {linha.Competencia}: informe o depósito em reais, por exemplo 250,00.");
             valores.Add(new(competencia, valor));
         }

@@ -13,5 +13,6 @@ public static class DependencyInjection
         .AddSingleton<SqliteTributacaoConsulta>()
         .AddSingleton<ITributacaoConsulta>(provider => provider.GetRequiredService<SqliteTributacaoConsulta>())
         .AddSingleton<ICacheTabelasTributarias>(provider => provider.GetRequiredService<SqliteTributacaoConsulta>())
+        .AddSingleton<IIndicesEconomicos, SqliteIndicesEconomicos>()
         .AddScoped<IInicializadorBancoTributario, InicializadorBancoTributario>();
 }

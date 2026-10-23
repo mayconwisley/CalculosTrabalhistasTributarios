@@ -9,6 +9,16 @@ public static class DependencyInjection
 {
     /// <summary>Casos de uso da aplicação; as portas que eles usam são registradas pela infraestrutura.</summary>
     public static IServiceCollection AddApplication(this IServiceCollection services) => services
+        .AddCalculadoras()
+        .AddScoped<IVerificarAtualizacoesUseCase, VerificarAtualizacoesUseCase>()
+        .AddAtualizacaoTodasTabelas();
+
+    /// <summary>Atualização de todas as tabelas da abertura; a porta <see cref="IAtualizadorTabelas"/> vem de Infrastructure.Tabelas.</summary>
+    public static IServiceCollection AddAtualizacaoTodasTabelas(this IServiceCollection services) => services
+        .AddScoped<IAtualizarTodasTabelasUseCase, AtualizarTodasTabelasUseCase>();
+
+    /// <summary>Calculadoras do desktop e do aplicativo móvel; dependem só das tabelas e dos índices do banco local.</summary>
+    public static IServiceCollection AddCalculadoras(this IServiceCollection services) => services
         .AddSimulacaoTributaria()
         .AddScoped<ISimularPensaoUseCase, SimularPensaoUseCase>()
         .AddScoped<ISimularPensaoAtrasoUseCase, SimularPensaoAtrasoUseCase>()
@@ -59,9 +69,7 @@ public static class DependencyInjection
         .AddScoped<ISimularDemonstrativoUseCase<SimularContribuicaoSeguradoRequest>, SimularContribuicaoSeguradoUseCase>()
         .AddScoped<ISimularDemonstrativoUseCase<SimularResgatePrevidenciaRequest>, SimularResgatePrevidenciaUseCase>()
         .AddScoped<ISimularDemonstrativoUseCase<SimularAposentadoriaRequest>, SimularAposentadoriaUseCase>()
-        .AddScoped<ISimularDemonstrativoUseCase<SimularPensaoMorteRequest>, SimularPensaoMorteUseCase>()
-        .AddScoped<IVerificarAtualizacoesUseCase, VerificarAtualizacoesUseCase>()
-        .AddScoped<IAtualizarTodasTabelasUseCase, AtualizarTodasTabelasUseCase>();
+        .AddScoped<ISimularDemonstrativoUseCase<SimularPensaoMorteRequest>, SimularPensaoMorteUseCase>();
 
     /// <summary>Registra a simulação autônoma usada também pelo aplicativo móvel, sem exigir banco ou relatórios.</summary>
     public static IServiceCollection AddSaqueAniversario(this IServiceCollection services) => services
@@ -69,11 +77,4 @@ public static class DependencyInjection
 
     public static IServiceCollection AddSimulacaoTributaria(this IServiceCollection services) => services
         .AddScoped<ISimularDemonstrativoUseCase<SimularImpostoRequest>, SimularImpostoUseCase>();
-
-    public static IServiceCollection AddTrabalhistasMobile(this IServiceCollection services) => services
-        .AddScoped<ISimularDemonstrativoUseCase<SimularDecimoTerceiroRequest>, SimularDecimoTerceiroUseCase>()
-        .AddScoped<ISimularDemonstrativoUseCase<SimularComplementoDecimoTerceiroRequest>, SimularComplementoDecimoTerceiroUseCase>()
-        .AddScoped<ISimularDemonstrativoUseCase<SimularFeriasRequest>, SimularFeriasUseCase>()
-        .AddScoped<ISimularDemonstrativoUseCase<SimularHorasExtrasRequest>, SimularHorasExtrasUseCase>()
-        .AddScoped<ISimularDemonstrativoUseCase<SimularRescisaoRequest>, SimularRescisaoUseCase>();
 }

@@ -14,7 +14,11 @@ public sealed class CampoMobile(string chave, string rotulo, string dica, TipoCa
     public string Dica { get; } = dica;
     public TipoCampoMobile Tipo { get; } = tipo;
     public IReadOnlyList<string> Opcoes { get; } = opcoes ?? [];
-    public bool EhTexto => Tipo is not (TipoCampoMobile.Moeda or TipoCampoMobile.Opcao or TipoCampoMobile.SimNao);
+    public bool EhTexto => Tipo is not (TipoCampoMobile.Moeda or TipoCampoMobile.Opcao or TipoCampoMobile.SimNao or TipoCampoMobile.Secao);
+    /// <summary>Aceita só dígitos e separador decimal; datas, competências, horas e textos precisam do teclado de texto para "/", ":" e letras.</summary>
+    public bool EhNumerico => Tipo is TipoCampoMobile.Numero or TipoCampoMobile.Inteiro;
+    public bool EhSecao => Tipo == TipoCampoMobile.Secao;
+    public bool EhEntrada => !EhSecao;
     public bool EhOpcao => Tipo == TipoCampoMobile.Opcao;
     public bool EhSimNao => Tipo == TipoCampoMobile.SimNao;
     public bool EhMoeda => Tipo == TipoCampoMobile.Moeda;

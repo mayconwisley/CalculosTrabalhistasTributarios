@@ -9,5 +9,6 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
     <ProjectReference Include="..\CalculosTrabalhistasTributarios.Application\CalculosTrabalhistasTributarios.Application.csproj" />
     <InternalsVisibleTo Include="CalculosTrabalhistasTributarios.Infrastructure" />
+    <InternalsVisibleTo Include="CalculosTrabalhistasTributarios.Infrastructure.Tabelas" />
   </ItemGroup>
 </Project>

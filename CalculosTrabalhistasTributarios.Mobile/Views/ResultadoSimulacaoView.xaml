@@ -11,8 +11,8 @@
                 </Border.Background>
                 <VerticalStackLayout Spacing="10">
                     <Label Text="SEU RESULTADO" TextColor="White" FontSize="11" FontFamily="OpenSansSemibold" />
-                    <Label Text="{Binding Demonstrativo.RotuloResultado}" TextColor="White" FontSize="16" />
-                    <Label Text="{Binding ResultadoFormatado}" TextColor="White" FontSize="36" FontFamily="OpenSansSemibold" SemanticProperties.HeadingLevel="Level2" />
+                    <Label Text="{Binding RotuloResultado}" TextColor="White" FontSize="16" />
+                    <Label Text="{Binding ResultadoFormatado}" IsVisible="{Binding TemVerbas}" TextColor="White" FontSize="36" FontFamily="OpenSansSemibold" SemanticProperties.HeadingLevel="Level2" />
                     <Label Text="{Binding Demonstrativo.Referencia}" TextColor="White" FontSize="12" />
                 </VerticalStackLayout>
             </Border>
@@ -43,6 +43,7 @@
                         <Label Text="{Binding Demonstrativo.Comparativo.Titulo}" Style="{StaticResource TituloSecao}" />
                         <Label Text="{Binding ComparativoTexto}" />
                     </VerticalStackLayout>
+                    <VerticalStackLayout IsVisible="{Binding TemVerbas}" Spacing="10">
                     <Label Text="{Binding Demonstrativo.RotuloProventos}" FontAttributes="Bold" />
                     <VerticalStackLayout BindableLayout.ItemsSource="{Binding Demonstrativo.Proventos}">
                         <BindableLayout.ItemTemplate>
@@ -69,8 +70,10 @@
                     </VerticalStackLayout>
                     <Label Text="{Binding Demonstrativo.RotuloResultado}" FontAttributes="Bold" />
                     <Label Text="{Binding Demonstrativo.Resultado, StringFormat='R$ {0:N2}'}" FontSize="24" FontAttributes="Bold" />
+                    </VerticalStackLayout>
+                    <VerticalStackLayout IsVisible="{Binding TemInformativos}" Spacing="6">
                     <Label Text="Informativos (fora do resultado)" FontAttributes="Bold" />
-                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding Demonstrativo.Informativos}" BindableLayout.EmptyView="Sem valores informativos.">
+                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding Demonstrativo.Informativos}">
                         <BindableLayout.ItemTemplate>
                             <DataTemplate x:DataType="dto:VerbaDto">
                                 <VerticalStackLayout Spacing="3">
@@ -80,6 +83,7 @@
                                 </VerticalStackLayout>
                             </DataTemplate>
                         </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
                     </VerticalStackLayout>
                     <Label Text="Memória de cálculo" FontSize="20" FontAttributes="Bold" SemanticProperties.HeadingLevel="Level2" />
                     <VerticalStackLayout Spacing="14" BindableLayout.ItemsSource="{Binding Demonstrativo.Memoria}">

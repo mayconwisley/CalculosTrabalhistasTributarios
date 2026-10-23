@@ -4,13 +4,49 @@
 
 O aplicativo Android é uma apresentação adicional para o mesmo núcleo de cálculo. A solução principal `CalculosTrabalhistasTributarios.sln` inclui os projetos desktop e móveis. O WPF mantém o fluxo de publicação existente. Não há backend ou sincronização com o computador.
 
-O catálogo segue os grupos do WPF e contém **Simulação tributária**, **Saque-aniversário do FGTS**, **13º salário**, **Férias**, **Horas extras e adicionais** e **Rescisão**. Cada abertura cria um formulário independente; voltar à tela inicial não salva um histórico.
+A tela inicial é montada a partir de `CatalogoCalculadorasMobile` (`Mobile.Presentation/Inicio`), com os grupos do WPF: Impostos e salário; Pensão e débitos judiciais; Remuneração e custos; Férias, 13º e desligamento; FGTS, afastamentos e benefícios. Cada cartão indica a calculadora e o formulário da tela comum de cálculo; o registro dos formulários no DI e a navegação partem desse catálogo, e um teste confere que cada valor de `TipoCalculadoraMobile` tem um único cartão. Cada abertura cria um formulário independente; voltar à tela inicial não salva um histórico.
 
 No saque-aniversário, informe: saldo do extrato, garantia bloqueada, indicação de garantia já incluída, multa incluída, parcela anual comprometida e mês de aniversário. O resultado apresenta os destaques, proventos, descontos, total, memória e observações devolvidos pelo caso de uso existente.
 
-O resultado pode ser compartilhado em PDF pelo menu nativo do Android (WhatsApp, e-mail e outros aplicativos compatíveis instalados). O documento contém destaques, verbas, total, memória, observações e o aviso de simulação em todas as páginas. Não há exportação Excel no aplicativo móvel nem dependência de ClosedXML ou QuestPDF.
+O resultado pode ser compartilhado em PDF pelo menu nativo do Android (WhatsApp, e-mail e outros aplicativos compatíveis instalados). O documento contém destaques, verbas, total quando aplicável, comparativo, memória, observações e o aviso de simulação em todas as páginas. Não há exportação Excel no aplicativo móvel nem dependência de ClosedXML ou QuestPDF.
 
-Não estão disponíveis nesta etapa: análise de nova antecipação, histórico, importação de formulários, atualização online de tabelas e demais calculadoras. A rescisão permite digitar ou gerar os depósitos históricos de FGTS, mas a transferência de quitação do banco de horas depende de portar a calculadora de banco de horas. Os dados do formulário permanecem somente na sessão; não há permissão de rede solicitada pelo manifesto da aplicação. O aplicativo destinatário do compartilhamento gerencia o envio e sua conexão.
+Não estão disponíveis nesta etapa: análise de nova antecipação, histórico, importação de formulários, botão "Preencher exemplo", atualização online de tabelas, índices e cotações, e as transferências entre calculadoras do desktop, exceto a quitação do banco de horas (por exemplo, jornada para horas extras ou holerite, diferenças para o RRA e depósitos da conferência do FGTS para a rescisão). A rescisão permite digitar ou gerar os depósitos históricos de FGTS. Os dados do formulário permanecem somente na sessão; não há permissão de rede solicitada pelo manifesto da aplicação. O aplicativo destinatário do compartilhamento gerencia o envio e sua conexão.
+
+Essas calculadoras reutilizam a apuração e as tabelas locais do desktop. No **salário-família**, informe a remuneração do mês completo e os dias trabalhados; a remuneração de um mês parcial não deve ser proporcionalizada na entrada. Em **insalubridade e periculosidade**, escolha o grau e a base da insalubridade; o valor de base só aparece quando necessário. Em **comissões e DSR**, é possível usar o calendário da competência ou informar os dias do período. No **seguro-desemprego**, a solicitação define a janela de carência; o empregado doméstico usa o cálculo próprio da LC 150/2015.
+
+O **Holerite do mês** organiza o formulário em seções (remuneração, horas e jornada, comissões e DSR, faltas, IRRF e pensão, benefícios e descontos) e usa a mesma apuração do desktop. Horas aceitam 10:30 ou 10,5. Comissões informadas no campo próprio recebem o DSR automaticamente, salvo se o valor já o incluir; não as repita nos proventos tributáveis. A quitação do banco de horas chega pelo botão do banco de horas.
+
+No **Banco de horas**, escolha o regime (mesmo mês, até 6 meses ou até 1 ano), a situação e o período do ciclo, e registre cada crédito ou folga em linhas com data, tipo, horas de relógio (h:mm, até 10:00) e, no crédito, um adicional próprio opcional. O saldo é apurado em minutos e as folgas compensam primeiro os créditos mais antigos. No fechamento do ciclo, **Usar no holerite** abre o holerite da competência do fim do ciclo; na rescisão, **Usar na rescisão** abre a rescisão com o fim do ciclo como data de desligamento. Em ambos, o salário (e no holerite, o divisor) é copiado do banco, e o cálculo só considera a quitação depois que o usuário confirma as incidências de INSS, IRRF e FGTS; **Descartar quitação** remove as parcelas.
+
+Em **Custo do funcionário**, escolha o regime, ajuste RAT/FAP quando aplicáveis e informe benefícios agregados ou benefícios detalhados em linhas com custo e participação do empregado; não duplique os valores. O custo por hora usa o divisor contratual informado. Em **Pró-labore e autônomo**, o campo ISS aparece somente para RPA quando houver retenção municipal. Em **PLR**, informe pagamentos e imposto já retido no ano; a pensão judicial opcional reduz a base do IRRF. Em **CLT x PJ**, o valor PJ igual a zero pede o cálculo da equivalência; o resultado e o PDF apresentam o comparativo anual, sem tratá-lo como um líquido único.
+
+### Grades de linhas
+
+Meses, vínculos, parcelas, aportes e marcações usam a grade comum da tela de cálculo (`GradeMobile`): cada linha tem os mesmos tipos de campo do formulário, **+ Linha** respeita o limite da calculadora e a remoção é imediata. **Gerar meses** cria as competências do período e preserva os valores já digitados; linhas fora do novo período continuam no fim da grade, com aviso, para o usuário removê-las. Os erros de leitura identificam a linha ("Mês 3: …") e levam a grade à página dessa linha. As linhas ficam na própria página, sem lista com rolagem interna, para que o gesto sobre elas role a tela inteira; por isso a grade mostra 12 linhas por vez, com **Anteriores** e **Próximas** acima e abaixo da faixa exibida ("13–24 de 60"), e **+ Linha** abre a página da linha nova. O cálculo sempre lê todas as linhas. Os depósitos históricos do FGTS da rescisão e os lançamentos do banco de horas seguem a mesma paginação. O resgate de previdência é a exceção: o gerador de aportes substitui a grade e pede um segundo toque de confirmação quando já existem aportes.
+
+### Orientações por calculadora
+
+- **Salário bruto pelo líquido, IRPF anual, carnê-leão, dividendos e ganho de capital:** usam as tabelas locais da competência ou do ano informado. O IRPF anual atende declarações a partir de 2026.
+- **Contribuição do autônomo e do facultativo:** escolha a categoria e o plano (20%, 11% ou 5%); o resultado mostra código, vencimento e complementação quando aplicável.
+- **Crédito do Trabalhador e empréstimo pessoal:** a margem livre vazia é diferente de zero. O empréstimo pessoal usa a tabela Price, com liberação entre 2025 e 2100.
+- **Correção de valores, tributo em atraso, débitos judiciais, aposentadoria e pensão por morte:** dependem dos índices (IPCA, IPCA-E, INPC, Selic, TR, taxa legal) do banco distribuído. Sem atualização pela internet no celular, um período além das sementes devolve a mensagem de índice ausente do caso de uso, em vez de um valor estimado.
+- **Abono salarial:** informe o ano-base, os meses trabalhados e a remuneração média; limite 0,00 usa o valor publicado.
+- **Afastamentos e licenças:** informe tipo, início, remuneração e dias; um afastamento anterior pela mesma doença em 60 dias soma-se ao novo (Decreto 3.048/1999, art. 75).
+- **INSS em múltiplos vínculos:** informe os vínculos na ordem de desconto; ela define quem usa cada faixa e o teto restante. Para mudar a ordem, remova e inclua a linha novamente.
+- **Reajuste retroativo:** gere os meses com o salário anterior e o percentual, corrija os meses atípicos e acrescente 13º ou férias já pagos.
+- **RRA:** gere os meses do pagamento e acrescente uma linha de 13º por ano; na Justiça Federal, rendimentos normais e dependentes não se aplicam.
+- **Resgate de previdência:** prefira os saldos do extrato; o gerador apenas estima o saldo pela rentabilidade mensal.
+- **Simples Nacional:** informe período e atividade e gere os meses da janela da RBT12/FS12.
+- **Conferência do FGTS:** gere as competências, ajuste remuneração e depósito e, havendo desligamento, inclua uma linha do tipo Rescisória.
+- **Gorjetas, sobreaviso e transferência:** gere os meses e preencha os valores de cada competência; horas de sobreaviso aceitam 10:30 ou 10,5. Na dispensa, informe os dias de aviso.
+- **Média de verbas variáveis:** gere até 24 meses e confira o divisor; meses zerados também contam.
+- **Trabalho no exterior:** o celular não consulta cotações; digite o dólar compra fiscal da Receita Federal, a cotação USD por unidade (PTAX; 1 para dólar) e o câmbio efetivo do comprovante.
+- **Aposentadoria e pensão por morte:** calcule a média pelos salários desde 07/1994 (um período por sequência de meses com o mesmo salário; **+ Período** começa no mês seguinte ao anterior) ou informe a média pronta. Na pensão, informe a aposentadoria recebida quando o segurado era aposentado.
+- **Pensão alimentícia:** informe os rendimentos de quem paga e um beneficiário por linha, na ordem da decisão; o resultado segue a modalidade de IRRF de menor imposto e compara as duas. Para mudar a ordem, remova e inclua a linha novamente.
+- **Pensão em atraso:** gere as parcelas do período, informe os pagamentos parciais e escolha correção, juros e acréscimos; o resultado separa o rito da prisão e o da penhora. Alterar valor, dia ou período faz o cálculo gerar as parcelas novamente, mantendo o valor pago de cada mês.
+- **Estabilidade:** informe a média remuneratória, a demissão, o fim da estabilidade e, se houver, complementos. Como no desktop, o total estimado soma a indenização, o 13º, as férias com 1/3, o FGTS e a multa de 40%; uma observação no resultado explica essa soma.
+- **Débitos judiciais:** escolha a natureza, a data do cálculo e as datas do processo (ajuizamento no trabalhista; citação no cível com juros desde a citação) e informe as parcelas com vencimento e valor.
+- **Jornada pelo ponto:** informe competência, período do ponto (até 62 dias), escala e horário padrão, gere os dias e ajuste tipo e marcações. Os totais aparecem no quadro do resultado para serem digitados nas horas extras ou no holerite; mudar a escala não altera dias já gerados.
 
 ## Simulação tributária e tabelas locais
 
@@ -59,7 +95,9 @@ Conferência realizada em emulador Android x86_64 com densidade de 420 dpi, em 1
 
 Na simulação tributária, foram conferidos catálogo, navegação, primeira preparação do SQLite e cálculo de outubro de 2026 com bruto de R$ 8.000,00 e dois dependentes: INSS R$ 921,50, IRRF R$ 933,58, líquido R$ 6.144,92 e FGTS informativo de R$ 640,00. O comparativo foi verificado também em 320 × 640 DIPs no tema escuro. Os testes de paridade usam competências históricas e os quatro vínculos. O compartilhamento foi conferido até o menu com o PDF anexado, sem envio a destinatários.
 
-Na ampliação trabalhista, as quatro telas foram abertas no emulador. A rescisão foi conferida com edição do salário, adição e remoção de linha de FGTS e cálculo com resultado exibido. O formulário e a lista de FGTS foram inspecionados em 1080 × 2400 no tema claro e em 840 × 1680 no tema escuro; a lista tem rolagem própria. O PDF das novas calculadoras não foi inspecionado visualmente em aparelho físico.
+Na ampliação trabalhista, as quatro telas foram abertas no emulador. A rescisão foi conferida com edição do salário, adição e remoção de linha de FGTS e cálculo com resultado exibido. O formulário e a lista de FGTS foram inspecionados em 1080 × 2400 no tema claro e em 840 × 1680 no tema escuro. O PDF das novas calculadoras não foi inspecionado visualmente em aparelho físico.
+
+Na ampliação para todas as calculadoras, a conferência no emulador Android (API 36, 1080 × 2400, 420 dpi, tema claro) abriu cada tela nova pelo catálogo e acionou **Calcular** com os valores iniciais; todas exibiram a mensagem de validação esperada ou um resultado. Com dados, foram conferidos: gorjetas (Gerar meses com 12 linhas, R$ 1.500,00 em um mês: média R$ 125,00, total R$ 1.791,67 e FGTS R$ 143,33), jornada pelo ponto (geração dos dias e 196:00 horas em 10/2026) e correção de valores pelo IPCA de 01/2025 a 01/2026 (R$ 1.000,00 para R$ 1.042,64). O PDF da jornada chegou ao menu nativo de compartilhamento, sem envio e sem inspeção visual das páginas. Datas, competências, horas e textos usam o teclado de texto, porque o estilo padrão das entradas é numérico e descartaria "/", ":" e letras. Depois da troca das listas com rolagem própria pela grade paginada, o gesto sobre as linhas passou a rolar a página; na compilação Release, gerar 720 competências na conferência do FGTS levou cerca de 3 s, contra cerca de 5 s para 60 linhas exibidas todas de uma vez, e **Próximas** no paginador inferior levou a tela ao início da página seguinte.
 
 ## Estrutura e dependências
 
@@ -71,13 +109,14 @@ CalculosTrabalhistasTributarios.Mobile.sln
 ├── Mobile.Presentation            # net10.0: ViewModels por funcionalidade, sem MAUI/WPF
 │   ├── DependencyInjection.cs
 │   ├── SaqueAniversario/
-│   └── Trabalhista/                 # formulários e leitura das quatro calculadoras
+│   ├── Inicio/                      # catálogo e grupos da tela inicial
+│   └── Trabalhista/                 # formulários da tela comum, campos e grades
 ├── Mobile                         # net10.0-android: composição e controles nativos
 │   ├── MauiProgram.cs
 │   ├── App.xaml
 │   ├── Comportamentos/
 │   ├── Features/SaqueAniversario/
-│   ├── Features/Trabalhista/        # formulário comum das quatro calculadoras
+│   ├── Features/Trabalhista/        # tela comum de cálculo
 │   ├── Platforms/Android/
 │   └── Resources/
 └── Mobile.Tests                   # net10.0: testes sem dispositivo ou workload MAUI
@@ -85,10 +124,11 @@ CalculosTrabalhistasTributarios.Mobile.sln
 
 Fluxo: página → binding/command do ViewModel → `ISimularDemonstrativoUseCase<TRequest>` → domínio → `DemonstrativoDto` → página.
 
-- `MauiProgram` é o ponto de composição. Registra somente os serviços necessários, usando `AddSaqueAniversario`, `AddSimulacaoTributaria` e `AddTrabalhistasMobile` da Application e `AddPresentation` da apresentação móvel.
+- `MauiProgram` é o ponto de composição. Registra somente os serviços necessários, usando `AddCalculadoras` da Application (os casos de uso de cálculo, sem a atualização online), `AddInfrastructureLocal` (tabelas e índices do SQLite) e `AddPresentation` da apresentação móvel, que registra os formulários do catálogo.
+- Calculadoras com resultado próprio no desktop (estabilidade, pensão alimentícia, pensão em atraso, débitos judiciais, jornada) são apresentadas pelos montadores de `Application/Demonstrativos`, que reorganizam o resultado apurado em `DemonstrativoDto` sem recalcular.
 - Cada janela possui um escopo de DI, descartado em `Window.Destroying`. Página e ViewModel são transient; não compartilhe formulários mutáveis em singletons.
 - `Mobile.Presentation` usa CommunityToolkit.Mvvm para notificações e comandos assíncronos. Não depende de controles MAUI, WPF ou Infrastructure.
-- `LeituraNumerica.cs` é incluído como fonte vinculada da apresentação existente. Há uma única implementação do parser, sem carregar o assembly WPF. Ao alterá-lo, execute os testes de ambas as apresentações. Se mais componentes independentes precisarem ser compartilhados, avalie uma biblioteca comum de apresentação, sem mover parsing de formulário para o domínio.
+- `LeituraNumerica.cs` e `LeituraDeHoras.cs` são incluídos como fontes vinculadas da apresentação existente. Há uma única implementação do parser, sem carregar o assembly WPF. Ao alterá-lo, execute os testes de ambas as apresentações. Se mais componentes independentes precisarem ser compartilhados, avalie uma biblioteca comum de apresentação, sem mover parsing de formulário para o domínio.
 - Os bindings são tipados com `x:DataType`; mantenha a compilação XAML estrita. Textos e valores usam `pt-BR`; cores acompanham o tema do sistema.
 - O comando impede execução simultânea e recebe `CancellationToken`. A saída da página cancela a operação. Editar uma entrada invalida o resultado exibido.
 - Falhas esperadas usam o `Result` existente. Falhas inesperadas na fronteira de apresentação são registradas com `ILogger`, sem formulário completo, e produzem mensagem ao usuário. O provedor de diagnóstico atual é Debug; antes de distribuição em produção, integrar diagnóstico persistente no armazenamento privado do aplicativo.
@@ -115,8 +155,8 @@ Os testes de apresentação podem rodar sem Android SDK. Para compilar somente o
 ## Regras para ampliar
 
 1. Reutilize ou implemente o caso de uso na Application, com regras exclusivamente no Domain. Não copie fórmulas para ViewModels ou XAML.
-2. Registre a funcionalidade na camada responsável. Não chame `AddApplication` completo no móvel enquanto suas portas de infraestrutura não estiverem implementadas; o registro completo exige banco, consultas e outros serviços.
-3. Crie o ViewModel em `Mobile.Presentation/<Funcionalidade>` e a página em `Mobile/Features/<Funcionalidade>`. Mantenha code-behind limitado ao ciclo de vida e comportamento visual.
+2. Registre a funcionalidade na camada responsável. Casos de uso de cálculo entram em `AddCalculadoras`. Não chame `AddApplication` completo no móvel enquanto suas portas de infraestrutura não estiverem implementadas; a atualização de tabelas exige fontes e consultas externas.
+3. Para a tela comum, derive de `CalculadoraTrabalhistaViewModel` em `Mobile.Presentation/Trabalhista`, acrescente o valor a `TipoCalculadoraMobile` e o cartão a `CatalogoCalculadorasMobile`; registro e navegação seguem o catálogo. Uma página própria fica em `Mobile/Features/<Funcionalidade>`, com cartão sem formulário e entrada na fábrica de páginas do `MauiProgram`. Mantenha code-behind limitado ao ciclo de vida e comportamento visual.
 4. Crie portas novas somente para necessidades reais e coloque interfaces em `Interfaces` da camada responsável. Não crie novos projetos Domain ou Application exclusivos do celular.
 5. Para SQLite, adapte o caminho ao armazenamento privado (`FileSystem.AppDataDirectory`), inicialize em local gravável e preserve sementes, transações e compatibilidade. Não referencie a Infrastructure inteira apenas para usar um serviço: primeiro valide e separe as dependências incompatíveis.
 6. Ao ampliar o relatório móvel para outra calculadora, inclua explicitamente quadros, comparativos ou outros dados especializados do DTO: o gerador consome destaques, verbas, informativos, memória, quadros de faixas e comparação de modalidades do IRRF. Preserve o aviso em cada página, os valores da tela e a quebra de textos longos. Valide PDF renderizado, compartilhamento, trimming e execução Release em aparelhos.

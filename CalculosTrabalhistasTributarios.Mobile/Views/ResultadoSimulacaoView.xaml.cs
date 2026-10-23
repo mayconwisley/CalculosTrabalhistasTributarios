@@ -18,7 +18,12 @@ public partial class ResultadoSimulacaoView : ContentView
     public bool ExibirDetalhes { get => (bool)GetValue(ExibirDetalhesProperty); set => SetValue(ExibirDetalhesProperty, value); }
     public bool TemResultado => Demonstrativo is not null;
     public bool TemComparativo => Demonstrativo?.Comparativo is not null;
-    public string ResultadoFormatado => Demonstrativo?.Resultado.ToString("C2", CultureInfo.GetCultureInfo("pt-BR")) ?? string.Empty;
+    public bool TemVerbas => Demonstrativo is { } demonstrativo && (demonstrativo.TemVerbas || demonstrativo.Comparativo is null);
+    public bool TemInformativos => Demonstrativo?.Informativos.Count > 0;
+    public string RotuloResultado => Demonstrativo?.Comparativo is { } comparativo && !TemVerbas
+        ? comparativo.Titulo : Demonstrativo?.RotuloResultado ?? string.Empty;
+    public string ResultadoFormatado => TemVerbas && Demonstrativo is { } demonstrativo
+        ? demonstrativo.Resultado.ToString("C2", CultureInfo.GetCultureInfo("pt-BR")) : string.Empty;
     public string ComparativoTexto => Demonstrativo?.Comparativo is { } quadro
         ? string.Join("\n\n", quadro.Linhas.Select(linha => linha.Descricao + "\n" +
             string.Join("\n", quadro.Colunas.Zip(linha.Valores, (coluna, valor) => $"{coluna}: {valor}"))))
@@ -28,6 +33,9 @@ public partial class ResultadoSimulacaoView : ContentView
         var view = (ResultadoSimulacaoView)bindable;
         view.OnPropertyChanged(nameof(TemResultado));
         view.OnPropertyChanged(nameof(TemComparativo));
+        view.OnPropertyChanged(nameof(TemVerbas));
+        view.OnPropertyChanged(nameof(TemInformativos));
+        view.OnPropertyChanged(nameof(RotuloResultado));
         view.OnPropertyChanged(nameof(ResultadoFormatado));
         view.OnPropertyChanged(nameof(ComparativoTexto));
     }

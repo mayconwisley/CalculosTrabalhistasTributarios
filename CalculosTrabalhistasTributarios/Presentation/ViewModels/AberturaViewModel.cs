@@ -1,5 +1,6 @@
 using CalculosTrabalhistasTributarios.Application.DTOs;
 using CalculosTrabalhistasTributarios.Application.Interfaces;
+using CalculosTrabalhistasTributarios.Application.UseCases;
 using CalculosTrabalhistasTributarios.Presentation.Mvvm;
 using System.Globalization;
 using System.Windows.Input;
@@ -145,20 +146,10 @@ public sealed class AberturaViewModel : ViewModelBase
     }
 
     /// <summary>Texto do aviso da tela principal quando alguma tabela não foi atualizada; nulo quando todas foram.</summary>
-    public static string? DescreverPendencias(IReadOnlyList<AtualizacaoDeTabela> resultados)
-    {
-        var falhas = resultados.Where(resultado => resultado.Resultado.Falhou).ToList();
-        if (falhas.Count == 0)
-            return null;
-        if (falhas.Count == resultados.Count)
-            return "As tabelas não foram atualizadas: nenhuma fonte respondeu. Confira a conexão com a internet; os dados locais foram preservados e a atualização será tentada de novo na próxima abertura.";
-        return $"Na última atualização, {falhas.Count} de {resultados.Count} tabelas não foram atualizadas ({string.Join(", ", falhas.Select(falha => falha.Nome))}). " +
-            "Os dados locais foram preservados; atualize-as pela tela de cada tabela.";
-    }
+    public static string? DescreverPendencias(IReadOnlyList<AtualizacaoDeTabela> resultados) => DescricaoAtualizacaoTabelas.DescreverPendencias(resultados);
 
     /// <summary>O motivo informado pela fonte de cada tabela não atualizada.</summary>
-    public static string DetalharPendencias(IReadOnlyList<AtualizacaoDeTabela> resultados) => string.Join("\n\n",
-        resultados.Where(resultado => resultado.Resultado.Falhou).Select(falha => $"{falha.Nome}: {falha.Resultado.Erro.Mensagem}"));
+    public static string DetalharPendencias(IReadOnlyList<AtualizacaoDeTabela> resultados) => DescricaoAtualizacaoTabelas.DetalharPendencias(resultados);
 
     private void Concluir(string mensagem)
     {

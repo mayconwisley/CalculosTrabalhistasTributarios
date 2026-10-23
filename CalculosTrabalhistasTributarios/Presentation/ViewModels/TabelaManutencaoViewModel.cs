@@ -1,5 +1,6 @@
 using CalculosTrabalhistasTributarios.Application.DTOs;
 using CalculosTrabalhistasTributarios.Application.Interfaces;
+using CalculosTrabalhistasTributarios.Application.UseCases;
 using CalculosTrabalhistasTributarios.Presentation.Interfaces;
 using CalculosTrabalhistasTributarios.Presentation.Mvvm;
 using System.Collections.ObjectModel;
@@ -111,7 +112,7 @@ public sealed class TabelaManutencaoViewModel : ViewModelBase
     };
 
     /// <summary>Índices mensais: a variação da inflação pode ser negativa, e a atualização importa meses, não faixas.</summary>
-    public bool EhIndice => Tipo is TipoTabelaTributaria.Inpc or TipoTabelaTributaria.Ipca or TipoTabelaTributaria.TaxaLegal or TipoTabelaTributaria.Selic or TipoTabelaTributaria.IpcaE or TipoTabelaTributaria.Tr;
+    public bool EhIndice => DescricaoAtualizacaoTabelas.EhIndice(Tipo);
     public string FonteOficial => _atualizador.FonteOficial(Tipo).AbsoluteUri;
     public ObservableCollection<RegistroTabelaDto> Registros { get; } = [];
     public RegistroTabelaDto? Selecionado
@@ -184,31 +185,13 @@ public sealed class TabelaManutencaoViewModel : ViewModelBase
                 return;
             }
             await CarregarAsync(Selecionado?.Id);
-            StatusAtualizacao = EhIndice ? DescreverAtualizacaoIndice(atualizacao.Valor) : DescreverAtualizacao(atualizacao.Valor);
+            StatusAtualizacao = DescricaoAtualizacaoTabelas.DescreverAtualizacao(Tipo, atualizacao.Valor);
         }
         catch (Exception ex)
         {
             StatusAtualizacao = "A atualização não foi concluída; os dados locais foram preservados.";
             _notificador.MostrarErro("Não foi possível atualizar a tabela pela internet.", ex);
         }
-    }
-    private static string DescreverAtualizacao(AtualizacaoTabelaResultado resultado)
-    {
-        var origem = resultado.Oficial ? "pela fonte oficial" : $"por {string.Join(" e ", resultado.Fontes)}, que já publicaram a tabela";
-        var texto = resultado.QuantidadeFaixas switch
-        {
-            // O desconto mínimo é só conferido: quando o banco já tem o valor da lei, nada é gravado.
-            0 => $"Dados de {resultado.Competencia:MM/yyyy} conferidos {origem}: os valores cadastrados já estavam corretos.",
-            1 => $"Dados de {resultado.Competencia:MM/yyyy} atualizados {origem} (1 valor importado).",
-            var faixas => $"Dados de {resultado.Competencia:MM/yyyy} atualizados {origem} ({faixas} faixas tributárias importadas)."
-        };
-        return resultado.Observacoes.Count == 0 ? texto : $"{texto} {string.Join(" ", resultado.Observacoes)}";
-    }
-    private static string DescreverAtualizacaoIndice(AtualizacaoTabelaResultado resultado)
-    {
-        var meses = resultado.QuantidadeFaixas == 1 ? "1 mês incluído ou corrigido" : $"{resultado.QuantidadeFaixas} meses incluídos ou corrigidos";
-        var texto = $"Índices até {resultado.Competencia:MM/yyyy} conferidos com {string.Join(" e ", resultado.Fontes)} ({meses}).";
-        return resultado.Observacoes.Count == 0 ? texto : $"{texto} {string.Join(" ", resultado.Observacoes)}";
     }
     private void AbrirFonteOficial()
     {

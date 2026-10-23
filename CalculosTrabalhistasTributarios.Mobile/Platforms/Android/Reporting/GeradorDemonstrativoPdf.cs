@@ -19,8 +19,11 @@ internal static class GeradorDemonstrativoPdf
         escritor.Texto(dto.Titulo, 22, true);
         escritor.Texto(dto.Referencia);
         escritor.Texto($"Emissão: {DateTime.Now:dd/MM/yyyy HH:mm}");
-        escritor.Secao(dto.RotuloResultado);
-        escritor.Texto(Moeda(dto.Resultado), 25, true);
+        if (dto.TemVerbas || dto.Comparativo is null)
+        {
+            escritor.Secao(dto.RotuloResultado);
+            escritor.Texto(Moeda(dto.Resultado), 25, true);
+        }
         foreach (var destaque in dto.Destaques)
         {
             escritor.Texto($"{destaque.Rotulo}: {destaque.Valor}", 11, true);
@@ -36,10 +39,13 @@ internal static class GeradorDemonstrativoPdf
                     escritor.Texto($"{coluna}: {valor}");
             }
         }
-        Verbas(escritor, dto.RotuloProventos, dto.Proventos);
-        escritor.Texto($"Total: {Moeda(dto.TotalProventos)}", 11, true);
-        Verbas(escritor, "Descontos", dto.Descontos);
-        escritor.Texto($"Total de descontos: {Moeda(dto.TotalDescontos)}", 11, true);
+        if (dto.TemVerbas || dto.Comparativo is null)
+        {
+            Verbas(escritor, dto.RotuloProventos, dto.Proventos);
+            escritor.Texto($"Total: {Moeda(dto.TotalProventos)}", 11, true);
+            Verbas(escritor, "Descontos", dto.Descontos);
+            escritor.Texto($"Total de descontos: {Moeda(dto.TotalDescontos)}", 11, true);
+        }
         if (dto.Informativos.Count > 0)
             Verbas(escritor, "Informativos (fora do resultado)", dto.Informativos);
         escritor.Secao("Memória de cálculo");
