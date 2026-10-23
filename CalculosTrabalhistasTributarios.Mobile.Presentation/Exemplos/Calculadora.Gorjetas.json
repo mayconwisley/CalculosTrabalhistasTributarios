@@ -1,0 +1,18 @@
+{
+  "Campos": {
+    "retencao": "20",
+    "inicio": "05/2026",
+    "fim": "10/2026",
+    "valorMensal": "2.000,00"
+  },
+  "Grades": {
+    "meses": [
+      { "competencia": "05/2026", "valor": "2.000,00" },
+      { "competencia": "06/2026", "valor": "2.000,00" },
+      { "competencia": "07/2026", "valor": "2.000,00" },
+      { "competencia": "08/2026", "valor": "2.000,00" },
+      { "competencia": "09/2026", "valor": "2.000,00" },
+      { "competencia": "10/2026", "valor": "2.000,00" }
+    ]
+  }
+}

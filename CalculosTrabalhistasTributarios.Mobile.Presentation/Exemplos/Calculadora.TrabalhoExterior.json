@@ -1,0 +1,14 @@
+{
+  "Campos": {
+    "recebimento": "15/10/2026",
+    "remuneracao": "10.000,00",
+    "jurosRecebidos": "50,00",
+    "impostoExterior": "2.000,00",
+    "dolarFiscal": "5,00",
+    "cambioEfetivo": "4,80",
+    "taxaMoeda": "10,00",
+    "jurosBanco": "5,00",
+    "taxaReais": "20,00",
+    "creditoExterior": 1
+  }
+}

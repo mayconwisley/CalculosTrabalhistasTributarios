@@ -1,0 +1,17 @@
+{
+  "Campos": {
+    "dataObito": "13/10/2026",
+    "situacao": 1,
+    "anos": "30",
+    "idadeConjuge": "40",
+    "beneficioConjuge": "3.000,00",
+    "outros": "1"
+  },
+  "Grades": {
+    "salarios": [
+      { "inicio": "01/1997", "fim": "12/2006", "salario": "1.500,00" },
+      { "inicio": "01/2007", "fim": "12/2016", "salario": "3.500,00" },
+      { "inicio": "01/2017", "fim": "09/2026", "salario": "6.500,00" }
+    ]
+  }
+}

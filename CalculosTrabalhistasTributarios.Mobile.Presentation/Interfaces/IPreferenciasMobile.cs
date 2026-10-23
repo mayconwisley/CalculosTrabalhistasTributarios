@@ -13,4 +13,7 @@ public interface IPreferenciasMobile
     DateTime? HorarioAtualizacaoTabelas { get; set; }
 
     TemaMobile Tema { get; set; }
+
+    /// <summary>O aviso de que os resultados são simulações já foi mostrado na primeira abertura.</summary>
+    bool AvisoSimulacaoLido { get; set; }
 }

@@ -16,6 +16,19 @@ public sealed class PlataformaMobile : IPlataformaMobile
 
     public Task AbrirEnderecoAsync(Uri endereco) => Browser.Default.OpenAsync(endereco, BrowserLaunchMode.SystemPreferred);
 
+    // Uma cópia na pasta do provedor de arquivos do app, a mesma do PDF: o destinatário não lê o armazenamento privado.
+    public async Task CompartilharArquivoAsync(string titulo, string caminho)
+    {
+        var pasta = Path.Combine(FileSystem.Current.CacheDirectory, "sharing-root");
+        var copia = Path.Combine(pasta, Path.GetFileName(caminho));
+        await Task.Run(() =>
+        {
+            Directory.CreateDirectory(pasta);
+            File.Copy(caminho, copia, overwrite: true);
+        });
+        await Share.Default.RequestAsync(new ShareFileRequest(titulo, new ShareFile(copia, "text/plain")));
+    }
+
     public void AplicarTema(TemaMobile tema)
     {
         if (Microsoft.Maui.Controls.Application.Current is { } app)

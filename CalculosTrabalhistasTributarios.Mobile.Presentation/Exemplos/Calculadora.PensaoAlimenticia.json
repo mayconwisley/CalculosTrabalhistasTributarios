@@ -1,0 +1,12 @@
+{
+  "Campos": {
+    "competencia": "10/2026",
+    "valorBruto": "8.500,00",
+    "dependentes": "2"
+  },
+  "Grades": {
+    "beneficiarios": [
+      { "nome": "Beneficiário 1", "base": 0, "percentual": "30,00", "valor": "0,00" }
+    ]
+  }
+}

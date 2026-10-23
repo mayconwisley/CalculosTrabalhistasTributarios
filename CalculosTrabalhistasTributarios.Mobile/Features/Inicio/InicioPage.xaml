@@ -1,64 +1,52 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:CalculosTrabalhistasTributarios.Mobile.Presentation.Inicio;assembly=CalculosTrabalhistasTributarios.Mobile.Presentation"
-             x:Class="CalculosTrabalhistasTributarios.Mobile.Features.Inicio.InicioPage" x:DataType="vm:InicioViewModel" Title="Calculadoras">
+             xmlns:local="clr-namespace:CalculosTrabalhistasTributarios.Mobile.Features.Inicio"
+             xmlns:views="clr-namespace:CalculosTrabalhistasTributarios.Mobile.Views" x:Class="CalculosTrabalhistasTributarios.Mobile.Features.Inicio.InicioPage" x:DataType="vm:InicioViewModel" Title="Calculadoras">
+    <ContentPage.Resources>
+        <!-- Item encontrado pela busca: toque abre; a estrela marca ou desmarca a favorita. -->
+        <DataTemplate x:Key="ItemEncontrado" x:DataType="vm:AtalhoMobile">
+            <Border Style="{StaticResource ItemRecente}" SemanticProperties.Description="{Binding Titulo}">
+                <Border.GestureRecognizers><TapGestureRecognizer CommandParameter="{Binding .}" Command="{Binding AbrirCommand, Source={RelativeSource AncestorType={x:Type vm:InicioViewModel}}, x:DataType=vm:InicioViewModel}" /></Border.GestureRecognizers>
+                <Grid ColumnDefinitions="*,48" ColumnSpacing="8">
+                    <VerticalStackLayout Spacing="2" VerticalOptions="Center"><Label Text="{Binding Titulo}" FontFamily="OpenSansSemibold" />
+                        <Label Text="{Binding Descricao}" Style="{StaticResource TextoSecundario}" MaxLines="2" LineBreakMode="TailTruncation" /></VerticalStackLayout>
+                    <Button Grid.Column="1" Text="{Binding IconeFavorito}" WidthRequest="48" Style="{StaticResource BotaoFavorito}" SemanticProperties.Description="{Binding DescricaoFavorito}" CommandParameter="{Binding .}" Command="{Binding AlternarFavoritoCommand, Source={RelativeSource AncestorType={x:Type vm:InicioViewModel}}, x:DataType=vm:InicioViewModel}" />
+                </Grid>
+            </Border>
+        </DataTemplate>
+        <DataTemplate x:Key="GrupoEncontrado" x:DataType="vm:GrupoAtalhosMobile">
+            <VerticalStackLayout Spacing="8" IsVisible="{Binding Visivel}">
+                <Label Text="{Binding Titulo}" Style="{StaticResource TituloSecao}" SemanticProperties.HeadingLevel="Level2" />
+                <VerticalStackLayout Spacing="8" BindableLayout.ItemsSource="{Binding Atalhos}" BindableLayout.ItemTemplate="{StaticResource ItemEncontrado}" />
+            </VerticalStackLayout>
+        </DataTemplate>
+    </ContentPage.Resources>
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="20" MaximumWidthRequest="640">
-            <Label Text="Seus cálculos,&#10;em qualquer lugar." FontSize="30" FontFamily="OpenSansSemibold" SemanticProperties.HeadingLevel="Level1" />
-            <Label Text="Simulações locais, memória de cálculo e PDF para compartilhar." Style="{StaticResource TextoSecundario}" FontSize="14" />
-            <Label Text="{Binding Resumo}" Style="{StaticResource TextoSecundario}" />
+            <!-- Boas-vindas, como a tela inicial do desktop: as calculadoras e as tabelas ficam no menu ☰. -->
+            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="14">
+                <views:Logotipo WidthRequest="56" HeightRequest="56" />
+                <Label Grid.Column="1" Text="Boas-vindas" FontSize="28" FontFamily="OpenSansSemibold" VerticalOptions="Center" SemanticProperties.HeadingLevel="Level1" />
+            </Grid>
+            <Label Text="Escolha uma calculadora ou uma tabela no menu ☰ para começar. As simulações são feitas neste aparelho, com as tabelas da competência informada." Style="{StaticResource TextoSecundario}" FontSize="14" />
+            <Button Text="☰  Ver calculadoras e tabelas" Command="{Binding AbrirMenuCommand}" AutomationId="AbrirMenuInicio" SemanticProperties.Hint="Abre o menu lateral, com as calculadoras e as tabelas por assunto" />
             <Border Style="{StaticResource CaixaCampo}"><Entry Text="{Binding Busca}" Placeholder="Buscar cálculos e tabelas" Keyboard="Text" HorizontalTextAlignment="Start" AutomationId="BuscaInicio" /></Border>
             <Label Text="{Binding MensagemSemResultado}" IsVisible="{Binding SemResultado}" />
-            <Button Text="Limpar busca" Command="{Binding LimparBuscaCommand}" IsVisible="{Binding SemResultado}" />
+            <Button Text="Limpar busca" Command="{Binding LimparBuscaCommand}" IsVisible="{Binding EmBusca}" Style="{StaticResource BotaoLink}" />
             <Border IsVisible="{Binding TemAvisoTabelas}"><VerticalStackLayout Spacing="8"><Label Text="{Binding AvisoTabelas}" />
                 <Button Text="Ver pendências" Command="{Binding VerPendenciasCommand}" /><Button Text="Dispensar" Command="{Binding DispensarAvisoTabelasCommand}" />
             </VerticalStackLayout></Border>
-            <Label Text="Favoritas" Style="{StaticResource TituloSecao}" IsVisible="{Binding TemFavoritas}" />
-            <VerticalStackLayout Spacing="8" BindableLayout.ItemsSource="{Binding Favoritas.Atalhos}"><BindableLayout.ItemTemplate>
-                <DataTemplate x:DataType="vm:AtalhoMobile"><Border><VerticalStackLayout Spacing="8"><Grid ColumnDefinitions="*,54"><Label Text="{Binding Titulo}" Style="{StaticResource TituloSecao}" VerticalOptions="Center" />
-                    <Button Grid.Column="1" Text="{Binding IconeFavorito}" WidthRequest="54" Padding="0" SemanticProperties.Description="{Binding DescricaoFavorito}" CommandParameter="{Binding .}" Command="{Binding AlternarFavoritoCommand, Source={RelativeSource AncestorType={x:Type vm:InicioViewModel}}, x:DataType=vm:InicioViewModel}" /></Grid>
-                    <Label Text="{Binding Descricao}" Style="{StaticResource TextoSecundario}" />
-                    <Button Text="{Binding TextoBotao}" CommandParameter="{Binding .}" Command="{Binding AbrirCommand, Source={RelativeSource AncestorType={x:Type vm:InicioViewModel}}, x:DataType=vm:InicioViewModel}" />
-                </VerticalStackLayout></Border></DataTemplate>
-            </BindableLayout.ItemTemplate></VerticalStackLayout>
-            <VerticalStackLayout Spacing="20" BindableLayout.ItemsSource="{Binding Grupos}">
-                <BindableLayout.ItemTemplate>
-                    <DataTemplate x:DataType="vm:GrupoAtalhosMobile">
-                        <VerticalStackLayout Spacing="20" IsVisible="{Binding Visivel}">
-                            <Label Text="{Binding Titulo}" Style="{StaticResource TituloSecao}" SemanticProperties.HeadingLevel="Level2" />
-                            <VerticalStackLayout Spacing="20" BindableLayout.ItemsSource="{Binding Atalhos}">
-                                <BindableLayout.ItemTemplate>
-                                    <DataTemplate x:DataType="vm:AtalhoMobile">
-                                        <Border>
-                                            <VerticalStackLayout Spacing="12">
-                                                <Grid ColumnDefinitions="*,54"><Label Text="{Binding Titulo}" Style="{StaticResource TituloSecao}" VerticalOptions="Center" />
-                                                    <Button Grid.Column="1" Text="{Binding IconeFavorito}" WidthRequest="54" Padding="0" SemanticProperties.Description="{Binding DescricaoFavorito}" CommandParameter="{Binding .}" Command="{Binding AlternarFavoritoCommand, Source={RelativeSource AncestorType={x:Type vm:InicioViewModel}}, x:DataType=vm:InicioViewModel}" /></Grid>
-                                                <Label Text="{Binding Descricao}" />
-                                                <Button Text="{Binding TextoBotao}" AutomationId="{Binding IdAutomacao}" CommandParameter="{Binding .}"
-                                                        Command="{Binding AbrirCommand, Source={RelativeSource AncestorType={x:Type vm:InicioViewModel}}, x:DataType=vm:InicioViewModel}" />
-                                            </VerticalStackLayout>
-                                        </Border>
-                                    </DataTemplate>
-                                </BindableLayout.ItemTemplate>
-                            </VerticalStackLayout>
-                        </VerticalStackLayout>
-                    </DataTemplate>
-                </BindableLayout.ItemTemplate>
+            <local:BoasVindasView IsVisible="{Binding ExibeBoasVindas}" />
+            <!-- Durante a busca, os itens encontrados substituem as boas-vindas. -->
+            <VerticalStackLayout Spacing="20" IsVisible="{Binding EmBusca}">
+                <VerticalStackLayout Spacing="8" IsVisible="{Binding TemFavoritas}">
+                    <Label Text="Favoritas" Style="{StaticResource TituloSecao}" SemanticProperties.HeadingLevel="Level2" />
+                    <VerticalStackLayout Spacing="8" BindableLayout.ItemsSource="{Binding Favoritas.Atalhos}" BindableLayout.ItemTemplate="{StaticResource ItemEncontrado}" />
+                </VerticalStackLayout>
+                <VerticalStackLayout Spacing="20" BindableLayout.ItemsSource="{Binding Grupos}" BindableLayout.ItemTemplate="{StaticResource GrupoEncontrado}" />
+                <VerticalStackLayout Spacing="20" BindableLayout.ItemsSource="{Binding GruposTabelas}" BindableLayout.ItemTemplate="{StaticResource GrupoEncontrado}" />
             </VerticalStackLayout>
-            <Label Text="Tabelas" Style="{StaticResource TituloSecao}" SemanticProperties.HeadingLevel="Level2" />
-            <VerticalStackLayout Spacing="16" BindableLayout.ItemsSource="{Binding GruposTabelas}"><BindableLayout.ItemTemplate>
-                <DataTemplate x:DataType="vm:GrupoAtalhosMobile"><VerticalStackLayout Spacing="10" IsVisible="{Binding Visivel}">
-                    <Label Text="{Binding Titulo}" Style="{StaticResource TituloSecao}" />
-                    <VerticalStackLayout Spacing="8" BindableLayout.ItemsSource="{Binding Atalhos}"><BindableLayout.ItemTemplate>
-                        <DataTemplate x:DataType="vm:AtalhoMobile"><Border><VerticalStackLayout Spacing="8">
-                            <Grid ColumnDefinitions="*,54"><Label Text="{Binding Titulo}" Style="{StaticResource RotuloCampo}" VerticalOptions="Center" />
-                                <Button Grid.Column="1" Text="{Binding IconeFavorito}" WidthRequest="54" Padding="0" SemanticProperties.Description="{Binding DescricaoFavorito}" CommandParameter="{Binding .}" Command="{Binding AlternarFavoritoCommand, Source={RelativeSource AncestorType={x:Type vm:InicioViewModel}}, x:DataType=vm:InicioViewModel}" /></Grid>
-                            <Label Text="{Binding Descricao}" Style="{StaticResource TextoSecundario}" />
-                            <Button Text="Abrir tabela" CommandParameter="{Binding .}" Command="{Binding AbrirCommand, Source={RelativeSource AncestorType={x:Type vm:InicioViewModel}}, x:DataType=vm:InicioViewModel}" />
-                        </VerticalStackLayout></Border></DataTemplate>
-                    </BindableLayout.ItemTemplate></VerticalStackLayout>
-                </VerticalStackLayout></DataTemplate>
-            </BindableLayout.ItemTemplate></VerticalStackLayout>
             <Label Text="{Binding Mensagem}" TextColor="{AppThemeBinding Light={StaticResource ErroClaro}, Dark={StaticResource ErroEscuro}}" />
             <Label Text="Valores estimados. Procure um profissional especializado para conferir os valores aplicáveis ao seu caso." Style="{StaticResource TextoSecundario}" />
         </VerticalStackLayout>

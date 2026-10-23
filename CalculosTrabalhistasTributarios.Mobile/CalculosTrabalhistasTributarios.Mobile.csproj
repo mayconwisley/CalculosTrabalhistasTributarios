@@ -15,9 +15,11 @@
     <SupportedOSPlatformVersion>24.0</SupportedOSPlatformVersion>
   </PropertyGroup>
   <ItemGroup>
-    <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#174A67" />
-    <MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#174A67" BaseSize="128,128" />
-    <MauiImage Include="Resources\Images\calculadora.svg" BaseSize="128,128" />
+    <!-- Mesmo logo do WPF (Assets/logo-light.png); a escala mantém a moldura dentro da máscara do ícone adaptável. -->
+    <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.png" ForegroundScale="0.7" Color="#F8F9FC" />
+    <MauiSplashScreen Include="Resources\Splash\splash.png" Color="#F8F9FC" BaseSize="160,160" />
+    <MauiImage Include="Resources\Images\logo_claro.png" BaseSize="128,128" />
+    <MauiImage Include="Resources\Images\logo_escuro.png" BaseSize="128,128" />
     <MauiFont Include="Resources\Fonts\*" />
     <MauiAsset Include="..\LICENSE" LogicalName="LICENSE.txt" />
     <MauiAsset Include="..\CalculosTrabalhistasTributarios\BancoDados\calculoIrrf.db" LogicalName="calculoIrrf.db" />
@@ -30,5 +32,7 @@
     <ProjectReference Include="..\CalculosTrabalhistasTributarios.Mobile.Presentation\CalculosTrabalhistasTributarios.Mobile.Presentation.csproj" />
     <ProjectReference Include="..\CalculosTrabalhistasTributarios.Infrastructure.Local\CalculosTrabalhistasTributarios.Infrastructure.Local.csproj" />
     <ProjectReference Include="..\CalculosTrabalhistasTributarios.Infrastructure.Tabelas\CalculosTrabalhistasTributarios.Infrastructure.Tabelas.csproj" />
+    <!-- Mesmo arquivo de erros do desktop, sem referenciar a infraestrutura de relatórios. -->
+    <Compile Include="..\CalculosTrabalhistasTributarios.Infrastructure\Diagnostico\ArquivoRegistroDeErros.cs" Link="Services\ArquivoRegistroDeErros.cs" />
   </ItemGroup>
 </Project>

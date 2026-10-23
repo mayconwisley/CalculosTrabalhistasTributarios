@@ -3,7 +3,7 @@
              xmlns:vm="clr-namespace:CalculosTrabalhistasTributarios.Mobile.Presentation.Tabelas;assembly=CalculosTrabalhistasTributarios.Mobile.Presentation"
              xmlns:views="clr-namespace:CalculosTrabalhistasTributarios.Mobile.Views"
              x:Class="CalculosTrabalhistasTributarios.Mobile.Features.Tabelas.TabelaPage" x:DataType="vm:TabelaMobileViewModel" Title="Tabela">
-    <ScrollView><VerticalStackLayout Padding="20" Spacing="16" MaximumWidthRequest="640">
+    <ScrollView x:Name="Rolagem"><VerticalStackLayout Padding="20" Spacing="16" MaximumWidthRequest="640">
         <Label Text="{Binding Titulo}" Style="{StaticResource TituloSecao}" SemanticProperties.HeadingLevel="Level1" />
         <Label Text="{Binding Descricao}" Style="{StaticResource TextoSecundario}" />
         <Border><VerticalStackLayout Spacing="12">

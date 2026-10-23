@@ -8,6 +8,7 @@ using CalculosTrabalhistasTributarios.Mobile.Services;
 using CalculosTrabalhistasTributarios.Infrastructure.Local;
 using CalculosTrabalhistasTributarios.Infrastructure.Persistence;
 using CalculosTrabalhistasTributarios.Application.Interfaces;
+using CalculosTrabalhistasTributarios.Infrastructure.Diagnostico;
 using CalculosTrabalhistasTributarios.Mobile.Features.Inicio;
 using CalculosTrabalhistasTributarios.Mobile.Features.Tributacao;
 using CalculosTrabalhistasTributarios.Mobile.Presentation.Inicio;
@@ -31,6 +32,8 @@ public static class MauiProgram
         CultureInfo.CurrentUICulture = cultura;
         CultureInfo.DefaultThreadCurrentCulture = cultura;
         CultureInfo.DefaultThreadCurrentUICulture = cultura;
+        var registroDeErros = new ArquivoRegistroDeErros(Path.Combine(FileSystem.Current.AppDataDirectory, "logs"), AppInfo.Current.VersionString);
+        TratarErrosInesperados(registroDeErros);
         var builder = MauiApp.CreateBuilder();
         builder.UseMauiApp<App>()
             .ConfigureFonts(fonts =>
@@ -50,6 +53,8 @@ public static class MauiProgram
             new InicializadorBancoTributario(provider.GetRequiredService<BancoTributario>()),
             provider.GetRequiredService<SqliteTributacaoConsulta>()));
         builder.Services.Replace(ServiceDescriptor.Singleton<ITributacaoConsulta, TributacaoLocalPreparada>());
+        builder.Services.AddSingleton<IRegistroDeErros>(registroDeErros);
+        builder.Logging.AddProvider(new RegistroDeErrosLoggerProvider(registroDeErros));
         builder.Services.AddSingleton<IShare>(Share.Default);
         builder.Services.AddSingleton<IFileSystem>(FileSystem.Current);
         builder.Services.AddSingleton<ICompartilhamentoPdf, CompartilhamentoPdf>();
@@ -106,5 +111,27 @@ public static class MauiProgram
         builder.Logging.AddDebug();
 #endif
         return builder.Build();
+    }
+
+    /// <summary>
+    /// Como no desktop, o erro que escapa das telas fica registrado em logs/erros-AAAA-MM.log, no armazenamento privado do
+    /// aparelho; o usuário envia o arquivo pelas Configurações. No Android, a exceção não tratada ainda fecha o aplicativo.
+    /// </summary>
+    private static void TratarErrosInesperados(IRegistroDeErros registro)
+    {
+        AppDomain.CurrentDomain.UnhandledException += (_, evento) =>
+        {
+            if (evento.ExceptionObject is Exception exception)
+                registro.Registrar(exception, evento.IsTerminating ? "Erro inesperado que fechou o aplicativo" : "Erro inesperado");
+        };
+        TaskScheduler.UnobservedTaskException += (_, evento) =>
+        {
+            registro.Registrar(evento.Exception, "Erro inesperado numa tarefa em segundo plano");
+            evento.SetObserved();
+        };
+#if ANDROID
+        Android.Runtime.AndroidEnvironment.UnhandledExceptionRaiser += (_, evento) =>
+            registro.Registrar(evento.Exception, "Erro inesperado na interface");
+#endif
     }
 }

@@ -1,6 +1,8 @@
 using System.Text.Json;
 using CalculosTrabalhistasTributarios.Application.DTOs;
 using CalculosTrabalhistasTributarios.Application.Interfaces;
+using CalculosTrabalhistasTributarios.Domain.Comum;
+using CalculosTrabalhistasTributarios.Mobile.Presentation.Exemplos;
 using CalculosTrabalhistasTributarios.Mobile.Presentation.Historico;
 using CalculosTrabalhistasTributarios.Mobile.Presentation.Inicio;
 using CalculosTrabalhistasTributarios.Mobile.Presentation.Interfaces;
@@ -86,6 +88,35 @@ public sealed class HistoricoMobileService(IHistoricoCalculos historico, Func<Ti
         {
             logger.LogError(erro, "Falha ao abrir histórico móvel {Id}.", salvo.Id);
             await Pagina.DisplayAlertAsync("Histórico", "Não foi possível abrir o formulário salvo.", "Entendi");
+        }
+    }
+
+    /// <summary>Substitui o formulário pelo exemplo do manual, como no desktop: confirma, volta os campos ao valor inicial e calcula.</summary>
+    public async Task PreencherExemploAsync(TipoCalculadoraMobile tipo, IFormularioHistoricoMobile formulario)
+    {
+        if (!await Pagina.DisplayAlertAsync("Preencher exemplo",
+            "Preencher o formulário com o exemplo do manual?\n\nOs dados do formulário serão substituídos por valores fictícios.",
+            "Preencher", "Cancelar"))
+            return;
+        try
+        {
+            if (criarPagina(tipo).BindingContext is not IFormularioHistoricoMobile vazio)
+                throw new InvalidOperationException("A calculadora não implementa histórico.");
+            var exemplo = ExemplosMobile.Montar(tipo, vazio.ExportarDados());
+            var importacao = exemplo.Falhou ? Result.Falha(exemplo.Erro) : formulario.TentarImportarDados(exemplo.Valor);
+            if (importacao.Falhou)
+            {
+                await Pagina.DisplayAlertAsync("Exemplo", importacao.Erro.Mensagem, "Entendi");
+                return;
+            }
+            // O exemplo não é o cálculo salvo que estava aberto: salvar depois cria um novo registro.
+            formulario.HistoricoId = null;
+            await CalcularAsync(formulario);
+        }
+        catch (Exception erro)
+        {
+            logger.LogError(erro, "Falha ao preencher o exemplo da calculadora móvel {Tipo}.", tipo);
+            await Pagina.DisplayAlertAsync("Exemplo", "Não foi possível preencher o exemplo.", "Entendi");
         }
     }
 

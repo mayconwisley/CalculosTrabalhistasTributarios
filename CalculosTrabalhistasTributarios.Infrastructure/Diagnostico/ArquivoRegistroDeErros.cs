@@ -20,11 +20,15 @@ public sealed class ArquivoRegistroDeErros : IRegistroDeErros
     {
     }
 
-    public ArquivoRegistroDeErros(string pasta)
+    public ArquivoRegistroDeErros(string pasta) : this(pasta, System.Reflection.Assembly.GetEntryAssembly()?.GetName().Version?.ToString(3))
+    {
+    }
+
+    /// <param name="versao">Versão exibida no registro; o Android não tem assembly de entrada, e o app informa a versão instalada.</param>
+    public ArquivoRegistroDeErros(string pasta, string? versao)
     {
         _pasta = pasta;
-        var versao = System.Reflection.Assembly.GetEntryAssembly()?.GetName().Version;
-        _versao = versao is null ? "desconhecida" : versao.ToString(3);
+        _versao = versao ?? "desconhecida";
     }
 
     public string Arquivo => Path.Combine(_pasta, $"erros-{DateTime.Now:yyyy-MM}.log");

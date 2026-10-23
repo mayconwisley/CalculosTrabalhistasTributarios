@@ -1,0 +1,18 @@
+{
+  "Campos": {
+    "despesas": "1.500,00",
+    "inicio": "03/2026",
+    "fim": "08/2026",
+    "salarioMensal": "4.000,00"
+  },
+  "Grades": {
+    "meses": [
+      { "competencia": "03/2026", "salario": "4.000,00", "dias": "15" },
+      { "competencia": "04/2026", "salario": "4.000,00", "dias": "30" },
+      { "competencia": "05/2026", "salario": "4.000,00", "dias": "30" },
+      { "competencia": "06/2026", "salario": "4.000,00", "dias": "30" },
+      { "competencia": "07/2026", "salario": "4.000,00", "dias": "30" },
+      { "competencia": "08/2026", "salario": "4.000,00", "dias": "30" }
+    ]
+  }
+}

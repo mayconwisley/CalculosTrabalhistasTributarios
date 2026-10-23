@@ -1,0 +1,33 @@
+{
+  "Campos": {
+    "valorPensao": "1.000,00",
+    "primeiraParcela": "01/2025",
+    "ultimaParcela": "09/2026",
+    "dataCalculo": "03/10/2026"
+  },
+  "Grades": {
+    "parcelas": [
+      { "mes": "01/2025", "vencimento": "10/01/2025", "devido": "1.000,00", "pago": "0,00" },
+      { "mes": "02/2025", "vencimento": "10/02/2025", "devido": "1.000,00", "pago": "0,00" },
+      { "mes": "03/2025", "vencimento": "10/03/2025", "devido": "1.000,00", "pago": "500,00" },
+      { "mes": "04/2025", "vencimento": "10/04/2025", "devido": "1.000,00", "pago": "0,00" },
+      { "mes": "05/2025", "vencimento": "10/05/2025", "devido": "1.000,00", "pago": "0,00" },
+      { "mes": "06/2025", "vencimento": "10/06/2025", "devido": "1.000,00", "pago": "0,00" },
+      { "mes": "07/2025", "vencimento": "10/07/2025", "devido": "1.000,00", "pago": "0,00" },
+      { "mes": "08/2025", "vencimento": "10/08/2025", "devido": "1.000,00", "pago": "0,00" },
+      { "mes": "09/2025", "vencimento": "10/09/2025", "devido": "1.000,00", "pago": "0,00" },
+      { "mes": "10/2025", "vencimento": "10/10/2025", "devido": "1.000,00", "pago": "0,00" },
+      { "mes": "11/2025", "vencimento": "10/11/2025", "devido": "1.000,00", "pago": "0,00" },
+      { "mes": "12/2025", "vencimento": "10/12/2025", "devido": "1.000,00", "pago": "0,00" },
+      { "mes": "01/2026", "vencimento": "10/01/2026", "devido": "1.000,00", "pago": "0,00" },
+      { "mes": "02/2026", "vencimento": "10/02/2026", "devido": "1.000,00", "pago": "0,00" },
+      { "mes": "03/2026", "vencimento": "10/03/2026", "devido": "1.000,00", "pago": "0,00" },
+      { "mes": "04/2026", "vencimento": "10/04/2026", "devido": "1.000,00", "pago": "0,00" },
+      { "mes": "05/2026", "vencimento": "10/05/2026", "devido": "1.000,00", "pago": "0,00" },
+      { "mes": "06/2026", "vencimento": "10/06/2026", "devido": "1.000,00", "pago": "0,00" },
+      { "mes": "07/2026", "vencimento": "10/07/2026", "devido": "1.000,00", "pago": "0,00" },
+      { "mes": "08/2026", "vencimento": "10/08/2026", "devido": "1.000,00", "pago": "0,00" },
+      { "mes": "09/2026", "vencimento": "10/09/2026", "devido": "1.000,00", "pago": "0,00" }
+    ]
+  }
+}

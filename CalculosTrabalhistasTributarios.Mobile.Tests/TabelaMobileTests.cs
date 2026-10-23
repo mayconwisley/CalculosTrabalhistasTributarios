@@ -71,5 +71,6 @@ public sealed class TabelaMobileTests
         public Task<bool> ConfirmarAsync(string titulo, string mensagem, string aceitar, string cancelar) => Task.FromResult(true);
         public Task AbrirEnderecoAsync(Uri endereco) => Task.CompletedTask;
         public void AplicarTema(TemaMobile tema) { }
+        public Task CompartilharArquivoAsync(string titulo, string caminho) => Task.CompletedTask;
     }
 }

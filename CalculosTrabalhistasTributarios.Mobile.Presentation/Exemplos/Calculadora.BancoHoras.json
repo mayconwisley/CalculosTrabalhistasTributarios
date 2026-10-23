@@ -1,0 +1,12 @@
+{
+  "Campos": {
+    "situacao": 1,
+    "inicio": "01/10/2026",
+    "fim": "31/10/2026",
+    "salario": "3.000,00"
+  },
+  "LancamentosBanco": [
+    { "Data": "05/10/2026", "Tipo": 0, "Horas": "2:00", "Adicional": "", "Descricao": "Horas extras" },
+    { "Data": "15/10/2026", "Tipo": 1, "Horas": "0:30", "Adicional": "", "Descricao": "Saída antecipada" }
+  ]
+}

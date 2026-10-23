@@ -9,6 +9,7 @@ public sealed class PreferenciasMobile : IPreferenciasMobile
     private const string ChaveAtualizar = "tabelas.atualizarAoAbrir";
     private const string ChaveHorario = "tabelas.horarioAtualizacao";
     private const string ChaveTema = "aparencia.tema";
+    private const string ChaveAvisoSimulacao = "aviso.simulacaoLido";
     private readonly List<string> _favoritos;
 
     public PreferenciasMobile()
@@ -37,6 +38,12 @@ public sealed class PreferenciasMobile : IPreferenciasMobile
         get => DateTime.TryParse(Preferences.Default.Get(ChaveHorario, string.Empty), null,
             System.Globalization.DateTimeStyles.RoundtripKind, out var horario) ? horario : null;
         set => Preferences.Default.Set(ChaveHorario, value?.ToString("O") ?? string.Empty);
+    }
+
+    public bool AvisoSimulacaoLido
+    {
+        get => Preferences.Default.Get(ChaveAvisoSimulacao, false);
+        set => Preferences.Default.Set(ChaveAvisoSimulacao, value);
     }
 
     public TemaMobile Tema

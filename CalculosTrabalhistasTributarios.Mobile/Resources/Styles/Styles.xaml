@@ -46,7 +46,7 @@
     <Style TargetType="Button">
         <Setter Property="MinimumHeightRequest" Value="54" />
         <Setter Property="Padding" Value="18,14" />
-        <Setter Property="BackgroundColor" Value="{StaticResource Primaria}" />
+        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Primaria}, Dark={StaticResource PrimariaEscura}}" />
         <Setter Property="TextColor" Value="White" />
         <Setter Property="CornerRadius" Value="16" />
         <Setter Property="FontFamily" Value="OpenSansSemibold" />
@@ -60,6 +60,37 @@
             </VisualStateGroupList>
         </Setter>
     </Style>
+    <Style x:Key="BotaoFavorito" TargetType="Button">
+        <Setter Property="BackgroundColor" Value="Transparent" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource TextoAcentoClaro}, Dark={StaticResource TextoAcentoEscuro}}" />
+        <Setter Property="FontSize" Value="30" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="BorderWidth" Value="0" />
+    </Style>
+    <Style x:Key="BotaoLink" TargetType="Button">
+        <Setter Property="BackgroundColor" Value="Transparent" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource TextoAcentoClaro}, Dark={StaticResource TextoAcentoEscuro}}" />
+        <Setter Property="Padding" Value="0,8" />
+        <Setter Property="MinimumHeightRequest" Value="44" />
+        <Setter Property="HorizontalOptions" Value="Start" />
+        <Setter Property="BorderWidth" Value="0" />
+    </Style>
+    <Style x:Key="MarcadorPasso" TargetType="Border">
+        <Setter Property="WidthRequest" Value="36" />
+        <Setter Property="HeightRequest" Value="36" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="StrokeThickness" Value="0" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 18" />
+        <Setter Property="VerticalOptions" Value="Start" />
+        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource AcentoClaro}, Dark={StaticResource AcentoEscuro}}" />
+    </Style>
+    <Style x:Key="NumeroPasso" TargetType="Label" BasedOn="{StaticResource RotuloBase}">
+        <Setter Property="FontFamily" Value="OpenSansSemibold" />
+        <Setter Property="FontSize" Value="15" />
+        <Setter Property="HorizontalOptions" Value="Center" />
+        <Setter Property="VerticalOptions" Value="Center" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource TextoAcentoClaro}, Dark={StaticResource TextoAcentoEscuro}}" />
+    </Style>
     <Style x:Key="CartaoBase" TargetType="Border">
         <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource CartaoClaro}, Dark={StaticResource CartaoEscuro}}" />
         <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource BordaClara}, Dark={StaticResource BordaEscura}}" />
@@ -70,6 +101,12 @@
     <Style TargetType="Border" BasedOn="{StaticResource CartaoBase}" />
     <Style x:Key="CaixaCampo" TargetType="Border" BasedOn="{StaticResource CartaoBase}">
         <Setter Property="Padding" Value="12,0" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 12" />
+        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource FundoClaro}, Dark={StaticResource FundoEscuro}}" />
+    </Style>
+    <Style x:Key="ItemRecente" TargetType="Border" BasedOn="{StaticResource CartaoBase}">
+        <Setter Property="Padding" Value="14,10" />
+        <Setter Property="MinimumHeightRequest" Value="56" />
         <Setter Property="StrokeShape" Value="RoundRectangle 12" />
         <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource FundoClaro}, Dark={StaticResource FundoEscuro}}" />
     </Style>

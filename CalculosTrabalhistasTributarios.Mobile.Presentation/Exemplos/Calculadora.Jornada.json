@@ -1,0 +1,42 @@
+{
+  "Campos": {
+    "competencia": "10/2026",
+    "inicio": "01/10/2026",
+    "fim": "31/10/2026"
+  },
+  "Grades": {
+    "dias": [
+      { "data": "01/10/2026", "tipo": 0, "previsto": "8:00", "entrada1": "08:00", "saida1": "12:00", "entrada2": "13:00", "saida2": "17:00" },
+      { "data": "02/10/2026", "tipo": 0, "previsto": "8:00", "entrada1": "08:00", "saida1": "12:00", "entrada2": "13:00", "saida2": "17:00" },
+      { "data": "03/10/2026", "tipo": 0, "previsto": "4:00", "entrada1": "08:00", "saida1": "12:00", "entrada2": "", "saida2": "" },
+      { "data": "04/10/2026", "tipo": 1, "previsto": "0:00", "entrada1": "", "saida1": "", "entrada2": "", "saida2": "" },
+      { "data": "05/10/2026", "tipo": 0, "previsto": "8:00", "entrada1": "08:00", "saida1": "12:00", "entrada2": "13:00", "saida2": "19:00" },
+      { "data": "06/10/2026", "tipo": 0, "previsto": "8:00", "entrada1": "", "saida1": "", "entrada2": "", "saida2": "" },
+      { "data": "07/10/2026", "tipo": 0, "previsto": "8:00", "entrada1": "08:00", "saida1": "12:00", "entrada2": "13:00", "saida2": "17:00" },
+      { "data": "08/10/2026", "tipo": 0, "previsto": "8:00", "entrada1": "08:00", "saida1": "12:00", "entrada2": "13:00", "saida2": "17:00" },
+      { "data": "09/10/2026", "tipo": 0, "previsto": "8:00", "entrada1": "08:00", "saida1": "12:00", "entrada2": "13:00", "saida2": "17:00" },
+      { "data": "10/10/2026", "tipo": 0, "previsto": "4:00", "entrada1": "08:00", "saida1": "12:00", "entrada2": "", "saida2": "" },
+      { "data": "11/10/2026", "tipo": 1, "previsto": "0:00", "entrada1": "08:00", "saida1": "12:00", "entrada2": "", "saida2": "" },
+      { "data": "12/10/2026", "tipo": 2, "previsto": "0:00", "entrada1": "", "saida1": "", "entrada2": "", "saida2": "" },
+      { "data": "13/10/2026", "tipo": 0, "previsto": "8:00", "entrada1": "08:00", "saida1": "12:00", "entrada2": "13:00", "saida2": "17:00" },
+      { "data": "14/10/2026", "tipo": 0, "previsto": "8:00", "entrada1": "14:00", "saida1": "18:00", "entrada2": "19:00", "saida2": "23:30" },
+      { "data": "15/10/2026", "tipo": 0, "previsto": "8:00", "entrada1": "08:00", "saida1": "12:00", "entrada2": "12:30", "saida2": "17:00" },
+      { "data": "16/10/2026", "tipo": 0, "previsto": "8:00", "entrada1": "08:00", "saida1": "12:00", "entrada2": "13:00", "saida2": "17:00" },
+      { "data": "17/10/2026", "tipo": 0, "previsto": "4:00", "entrada1": "08:00", "saida1": "12:00", "entrada2": "", "saida2": "" },
+      { "data": "18/10/2026", "tipo": 1, "previsto": "0:00", "entrada1": "", "saida1": "", "entrada2": "", "saida2": "" },
+      { "data": "19/10/2026", "tipo": 0, "previsto": "8:00", "entrada1": "08:00", "saida1": "12:00", "entrada2": "13:00", "saida2": "17:00" },
+      { "data": "20/10/2026", "tipo": 0, "previsto": "8:00", "entrada1": "08:00", "saida1": "12:00", "entrada2": "13:00", "saida2": "17:00" },
+      { "data": "21/10/2026", "tipo": 0, "previsto": "8:00", "entrada1": "08:00", "saida1": "12:00", "entrada2": "13:00", "saida2": "17:00" },
+      { "data": "22/10/2026", "tipo": 0, "previsto": "8:00", "entrada1": "08:00", "saida1": "12:00", "entrada2": "13:00", "saida2": "17:00" },
+      { "data": "23/10/2026", "tipo": 0, "previsto": "8:00", "entrada1": "08:00", "saida1": "12:00", "entrada2": "13:00", "saida2": "17:00" },
+      { "data": "24/10/2026", "tipo": 0, "previsto": "4:00", "entrada1": "08:00", "saida1": "12:00", "entrada2": "", "saida2": "" },
+      { "data": "25/10/2026", "tipo": 1, "previsto": "0:00", "entrada1": "", "saida1": "", "entrada2": "", "saida2": "" },
+      { "data": "26/10/2026", "tipo": 0, "previsto": "8:00", "entrada1": "08:00", "saida1": "12:00", "entrada2": "13:00", "saida2": "17:00" },
+      { "data": "27/10/2026", "tipo": 0, "previsto": "8:00", "entrada1": "08:00", "saida1": "12:00", "entrada2": "13:00", "saida2": "17:00" },
+      { "data": "28/10/2026", "tipo": 0, "previsto": "8:00", "entrada1": "08:00", "saida1": "12:00", "entrada2": "13:00", "saida2": "17:00" },
+      { "data": "29/10/2026", "tipo": 0, "previsto": "8:00", "entrada1": "08:00", "saida1": "12:00", "entrada2": "13:00", "saida2": "17:00" },
+      { "data": "30/10/2026", "tipo": 0, "previsto": "8:00", "entrada1": "08:00", "saida1": "12:00", "entrada2": "13:00", "saida2": "17:00" },
+      { "data": "31/10/2026", "tipo": 0, "previsto": "4:00", "entrada1": "08:00", "saida1": "12:00", "entrada2": "", "saida2": "" }
+    ]
+  }
+}

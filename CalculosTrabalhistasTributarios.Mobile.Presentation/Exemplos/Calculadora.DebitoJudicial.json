@@ -1,0 +1,12 @@
+{
+  "Campos": {
+    "dataCalculo": "04/10/2026",
+    "ajuizamento": "15/03/2024"
+  },
+  "Grades": {
+    "parcelas": [
+      { "descricao": "Horas extras de 2023", "vencimento": "10/01/2024", "valor": "10.000,00" },
+      { "descricao": "Diferenças salariais", "vencimento": "10/09/2024", "valor": "5.000,00" }
+    ]
+  }
+}

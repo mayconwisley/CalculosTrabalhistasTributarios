@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Boas-vindas da tela inicial (resumo, recentes e primeiros passos), em controle próprio para manter a página enxuta. -->
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:CalculosTrabalhistasTributarios.Mobile.Presentation.Inicio;assembly=CalculosTrabalhistasTributarios.Mobile.Presentation"
+             x:Class="CalculosTrabalhistasTributarios.Mobile.Features.Inicio.BoasVindasView" x:DataType="vm:InicioViewModel">
+    <VerticalStackLayout Spacing="16">
+        <Border><VerticalStackLayout Spacing="6">
+            <Label FontSize="15" FontFamily="OpenSansSemibold" TextColor="{AppThemeBinding Light={StaticResource TextoAcentoClaro}, Dark={StaticResource TextoAcentoEscuro}}"><Label.FormattedText><FormattedString>
+                <Span Text="{Binding QuantidadeCalculadoras}" FontSize="26" FontAttributes="Bold" /><Span Text=" calculadoras" />
+            </FormattedString></Label.FormattedText></Label>
+            <Label Text="Trabalhistas, tributárias, previdenciárias, de pensão e de débitos judiciais, organizadas por assunto no menu ☰." Style="{StaticResource TextoSecundario}" />
+        </VerticalStackLayout></Border>
+        <Border><VerticalStackLayout Spacing="6">
+            <Label FontSize="15" FontFamily="OpenSansSemibold" TextColor="{AppThemeBinding Light={StaticResource TextoAcentoClaro}, Dark={StaticResource TextoAcentoEscuro}}"><Label.FormattedText><FormattedString>
+                <Span Text="{Binding QuantidadeTabelas}" FontSize="26" FontAttributes="Bold" /><Span Text=" tabelas" />
+            </FormattedString></Label.FormattedText></Label>
+            <Label Text="INSS, IRRF, deduções e índices econômicos. Cada registro vale a partir da sua competência e pode ser atualizado pela internet." Style="{StaticResource TextoSecundario}" />
+            <Label Text="{Binding SituacaoTabelas}" Margin="0,4,0,0" />
+            <Button Text="Atualizar nas Configurações" Style="{StaticResource BotaoLink}" Command="{Binding AbrirConfiguracoesCommand}" SemanticProperties.Description="Abrir as Configurações para atualizar todas as tabelas agora" />
+        </VerticalStackLayout></Border>
+        <Border><VerticalStackLayout Spacing="6">
+            <Grid ColumnDefinitions="*,Auto"><Label Text="Continuar de onde parou" Style="{StaticResource TituloSecao}" VerticalOptions="Center" SemanticProperties.HeadingLevel="Level2" />
+                <Button Grid.Column="1" Text="Ver o histórico" Style="{StaticResource BotaoLink}" Command="{Binding AbrirHistoricoCommand}" /></Grid>
+            <ActivityIndicator IsRunning="{Binding CarregandoRecentes}" IsVisible="{Binding CarregandoRecentes}" HeightRequest="28" SemanticProperties.Description="Lendo os cálculos recentes" />
+            <Label Text="Nenhum cálculo salvo ainda. Em uma calculadora, toque em Salvar para retomá-lo depois por aqui." Style="{StaticResource TextoSecundario}" IsVisible="{Binding SemRecentes}" />
+            <VerticalStackLayout Spacing="8" BindableLayout.ItemsSource="{Binding Recentes}"><BindableLayout.ItemTemplate>
+                <DataTemplate x:DataType="vm:CalculoRecenteMobile">
+                    <Border Style="{StaticResource ItemRecente}" SemanticProperties.Description="{Binding DescricaoAcessivel}">
+                        <Border.GestureRecognizers><TapGestureRecognizer CommandParameter="{Binding .}" Command="{Binding AbrirRecenteCommand, Source={RelativeSource AncestorType={x:Type vm:InicioViewModel}}, x:DataType=vm:InicioViewModel}" /></Border.GestureRecognizers>
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                            <VerticalStackLayout Spacing="2"><Label Text="{Binding Nome}" FontFamily="OpenSansSemibold" LineBreakMode="TailTruncation" /><Label Text="{Binding Calculadora}" Style="{StaticResource TextoSecundario}" LineBreakMode="TailTruncation" /></VerticalStackLayout>
+                            <Label Grid.Column="1" Text="{Binding Quando}" Style="{StaticResource TextoSecundario}" VerticalOptions="Center" />
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </BindableLayout.ItemTemplate></VerticalStackLayout>
+        </VerticalStackLayout></Border>
+        <Border><VerticalStackLayout Spacing="14">
+            <Label Text="Primeiros passos" Style="{StaticResource TituloSecao}" SemanticProperties.HeadingLevel="Level2" />
+            <Grid ColumnDefinitions="36,*" ColumnSpacing="12"><Border Style="{StaticResource MarcadorPasso}"><Label Text="1" Style="{StaticResource NumeroPasso}" /></Border>
+                <VerticalStackLayout Grid.Column="1"><Label Text="Procure pelo nome" Style="{StaticResource RotuloCampo}" /><Label Text="A busca acima e a do menu ☰ filtram calculadoras e tabelas pelo nome ou pela descrição." Style="{StaticResource TextoSecundario}" /></VerticalStackLayout></Grid>
+            <Grid ColumnDefinitions="36,*" ColumnSpacing="12"><Border Style="{StaticResource MarcadorPasso}"><Label Text="2" Style="{StaticResource NumeroPasso}" /></Border>
+                <VerticalStackLayout Grid.Column="1"><Label Text="Marque as favoritas" Style="{StaticResource RotuloCampo}" /><Label Text="A estrela ☆ ao lado de cada item do menu leva o item ao grupo Favoritas, no alto do menu." Style="{StaticResource TextoSecundario}" /></VerticalStackLayout></Grid>
+            <Grid ColumnDefinitions="36,*" ColumnSpacing="12"><Border Style="{StaticResource MarcadorPasso}"><Label Text="3" Style="{StaticResource NumeroPasso}" /></Border>
+                <VerticalStackLayout Grid.Column="1"><Label Text="Consulte o manual" Style="{StaticResource RotuloCampo}" /><Label Text="Ajuda, no alto de cada calculadora, ou Manual do usuário explicam as entradas, as premissas e os limites de cada cálculo." Style="{StaticResource TextoSecundario}" />
+                    <Button Text="Abrir o manual" Style="{StaticResource BotaoLink}" Command="{Binding AbrirManualCommand}" /></VerticalStackLayout></Grid>
+            <Grid ColumnDefinitions="36,*" ColumnSpacing="12"><Border Style="{StaticResource MarcadorPasso}"><Label Text="4" Style="{StaticResource NumeroPasso}" /></Border>
+                <VerticalStackLayout Grid.Column="1"><Label Text="Volte para esta tela" Style="{StaticResource RotuloCampo}" /><Label Text="O botão voltar do aparelho fecha a tela aberta; Início, no menu ☰, volta direto para cá." Style="{StaticResource TextoSecundario}" /></VerticalStackLayout></Grid>
+        </VerticalStackLayout></Border>
+    </VerticalStackLayout>
+</ContentView>

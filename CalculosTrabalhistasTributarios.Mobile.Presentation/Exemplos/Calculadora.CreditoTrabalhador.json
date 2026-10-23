@@ -1,0 +1,11 @@
+{
+  "Campos": {
+    "competencia": "10/2026",
+    "salario": "1.000,00",
+    "valor": "1.000,00",
+    "prazo": "12",
+    "juros": "1,5",
+    "dataLiberacao": "07/10/2026",
+    "primeiroVencimento": "07/11/2026"
+  }
+}

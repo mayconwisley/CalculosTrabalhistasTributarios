@@ -10,4 +10,7 @@ public interface IPlataformaMobile
     /// <summary>Abre a página no navegador do aparelho; nenhum dado do formulário é enviado.</summary>
     Task AbrirEnderecoAsync(Uri endereco);
     void AplicarTema(TemaMobile tema);
+
+    /// <summary>Abre a folha de compartilhamento do aparelho com o arquivo; o usuário escolhe o destino.</summary>
+    Task CompartilharArquivoAsync(string titulo, string caminho);
 }

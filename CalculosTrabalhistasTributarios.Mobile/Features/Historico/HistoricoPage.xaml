@@ -2,35 +2,52 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:dto="clr-namespace:CalculosTrabalhistasTributarios.Application.DTOs;assembly=CalculosTrabalhistasTributarios.Application"
              x:Class="CalculosTrabalhistasTributarios.Mobile.Features.Historico.HistoricoPage" Title="Histórico">
-    <Grid Padding="16" RowDefinitions="Auto,*">
-        <VerticalStackLayout Spacing="6" Margin="0,0,0,16">
-            <Label Text="Cálculos salvos" FontSize="27" FontFamily="OpenSansSemibold" SemanticProperties.HeadingLevel="Level1" />
-            <Label Text="Formulários guardados neste aparelho. Abra para recalcular com as tabelas disponíveis." Style="{StaticResource TextoSecundario}" />
-            <Label x:Name="Aviso" IsVisible="False" />
-            <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
-                <Picker x:Name="Primeiro" Title="Primeiro cálculo" ItemDisplayBinding="{Binding Nome}" />
-                <Picker x:Name="Segundo" Grid.Column="1" Title="Segundo cálculo" ItemDisplayBinding="{Binding Nome}" />
-            </Grid>
-            <Button Text="Comparar selecionados" Clicked="Comparar" AutomationId="CompararHistorico" />
-        </VerticalStackLayout>
-        <CollectionView x:Name="Lista" Grid.Row="1" SelectionMode="None" EmptyView="Nenhum cálculo salvo ainda.">
-            <CollectionView.ItemTemplate>
-                <DataTemplate x:DataType="dto:CalculoSalvoDto">
-                    <Border Margin="0,0,0,12" Padding="16">
-                        <VerticalStackLayout Spacing="8">
-                            <Label Text="{Binding Nome}" FontSize="20" FontFamily="OpenSansSemibold" />
-                            <Label Text="{Binding Calculadora}" Style="{StaticResource TextoSecundario}" />
-                            <Label Text="{Binding AlteradoEm, StringFormat='Atualizado em {0:dd/MM/yyyy HH:mm}'}" Style="{StaticResource TextoSecundario}" />
-                            <Button Text="Abrir" Clicked="Abrir" AutomationId="AbrirHistorico" />
-                            <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
-                                <Button Text="Duplicar" Clicked="Duplicar" />
-                                <Button Grid.Column="1" Text="Renomear" Clicked="Renomear" />
-                            </Grid>
-                            <Button Text="Excluir" Clicked="Excluir" />
-                        </VerticalStackLayout>
-                    </Border>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
-    </Grid>
+    <!-- O cabeçalho rola com a lista: com busca, filtros e comparação, ele não pode tomar a tela de um celular pequeno. -->
+    <CollectionView x:Name="Lista" Margin="16,0" SelectionMode="None">
+        <CollectionView.Header>
+            <VerticalStackLayout Spacing="8" Padding="0,16,0,16">
+                <Label Text="Cálculos salvos" FontSize="27" FontFamily="OpenSansSemibold" SemanticProperties.HeadingLevel="Level1" />
+                <Label Text="Formulários guardados neste aparelho. Abra para recalcular com as tabelas disponíveis." Style="{StaticResource TextoSecundario}" />
+                <Border Style="{StaticResource CaixaCampo}">
+                    <Entry x:Name="Busca" Placeholder="Buscar pelo nome ou pela calculadora" Keyboard="Text" HorizontalTextAlignment="Start"
+                           ClearButtonVisibility="WhileEditing" TextChanged="Filtrar" AutomationId="BuscaHistorico"
+                           SemanticProperties.Description="Buscar no histórico pelo nome do cálculo ou da calculadora" />
+                </Border>
+                <Picker x:Name="Calculadora" Title="Calculadora" SelectedIndexChanged="Filtrar" AutomationId="FiltroCalculadoraHistorico"
+                        SemanticProperties.Description="Filtrar por calculadora" />
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                    <Picker x:Name="Periodo" Title="Período" SelectedIndexChanged="Filtrar" SemanticProperties.Description="Filtrar pela data da última alteração" />
+                    <Picker x:Name="Ordem" Grid.Column="1" Title="Ordem" SelectedIndexChanged="Filtrar" SemanticProperties.Description="Ordem da lista" />
+                </Grid>
+                <Label x:Name="Resumo" Style="{StaticResource TextoSecundario}" />
+                <Label x:Name="Aviso" IsVisible="False" />
+                <Label Text="Comparar dois cálculos" Style="{StaticResource TituloSecao}" Margin="0,8,0,0" />
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                    <Picker x:Name="Primeiro" Title="Primeiro cálculo" ItemDisplayBinding="{Binding Nome}" />
+                    <Picker x:Name="Segundo" Grid.Column="1" Title="Segundo cálculo" ItemDisplayBinding="{Binding Nome}" />
+                </Grid>
+                <Button Text="Comparar selecionados" Clicked="Comparar" AutomationId="CompararHistorico" />
+            </VerticalStackLayout>
+        </CollectionView.Header>
+        <CollectionView.EmptyView>
+            <Label x:Name="Vazio" Text="Nenhum cálculo salvo ainda." Margin="0,8" Style="{StaticResource TextoSecundario}" />
+        </CollectionView.EmptyView>
+        <CollectionView.ItemTemplate>
+            <DataTemplate x:DataType="dto:CalculoSalvoDto">
+                <Border Margin="0,0,0,12" Padding="16">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="{Binding Nome}" FontSize="20" FontFamily="OpenSansSemibold" />
+                        <Label Text="{Binding Calculadora}" Style="{StaticResource TextoSecundario}" />
+                        <Label Text="{Binding AlteradoEm, StringFormat='Atualizado em {0:dd/MM/yyyy HH:mm}'}" Style="{StaticResource TextoSecundario}" />
+                        <Button Text="Abrir" Clicked="Abrir" AutomationId="AbrirHistorico" />
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                            <Button Text="Duplicar" Clicked="Duplicar" />
+                            <Button Grid.Column="1" Text="Renomear" Clicked="Renomear" />
+                        </Grid>
+                        <Button Text="Excluir" Clicked="Excluir" />
+                    </VerticalStackLayout>
+                </Border>
+            </DataTemplate>
+        </CollectionView.ItemTemplate>
+    </CollectionView>
 </ContentPage>

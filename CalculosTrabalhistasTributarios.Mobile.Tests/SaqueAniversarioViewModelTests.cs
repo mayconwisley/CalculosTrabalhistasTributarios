@@ -146,9 +146,11 @@ public sealed class SaqueAniversarioViewModelTests
         servicos.AddSingleton<CalculosTrabalhistasTributarios.Application.Interfaces.IIndicesEconomicos>(new CalculosTrabalhistasTributarios.Infrastructure.Persistence.SqliteIndicesEconomicos(new CalculosTrabalhistasTributarios.Infrastructure.Persistence.BancoTributario("Data Source=:memory:")));
         servicos.AddSingleton<INavegacaoCalculadoras>(new NavegacaoDeTeste());
         servicos.AddSingleton<INavegacaoMenu>(new MenuDeTeste());
+        servicos.AddSingleton<IHistoricoCalculos>(new HistoricoDeTeste([]));
         servicos.AddSingleton<IPreferenciasMobile>(new PreferenciasDeTeste());
         servicos.AddSingleton<IPlataformaMobile>(new PlataformaDeTeste());
         servicos.AddSingleton<IAtualizarTodasTabelasUseCase>(new AtualizacaoDeTeste());
+        servicos.AddSingleton<IRegistroDeErros>(new RegistroDeTeste());
         using var provider = servicos.BuildServiceProvider(new ServiceProviderOptions { ValidateOnBuild = true, ValidateScopes = true });
         using var scope = provider.CreateScope();
         var primeiro = scope.ServiceProvider.GetRequiredService<SaqueAniversarioViewModel>();
@@ -177,10 +179,12 @@ public sealed class SaqueAniversarioViewModelTests
     {
         var preferencias = new PreferenciasDeTeste();
         var vm = new InicioViewModel(new NavegacaoDeTeste(), new MenuDeTeste(), preferencias, new PlataformaDeTeste(),
-            new SituacaoAtualizacaoTabelas(), NullLogger<InicioViewModel>.Instance);
+            new SituacaoAtualizacaoTabelas(), new HistoricoDeTeste([]), NullLogger<InicioViewModel>.Instance);
         Assert.Equal(50, vm.QuantidadeCalculadoras);
         Assert.Equal(16, vm.QuantidadeTabelas);
+        Assert.True(vm.ExibeBoasVindas);
         vm.Busca = "salario familia";
+        Assert.False(vm.ExibeBoasVindas);
         var calculadora = Assert.Single(vm.Grupos.SelectMany(grupo => grupo.Atalhos), atalho => atalho.Titulo == "Salário-família");
         Assert.Contains(vm.GruposTabelas.SelectMany(grupo => grupo.Atalhos), atalho => atalho.Titulo == "Salário-família");
         vm.AlternarFavoritoCommand.Execute(calculadora);
@@ -192,6 +196,56 @@ public sealed class SaqueAniversarioViewModelTests
         vm.LimparBuscaCommand.Execute(null);
         Assert.False(vm.SemResultado);
     }
+
+    [Fact]
+    public async Task Aviso_de_simulacao_aparece_so_na_primeira_abertura()
+    {
+        var preferencias = new PreferenciasDeTeste();
+        var plataforma = new PlataformaDeTeste();
+        var vm = new InicioViewModel(new NavegacaoDeTeste(), new MenuDeTeste(), preferencias, plataforma,
+            new SituacaoAtualizacaoTabelas(), new HistoricoDeTeste([]), NullLogger<InicioViewModel>.Instance);
+
+        await vm.MostrarAvisoDeSimulacaoAsync();
+        await vm.MostrarAvisoDeSimulacaoAsync();
+
+        Assert.True(preferencias.AvisoSimulacaoLido);
+        var aviso = Assert.Single(plataforma.Avisos);
+        Assert.Contains("simulações", aviso);
+        Assert.Contains("profissional especializado", aviso);
+    }
+
+    [Fact]
+    public async Task Boas_vindas_mostram_os_cinco_calculos_alterados_mais_recentemente_e_os_reabrem()
+    {
+        var hoje = DateTime.Today;
+        var salvos = Enumerable.Range(1, 7)
+            .Select(dia => new CalculoSalvoDto(dia, "Calculadora.Ferias", "Férias", $"Cálculo {dia}", "{}", hoje.AddDays(-dia), hoje.AddDays(-dia).AddHours(9)))
+            .ToList();
+        var menu = new MenuDeTeste();
+        var vm = new InicioViewModel(new NavegacaoDeTeste(), menu, new PreferenciasDeTeste(), new PlataformaDeTeste(),
+            new SituacaoAtualizacaoTabelas(), new HistoricoDeTeste(salvos), NullLogger<InicioViewModel>.Instance);
+        Assert.False(vm.SemRecentes);
+
+        await vm.AtualizarBoasVindasCommand.ExecuteAsync(null);
+
+        Assert.Equal(["Cálculo 1", "Cálculo 2", "Cálculo 3", "Cálculo 4", "Cálculo 5"], vm.Recentes.Select(recente => recente.Nome));
+        Assert.Equal("ontem às 09:00", vm.Recentes[0].Quando);
+        Assert.Contains("ainda não foram atualizadas", vm.SituacaoTabelas);
+        await vm.AbrirRecenteCommand.ExecuteAsync(vm.Recentes[1]);
+        Assert.Equal(2, menu.CalculoAberto?.Id);
+
+        var vazio = new InicioViewModel(new NavegacaoDeTeste(), menu, new PreferenciasDeTeste(), new PlataformaDeTeste(),
+            new SituacaoAtualizacaoTabelas(), new HistoricoDeTeste([]), NullLogger<InicioViewModel>.Instance);
+        await vazio.AtualizarBoasVindasCommand.ExecuteAsync(null);
+        Assert.True(vazio.SemRecentes);
+    }
+
+    [Theory]
+    [InlineData(0, "hoje às 14:30")]
+    [InlineData(1, "ontem às 14:30")]
+    [InlineData(2, "21/10/2026")]
+    public void Recente_descreve_a_alteracao_de_forma_curta(int diasAtras, string esperado) =>
+        Assert.Equal(esperado, CalculoRecenteMobile.Descrever(new DateTime(2026, 10, 23, 14, 30, 0).AddDays(-diasAtras), new DateTime(2026, 10, 23)));
 
     [Fact]
     public void Atualizacao_ao_abrir_respeita_preferencia_e_dia_da_ultima_consulta()
@@ -218,6 +272,24 @@ public sealed class SaqueAniversarioViewModelTests
         public Task AbrirTabelaAsync(TipoTabelaTributaria tabela) => Task.CompletedTask;
         public Task AbrirConfiguracoesAsync() => Task.CompletedTask;
         public Task VoltarAoInicioAsync() => Task.CompletedTask;
+        public Task AbrirHistoricoAsync() => Task.CompletedTask;
+        public Task AbrirManualAsync() => Task.CompletedTask;
+        public void AbrirMenu() { }
+        public CalculoSalvoDto? CalculoAberto { get; private set; }
+        public Task AbrirCalculoSalvoAsync(CalculoSalvoDto calculo)
+        {
+            CalculoAberto = calculo;
+            return Task.CompletedTask;
+        }
+    }
+    private sealed class HistoricoDeTeste(IReadOnlyList<CalculoSalvoDto> salvos) : IHistoricoCalculos
+    {
+        public Task<IReadOnlyList<CalculoSalvoDto>> ListarAsync(CancellationToken cancellationToken) => Task.FromResult(salvos);
+        public Task<CalculoSalvoDto?> ObterAsync(long id, CancellationToken cancellationToken) => Task.FromResult(salvos.FirstOrDefault(salvo => salvo.Id == id));
+        public Task<long> SalvarAsync(long? id, string tipo, string calculadora, string nome, string dados, CancellationToken cancellationToken) => throw new NotSupportedException();
+        public Task<Result<long>> DuplicarAsync(long id, CancellationToken cancellationToken) => throw new NotSupportedException();
+        public Task RenomearAsync(long id, string nome, CancellationToken cancellationToken) => throw new NotSupportedException();
+        public Task ExcluirAsync(long id, CancellationToken cancellationToken) => throw new NotSupportedException();
     }
     private sealed class PreferenciasDeTeste : IPreferenciasMobile
     {
@@ -231,14 +303,26 @@ public sealed class SaqueAniversarioViewModelTests
         public bool AtualizarTabelasAoAbrir { get; set; }
         public DateTime? HorarioAtualizacaoTabelas { get; set; }
         public TemaMobile Tema { get; set; }
+        public bool AvisoSimulacaoLido { get; set; }
     }
     private sealed class PlataformaDeTeste : IPlataformaMobile
     {
         public string Versao => "1.0";
-        public Task MostrarAsync(string titulo, string mensagem) => Task.CompletedTask;
+        public List<string> Avisos { get; } = [];
+        public Task MostrarAsync(string titulo, string mensagem)
+        {
+            Avisos.Add(mensagem);
+            return Task.CompletedTask;
+        }
         public Task<bool> ConfirmarAsync(string titulo, string mensagem, string aceitar, string cancelar) => Task.FromResult(true);
         public Task AbrirEnderecoAsync(Uri endereco) => Task.CompletedTask;
         public void AplicarTema(TemaMobile tema) { }
+        public Task CompartilharArquivoAsync(string titulo, string caminho) => Task.CompletedTask;
+    }
+    private sealed class RegistroDeTeste : IRegistroDeErros
+    {
+        public string Arquivo => "erros.log";
+        public void Registrar(Exception exception, string contexto) { }
     }
     private sealed class AtualizacaoDeTeste : IAtualizarTodasTabelasUseCase
     {

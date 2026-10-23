@@ -1,0 +1,25 @@
+{
+  "Campos": {
+    "periodo": "10/2026",
+    "receitaMes": "20.000,00",
+    "proLabore": "3.000,00",
+    "receitaMensal": "20.000,00",
+    "folhaMensal": "5.000,00"
+  },
+  "Grades": {
+    "meses": [
+      { "competencia": "10/2025", "receita": "20.000,00", "folha": "5.000,00" },
+      { "competencia": "11/2025", "receita": "20.000,00", "folha": "5.000,00" },
+      { "competencia": "12/2025", "receita": "20.000,00", "folha": "5.000,00" },
+      { "competencia": "01/2026", "receita": "20.000,00", "folha": "5.000,00" },
+      { "competencia": "02/2026", "receita": "20.000,00", "folha": "5.000,00" },
+      { "competencia": "03/2026", "receita": "20.000,00", "folha": "5.000,00" },
+      { "competencia": "04/2026", "receita": "20.000,00", "folha": "5.000,00" },
+      { "competencia": "05/2026", "receita": "20.000,00", "folha": "5.000,00" },
+      { "competencia": "06/2026", "receita": "20.000,00", "folha": "5.000,00" },
+      { "competencia": "07/2026", "receita": "20.000,00", "folha": "5.000,00" },
+      { "competencia": "08/2026", "receita": "20.000,00", "folha": "5.000,00" },
+      { "competencia": "09/2026", "receita": "20.000,00", "folha": "5.000,00" }
+    ]
+  }
+}

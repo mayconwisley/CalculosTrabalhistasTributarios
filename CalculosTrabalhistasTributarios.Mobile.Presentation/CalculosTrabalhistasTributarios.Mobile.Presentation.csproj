@@ -13,5 +13,9 @@
     <Compile Include="..\CalculosTrabalhistasTributarios\Presentation\ViewModels\LeituraDeHoras.cs" Link="Comum\LeituraDeHoras.cs" />
     <Compile Include="..\CalculosTrabalhistasTributarios\Presentation\ViewModels\Historico\ComparacaoResultados.cs" Link="Historico\ComparacaoResultados.cs" />
     <Compile Include="..\CalculosTrabalhistasTributarios\Presentation\ViewModels\Historico\LinhaResultadoComparadoViewModel.cs" Link="Historico\LinhaResultadoComparadoViewModel.cs" />
+    <Compile Include="..\CalculosTrabalhistasTributarios\Presentation\SecoesDoManual.cs" Link="Ajuda\SecoesDoManual.cs" />
+    <EmbeddedResource Include="Exemplos\*.json" LogicalName="Exemplos.%(Filename)%(Extension)" />
+    <!-- A ajuda de cada calculadora mostra a seção do manual dentro do aplicativo. -->
+    <EmbeddedResource Include="..\docs\MANUAL.md" LogicalName="Manual.MANUAL.md" />
   </ItemGroup>
 </Project>

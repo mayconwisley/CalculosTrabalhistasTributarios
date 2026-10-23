@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:CalculosTrabalhistasTributarios.Mobile.Presentation.Abertura;assembly=CalculosTrabalhistasTributarios.Mobile.Presentation"
-             x:Class="CalculosTrabalhistasTributarios.Mobile.Features.Abertura.AberturaPage" x:DataType="vm:AtualizacaoTabelasViewModel" Title="Abertura" NavigationPage.HasNavigationBar="False">
+             xmlns:views="clr-namespace:CalculosTrabalhistasTributarios.Mobile.Views" x:Class="CalculosTrabalhistasTributarios.Mobile.Features.Abertura.AberturaPage" x:DataType="vm:AtualizacaoTabelasViewModel" Title="Abertura" NavigationPage.HasNavigationBar="False">
     <Grid Padding="24" RowDefinitions="*,Auto,*"><VerticalStackLayout Grid.Row="1" Spacing="20" HorizontalOptions="Center" MaximumWidthRequest="500">
-        <Image Source="calculadora.png" HeightRequest="90" WidthRequest="90" SemanticProperties.Description="Cálculos Trabalhistas e Tributários" />
+        <views:Logotipo HeightRequest="96" WidthRequest="96" />
         <Label Text="Cálculos Trabalhistas e Tributários" FontSize="25" FontFamily="OpenSansSemibold" HorizontalTextAlignment="Center" SemanticProperties.HeadingLevel="Level1" />
         <Label Text="{Binding Mensagem}" HorizontalTextAlignment="Center" />
         <ActivityIndicator IsRunning="{Binding Indeterminado}" IsVisible="{Binding Indeterminado}" />

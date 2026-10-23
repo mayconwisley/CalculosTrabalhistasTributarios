@@ -1,0 +1,11 @@
+{
+  "Campos": {
+    "competencia": "10/2026"
+  },
+  "Grades": {
+    "vinculos": [
+      { "categoria": 0, "remuneracao": "4.500,00", "identificacao": "Empresa A" },
+      { "categoria": 0, "remuneracao": "3.000,00", "identificacao": "Empresa B" }
+    ]
+  }
+}

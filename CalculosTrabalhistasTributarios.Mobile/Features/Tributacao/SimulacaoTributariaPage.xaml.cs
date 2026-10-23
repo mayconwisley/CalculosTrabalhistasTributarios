@@ -1,3 +1,4 @@
+using CalculosTrabalhistasTributarios.Mobile.Features.Ajuda;
 using CalculosTrabalhistasTributarios.Mobile.Presentation.Tributacao;
 using CalculosTrabalhistasTributarios.Mobile.Presentation.Inicio;
 using CalculosTrabalhistasTributarios.Mobile.Services;
@@ -12,7 +13,10 @@ public partial class SimulacaoTributariaPage : ContentPage
         InitializeComponent();
         BindingContext = _viewModel = viewModel;
         ToolbarItems.Add(new ToolbarItem("Salvar", null, async () => await historico.SalvarAsync(TipoCalculadoraMobile.SimulacaoTributaria, _viewModel)));
-        ToolbarItems.Add(new ToolbarItem("Ajuda", null, async () => await manual.AbrirAsync()));
+        ToolbarItems.Add(new ToolbarItem("Ajuda", null, async () => await Navigation.PushAsync(new AjudaPage(TipoCalculadoraMobile.SimulacaoTributaria, "Simulação tributária", manual))));
+        // No menu de opções da barra, como o botão "Preencher exemplo" do desktop.
+        ToolbarItems.Add(new ToolbarItem { Text = "Preencher exemplo", Order = ToolbarItemOrder.Secondary,
+            Command = new Command(async () => await historico.PreencherExemploAsync(TipoCalculadoraMobile.SimulacaoTributaria, _viewModel)) });
     }
     protected override void OnDisappearing()
     {

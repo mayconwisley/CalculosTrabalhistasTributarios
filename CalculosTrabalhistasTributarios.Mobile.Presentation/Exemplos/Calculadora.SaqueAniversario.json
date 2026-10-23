@@ -1,0 +1,12 @@
+{
+  "Campos": {
+    "Saldo": "18.000,00",
+    "SaldoIncluiGarantia": true,
+    "GarantiaBloqueada": "10.000,00",
+    "IndiceMes": 3,
+    "DataAnalise": "07/10/2026",
+    "IndiceCarencia": 1,
+    "IndiceContratoNovo": 1,
+    "IndiceProximoCedido": 1
+  }
+}

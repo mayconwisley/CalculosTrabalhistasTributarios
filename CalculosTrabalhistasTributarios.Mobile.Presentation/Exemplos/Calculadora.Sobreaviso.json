@@ -1,0 +1,17 @@
+{
+  "Campos": {
+    "inicio": "07/2026",
+    "fim": "10/2026",
+    "salarioMensal": "3.300,00",
+    "sobreavisoMensal": "40:00",
+    "prontidaoMensal": "6:00"
+  },
+  "Grades": {
+    "meses": [
+      { "competencia": "07/2026", "salario": "3.300,00", "sobreaviso": "40:00", "prontidao": "6:00", "feriados": "0" },
+      { "competencia": "08/2026", "salario": "3.300,00", "sobreaviso": "40:00", "prontidao": "6:00", "feriados": "0" },
+      { "competencia": "09/2026", "salario": "3.300,00", "sobreaviso": "40:00", "prontidao": "6:00", "feriados": "1" },
+      { "competencia": "10/2026", "salario": "3.300,00", "sobreaviso": "40:00", "prontidao": "6:00", "feriados": "1" }
+    ]
+  }
+}

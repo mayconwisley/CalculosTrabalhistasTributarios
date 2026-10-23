@@ -1,21 +1,23 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
-    <Color x:Key="FundoClaro">#F3F6FA</Color>
-    <Color x:Key="FundoEscuro">#0D1721</Color>
+    <!-- Mesma paleta do ThemeManager do WPF, nos temas claro e escuro. -->
+    <Color x:Key="FundoClaro">#F8FAFC</Color>
+    <Color x:Key="FundoEscuro">#101828</Color>
     <Color x:Key="CartaoClaro">#FFFFFF</Color>
-    <Color x:Key="CartaoEscuro">#172635</Color>
-    <Color x:Key="TextoClaro">#183247</Color>
-    <Color x:Key="TextoEscuro">#EFF6FC</Color>
-    <Color x:Key="SecundarioClaro">#526779</Color>
-    <Color x:Key="SecundarioEscuro">#B3C5D5</Color>
-    <Color x:Key="BordaClara">#DCE6EF</Color>
-    <Color x:Key="BordaEscura">#304658</Color>
-    <Color x:Key="Primaria">#125D6B</Color>
-    <Color x:Key="PrimariaProfunda">#163A55</Color>
-    <Color x:Key="AcentoClaro">#E5F4F2</Color>
-    <Color x:Key="AcentoEscuro">#183C42</Color>
-    <Color x:Key="TextoAcentoClaro">#0C5D57</Color>
-    <Color x:Key="TextoAcentoEscuro">#A4E9DC</Color>
-    <Color x:Key="ErroClaro">#A21D32</Color>
-    <Color x:Key="ErroEscuro">#FFB4AB</Color>
+    <Color x:Key="CartaoEscuro">#182230</Color>
+    <Color x:Key="TextoClaro">#101828</Color>
+    <Color x:Key="TextoEscuro">#F9FAFB</Color>
+    <Color x:Key="SecundarioClaro">#5D6679</Color>
+    <Color x:Key="SecundarioEscuro">#A4ADBC</Color>
+    <Color x:Key="BordaClara">#E2E8F0</Color>
+    <Color x:Key="BordaEscura">#344054</Color>
+    <Color x:Key="Primaria">#175CD3</Color>
+    <Color x:Key="PrimariaEscura">#1570EF</Color>
+    <Color x:Key="PrimariaProfunda">#1849A9</Color>
+    <Color x:Key="AcentoClaro">#DBEAFE</Color>
+    <Color x:Key="AcentoEscuro">#1E3A5F</Color>
+    <Color x:Key="TextoAcentoClaro">#175CD3</Color>
+    <Color x:Key="TextoAcentoEscuro">#53B1FD</Color>
+    <Color x:Key="ErroClaro">#B42318</Color>
+    <Color x:Key="ErroEscuro">#FDA29B</Color>
 </ResourceDictionary>

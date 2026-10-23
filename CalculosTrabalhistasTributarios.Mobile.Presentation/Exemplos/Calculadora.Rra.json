@@ -1,0 +1,21 @@
+{
+  "Campos": {
+    "dataPagamento": "20/05/2026",
+    "inicioParcelas": "12/2025",
+    "fimParcelas": "02/2026",
+    "valorMensal": "4.000,00",
+    "correcao": "1.000,00",
+    "juros": "2.000,00",
+    "despesas": "1.900,00",
+    "outrosRendimentos": "5.000,00",
+    "inssOutros": "500,00"
+  },
+  "Grades": {
+    "parcelas": [
+      { "tipo": 0, "competencia": "12/2025", "valor": "4.000,00" },
+      { "tipo": 0, "competencia": "01/2026", "valor": "4.000,00" },
+      { "tipo": 0, "competencia": "02/2026", "valor": "4.000,00" },
+      { "tipo": 1, "competencia": "12/2025", "valor": "4.000,00" }
+    ]
+  }
+}
