@@ -42,11 +42,12 @@ $codigoVersao = [int]$Matches[1] * 10000 + [int]$Matches[2] * 100 + [int]$Matche
 $versaoExibida = ($Versao -split '-')[0]
 
 $assinatura = @()
-$chave = $env:CALCULADORA_ANDROID_KEYSTORE
+# Espaços nas pontas aparecem facilmente ao colar o caminho na janela de variáveis do Windows.
+$chave = "$env:CALCULADORA_ANDROID_KEYSTORE".Trim()
 if ($chave -and $env:CALCULADORA_ANDROID_ALIAS -and $env:CALCULADORA_ANDROID_SENHA) {
     if (-not (Test-Path $chave)) { throw "A chave de publicação do Android não foi encontrada em $chave (CALCULADORA_ANDROID_KEYSTORE)." }
     # As senhas seguem pelo prefixo env: e não aparecem na linha de comando nem no log.
-    $assinatura = @('-p:AndroidKeyStore=true', "-p:AndroidSigningKeyStore=$chave", "-p:AndroidSigningKeyAlias=$($env:CALCULADORA_ANDROID_ALIAS)",
+    $assinatura = @('-p:AndroidKeyStore=true', "-p:AndroidSigningKeyStore=$chave", "-p:AndroidSigningKeyAlias=$($env:CALCULADORA_ANDROID_ALIAS.Trim())",
         '-p:AndroidSigningStorePass=env:CALCULADORA_ANDROID_SENHA', '-p:AndroidSigningKeyPass=env:CALCULADORA_ANDROID_SENHA')
 }
 elseif ($PermitirChaveDeDepuracao) {
