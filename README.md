@@ -32,7 +32,7 @@
 
 ### Versão móvel em desenvolvimento
 
-A solução [CalculosTrabalhistasTributarios.Mobile.sln](CalculosTrabalhistasTributarios.Mobile.sln) contém a base Android em .NET MAUI 10, com apresentação MVVM testável e reutilização de Domain e Application. A primeira tela é o saque-aniversário do FGTS, executado offline, com cartões adaptados ao celular e compartilhamento de PDF pelo menu nativo (WhatsApp, e-mail e outros aplicativos). O móvel oferece somente PDF, sem Excel. Histórico, atualização de tabelas e demais calculadoras ainda não foram portados.
+A solução [CalculosTrabalhistasTributarios.Mobile.sln](CalculosTrabalhistasTributarios.Mobile.sln) contém a base Android em .NET MAUI 10, com apresentação MVVM testável e reutilização de Domain e Application. A tela inicial organiza as calculadoras por grupos do WPF. Estão disponíveis a simulação tributária (INSS, IRRF e FGTS por competência) e o saque-aniversário do FGTS, ambos offline, com memória e compartilhamento de PDF pelo menu nativo (WhatsApp, e-mail e outros aplicativos). O móvel oferece somente PDF, sem Excel. O SQLite e suas sementes são compartilhados com o desktop, com banco privado no Android. Histórico, atualização online de tabelas e demais calculadoras ainda não foram portados.
 
 A solução principal `CalculosTrabalhistasTributarios.sln` inclui os projetos WPF e MAUI no mesmo Solution Explorer. Para trabalhar apenas no desktop sem exigir o SDK Android, use o filtro `CalculosTrabalhistasTributarios.Desktop.slnf`. A solução `CalculosTrabalhistasTributarios.Mobile.sln` permite abrir somente a parte móvel. Consulte [docs/MAUI.md](docs/MAUI.md) para requisitos, comandos e regras de extensão.
 
@@ -205,10 +205,12 @@ CalculosTrabalhistasTributarios.Application/     Casos de uso: orquestram o dom�
 ├── DTOs/              Pedidos e resultados que atravessam as camadas
 └── Extensoes/, Mapeamentos/
 CalculosTrabalhistasTributarios.Infrastructure/  Adaptadores das portas
-├── Interfaces/        Contratos internos (fontes das tabelas, cache, inicialização do banco)
-├── Persistence/       SQLite; em Inicializacao/, esquema, correções e carga das tabelas oficiais
+├── Interfaces/        Contratos das fontes e atualizações
 ├── Reporting/         PDF (QuestPDF) e Excel (ClosedXML), uma classe por relatório
 └── Tributacao/        Atualização das tabelas pela internet
+CalculosTrabalhistasTributarios.Infrastructure.Local/ SQLite compartilhado entre WPF e Android
+├── Persistence/       Consultas, histórico e, em Inicializacao/, esquema e sementes
+└── Interfaces/        Cache e inicialização; namespaces preservados por compatibilidade
 CalculosTrabalhistasTributarios/                 Aplicativo WPF (MVVM)
 ├── Presentation/      Interfaces/, ViewModels, serviços WPF, comportamentos e tema
 ├── Views/             Janelas em XAML

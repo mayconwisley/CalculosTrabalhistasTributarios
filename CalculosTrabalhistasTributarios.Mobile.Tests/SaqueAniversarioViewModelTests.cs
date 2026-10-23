@@ -113,9 +113,12 @@ public sealed class SaqueAniversarioViewModelTests
     [Fact]
     public void Composicao_valida_escopos_e_cria_formularios_independentes()
     {
-        var servicos = new ServiceCollection().AddSaqueAniversario().AddPresentation();
+        var servicos = new ServiceCollection().AddSaqueAniversario().AddSimulacaoTributaria().AddPresentation();
         servicos.AddSingleton<ICompartilhamentoPdf, CompartilhamentoDeTeste>();
         servicos.AddSingleton<ILogger<SaqueAniversarioViewModel>>(NullLogger<SaqueAniversarioViewModel>.Instance);
+        servicos.AddSingleton(typeof(ILogger<>), typeof(NullLogger<>));
+        servicos.AddSingleton<ITributacaoConsulta>(new CalculosTrabalhistasTributarios.Infrastructure.Persistence.SqliteTributacaoConsulta(new CalculosTrabalhistasTributarios.Infrastructure.Persistence.BancoTributario("Data Source=:memory:")));
+        servicos.AddSingleton<INavegacaoCalculadoras>(new NavegacaoDeTeste());
         using var provider = servicos.BuildServiceProvider(new ServiceProviderOptions { ValidateOnBuild = true, ValidateScopes = true });
         using var scope = provider.CreateScope();
         var primeiro = scope.ServiceProvider.GetRequiredService<SaqueAniversarioViewModel>();
@@ -133,6 +136,10 @@ public sealed class SaqueAniversarioViewModelTests
         new(simular ?? new SimularSaqueAniversarioUseCase(), NullLogger<SaqueAniversarioViewModel>.Instance, new CompartilhamentoDeTeste())
         { Saldo = "8.000,00", IndiceMes = 3 };
 
+    private sealed class NavegacaoDeTeste : INavegacaoCalculadoras
+    {
+        public Task AbrirAsync(CalculosTrabalhistasTributarios.Mobile.Presentation.Inicio.TipoCalculadoraMobile calculadora) => Task.CompletedTask;
+    }
     private sealed class CompartilhamentoDeTeste : ICompartilhamentoPdf
     {
         public Task CompartilharAsync(DemonstrativoDto demonstrativo, CancellationToken cancellationToken) => Task.CompletedTask;

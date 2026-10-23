@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:CalculosTrabalhistasTributarios.Mobile.Presentation.Tributacao;assembly=CalculosTrabalhistasTributarios.Mobile.Presentation"
+             xmlns:views="clr-namespace:CalculosTrabalhistasTributarios.Mobile.Views"
+             xmlns:comportamentos="clr-namespace:CalculosTrabalhistasTributarios.Mobile.Comportamentos"
+             x:Class="CalculosTrabalhistasTributarios.Mobile.Features.Tributacao.SimulacaoTributariaPage" x:DataType="vm:SimulacaoTributariaViewModel" Title="Simulação tributária">
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="20" MaximumWidthRequest="640">
+            <Label Text="Do bruto ao líquido" FontSize="30" FontFamily="OpenSansSemibold" SemanticProperties.HeadingLevel="Level1" />
+            <Label Text="INSS, IRRF e FGTS com as mesmas regras do aplicativo Windows." Style="{StaticResource TextoSecundario}" FontSize="14" />
+            <Border>
+                <VerticalStackLayout Spacing="12">
+                    <VerticalStackLayout.Triggers>
+                        <DataTrigger TargetType="VerticalStackLayout" Binding="{Binding Ocupado}" Value="True"><Setter Property="IsEnabled" Value="False" /></DataTrigger>
+                    </VerticalStackLayout.Triggers>
+                    <Label Text="Competência e vínculo" Style="{StaticResource TituloSecao}" />
+                    <Label Text="Competência (MM/yyyy)" Style="{StaticResource RotuloCampo}" />
+                    <Border Style="{StaticResource CaixaCampo}"><Entry Text="{Binding Competencia}" Keyboard="Text" MaxLength="7" FontSize="18" HorizontalTextAlignment="Start" AutomationId="Competencia" SemanticProperties.Description="Competência no formato mês e ano" /></Border>
+                    <Label Text="As tabelas seguem a competência informada. Nesta etapa, são atualizadas junto com as versões do aplicativo; não há consulta online." Style="{StaticResource TextoSecundario}" />
+                    <Label Text="Tipo de vínculo" Style="{StaticResource RotuloCampo}" />
+                    <Border Style="{StaticResource CaixaCampo}"><Picker ItemsSource="{Binding Vinculos}" SelectedIndex="{Binding IndiceVinculo}" Title="Selecione o vínculo" AutomationId="Vinculo" SemanticProperties.Description="Tipo de vínculo" /></Border>
+                    <Label Text="Valor bruto (R$)" Style="{StaticResource RotuloCampo}" />
+                    <Border Style="{StaticResource CaixaCampo}"><Entry Text="{Binding ValorBruto}" AutomationId="ValorBruto" SemanticProperties.Description="Rendimento bruto em reais"><Entry.Behaviors><comportamentos:EntradaMonetariaBehavior /></Entry.Behaviors></Entry></Border>
+                    <Label Text="Dependentes para IRRF" Style="{StaticResource RotuloCampo}" />
+                    <Border Style="{StaticResource CaixaCampo}"><Entry Text="{Binding Dependentes}" FontSize="18" MaxLength="3" AutomationId="Dependentes" SemanticProperties.Description="Quantidade de dependentes para IRRF" /></Border>
+                    <Label Text="Base de INSS e FGTS" Style="{StaticResource RotuloCampo}" />
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                        <Grid.Triggers><DataTrigger TargetType="Grid" Binding="{Binding EhAposentadoria}" Value="True"><Setter Property="IsVisible" Value="False" /></DataTrigger></Grid.Triggers>
+                        <Label Text="Usar o valor bruto como base" VerticalOptions="Center" />
+                        <Switch Grid.Column="1" IsToggled="{Binding UsarBrutoComoBase}" SemanticProperties.Description="Usar o valor bruto como base de INSS e FGTS" />
+                    </Grid>
+                    <VerticalStackLayout IsVisible="{Binding ExibirBaseInss}" Spacing="6">
+                        <Border Style="{StaticResource CaixaCampo}"><Entry Text="{Binding BaseInss}" AutomationId="BaseInss" SemanticProperties.Description="Base de INSS e FGTS em reais"><Entry.Behaviors><comportamentos:EntradaMonetariaBehavior /></Entry.Behaviors></Entry></Border>
+                        <Label Text="O INSS aplica o teto; o FGTS usa a base informada sem teto." Style="{StaticResource TextoSecundario}" />
+                    </VerticalStackLayout>
+                    <VerticalStackLayout IsVisible="{Binding EhAposentadoria}" Spacing="8">
+                        <Label Text="Aposentadoria e pensão não têm desconto de INSS nem depósito de FGTS nesta simulação." Style="{StaticResource TextoSecundario}" />
+                        <Grid ColumnDefinitions="*,Auto"><Label Text="65 anos ou mais na competência" VerticalOptions="Center" /><Switch Grid.Column="1" IsToggled="{Binding SessentaECincoAnos}" SemanticProperties.Description="Beneficiário com 65 anos ou mais na competência" /></Grid>
+                        <Grid ColumnDefinitions="*,Auto"><Label Text="Este rendimento é o 13º do benefício" VerticalOptions="Center" /><Switch Grid.Column="1" IsToggled="{Binding DecimoTerceiro}" SemanticProperties.Description="Rendimento corresponde ao décimo terceiro do benefício" /></Grid>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+            <Label Text="{Binding Mensagem}" IsVisible="{Binding TemMensagem}" TextColor="{AppThemeBinding Light={StaticResource ErroClaro}, Dark={StaticResource ErroEscuro}}" />
+            <Button Text="Calcular salário e impostos" Command="{Binding CalcularCommand}" AutomationId="CalcularTributaria" />
+            <ActivityIndicator IsVisible="{Binding Ocupado}" IsRunning="{Binding Ocupado}" />
+            <views:ResultadoSimulacaoView Demonstrativo="{Binding Demonstrativo}" CompartilharPdfCommand="{Binding CompartilharPdfCommand}" />
+            <Label Text="Simulação com valores estimados. FGTS e encargos do empregador são informativos e não reduzem automaticamente o líquido. Procure um profissional especializado para conferir os valores." Style="{StaticResource TextoSecundario}" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

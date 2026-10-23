@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:local="clr-namespace:CalculosTrabalhistasTributarios.Mobile.Views" xmlns:dto="clr-namespace:CalculosTrabalhistasTributarios.Application.DTOs;assembly=CalculosTrabalhistasTributarios.Application" x:Class="CalculosTrabalhistasTributarios.Mobile.Views.ResultadoSimulacaoView" x:Name="Root" x:DataType="local:ResultadoSimulacaoView">
+    <Grid BindingContext="{Binding Source={x:Reference Root}}">
+        <VerticalStackLayout Spacing="18" IsVisible="{Binding TemResultado}">
+            <Border StrokeThickness="0" Padding="24">
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                        <GradientStop Color="{StaticResource PrimariaProfunda}" Offset="0" />
+                        <GradientStop Color="{StaticResource Primaria}" Offset="1" />
+                    </LinearGradientBrush>
+                </Border.Background>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="SEU RESULTADO" TextColor="White" FontSize="11" FontFamily="OpenSansSemibold" />
+                    <Label Text="{Binding Demonstrativo.RotuloResultado}" TextColor="White" FontSize="16" />
+                    <Label Text="{Binding ResultadoFormatado}" TextColor="White" FontSize="36" FontFamily="OpenSansSemibold" SemanticProperties.HeadingLevel="Level2" />
+                    <Label Text="{Binding Demonstrativo.Referencia}" TextColor="White" FontSize="12" />
+                </VerticalStackLayout>
+            </Border>
+            <Button Text="Compartilhar PDF" Command="{Binding CompartilharPdfCommand}" AutomationId="CompartilharPdf" SemanticProperties.Description="Gerar PDF e escolher aplicativo para compartilhar" />
+            <Label Text="Escolha WhatsApp, e-mail ou outro aplicativo instalado. O documento inclui a memória e as premissas da simulação." Style="{StaticResource TextoSecundario}" />
+            <VerticalStackLayout Spacing="10" BindableLayout.ItemsSource="{Binding Demonstrativo.Destaques}">
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate x:DataType="dto:DestaqueDto">
+                        <Border Padding="18">
+                            <VerticalStackLayout Spacing="4">
+                                <Label Text="{Binding Rotulo}" Style="{StaticResource TextoSecundario}" />
+                                <Label Text="{Binding Valor}" FontSize="21" FontFamily="OpenSansSemibold" />
+                                <Label Text="{Binding Complemento}" Style="{StaticResource TextoSecundario}" />
+                            </VerticalStackLayout>
+                        </Border>
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+            </VerticalStackLayout>
+            <Border Padding="18,10">
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                    <Label Text="Demonstrativo e memória" Style="{StaticResource RotuloCampo}" VerticalOptions="Center" />
+                    <Switch Grid.Column="1" IsToggled="{Binding ExibirDetalhes}" AutomationId="ExibirDetalhes" SemanticProperties.Description="Mostrar demonstrativo e memória de cálculo" />
+                </Grid>
+            </Border>
+            <Border IsVisible="{Binding ExibirDetalhes}">
+                <VerticalStackLayout Spacing="16">
+                    <VerticalStackLayout IsVisible="{Binding TemComparativo}" Spacing="10">
+                        <Label Text="{Binding Demonstrativo.Comparativo.Titulo}" Style="{StaticResource TituloSecao}" />
+                        <Label Text="{Binding ComparativoTexto}" />
+                    </VerticalStackLayout>
+                    <Label Text="{Binding Demonstrativo.RotuloProventos}" FontAttributes="Bold" />
+                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding Demonstrativo.Proventos}">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="dto:VerbaDto">
+                                <VerticalStackLayout Spacing="3" Padding="0,4">
+                                    <Label Text="{Binding Descricao}" />
+                                    <Label Text="{Binding Referencia}" />
+                                    <Label Text="{Binding Valor, StringFormat='R$ {0:N2}'}" FontAttributes="Bold" />
+                                </VerticalStackLayout>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+                    <Label Text="Descontos" FontAttributes="Bold" />
+                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding Demonstrativo.Descontos}" BindableLayout.EmptyView="Sem descontos informados.">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="dto:VerbaDto">
+                                <VerticalStackLayout Spacing="3">
+                                    <Label Text="{Binding Descricao}" />
+                                    <Label Text="{Binding Referencia}" />
+                                    <Label Text="{Binding Valor, StringFormat='R$ {0:N2}'}" />
+                                </VerticalStackLayout>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+                    <Label Text="{Binding Demonstrativo.RotuloResultado}" FontAttributes="Bold" />
+                    <Label Text="{Binding Demonstrativo.Resultado, StringFormat='R$ {0:N2}'}" FontSize="24" FontAttributes="Bold" />
+                    <Label Text="Memória de cálculo" FontSize="20" FontAttributes="Bold" SemanticProperties.HeadingLevel="Level2" />
+                    <VerticalStackLayout Spacing="14" BindableLayout.ItemsSource="{Binding Demonstrativo.Memoria}">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="dto:GrupoMemoriaDto">
+                                <VerticalStackLayout Spacing="6">
+                                    <Label Text="{Binding Titulo}" FontAttributes="Bold" />
+                                    <Label Text="{Binding Destaque}" />
+                                    <VerticalStackLayout Spacing="12" BindableLayout.ItemsSource="{Binding Quadro.Faixas}">
+                                        <BindableLayout.ItemTemplate>
+                                            <DataTemplate x:DataType="dto:FaixaMemoriaDto">
+                                                <VerticalStackLayout Spacing="3">
+                                                    <Label Text="{Binding Numero, StringFormat='Faixa {0}'}" FontAttributes="Bold" />
+                                                    <Label Text="{Binding De, StringFormat='De: R$ {0:N2}'}" />
+                                                    <Label Text="{Binding Ate, StringFormat='Até: R$ {0:N2}', TargetNullValue='Até: sem limite'}" />
+                                                    <Label Text="{Binding ParteDaBase, StringFormat='Base nesta faixa: R$ {0:N2}'}" />
+                                                    <Label Text="{Binding Aliquota, StringFormat='Alíquota: {0:0.##}%'}" />
+                                                    <Label Text="{Binding ValorExato, StringFormat='Valor exato: R$ {0:0.00####}'}" />
+                                                    <Label Text="{Binding Valor, StringFormat='Considerado: R$ {0:0.00####}'}" />
+                                                </VerticalStackLayout>
+                                            </DataTemplate>
+                                        </BindableLayout.ItemTemplate>
+                                    </VerticalStackLayout>
+                                    <VerticalStackLayout Spacing="8" BindableLayout.ItemsSource="{Binding Formulas}">
+                                        <BindableLayout.ItemTemplate>
+                                            <DataTemplate x:DataType="dto:FormulaDto">
+                                                <VerticalStackLayout Spacing="2">
+                                                    <Label Text="{Binding Titulo}" FontAttributes="Bold" />
+                                                    <Label Text="{Binding Formula}" />
+                                                </VerticalStackLayout>
+                                            </DataTemplate>
+                                        </BindableLayout.ItemTemplate>
+                                    </VerticalStackLayout>
+                                </VerticalStackLayout>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+                    <Label Text="Premissas e limites" FontSize="20" FontAttributes="Bold" SemanticProperties.HeadingLevel="Level2" />
+                    <VerticalStackLayout Spacing="10" BindableLayout.ItemsSource="{Binding Demonstrativo.Observacoes}">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="x:String">
+                                <Label Text="{Binding .}" />
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+        </VerticalStackLayout>
+    </Grid>
+</ContentView>

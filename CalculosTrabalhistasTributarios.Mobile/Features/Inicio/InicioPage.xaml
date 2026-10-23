@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:CalculosTrabalhistasTributarios.Mobile.Presentation.Inicio;assembly=CalculosTrabalhistasTributarios.Mobile.Presentation"
+             x:Class="CalculosTrabalhistasTributarios.Mobile.Features.Inicio.InicioPage" x:DataType="vm:InicioViewModel" Title="Calculadoras">
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="20" MaximumWidthRequest="640">
+            <Label Text="Seus cálculos,&#10;em qualquer lugar." FontSize="30" FontFamily="OpenSansSemibold" SemanticProperties.HeadingLevel="Level1" />
+            <Label Text="Simulações locais, memória de cálculo e PDF para compartilhar." Style="{StaticResource TextoSecundario}" FontSize="14" />
+            <Label Text="Impostos e salário" Style="{StaticResource TituloSecao}" SemanticProperties.HeadingLevel="Level2" />
+            <Border>
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Simulação tributária" Style="{StaticResource TituloSecao}" />
+                    <Label Text="INSS por faixas, IRRF nas duas modalidades, salário líquido e FGTS por competência." />
+                    <Button Text="Simular impostos e salário" Command="{Binding AbrirTributariaCommand}" AutomationId="AbrirTributaria" />
+                </VerticalStackLayout>
+            </Border>
+            <Label Text="FGTS, afastamentos e benefícios" Style="{StaticResource TituloSecao}" SemanticProperties.HeadingLevel="Level2" />
+            <Border>
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Saque-aniversário do FGTS" Style="{StaticResource TituloSecao}" />
+                    <Label Text="Valor do saque anual, saldo restante e parcela comprometida com o banco." />
+                    <Button Text="Simular saque-aniversário" Command="{Binding AbrirSaqueAniversarioCommand}" AutomationId="AbrirSaque" />
+                </VerticalStackLayout>
+            </Border>
+            <Label Text="{Binding Mensagem}" TextColor="{AppThemeBinding Light={StaticResource ErroClaro}, Dark={StaticResource ErroEscuro}}" />
+            <Label Text="Valores estimados. Procure um profissional especializado para conferir os valores aplicáveis ao seu caso." Style="{StaticResource TextoSecundario}" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

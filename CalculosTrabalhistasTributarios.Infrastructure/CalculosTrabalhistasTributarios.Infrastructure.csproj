@@ -15,6 +15,7 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" VersionOverride="10.0.13" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CalculosTrabalhistasTributarios.Infrastructure.Local\CalculosTrabalhistasTributarios.Infrastructure.Local.csproj" />
     <ProjectReference Include="..\CalculosTrabalhistasTributarios.Application\CalculosTrabalhistasTributarios.Application.csproj" />
   </ItemGroup>
 </Project>

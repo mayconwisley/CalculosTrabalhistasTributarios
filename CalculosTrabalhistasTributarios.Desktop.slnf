@@ -6,6 +6,7 @@
       "CalculosTrabalhistasTributarios.Application\\CalculosTrabalhistasTributarios.Application.csproj",
       "CalculosTrabalhistasTributarios.Domain\\CalculosTrabalhistasTributarios.Domain.csproj",
       "CalculosTrabalhistasTributarios.Infrastructure\\CalculosTrabalhistasTributarios.Infrastructure.csproj",
+      "CalculosTrabalhistasTributarios.Infrastructure.Local\\CalculosTrabalhistasTributarios.Infrastructure.Local.csproj",
       "CalculosTrabalhistasTributarios.Tests\\CalculosTrabalhistasTributarios.Tests.csproj"
     ]
   }

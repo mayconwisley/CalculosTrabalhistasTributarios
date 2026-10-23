@@ -13,5 +13,7 @@
     <PackageReference Include="xunit.runner.visualstudio" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
     <ProjectReference Include="..\CalculosTrabalhistasTributarios.Mobile.Presentation\CalculosTrabalhistasTributarios.Mobile.Presentation.csproj" />
+    <ProjectReference Include="..\CalculosTrabalhistasTributarios.Infrastructure.Local\CalculosTrabalhistasTributarios.Infrastructure.Local.csproj" />
+    <None Include="..\CalculosTrabalhistasTributarios\BancoDados\calculoIrrf.db" Link="BancoDados\base.db" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

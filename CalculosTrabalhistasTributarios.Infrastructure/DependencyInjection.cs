@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using CalculosTrabalhistasTributarios.Infrastructure.Local;
 
 namespace CalculosTrabalhistasTributarios.Infrastructure;
 
@@ -21,12 +22,9 @@ public static class DependencyInjection
 
     // As fontes de cada tabela aparecem nas mensagens ao usuário na ordem em que estão registradas.
     public static IServiceCollection AddInfrastructure(this IServiceCollection services) => services
-        .AddSingleton(new BancoTributario($"Data Source={CaminhoBanco}"))
+        .AddInfrastructureLocal(CaminhoBanco)
         .AddSingleton<Func<HttpClient>>(static () => CriarHttpClient())
         .AddSingleton<IConsultaCotacoesTrabalhoExterior, ConsultaCotacoesTrabalhoExterior>()
-        .AddSingleton<SqliteTributacaoConsulta>()
-        .AddSingleton<ITributacaoConsulta>(provider => provider.GetRequiredService<SqliteTributacaoConsulta>())
-        .AddSingleton<ICacheTabelasTributarias>(provider => provider.GetRequiredService<SqliteTributacaoConsulta>())
         .AddScoped<ITabelaTributariaService, SqliteTabelaTributariaService>()
         .AddSingleton<IIndicesEconomicos, SqliteIndicesEconomicos>()
         .AddSingleton<IHistoricoCalculos, SqliteHistoricoCalculos>()
@@ -71,8 +69,7 @@ public static class DependencyInjection
         .AddScoped<AtualizadorSeguroDesemprego>()
         .AddScoped<AtualizadorDescontoMinimo>()
         .AddScoped<AtualizadorIndices>()
-        .AddScoped<IAtualizadorTabelas, AtualizadorTabelas>()
-        .AddScoped<IInicializadorBancoTributario, InicializadorBancoTributario>();
+        .AddScoped<IAtualizadorTabelas, AtualizadorTabelas>();
 
     // Identifica o aplicativo para os sites consultados e limita a espera: uma fonte fora do ar não pode travar a atualização.
     // "Mozilla/5.0 (compatible; ...)" é o formato dos robôs que se identificam; o Planalto recusa a conexão sem ele.

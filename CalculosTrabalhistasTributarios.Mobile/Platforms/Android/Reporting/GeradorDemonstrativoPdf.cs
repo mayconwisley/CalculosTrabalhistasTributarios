@@ -26,6 +26,16 @@ internal static class GeradorDemonstrativoPdf
             escritor.Texto($"{destaque.Rotulo}: {destaque.Valor}", 11, true);
             escritor.Texto(destaque.Complemento);
         }
+        if (dto.Comparativo is { } comparativo)
+        {
+            escritor.Secao(comparativo.Titulo);
+            foreach (var linha in comparativo.Linhas)
+            {
+                escritor.Texto(linha.Descricao, 11, true);
+                foreach (var (coluna, valor) in comparativo.Colunas.Zip(linha.Valores))
+                    escritor.Texto($"{coluna}: {valor}");
+            }
+        }
         Verbas(escritor, dto.RotuloProventos, dto.Proventos);
         escritor.Texto($"Total: {Moeda(dto.TotalProventos)}", 11, true);
         Verbas(escritor, "Descontos", dto.Descontos);
@@ -42,6 +52,16 @@ internal static class GeradorDemonstrativoPdf
                 escritor.Texto(formula.Titulo, 10, true);
                 escritor.Texto(formula.Formula);
             }
+            if (grupo.Quadro is { } quadro)
+            {
+                foreach (var faixa in quadro.Faixas)
+                {
+                    escritor.Texto($"Faixa {faixa.Numero}: {Moeda(faixa.De)} a {(faixa.Ate is { } ate ? Moeda(ate) : "sem limite")}", 10, true);
+                    escritor.Texto($"Base na faixa: {Moeda(faixa.ParteDaBase)} | Alíquota: {faixa.Aliquota.ToString("0.##", CultureInfo.GetCultureInfo("pt-BR"))}%");
+                    escritor.Texto($"Valor exato: {Exato(faixa.ValorExato)} | Considerado: {Exato(faixa.Valor)}");
+                }
+                escritor.Texto($"Base total: {Moeda(quadro.BaseCalculo)} | Soma exata: {Exato(quadro.ValorExato)} | Considerado: {Moeda(quadro.Valor)}", 10, true);
+            }
         }
         escritor.Secao("Premissas e limites");
         foreach (var observacao in dto.Observacoes)
@@ -53,6 +73,7 @@ internal static class GeradorDemonstrativoPdf
     }
 
     private static string Moeda(decimal valor) => valor.ToString("C2", CultureInfo.GetCultureInfo("pt-BR"));
+    private static string Exato(decimal valor) => "R$ " + valor.ToString("#,##0.00####", CultureInfo.GetCultureInfo("pt-BR"));
 
     private static void Verbas(EscritorPaginado escritor, string titulo, IReadOnlyList<VerbaDto> verbas)
     {
@@ -96,6 +117,8 @@ internal static class GeradorDemonstrativoPdf
         public void Texto(string texto, float tamanho = 10, bool negrito = false)
         {
             _cancellationToken.ThrowIfCancellationRequested();
+            if (negrito)
+                GarantirEspaco(tamanho * 3 + 12);
             _pincel.TextSize = tamanho;
             _pincel.Color = negrito ? Cor.Rgb(23, 74, 103) : Cor.Rgb(43, 55, 68);
             _pincel.SetTypeface(negrito ? Typeface.DefaultBold : Typeface.Default);

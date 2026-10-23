@@ -45,6 +45,7 @@ public class ArquiteturaTests
     [InlineData("CalculosTrabalhistasTributarios.Domain")]
     [InlineData("CalculosTrabalhistasTributarios.Application")]
     [InlineData("CalculosTrabalhistasTributarios.Infrastructure")]
+    [InlineData("CalculosTrabalhistasTributarios.Infrastructure.Local")]
     [InlineData("CalculosTrabalhistasTributarios")]
     public void Interfaces_ficam_na_pasta_Interfaces(string nomeAssembly)
     {

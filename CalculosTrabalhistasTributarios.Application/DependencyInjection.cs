@@ -9,7 +9,7 @@ public static class DependencyInjection
 {
     /// <summary>Casos de uso da aplicação; as portas que eles usam são registradas pela infraestrutura.</summary>
     public static IServiceCollection AddApplication(this IServiceCollection services) => services
-        .AddScoped<ISimularDemonstrativoUseCase<SimularImpostoRequest>, SimularImpostoUseCase>()
+        .AddSimulacaoTributaria()
         .AddScoped<ISimularPensaoUseCase, SimularPensaoUseCase>()
         .AddScoped<ISimularPensaoAtrasoUseCase, SimularPensaoAtrasoUseCase>()
         .AddScoped<ISimularEstabilidadeUseCase, SimularEstabilidadeUseCase>()
@@ -66,4 +66,7 @@ public static class DependencyInjection
     /// <summary>Registra a simulação autônoma usada também pelo aplicativo móvel, sem exigir banco ou relatórios.</summary>
     public static IServiceCollection AddSaqueAniversario(this IServiceCollection services) => services
         .AddScoped<ISimularDemonstrativoUseCase<SimularSaqueAniversarioRequest>, SimularSaqueAniversarioUseCase>();
+
+    public static IServiceCollection AddSimulacaoTributaria(this IServiceCollection services) => services
+        .AddScoped<ISimularDemonstrativoUseCase<SimularImpostoRequest>, SimularImpostoUseCase>();
 }

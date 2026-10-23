@@ -48,6 +48,7 @@ Pratique DDD, SOLID e Clean Architecture com simplicidade. Preserve os projetos 
 | --- | --- | --- |
 | `CalculosTrabalhistasTributarios.Domain` | Regras, invariantes e resultados de negócio | Não depende das demais camadas, WPF, SQLite, HTTP ou bibliotecas de relatórios. |
 | `CalculosTrabalhistasTributarios.Application` | Casos de uso, pedidos, DTOs, portas e demonstrativos | Depende do Domain; não referencia Infrastructure nem WPF. A abstração de DI é usada no registro da camada. |
+| `CalculosTrabalhistasTributarios.Infrastructure.Local` | SQLite, consultas, histórico e sementes compartilhados por WPF e MAUI | Não referencia bibliotecas de relatório nem interfaces gráficas; preserva namespaces da persistência anterior. |
 | `CalculosTrabalhistasTributarios.Infrastructure` | Persistência, atualização externa, diagnóstico e exportação | Implementa portas da Application; não conhece ViewModels ou controles WPF. |
 | `CalculosTrabalhistasTributarios` | Aplicativo WPF e composição das camadas | MVVM, leitura do formulário, navegação, temas e serviços de interação. |
 | `CalculosTrabalhistasTributarios.Tests` | Referências numéricas, integração e arquitetura | Usa dados isolados e fontes externas simuladas. |
@@ -63,7 +64,7 @@ Pontos de entrada e extensão:
 - `Domain/Pensao`, `Domain/Judicial` e `Domain/Estabilidade`: regras dos respectivos assuntos.
 - `Domain/Previdencia`: contribuição do contribuinte individual e do facultativo, `CalculadoraMediaSalarios` (média desde 07/1994 corrigida pelo INPC), que a aposentadoria e a pensão por morte usam por meio de `MemoriaMediaSalarios`, na Application, e de `CamposMediaSalarios`, na apresentação e `RegrasBeneficioRgps` (coeficiente de 60% mais 2 pontos e limites do mínimo e do teto); os submódulos `Aposentadoria` e `PensaoMorte` tratam das regras da EC 103/2019, e `Complementar`, do IR no resgate de PGBL e VGBL.
 - `Application/UseCases`, `Application/DTOs` e `Application/Demonstrativos`: orquestração e resultados.
-- `Infrastructure/Persistence/Inicializacao`: esquema, sementes e correções do banco.
+- `Infrastructure.Local/Persistence/Inicializacao`: esquema, sementes e correções do banco.
 - `Infrastructure/Tributacao`: consultas, fontes e atualização das tabelas.
 - `Infrastructure/Reporting`: relatórios PDF e planilhas.
 - `Presentation/ViewModels/Calculadoras`: adaptação das calculadoras para a janela comum.
@@ -229,7 +230,7 @@ Não considere uma calculadora pronta se ela aparece na tela inicial, mas não r
 - Não rode testes ou migrações experimentais sobre o banco usado pelo usuário. Use cópias isoladas, como faz `CalculosTrabalhistasTributarios.Tests/Ambiente.cs`.
 - Não substitua o banco distribuído por uma cópia de banco pessoal ou de desenvolvimento contendo históricos.
 - Use comandos SQL parametrizados, descarte conexões/comandos corretamente e preserve transações em operações que precisam ser atômicas.
-- Ao alterar sementes ou scripts de inicialização, revise e incremente `VersaoSementes` em `Infrastructure/Persistence/InicializadorBancoTributario.cs` para que bancos já existentes recebam a atualização.
+- Ao alterar sementes ou scripts de inicialização, revise e incremente `VersaoSementes` em `Infrastructure.Local/Persistence/InicializadorBancoTributario.cs` para que bancos já existentes recebam a atualização.
 - A inicialização deve ser idempotente e transacional. Reiniciar o aplicativo não pode duplicar registros ou reaplicar alterações indevidas.
 - Preserve manutenções locais. Correções de registros existentes devem ter condição e finalidade delimitadas, seguindo `CorrecoesBanco`; não sobrescreva todas as tabelas indiscriminadamente.
 - Ao mudar dados tributários, revise a invalidação/recarga dos caches envolvidos para que o próximo cálculo não use dados antigos.
@@ -356,3 +357,7 @@ Considere a tarefa concluída quando os itens aplicáveis estiverem atendidos:
   2. concluir alterações já iniciadas;
   3. registrar claramente o trabalho restante;
   4. não iniciar uma nova refatoração extensa.
+
+## Aplicativo móvel
+
+Consulte `docs/MAUI.md`. Compartilhe Domain, Application e Infrastructure.Local; não copie regras para o MAUI. Os resultados usam `Views/ResultadoSimulacaoView` e o PDF nativo deve incluir informativos, comparativos, quadros e o aviso de simulação. Preserve o banco privado do Android e valide navegação, temas e PDF no emulador ou aparelho ao alterar telas.
