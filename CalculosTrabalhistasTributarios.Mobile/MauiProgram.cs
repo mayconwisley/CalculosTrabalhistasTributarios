@@ -69,12 +69,17 @@ public static class MauiProgram
         builder.Services.AddTransient<AberturaPage>();
         builder.Services.AddTransient<ConfiguracoesPage>();
         builder.Services.AddTransient<HistoricoPage>();
-        builder.Services.AddScoped<Func<TipoCalculadoraMobile, Page>>(provider => tipo => tipo switch
+        builder.Services.AddScoped<Func<TipoCalculadoraMobile, Page>>(provider => tipo =>
         {
+            Page pagina = tipo switch
+            {
             TipoCalculadoraMobile.SimulacaoTributaria => provider.GetRequiredService<SimulacaoTributariaPage>(),
             TipoCalculadoraMobile.SaqueAniversario => provider.GetRequiredService<SaqueAniversarioPage>(),
             _ => new CalculadoraTrabalhistaPage((CalculadoraTrabalhistaViewModel)provider.GetRequiredService(CatalogoCalculadorasMobile.TipoViewModel(tipo)),
                 tipo, provider.GetRequiredService<HistoricoMobileService>(), provider.GetRequiredService<ManualMobileService>())
+            };
+            provider.GetRequiredService<ApoioFormularioMobile>().Configurar(pagina, tipo);
+            return pagina;
         });
         // Só o formulário, sem a página: preencher o exemplo e comparar históricos não precisam montar a tela.
         builder.Services.AddScoped<Func<TipoCalculadoraMobile, IFormularioHistoricoMobile>>(provider => tipo => tipo switch
@@ -88,6 +93,7 @@ public static class MauiProgram
         builder.Services.AddScoped<INavegacaoTransferenciasMobile>(provider => provider.GetRequiredService<NavegadorCalculadoras>());
         builder.Services.AddScoped<NavegadorMenu>();
         builder.Services.AddScoped<HistoricoMobileService>();
+        builder.Services.AddScoped<ApoioFormularioMobile>();
         builder.Services.AddSingleton<ManualMobileService>();
         builder.Services.AddScoped<INavegacaoMenu>(provider => provider.GetRequiredService<NavegadorMenu>());
         builder.Services.AddSingleton<Func<Window>>(provider => () =>

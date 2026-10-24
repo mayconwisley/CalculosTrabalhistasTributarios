@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+    <SolidColorBrush x:Key="ErroCampoBrush" Color="{AppThemeBinding Light={StaticResource ErroClaro}, Dark={StaticResource ErroEscuro}}" />
     <Style TargetType="ContentPage" ApplyToDerivedTypes="True">
         <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource FundoClaro}, Dark={StaticResource FundoEscuro}}" />
     </Style>
@@ -17,6 +18,9 @@
     <Style x:Key="TextoSecundario" TargetType="Label" BasedOn="{StaticResource RotuloBase}">
         <Setter Property="FontSize" Value="13" />
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource SecundarioClaro}, Dark={StaticResource SecundarioEscuro}}" />
+    </Style>
+    <Style x:Key="TextoErroCampo" TargetType="Label" BasedOn="{StaticResource TextoSecundario}">
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource ErroClaro}, Dark={StaticResource ErroEscuro}}" />
     </Style>
     <Style x:Key="TituloSecao" TargetType="Label" BasedOn="{StaticResource RotuloBase}">
         <Setter Property="FontFamily" Value="OpenSansSemibold" />

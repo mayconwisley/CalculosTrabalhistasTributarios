@@ -101,7 +101,12 @@ public sealed partial class AtualizacaoTabelasViewModel : ObservableObject
     }
 
     [RelayCommand(CanExecute = nameof(Atualizando))]
-    private void Interromper() => _interromper?.Cancel();
+    private async Task InterromperAsync()
+    {
+        // Callbacks de cancelamento HTTP podem fechar sockets de forma síncrona.
+        // CancelAsync sinaliza o token e executa esses callbacks sem prender a thread da tela.
+        if (_interromper is { } interromper) await interromper.CancelAsync();
+    }
 
     private async Task AtualizarAsync(DateTime agora)
     {

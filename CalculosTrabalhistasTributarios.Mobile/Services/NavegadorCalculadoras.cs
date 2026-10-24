@@ -20,6 +20,7 @@ public sealed class NavegadorCalculadoras(Func<TipoCalculadoraMobile, Page> cria
     public Task AbrirAsync(TipoCalculadoraMobile calculadora, QuitacaoBancoHoras quitacao)
     {
         var pagina = criarPagina(calculadora);
+        pagina.SetValue(ApoioFormularioMobile.RecebeuDadosProperty, true);
         if (pagina.BindingContext is not CalculadoraTrabalhistaViewModel calculadoraDestino)
             throw new ArgumentOutOfRangeException(nameof(calculadora), "A calculadora não recebe a quitação do banco de horas.");
         calculadoraDestino.ReceberQuitacao(quitacao);
@@ -30,6 +31,7 @@ public sealed class NavegadorCalculadoras(Func<TipoCalculadoraMobile, Page> cria
     public Task AbrirComDadosAsync(TipoCalculadoraMobile calculadora, DadosFormularioMobile dados)
     {
         var pagina = criarPagina(calculadora);
+        pagina.SetValue(ApoioFormularioMobile.RecebeuDadosProperty, true);
         if (pagina.BindingContext is not IFormularioHistoricoMobile formulario)
             throw new ArgumentOutOfRangeException(nameof(calculadora), "A calculadora não recebe dados transferidos.");
         var importacao = formulario.TentarImportarDados(dados);

@@ -11,21 +11,21 @@ public static class LeituraCampoMobile
     public static int Opcao(CampoMobile campo)
     {
         if (campo.Indice < 0 || campo.Indice >= campo.Opcoes.Count)
-            throw new EntradaInvalidaException($"{campo.Rotulo}: selecione uma opção válida.");
+            throw new EntradaInvalidaException($"{campo.Rotulo}: selecione uma opção válida.", campo);
         return campo.Indice;
     }
 
     public static decimal Numero(CampoMobile campo)
     {
         if (!LeituraNumerica.TentarLer(campo.Valor, out var valor))
-            throw new EntradaInvalidaException($"{campo.Rotulo}: informe um número, por exemplo 3.500,00.");
+            throw new EntradaInvalidaException($"{campo.Rotulo}: informe um número, por exemplo 3.500,00.", campo);
         return valor;
     }
 
     public static int Inteiro(CampoMobile campo)
     {
         if (!int.TryParse(campo.Valor.Trim(), NumberStyles.Integer, Cultura, out var valor))
-            throw new EntradaInvalidaException($"{campo.Rotulo}: informe um número inteiro.");
+            throw new EntradaInvalidaException($"{campo.Rotulo}: informe um número inteiro.", campo);
         return valor;
     }
 
@@ -37,13 +37,13 @@ public static class LeituraCampoMobile
             && horas >= 0 && minutos is >= 0 and < 60)
             return horas + minutos / 60m;
         if (LeituraNumerica.TentarLer(texto, out var decimais)) return decimais;
-        throw new EntradaInvalidaException($"{campo.Rotulo}: use horas de relógio como 10:30 ou horas decimais como 10,5.");
+        throw new EntradaInvalidaException($"{campo.Rotulo}: use horas de relógio como 10:30 ou horas decimais como 10,5.", campo);
     }
 
     public static DateOnly Data(CampoMobile campo)
     {
         if (DateOnly.TryParseExact(campo.Valor.Trim(), "dd/MM/yyyy", Cultura, DateTimeStyles.None, out var data)) return data;
-        throw new EntradaInvalidaException($"{campo.Rotulo}: informe uma data em dd/mm/aaaa.");
+        throw new EntradaInvalidaException($"{campo.Rotulo}: informe uma data em dd/mm/aaaa.", campo);
     }
 
     public static DateOnly? DataOpcional(CampoMobile campo) => campo.Valor.Trim().Length == 0 ? null : Data(campo);
@@ -51,6 +51,6 @@ public static class LeituraCampoMobile
     public static DateOnly Competencia(CampoMobile campo)
     {
         if (DateOnly.TryParseExact("01/" + campo.Valor.Trim(), "dd/MM/yyyy", Cultura, DateTimeStyles.None, out var data)) return data;
-        throw new EntradaInvalidaException($"{campo.Rotulo}: informe mês e ano em mm/aaaa.");
+        throw new EntradaInvalidaException($"{campo.Rotulo}: informe mês e ano em mm/aaaa.", campo);
     }
 }

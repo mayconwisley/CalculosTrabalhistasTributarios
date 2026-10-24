@@ -68,6 +68,7 @@ public sealed class HistoricoMobileService(IHistoricoCalculos historico, Func<Ti
             var dados = JsonSerializer.Deserialize<DadosFormularioMobile>(salvo.Dados);
             if (dados is null) throw new JsonException("Dados ausentes.");
             var pagina = criarPagina(tipo);
+            pagina.SetValue(ApoioFormularioMobile.RecebeuDadosProperty, true);
             if (pagina.BindingContext is not IFormularioHistoricoMobile formulario)
                 throw new InvalidOperationException("A calculadora não implementa histórico.");
             var importacao = formulario.TentarImportarDados(dados);

@@ -65,6 +65,11 @@ Abra **Cálculos Trabalhistas e Tributários** pelo Menu Iniciar ou pelo atalho 
 
 Na tela de boas-vindas, **Baixar para Android** abre a [página da versão mais recente](https://github.com/mayconwisley/CalculosTrabalhistasTributarios/releases/latest). No celular, baixe o arquivo terminado em **-android.apk** em *Assets*. O aplicativo móvel requer Android 7.0 ou superior.
 
+No Android, o preenchimento possui **rascunho automático no aparelho**, separado dos cálculos salvos no histórico. Ao reabrir uma calculadora, escolha **Recuperar** ou **Descartar**. O rascunho guarda edições em intervalos de aproximadamente um segundo e ao sair da página ou colocar o aplicativo em segundo plano; um encerramento abrupto pode perder a última edição. Use **Salvar** para manter um cálculo no histórico. Abrir um histórico ou receber uma transferência preserva os dados escolhidos, sem substituí-los automaticamente pelo rascunho. **Descartar rascunho**, no menu da calculadora, restaura o formulário inicial e apaga a cópia automática após confirmação; não exclui históricos salvos.
+
+Nas calculadoras com formulário comum, toque no título de uma seção para recolhê-la ou expandi-la. **Calcular** fica no rodapé; depois da apuração, **Resultado** leva ao resumo. Campos com erro de leitura mostram a mensagem junto da entrada. Datas e competências permitem digitar ou tocar no ícone de calendário (**Escolher**); confira os formatos `dd/MM/yyyy` e `MM/yyyy`. O resultado tem expansões independentes para **Premissas e limites**, **Demonstrativo** e **Memória de cálculo**. Listas longas são paginadas na tela, e o PDF mantém o conteúdo completo.
+
+
 Na primeira execução, o aplicativo prepara o banco de dados local com as tabelas históricas de INSS e IRRF. Esse processo é automático e acontece uma única vez.
 
 Antes da janela principal aparece a **tela de abertura**. Na primeira abertura de cada dia, ela atualiza pela internet todas as tabelas (INSS, IRRF e suas deduções, salário mínimo, salário-família, seguro-desemprego, PLR, desconto mínimo e os índices INPC, IPCA, IPCA-E, Selic, taxa legal e TR).

@@ -9,6 +9,7 @@ namespace CalculosTrabalhistasTributarios.Infrastructure.Local;
 public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructureLocal(this IServiceCollection services, string caminhoBanco) => services
+        .AddSingleton<IRascunhosFormularios>(_ => new ArquivoRascunhosFormularios(Path.Combine(Path.GetDirectoryName(Path.GetFullPath(caminhoBanco)) ?? throw new ArgumentException("Diretório do banco inválido.", nameof(caminhoBanco)), "rascunhos")))
         .AddSingleton(new BancoTributario(new SqliteConnectionStringBuilder { DataSource = caminhoBanco }.ToString()))
         .AddSingleton<SqliteTributacaoConsulta>()
         .AddSingleton<ITributacaoConsulta>(provider => provider.GetRequiredService<SqliteTributacaoConsulta>())

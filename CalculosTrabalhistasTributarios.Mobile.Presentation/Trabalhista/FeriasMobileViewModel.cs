@@ -16,20 +16,24 @@ public sealed class FeriasMobileViewModel : CalculadoraTrabalhistaViewModel
         ICompartilhamentoPdf compartilhamento, ILogger<FeriasMobileViewModel> logger) : base(compartilhamento, logger)
     {
         _simulador = simulador;
+        Secao("secao_competencia", "Competência e remuneração");
         Adicionar("competencia", "Competência do pagamento (mm/aaaa)", TipoCampoMobile.Competencia, DateTime.Today.ToString("MM/yyyy", Cultura));
         Adicionar("inicio", "Início do gozo (dd/mm/aaaa, opcional)", TipoCampoMobile.Data, dica: "Informe para separar férias e INSS pelas competências do descanso.");
         Adicionar("fimConcessivo", "Concessão até (dd/mm/aaaa, opcional)", TipoCampoMobile.Data, dica: "Dias gozados depois dessa data são apurados em dobro.");
         Adicionar("salario", "Salário mensal (R$)", TipoCampoMobile.Moeda, "0,00");
         Adicionar("medias", "Médias de variáveis (R$)", TipoCampoMobile.Moeda, "0,00");
         Adicionar("faltas", "Faltas injustificadas no período", TipoCampoMobile.Inteiro, "0");
+        Secao("secao_dias", "Descanso e opções");
         Adicionar("dias", "Dias de descanso", TipoCampoMobile.Inteiro, "0", "Zero usa todos os dias de direito que não forem vendidos.");
         Adicionar("segundo", "Dias do 2º período (opcional)", TipoCampoMobile.Inteiro, "0");
         Adicionar("terceiro", "Dias do 3º período (opcional)", TipoCampoMobile.Inteiro, "0");
         Adicionar("abono", "Vender 1/3 das férias (abono)", TipoCampoMobile.SimNao);
         Adicionar("adiantamento", "Adiantar 13º (1ª parcela)", TipoCampoMobile.SimNao);
+        Secao("secao_dependentes", "Tributação e pensão");
         Adicionar("dependentes", "Dependentes para IRRF", TipoCampoMobile.Inteiro, "0");
         AdicionarPensao();
         Adicionar("previdencia", "Previdência complementar (R$)", TipoCampoMobile.Moeda, "0,00");
+        Secao("secao_basePrimeiro", "Bases fora das férias");
         Adicionar("basePrimeiro", "Base fora das férias no 1º mês (R$)", TipoCampoMobile.Moeda, "0,00", "Não repita férias e 1/3.");
         Adicionar("baseSegundo", "Base fora das férias no 2º mês (R$)", TipoCampoMobile.Moeda, "0,00");
         Adicionar("baseTerceiro", "Base fora das férias no 3º mês (R$)", TipoCampoMobile.Moeda, "0,00");

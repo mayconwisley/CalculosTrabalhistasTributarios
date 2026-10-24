@@ -144,7 +144,7 @@ public sealed partial class GradeMobile : ObservableObject
             catch (EntradaInvalidaException erro)
             {
                 Pagina.Exibir(linha);
-                throw new EntradaInvalidaException($"{linha.Titulo}: {erro.Message}");
+                throw new EntradaInvalidaException($"{linha.Titulo}: {erro.Message}", erro.Campo);
             }
         }
         return valores;

@@ -8,6 +8,7 @@ public sealed class CampoMobile(string chave, string rotulo, string dica, TipoCa
     private int _indice;
     private bool _marcado;
     private bool _visivel = true;
+    private string? _erro;
 
     public string Chave { get; } = chave;
     public string Rotulo { get; } = rotulo;
@@ -22,8 +23,14 @@ public sealed class CampoMobile(string chave, string rotulo, string dica, TipoCa
     public bool EhOpcao => Tipo == TipoCampoMobile.Opcao;
     public bool EhSimNao => Tipo == TipoCampoMobile.SimNao;
     public bool EhMoeda => Tipo == TipoCampoMobile.Moeda;
-    public string Valor { get => _valor; set => SetProperty(ref _valor, value ?? string.Empty); }
-    public int Indice { get => _indice; set => SetProperty(ref _indice, value); }
-    public bool Marcado { get => _marcado; set => SetProperty(ref _marcado, value); }
+    public string? Erro
+    {
+        get => _erro;
+        set { if (SetProperty(ref _erro, value)) OnPropertyChanged(nameof(TemErro)); }
+    }
+    public bool TemErro => !string.IsNullOrEmpty(Erro);
+    public string Valor { get => _valor; set { if (SetProperty(ref _valor, value ?? string.Empty)) Erro = null; } }
+    public int Indice { get => _indice; set { if (SetProperty(ref _indice, value)) Erro = null; } }
+    public bool Marcado { get => _marcado; set { if (SetProperty(ref _marcado, value)) Erro = null; } }
     public bool Visivel { get => _visivel; set => SetProperty(ref _visivel, value); }
 }

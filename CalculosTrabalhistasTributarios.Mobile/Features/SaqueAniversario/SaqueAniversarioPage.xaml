@@ -89,7 +89,7 @@
                         <Label Text="03  Nova antecipação" Style="{StaticResource TituloSecao}" SemanticProperties.HeadingLevel="Level2" />
                         <Label Text="Confirme a carência e os contratos pelo extrato ou banco. Saldo livre, sozinho, não garante nova contratação." Style="{StaticResource TextoSecundario}" />
                         <Label Text="Data da análise (dd/mm/aaaa)" Style="{StaticResource RotuloCampo}" />
-                        <Border Style="{StaticResource CaixaCampo}"><Entry Text="{Binding DataAnalise}" Keyboard="Text" MaxLength="10" AutomationId="DataAnalise" /></Border>
+                        <Border Style="{StaticResource CaixaCampo}"><views:EntradaPeriodoView Texto="{Binding DataAnalise}" Tipo="Data" Rotulo="Data da análise" Identificador="DataAnalise" /></Border>
                         <Label Text="Adesão ao saque-aniversário há pelo menos 90 dias?" Style="{StaticResource RotuloCampo}" />
                         <Border Style="{StaticResource CaixaCampo}"><Picker ItemsSource="{Binding Confirmacoes}" SelectedIndex="{Binding IndiceCarencia}" AutomationId="CarenciaAntecipacao" /></Border>
                         <Label Text="Contrato do próximo saque feito desde 01/11/2025?" Style="{StaticResource RotuloCampo}" />

@@ -17,7 +17,41 @@ namespace CalculosTrabalhistasTributarios.Mobile.Presentation.Trabalhista;
 public abstract partial class CalculadoraTrabalhistaViewModel(ICompartilhamentoPdf compartilhamento, ILogger logger) : ObservableObject, IFormularioHistoricoMobile
 {
     protected static readonly CultureInfo Cultura = CultureInfo.GetCultureInfo("pt-BR");
-    private readonly Dictionary<string, CampoMobile> _campos = [];
+    private readonly EstadoFormularioTrabalhista _formulario = new();
+    private Dictionary<string, CampoMobile> _campos => _formulario.Campos;
+    private IReadOnlyList<SecaoCamposMobile>? _secoes;
+    [ObservableProperty] private CampoMobile? _primeiroCampoComErro;
+
+    public IReadOnlyList<SecaoCamposMobile> Secoes => _secoes ??= AgruparCampos();
+    private IReadOnlyList<SecaoCamposMobile> AgruparCampos()
+    {
+        var secoes = new List<SecaoCamposMobile>();
+        var campos = new List<CampoMobile>();
+        var titulo = "Dados do cálculo";
+        foreach (var campo in _campos.Values)
+        {
+            if (!campo.EhSecao) { campos.Add(campo); continue; }
+            if (campos.Count > 0) secoes.Add(new(titulo, campos.ToArray()));
+            campos.Clear();
+            titulo = campo.Rotulo;
+        }
+        if (campos.Count > 0) secoes.Add(new(titulo, campos.ToArray()));
+        return secoes;
+    }
+
+    private IEnumerable<CampoMobile> TodosCampos => _campos.Values.Concat(Grades.SelectMany(g => g.Linhas).SelectMany(l => l.Campos));
+
+    private void InformarErro(string mensagem, CampoMobile? campo = null)
+    {
+        Mensagem = mensagem;
+        // Falhas de domínio sem chave permanecem gerais; só associa um rótulo inequívoco.
+        var candidatos = TodosCampos.Where(c => c.Visivel && mensagem.StartsWith(c.Rotulo + ":", StringComparison.Ordinal)).Take(2).ToArray();
+        campo ??= candidatos.Length == 1 ? candidatos[0] : null;
+        if (campo is null) return;
+        campo.Erro = mensagem;
+        foreach (var secao in Secoes.Where(s => s.Campos.Contains(campo))) secao.Expandida = true;
+        PrimeiroCampoComErro = campo;
+    }
     [ObservableProperty] private string? _mensagem;
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(TemResultado))]
@@ -32,7 +66,7 @@ public abstract partial class CalculadoraTrabalhistaViewModel(ICompartilhamentoP
     public long? HistoricoId { get; set; }
     public abstract string Descricao { get; }
     public IReadOnlyList<CampoMobile> Campos => _campos.Values.ToArray();
-    public ObservableCollection<LinhaDepositoFgtsMobile> DepositosFgts { get; } = [];
+    public ObservableCollection<LinhaDepositoFgtsMobile> DepositosFgts => _formulario.DepositosFgts;
     public PaginaLinhas<LinhaDepositoFgtsMobile> PaginaDepositosFgts => field ??= new(DepositosFgts);
     public virtual bool ExibirHistoricoFgts => false;
     public virtual bool TemDepositosFgts => false;
@@ -49,13 +83,13 @@ public abstract partial class CalculadoraTrabalhistaViewModel(ICompartilhamentoP
     public virtual ICommand? JornadaParaHoleriteCommand => null;
     public virtual ICommand? JornadaParaHorasExtrasCommand => null;
     public virtual string? AvisoHistorico => null;
-    public ObservableCollection<LinhaBeneficioMobile> BeneficiosDetalhados { get; } = [];
+    public ObservableCollection<LinhaBeneficioMobile> BeneficiosDetalhados => _formulario.BeneficiosDetalhados;
     public virtual bool ExibirBeneficiosDetalhados => false;
     public virtual bool TemBeneficiosDetalhados => false;
     public virtual ICommand? AdicionarBeneficioCommand => null;
     public virtual ICommand? RemoverBeneficioCommand => null;
-    public ObservableCollection<GradeMobile> Grades { get; } = [];
-    public ObservableCollection<LinhaLancamentoBancoHorasMobile> LancamentosBancoHoras { get; } = [];
+    public ObservableCollection<GradeMobile> Grades => _formulario.Grades;
+    public ObservableCollection<LinhaLancamentoBancoHorasMobile> LancamentosBancoHoras => _formulario.LancamentosBancoHoras;
     public PaginaLinhas<LinhaLancamentoBancoHorasMobile> PaginaLancamentosBancoHoras => field ??= new(LancamentosBancoHoras);
     public virtual bool ExibirLancamentosBancoHoras => false;
     public virtual bool TemLancamentosBancoHoras => false;
@@ -75,74 +109,19 @@ public abstract partial class CalculadoraTrabalhistaViewModel(ICompartilhamentoP
         ]);
     public bool TemResultado => Demonstrativo is not null;
 
-    public DadosFormularioMobile ExportarDados() => new(1,
-        _campos.Values.Where(campo => campo.EhEntrada).ToDictionary(campo => campo.Chave, Capturar),
-        Grades.ToDictionary(grade => grade.Chave, grade => (IReadOnlyList<IReadOnlyDictionary<string, ValorCampoMobile>>)
-            grade.Linhas.Select(linha => (IReadOnlyDictionary<string, ValorCampoMobile>)linha.Campos.ToDictionary(campo => campo.Chave, Capturar)).ToArray()),
-        DepositosFgts.Select(linha => new DepositoFgtsSalvoMobile(linha.Competencia, linha.Valor)).ToArray(),
-        BeneficiosDetalhados.Select(linha => new BeneficioSalvoMobile(linha.Descricao, linha.Custo, linha.Participacao)).ToArray(),
-        LancamentosBancoHoras.Select(linha => new LancamentoBancoSalvoMobile(linha.Data, linha.Tipo, linha.Horas, linha.Adicional, linha.Descricao)).ToArray(),
-        QuitacaoBancoHoras, QuitacaoConfirmada);
+    public DadosFormularioMobile ExportarDados() => _formulario.ExportarDados(QuitacaoBancoHoras, QuitacaoConfirmada);
 
     public Result TentarImportarDados(DadosFormularioMobile dados)
     {
-        if (dados.Versao != 1 || dados.Campos is null || dados.Grades is null)
-            return Erro.Validacao("O formato do formulário salvo não é compatível com esta versão.");
-        foreach (var (chave, valor) in dados.Campos)
+        var resultado = _formulario.TentarImportarDados(dados, this switch
         {
-            if (!_campos.TryGetValue(chave, out var campo) || campo.EhSecao || !ValorValido(campo, valor))
-                return Erro.Validacao($"Campo {chave}: o valor salvo não é compatível com este formulário.");
-        }
-        foreach (var (chave, linhas) in dados.Grades)
-        {
-            var grade = Grades.FirstOrDefault(item => item.Chave == chave);
-            if (grade is null || linhas is null || linhas.Count > grade.Limite)
-                return Erro.Validacao($"Grade {chave}: as linhas salvas excedem o limite ou não pertencem ao formulário.");
-            var colunas = grade.Colunas.ToDictionary(coluna => coluna.Chave,
-                coluna => new CampoMobile(coluna.Chave, coluna.Rotulo, coluna.Dica, coluna.Tipo, coluna.Valor, coluna.Opcoes));
-            foreach (var linha in linhas)
-                if (linha is null || linha.Any(par => !colunas.TryGetValue(par.Key, out var campo) || !ValorValido(campo, par.Value)))
-                    return Erro.Validacao($"Grade {chave}: uma linha contém campo ou opção inválida.");
-        }
-        if ((dados.DepositosFgts?.Count ?? 0) > 720 || (dados.Beneficios?.Count ?? 0) > 30 || (dados.LancamentosBanco?.Count ?? 0) > 500
-            || (dados.LancamentosBanco?.Any(linha => linha is null || linha.Tipo is < 0 or > 1 || !TextoValido(linha.Data, 20)
-                || !TextoValido(linha.Horas, 20) || !TextoValido(linha.Adicional, 40) || !TextoValido(linha.Descricao, 120)) ?? false)
-            || (dados.DepositosFgts?.Any(linha => linha is null || !TextoValido(linha.Competencia, 20) || !TextoValido(linha.Valor, 40)) ?? false)
-            || (dados.Beneficios?.Any(linha => linha is null || !TextoValido(linha.Descricao, 120) || !TextoValido(linha.Custo, 40)
-                || !TextoValido(linha.Participacao, 40)) ?? false))
-            return Erro.Validacao("Linhas salvas: há valores ou quantidades fora dos limites do formulário.");
-
-        if (dados.QuitacaoBancoHoras is { } quitacao)
-        {
-            var chaveData = this is HoleriteMobileViewModel ? "competencia" : "desligamento";
-            if (this is not (HoleriteMobileViewModel or RescisaoMobileViewModel)
-                || !dados.Campos.TryGetValue(chaveData, out var campoData)
-                || !DateOnly.TryParseExact(this is HoleriteMobileViewModel ? "01/" + campoData.Valor : campoData.Valor,
-                    "dd/MM/yyyy", Cultura, System.Globalization.DateTimeStyles.None, out var dataDestino))
-                return Erro.Validacao("Quitação do banco de horas: confira a competência ou a data de desligamento salva.");
-            var validacao = quitacao.Validar(this is HoleriteMobileViewModel ? SituacaoBancoHoras.Fechamento : SituacaoBancoHoras.Rescisao, dataDestino);
-            if (validacao.Falhou) return validacao;
-        }
-
-        foreach (var (chave, valor) in dados.Campos) Restaurar(_campos[chave], valor);
-        foreach (var grade in Grades)
-        {
-            while (grade.Linhas.Count > 0) grade.Linhas.RemoveAt(grade.Linhas.Count - 1);
-            if (!dados.Grades.TryGetValue(grade.Chave, out var linhas)) continue;
-            foreach (var valores in linhas)
-            {
-                var linha = grade.AdicionarLinha();
-                if (linha is null) break;
-                foreach (var (chave, valor) in valores) Restaurar(linha.Campo(chave), valor);
-            }
-        }
-        DepositosFgts.Clear();
-        foreach (var linha in dados.DepositosFgts ?? []) DepositosFgts.Add(new() { Competencia = linha.Competencia, Valor = linha.Valor });
-        BeneficiosDetalhados.Clear();
-        foreach (var linha in dados.Beneficios ?? []) BeneficiosDetalhados.Add(new() { Descricao = linha.Descricao, Custo = linha.Custo, Participacao = linha.Participacao });
-        LancamentosBancoHoras.Clear();
-        foreach (var linha in dados.LancamentosBanco ?? []) LancamentosBancoHoras.Add(new()
-        { Data = linha.Data, Tipo = linha.Tipo, Horas = linha.Horas, Adicional = linha.Adicional, Descricao = linha.Descricao });
+            HoleriteMobileViewModel => SituacaoBancoHoras.Fechamento,
+            RescisaoMobileViewModel => SituacaoBancoHoras.Rescisao,
+            _ => null
+        });
+        if (resultado.Falhou) return resultado;
+        PrimeiroCampoComErro = null;
+        foreach (var campo in TodosCampos) campo.Erro = null;
         QuitacaoBancoHoras = dados.QuitacaoBancoHoras;
         QuitacaoConfirmada = dados.QuitacaoConfirmada && QuitacaoBancoHoras is not null;
         Demonstrativo = null;
@@ -150,17 +129,6 @@ public abstract partial class CalculadoraTrabalhistaViewModel(ICompartilhamentoP
         return Result.Ok();
     }
 
-    private static ValorCampoMobile Capturar(CampoMobile campo) => new(campo.Valor, campo.Indice, campo.Marcado);
-    private static bool TextoValido(string? texto, int limite) => texto is not null && texto.Length <= limite;
-    private static bool ValorValido(CampoMobile campo, ValorCampoMobile? valor) => valor is not null
-        && TextoValido(valor.Valor, 500)
-        && (campo.Tipo != TipoCampoMobile.Opcao || valor.Indice >= 0 && valor.Indice < campo.Opcoes.Count);
-    private static void Restaurar(CampoMobile campo, ValorCampoMobile valor)
-    {
-        campo.Valor = valor.Valor;
-        campo.Indice = valor.Indice;
-        campo.Marcado = valor.Marcado;
-    }
     public bool TemMensagem => !string.IsNullOrWhiteSpace(Mensagem);
     partial void OnMensagemChanged(string? value) => OnPropertyChanged(nameof(TemMensagem));
     partial void OnDemonstrativoChanged(DemonstrativoDto? value)
@@ -212,6 +180,7 @@ public abstract partial class CalculadoraTrabalhistaViewModel(ICompartilhamentoP
     {
         var campo = new CampoMobile(chave, rotulo, dica, tipo, valor, opcoes);
         _campos.Add(chave, campo);
+        _secoes = null;
         campo.PropertyChanged += (_, args) =>
         {
             if (args.PropertyName is nameof(CampoMobile.Valor) or nameof(CampoMobile.Indice) or nameof(CampoMobile.Marcado))
@@ -287,15 +256,17 @@ public abstract partial class CalculadoraTrabalhistaViewModel(ICompartilhamentoP
     {
         Demonstrativo = null;
         Mensagem = null;
+        PrimeiroCampoComErro = null;
+        foreach (var campo in TodosCampos) campo.Erro = null;
         try
         {
             Ocupado = true;
             var resultado = await ApurarAsync(cancellationToken);
             cancellationToken.ThrowIfCancellationRequested();
-            if (resultado.Falhou) Mensagem = resultado.Erro.Mensagem;
+            if (resultado.Falhou) InformarErro(resultado.Erro.Mensagem);
             else Demonstrativo = resultado.Valor;
         }
-        catch (EntradaInvalidaException erro) { Mensagem = erro.Message; }
+        catch (EntradaInvalidaException erro) { InformarErro(erro.Message, erro.Campo); }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested) { }
         catch (Exception erro)
         {

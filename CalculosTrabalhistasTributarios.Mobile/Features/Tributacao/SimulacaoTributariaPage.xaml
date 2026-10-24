@@ -15,8 +15,8 @@
                     </VerticalStackLayout.Triggers>
                     <Label Text="Competência e vínculo" Style="{StaticResource TituloSecao}" />
                     <Label Text="Competência (mm/aaaa)" Style="{StaticResource RotuloCampo}" />
-                    <Border Style="{StaticResource CaixaCampo}"><Entry Text="{Binding Competencia}" Keyboard="Text" MaxLength="7" FontSize="18" HorizontalTextAlignment="Start" AutomationId="Competencia" SemanticProperties.Description="Competência no formato mês e ano" /></Border>
-                    <Label Text="As tabelas seguem a competência informada. Nesta etapa, são atualizadas junto com as versões do aplicativo; não há consulta online." Style="{StaticResource TextoSecundario}" />
+                    <Border Style="{StaticResource CaixaCampo}"><views:EntradaPeriodoView Texto="{Binding Competencia}" Tipo="Competencia" Rotulo="Competência" Identificador="Competencia" /></Border>
+                    <Label Text="As tabelas seguem a competência informada. Consulte as pendências e a atualização em Configurações." Style="{StaticResource TextoSecundario}" />
                     <Label Text="Tipo de vínculo" Style="{StaticResource RotuloCampo}" />
                     <Border Style="{StaticResource CaixaCampo}"><Picker ItemsSource="{Binding Vinculos}" SelectedIndex="{Binding IndiceVinculo}" Title="Selecione o vínculo" AutomationId="Vinculo" SemanticProperties.Description="Tipo de vínculo" /></Border>
                     <Label Text="Valor bruto (R$)" Style="{StaticResource RotuloCampo}" />

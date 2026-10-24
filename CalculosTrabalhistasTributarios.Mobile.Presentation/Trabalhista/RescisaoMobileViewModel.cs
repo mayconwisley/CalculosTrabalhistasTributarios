@@ -30,21 +30,25 @@ public sealed class RescisaoMobileViewModel : CalculadoraTrabalhistaViewModel
         ICompartilhamentoPdf compartilhamento, ILogger<RescisaoMobileViewModel> logger) : base(compartilhamento, logger)
     {
         _simulador = simulador;
+        Secao("secao_vinculo", "Contrato e desligamento");
         Adicionar("vinculo", "Vínculo", TipoCampoMobile.Opcao, opcoes: ["Empregado (CLT)", "Empregado doméstico", "Jovem aprendiz"]);
         Adicionar("admissao", "Data de admissão (dd/mm/aaaa)", TipoCampoMobile.Data, DateTime.Today.AddYears(-2).ToString("dd/MM/yyyy", Cultura));
         Adicionar("desligamento", "Data de desligamento (dd/mm/aaaa)", TipoCampoMobile.Data, DateTime.Today.ToString("dd/MM/yyyy", Cultura));
         Adicionar("motivo", "Motivo do desligamento", TipoCampoMobile.Opcao, opcoes: ["Dispensa sem justa causa", "Pedido de demissão", "Acordo (art. 484-A)", "Dispensa por justa causa", "Fim de contrato a prazo", "Antecipada pela empresa", "Antecipada pelo empregado"]);
         Adicionar("aviso", "Aviso prévio", TipoCampoMobile.Opcao, opcoes: ["Indenizado", "Trabalhado ou dispensado", "Não cumprido pelo empregado"]);
         Adicionar("fimPrevisto", "Fim previsto do contrato (dd/mm/aaaa)", TipoCampoMobile.Data, dica: "Informe nas rescisões antecipadas do contrato a prazo.");
+        Secao("secao_salario", "Remuneração e verbas");
         Adicionar("salario", "Último salário mensal (R$)", TipoCampoMobile.Moeda, "0,00");
         Adicionar("medias", "Médias de variáveis (R$)", TipoCampoMobile.Moeda, "0,00");
         Adicionar("outrosProventos", "Outros proventos do mês (R$)", TipoCampoMobile.Moeda, "0,00");
         Adicionar("indenizatorias", "Verbas indenizatórias (R$)", TipoCampoMobile.Moeda, "0,00");
         Adicionar("faltasMes", "Faltas no mês", TipoCampoMobile.Inteiro, "0");
         Adicionar("semanasFalta", "Semanas com falta no mês", TipoCampoMobile.Inteiro, "0");
+        Secao("secao_feriasVencidas", "Férias e FGTS");
         Adicionar("feriasVencidas", "Férias vencidas", TipoCampoMobile.Opcao, opcoes: ["Nenhuma", "1 período", "2 períodos"]);
         Adicionar("faltasPeriodo", "Faltas no período aquisitivo atual", TipoCampoMobile.Inteiro, "0");
         Adicionar("saldoFgts", "Saldo do FGTS (R$)", TipoCampoMobile.Moeda, "0,00", "Use o saldo para fins rescisórios do extrato. Zero produz uma estimativa.");
+        Secao("secao_adiantamento13", "Descontos e pagamento");
         Adicionar("adiantamento13", "13º já adiantado (R$)", TipoCampoMobile.Moeda, "0,00");
         Adicionar("outrosDescontos", "Outros descontos (R$)", TipoCampoMobile.Moeda, "0,00");
         Adicionar("dependentes", "Dependentes para IRRF", TipoCampoMobile.Inteiro, "0");

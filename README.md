@@ -52,6 +52,8 @@ No celular, baixe **CalculosTrabalhistasTributarios-X.Y.Z-android.apk** e abra o
 - Traz as mesmas calculadoras e tabelas do Windows, com busca e favoritas no menu, histórico de cálculos, **Preencher exemplo**, ajuda com a seção do manual de cada calculadora e atualização diária das tabelas pela internet.
 - O resultado é compartilhado em PDF pelo menu do Android (WhatsApp, e-mail e outros aplicativos), com a mesma organização do relatório do Windows. As transferências entre calculadoras são as mesmas do Windows. Não há exportação para o Excel.
 
+Os formulários Android oferecem rascunhos automáticos locais, recuperação de preenchimentos, campos de data e competência com seleção assistida e detalhes do resultado carregados sob demanda. Na tela comum, Calcular fica no rodapé e erros de leitura aparecem junto ao campo.
+
 Detalhes do aplicativo Android, para quem desenvolve, estão em [docs/MAUI.md](docs/MAUI.md).
 
 ## Manual do usuário
@@ -288,7 +290,7 @@ dotnet test .\CalculosTrabalhistasTributarios.Tests
 dotnet test .\CalculosTrabalhistasTributarios.Mobile.Tests
 ```
 
-O `gerar-instalador.ps1` e o `gerar-apk.ps1` rodam os testes antes de publicar: se algum falhar, a versão não é gerada. No GitHub, o [CI](.github/workflows/ci.yml) compila o filtro do desktop e roda os testes do desktop e do mobile em cada push no `master` e em cada pull request.
+O `gerar-instalador.ps1` e o `gerar-apk.ps1` rodam os testes antes de publicar: se algum falhar, a versão não é gerada. No GitHub, o [CI](.github/workflows/ci.yml) compila o filtro do desktop e o APK Android, roda os testes do desktop e da apresentação mobile e verifica percursos reais em emulador Android em cada push no `master` e em cada pull request.
 
 ## Gerar o instalador
 

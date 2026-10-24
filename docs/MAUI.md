@@ -79,7 +79,7 @@ Todas usam os casos de uso compartilhados da Application e as tabelas locais da 
 
 1. Preencha o saldo, o mês de aniversário e os ajustes do extrato que se aplicarem.
 2. Toque em **Calcular meu saque** e confira o valor estimado.
-3. Use **Demonstrativo e memória** para consultar os detalhes na tela.
+3. Use as expansões **Demonstrativo** e **Memória de cálculo** para consultar os detalhes na tela.
 4. Toque em **Compartilhar PDF** e escolha o aplicativo e o destinatário. O envio só ocorre quando você o confirmar no aplicativo escolhido. Fechar o menu não indica falha nem comprova envio.
 
 Editar uma entrada invalida o resultado e exige novo cálculo antes de compartilhar. Durante cálculo ou compartilhamento, os campos e comandos concorrentes ficam indisponíveis.
@@ -87,6 +87,29 @@ Editar uma entrada invalida o resultado e exige novo cálculo antes de compartil
 Os arquivos são gerados em `CacheDirectory/sharing-root`, com nomes exclusivos. O FileProvider expõe apenas essa subpasta. PDFs com mais de sete dias são removidos na próxima geração; o Android também pode limpar seu cache. O arquivo não é apagado ao fechar o menu, pois o destinatário pode ainda estar lendo o conteúdo. Não é solicitada permissão de acesso geral ao armazenamento.
 
 O PDF usa `Android.Graphics.Pdf.PdfDocument`, sem serviços externos, com a mesma organização e aparência do demonstrativo do desktop (`RelatorioPdfDemonstrativo` e `ComponentesPdf`): cabeçalho com título e referência, resumo, comparativo, tabela de verbas com totais, barra do resultado, informativos, memória em molduras com o quadro de faixas, observações e o rodapé com o aviso de simulação, a versão e "Página X de Y". `DiagramacaoPdf` mede e distribui o conteúdo nas páginas antes de desenhar; tabelas que passam de página repetem o cabeçalho. Ao mudar o PDF do desktop, acompanhe a mudança no gerador móvel. O adaptador `ICompartilhamentoPdf` fica na apresentação móvel; geração e compartilhamento nativos ficam no projeto MAUI. O relatório consome o mesmo `DemonstrativoDto` exibido e não refaz cálculos. O texto obrigatório do rodapé é compartilhado com o desktop por `Application/Demonstrativos/AvisoSimulacao`.
+
+## Preenchimento, rascunhos e resultados
+
+- A tela comum organiza os campos pelas seções da calculadora. Toque no título para expandir ou recolher. **Calcular** permanece no rodapé; **Resultado** leva ao resumo depois de uma apuração. O menu **Ir ao resultado** também atende às calculadoras com página própria.
+- Uma falha de leitura aparece junto ao campo, abre sua seção e posiciona o foco. Nas grades comuns, a página da linha inválida é exibida. Erros de regra que não identificam inequivocamente um campo continuam como mensagem geral; a interface não adivinha uma associação.
+- Datas aceitam `dd/MM/yyyy` e competências `MM/yyyy`, com seleção assistida pelo ícone de calendário (**Escolher**). Ao sair do campo, oito dígitos de data ou seis de competência recebem os separadores; datas impossíveis continuam inválidas. Horas mantêm a unidade original: `1:30` e `1,5` são aceitos nas calculadoras que permitem ambos; `130` não é convertido automaticamente em `1:30`.
+- As calculadoras guardam uma cópia automática do preenchimento a cada segundo, quando o conteúdo mudou, e solicitam gravação ao sair da página ou colocar o app em segundo plano. A cópia fica no armazenamento privado, separada do SQLite do histórico, com substituição atômica e limite de tamanho. Encerramento abrupto antes da gravação pode perder a última edição.
+- Ao abrir novamente a calculadora, **Recuperar rascunho?** permite recuperar ou descartar. Recuperar não calcula nem altera históricos salvos. Abrir um histórico ou receber dados transferidos de outra calculadora tem precedência sobre esse aviso. Há um rascunho por calculadora, correspondente ao último preenchimento gravado.
+- **Descartar rascunho**, no menu, pede confirmação, restaura os valores iniciais e apaga a cópia automática. **Salvar** continua criando ou atualizando explicitamente o histórico. Desinstalar o app apaga os dados locais; rascunho não substitui um histórico ou documento compartilhado.
+- O resultado separa **Premissas e limites**, **Demonstrativo** e **Memória de cálculo** em expansões independentes. As premissas começam abertas. Os controles de cada expansão só são criados quando ela está aberta e são liberados ao recolher. Memória, comparativos e listas de verbas usam páginas; o cálculo e o PDF continuam consumindo o demonstrativo completo.
+
+## Testes da interface Android
+
+O CI compila o aplicativo Android e executa `tools/mobile-ui/smoke_android.py` em emulador API 36. O APK Release, com AOT desativado apenas para reduzir o tempo de compilação dos testes, usa o identificador terminado em `.uitests`, separado da instalação normal. O script recusa depender de um pacote de produção e limpa somente os dados do pacote de testes. Ele verifica busca, exemplo de férias, expansão do resultado, foco em data inválida, recuperação após encerramento do processo, descarte, tema escuro, largura de aproximadamente 320 DIPs e fonte ampliada. Evidências e logcat são publicados pelo job, inclusive em falha.
+
+Para executar localmente, com SDK, JDK, workload Android e emulador disponíveis:
+
+```powershell
+dotnet build CalculosTrabalhistasTributarios.Mobile -c Release -p:ApplicationId=br.com.mayconwisley.calculostrabalhistastributarios.uitests -p:EmbedAssembliesIntoApk=true -p:AndroidPackageFormats=apk -p:RuntimeIdentifier=android-x64 -p:RunAOTCompilation=false
+python tools/mobile-ui/smoke_android.py --apk CalculosTrabalhistasTributarios.Mobile/bin/Release/net10.0-android/android-x64/br.com.mayconwisley.calculostrabalhistastributarios.uitests-Signed.apk
+```
+
+Use `--adb` para informar o executável e `--serial` quando houver mais de um aparelho conectado. `--artifacts` define o diretório das evidências. O script altera temporariamente tamanho, densidade, fonte e tema do emulador; execute em um emulador dedicado a testes. Esses testes não comprovam envio de PDF a destinatários nem comportamento em todos os fabricantes.
 
 ## Aparência e validação
 
@@ -216,3 +239,9 @@ Os APKs gerados antes da chave de publicação, nos testes e no emulador, foram 
 - [Bindings compilados](https://learn.microsoft.com/en-us/dotnet/maui/fundamentals/data-binding/compiled-bindings?view=net-maui-10.0)
 - [Compartilhamento de arquivos e configuração do FileProvider](https://learn.microsoft.com/en-us/dotnet/maui/platform-integration/data/share?view=net-maui-10.0)
 - [PDF nativo do Android](https://developer.android.com/reference/android/graphics/pdf/PdfDocument)
+
+## Validação desta implementação (24/10/2026)
+
+Foram aprovados 206 testes móveis e 993 testes desktop. O APK Android Release isolado foi compilado, com 15 avisos XC0025 em bindings com Source explícito. O manual PDF foi regenerado e as páginas afetadas foram conferidas visualmente.
+
+O percurso ADB/UIAutomator está configurado no CI, mas não foi concluído localmente: os emuladores API 36 apresentaram ANR de componentes do próprio Android (System UI e Process system), inclusive antes da abertura do aplicativo. Assim, temas, fonte ampliada, foco, calendários, recuperação após encerramento e compartilhamento de PDF ainda exigem aprovação por navegação real em dispositivo ou emulador estável. Compilação e testes de apresentação não substituem essa conferência.
