@@ -63,6 +63,8 @@ Ao atualizar uma instalação anterior, o instalador usa a pasta já instalada (
 
 Abra **Cálculos Trabalhistas e Tributários** pelo Menu Iniciar ou pelo atalho da área de trabalho. A janela principal reúne, no menu lateral, as calculadoras, as tabelas e o histórico. Ao escolher um item, o formulário e o resultado aparecem na área central da mesma janela. Sem nenhum item aberto, a área central mostra a tela de boas-vindas, com a versão instalada no rodapé.
 
+Na tela de boas-vindas, **Baixar para Android** abre a [página da versão mais recente](https://github.com/mayconwisley/CalculosTrabalhistasTributarios/releases/latest). No celular, baixe o arquivo terminado em **-android.apk** em *Assets*. O aplicativo móvel requer Android 7.0 ou superior.
+
 Na primeira execução, o aplicativo prepara o banco de dados local com as tabelas históricas de INSS e IRRF. Esse processo é automático e acontece uma única vez.
 
 Antes da janela principal aparece a **tela de abertura**. Na primeira abertura de cada dia, ela atualiza pela internet todas as tabelas (INSS, IRRF e suas deduções, salário mínimo, salário-família, seguro-desemprego, PLR, desconto mínimo e os índices INPC, IPCA, IPCA-E, Selic, taxa legal e TR).
