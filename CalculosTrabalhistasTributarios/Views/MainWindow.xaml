@@ -331,7 +331,7 @@
 							        ToolTip="Abre o histórico, com todos os cálculos salvos, a busca e a comparação." />
 						</Grid>
 						<StackPanel Orientation="Horizontal" Visibility="{Binding Historico.CarregandoRecentes, Converter={StaticResource BooleanToVisibilityConverter}}">
-							<ProgressBar Style="{StaticResource BarraAbertura}" IsIndeterminate="True" Width="160" VerticalAlignment="Center" AutomationProperties.Name="Lendo os cálculos recentes" />
+							<ProgressBar Style="{StaticResource BarraAbertura}" IsIndeterminate="{Binding Historico.CarregandoRecentes}" Width="160" VerticalAlignment="Center" AutomationProperties.Name="Lendo os cálculos recentes" />
 							<TextBlock Text="Lendo os cálculos recentes..." Style="{StaticResource TextoDica}" Margin="12,0,0,0" VerticalAlignment="Center" />
 						</StackPanel>
 						<TextBlock Text="Nenhum cálculo salvo ainda. Em uma calculadora, use Salvar no histórico para retomá-lo depois por aqui." Style="{StaticResource TextoDica}"
@@ -418,7 +418,7 @@
 							<TextBlock Text="{Binding Historico.SituacaoComparacao}" TextWrapping="Wrap" VerticalAlignment="Center" Foreground="{DynamicResource MutedTextBrush}" />
 						</WrapPanel>
 						<StackPanel Orientation="Horizontal" Margin="0,8,0,0" Visibility="{Binding Historico.Carregando, Converter={StaticResource BooleanToVisibilityConverter}}">
-							<ProgressBar Style="{StaticResource BarraAbertura}" IsIndeterminate="True" Width="160" VerticalAlignment="Center" AutomationProperties.Name="Lendo o histórico" />
+							<ProgressBar Style="{StaticResource BarraAbertura}" IsIndeterminate="{Binding Historico.Carregando}" Width="160" VerticalAlignment="Center" AutomationProperties.Name="Lendo o histórico" />
 							<TextBlock Text="Lendo o histórico..." Foreground="{DynamicResource MutedTextBrush}" Margin="12,0,0,0" VerticalAlignment="Center" />
 						</StackPanel>
 						<TextBlock Text="{Binding Historico.MensagemVazia}" Foreground="{DynamicResource MutedTextBrush}" TextWrapping="Wrap" MaxWidth="520" HorizontalAlignment="Left" Margin="0,8,0,0"
