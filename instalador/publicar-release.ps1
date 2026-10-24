@@ -37,6 +37,16 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
+# O hook roda no Windows PowerShell 5.1, mas herda o PSModulePath de quem fez o push. Vindo do PowerShell 7, os módulos
+# do 7 aparecem antes e o Microsoft.PowerShell.Utility carregado não tem Get-FileHash. Refaz o caminho padrão do 5.1,
+# que vale também para o processo em segundo plano, aberto com este ambiente.
+if ($PSVersionTable.PSEdition -eq 'Desktop') {
+    $env:PSModulePath = @(
+        (Join-Path ([Environment]::GetFolderPath('MyDocuments')) 'WindowsPowerShell\Modules'),
+        (Join-Path $env:ProgramFiles 'WindowsPowerShell\Modules'),
+        [Environment]::GetEnvironmentVariable('PSModulePath', 'Machine')
+    ) -join ';'
+}
 # No console, o PowerShell escreve em Unicode e os acentos aparecem normalmente. Por pipe, cada programa decodifica
 # a saída do hook de um jeito: o VS Code usa UTF-8, e o Console do Gerenciador de Pacotes do Visual Studio usa a
 # página de código ANSI. Para ficar legível em todos, as mensagens saem sem acentos nesse caso.
