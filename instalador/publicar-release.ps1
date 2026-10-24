@@ -98,8 +98,19 @@ function New-ArquivosDaTag([string] $nome) {
         [pscustomobject]@{ Instalador = $instalador; Apk = $apk }
     }
     finally {
-        Invoke-Nativo 'Remover a cópia da tag' { git -C $raiz worktree remove --force $copia }
+        Remove-CopiaDaTag $copia
     }
+}
+
+# A compilação do Android cria caminhos com mais de 260 caracteres, que o git só apaga com core.longpaths. Os arquivos
+# já estão gerados: uma sobra na pasta temporária vira aviso, sem cancelar o push.
+function Remove-CopiaDaTag([string] $copia) {
+    if (Test-Nativo { git -C $raiz -c core.longpaths=true worktree remove --force $copia }) { return }
+    try {
+        if (Test-Path -LiteralPath $copia) { Remove-Item -LiteralPath "\\?\$copia" -Recurse -Force }
+        Test-Nativo { git -C $raiz worktree prune } | Out-Null
+    }
+    catch { Write-Warning "Não foi possível apagar a cópia temporária da tag ($copia): $_. Apague a pasta manualmente." }
 }
 
 function Write-Notas([string] $nome, [string] $arquivo, [string] $apk) {

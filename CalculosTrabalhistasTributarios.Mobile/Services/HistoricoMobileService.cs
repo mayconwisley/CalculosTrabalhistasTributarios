@@ -17,7 +17,7 @@ namespace CalculosTrabalhistasTributarios.Mobile.Services;
 
 /// <summary>Persiste os formulários no SQLite privado do aparelho e abre novas páginas para cada histórico.</summary>
 public sealed class HistoricoMobileService(IHistoricoCalculos historico, Func<TipoCalculadoraMobile, Page> criarPagina,
-    NavegadorMenu menu, ILogger<HistoricoMobileService> logger)
+    Func<TipoCalculadoraMobile, IFormularioHistoricoMobile> criarFormulario, NavegadorMenu menu, ILogger<HistoricoMobileService> logger)
 {
     private static Page Pagina => Microsoft.Maui.Controls.Application.Current?.Windows.FirstOrDefault()?.Page
         ?? throw new InvalidOperationException("Janela do aplicativo indisponível.");
@@ -100,9 +100,7 @@ public sealed class HistoricoMobileService(IHistoricoCalculos historico, Func<Ti
             return;
         try
         {
-            if (criarPagina(tipo).BindingContext is not IFormularioHistoricoMobile vazio)
-                throw new InvalidOperationException("A calculadora não implementa histórico.");
-            var exemplo = ExemplosMobile.Montar(tipo, vazio.ExportarDados());
+            var exemplo = ExemplosMobile.Montar(tipo, criarFormulario(tipo).ExportarDados());
             var importacao = exemplo.Falhou ? Result.Falha(exemplo.Erro) : formulario.TentarImportarDados(exemplo.Valor);
             if (importacao.Falhou)
             {
@@ -149,8 +147,8 @@ public sealed class HistoricoMobileService(IHistoricoCalculos historico, Func<Ti
             return null;
         var dados = JsonSerializer.Deserialize<DadosFormularioMobile>(salvo.Dados);
         if (dados is null) return null;
-        var formulario = criarPagina(tipo).BindingContext as IFormularioHistoricoMobile;
-        if (formulario is null || formulario.TentarImportarDados(dados).Falhou) return null;
+        var formulario = criarFormulario(tipo);
+        if (formulario.TentarImportarDados(dados).Falhou) return null;
         await CalcularAsync(formulario);
         return formulario switch
         {

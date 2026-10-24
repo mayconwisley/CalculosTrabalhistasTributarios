@@ -28,6 +28,12 @@ public sealed partial class GrupoAtalhosMobile(string titulo, IReadOnlyList<Atal
     public IReadOnlyList<AtalhoMobile> ItensMenu => Expandido || _emBusca ? Atalhos : Nenhum;
     public string IconeExpandir => Expandido || _emBusca ? "▾" : "▸";
 
+    /// <summary>
+    /// Itens da tela inicial, que só aparecem durante a busca. Fora dela a lista fica vazia: uma seção escondida com
+    /// <c>IsVisible</c> ainda criaria os cartões de todas as calculadoras e tabelas, deixando a abertura lenta.
+    /// </summary>
+    public IReadOnlyList<AtalhoMobile> ItensBusca => _emBusca ? Atalhos : Nenhum;
+
     [RelayCommand]
     private void Alternar() => Expandido = !Expandido;
 
@@ -46,6 +52,7 @@ public sealed partial class GrupoAtalhosMobile(string titulo, IReadOnlyList<Atal
         {
             OnPropertyChanged(nameof(ItensMenu));
             OnPropertyChanged(nameof(IconeExpandir));
+            OnPropertyChanged(nameof(ItensBusca));
         }
     }
 }

@@ -13,6 +13,8 @@ using CalculosTrabalhistasTributarios.Mobile.Features.Inicio;
 using CalculosTrabalhistasTributarios.Mobile.Features.Tributacao;
 using CalculosTrabalhistasTributarios.Mobile.Presentation.Inicio;
 using CalculosTrabalhistasTributarios.Mobile.Presentation.Trabalhista;
+using CalculosTrabalhistasTributarios.Mobile.Presentation.SaqueAniversario;
+using CalculosTrabalhistasTributarios.Mobile.Presentation.Tributacao;
 using CalculosTrabalhistasTributarios.Mobile.Features.Trabalhista;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using CalculosTrabalhistasTributarios.Infrastructure.Tabelas;
@@ -73,6 +75,13 @@ public static class MauiProgram
             TipoCalculadoraMobile.SaqueAniversario => provider.GetRequiredService<SaqueAniversarioPage>(),
             _ => new CalculadoraTrabalhistaPage((CalculadoraTrabalhistaViewModel)provider.GetRequiredService(CatalogoCalculadorasMobile.TipoViewModel(tipo)),
                 tipo, provider.GetRequiredService<HistoricoMobileService>(), provider.GetRequiredService<ManualMobileService>())
+        });
+        // Só o formulário, sem a página: preencher o exemplo e comparar históricos não precisam montar a tela.
+        builder.Services.AddScoped<Func<TipoCalculadoraMobile, IFormularioHistoricoMobile>>(provider => tipo => tipo switch
+        {
+            TipoCalculadoraMobile.SimulacaoTributaria => provider.GetRequiredService<SimulacaoTributariaViewModel>(),
+            TipoCalculadoraMobile.SaqueAniversario => provider.GetRequiredService<SaqueAniversarioViewModel>(),
+            _ => (IFormularioHistoricoMobile)provider.GetRequiredService(CatalogoCalculadorasMobile.TipoViewModel(tipo))
         });
         builder.Services.AddScoped<NavegadorCalculadoras>();
         builder.Services.AddScoped<INavegacaoCalculadoras>(provider => provider.GetRequiredService<NavegadorCalculadoras>());

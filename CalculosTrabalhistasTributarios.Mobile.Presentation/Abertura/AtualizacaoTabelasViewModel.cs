@@ -72,7 +72,8 @@ public sealed partial class AtualizacaoTabelasViewModel : ObservableObject
         Mensagem = "Preparando o banco de dados...";
         try
         {
-            await prepararBanco(CancellationToken.None);
+            // A cópia da base e as sementes usam SQLite síncrono: fora da thread da tela, a abertura não congela.
+            await Task.Run(() => prepararBanco(CancellationToken.None));
         }
         catch (Exception exception)
         {

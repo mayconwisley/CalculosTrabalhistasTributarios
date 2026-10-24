@@ -18,7 +18,7 @@
         <DataTemplate x:Key="GrupoEncontrado" x:DataType="vm:GrupoAtalhosMobile">
             <VerticalStackLayout Spacing="8" IsVisible="{Binding Visivel}">
                 <Label Text="{Binding Titulo}" Style="{StaticResource TituloSecao}" SemanticProperties.HeadingLevel="Level2" />
-                <VerticalStackLayout Spacing="8" BindableLayout.ItemsSource="{Binding Atalhos}" BindableLayout.ItemTemplate="{StaticResource ItemEncontrado}" />
+                <VerticalStackLayout Spacing="8" BindableLayout.ItemsSource="{Binding ItensBusca}" BindableLayout.ItemTemplate="{StaticResource ItemEncontrado}" />
             </VerticalStackLayout>
         </DataTemplate>
     </ContentPage.Resources>
@@ -42,7 +42,7 @@
             <VerticalStackLayout Spacing="20" IsVisible="{Binding EmBusca}">
                 <VerticalStackLayout Spacing="8" IsVisible="{Binding TemFavoritas}">
                     <Label Text="Favoritas" Style="{StaticResource TituloSecao}" SemanticProperties.HeadingLevel="Level2" />
-                    <VerticalStackLayout Spacing="8" BindableLayout.ItemsSource="{Binding Favoritas.Atalhos}" BindableLayout.ItemTemplate="{StaticResource ItemEncontrado}" />
+                    <VerticalStackLayout Spacing="8" BindableLayout.ItemsSource="{Binding Favoritas.ItensBusca}" BindableLayout.ItemTemplate="{StaticResource ItemEncontrado}" />
                 </VerticalStackLayout>
                 <VerticalStackLayout Spacing="20" BindableLayout.ItemsSource="{Binding Grupos}" BindableLayout.ItemTemplate="{StaticResource GrupoEncontrado}" />
                 <VerticalStackLayout Spacing="20" BindableLayout.ItemsSource="{Binding GruposTabelas}" BindableLayout.ItemTemplate="{StaticResource GrupoEncontrado}" />
