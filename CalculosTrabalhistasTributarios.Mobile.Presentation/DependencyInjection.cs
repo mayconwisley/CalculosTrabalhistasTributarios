@@ -18,7 +18,8 @@ public static class DependencyInjection
             .AddScoped<InicioViewModel>()
             .AddSingleton<SituacaoAtualizacaoTabelas>()
             .AddTransient<AtualizacaoTabelasViewModel>()
-            .AddTransient<ConfiguracoesMobileViewModel>();
+            .AddTransient<ConfiguracoesMobileViewModel>()
+            .AddTransient<CalculosTrabalhistasTributarios.Mobile.Presentation.Historico.HistoricoMobileViewModel>();
         // Formulários novos por página: cada abertura começa vazia.
         foreach (var cartao in CatalogoCalculadorasMobile.Cartoes.Where(cartao => cartao.ViewModel is not null))
             services.AddTransient(cartao.ViewModel!);

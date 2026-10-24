@@ -14,8 +14,18 @@ using Microsoft.Extensions.Logging;
 
 namespace CalculosTrabalhistasTributarios.Mobile.Presentation.Trabalhista;
 
-public abstract partial class CalculadoraTrabalhistaViewModel(ICompartilhamentoPdf compartilhamento, ILogger logger) : ObservableObject, IFormularioHistoricoMobile
+public abstract partial class CalculadoraTrabalhistaViewModel : ObservableObject, IFormularioEditavelMobile
 {
+    private readonly ICompartilhamentoPdf compartilhamento;
+    private readonly ILogger logger;
+    public event EventHandler? FormularioAlterado;
+    protected CalculadoraTrabalhistaViewModel(ICompartilhamentoPdf compartilhamento, ILogger logger)
+    {
+        this.compartilhamento = compartilhamento;
+        this.logger = logger;
+        _formulario.Alterado += (_, _) => NotificarEdicao();
+    }
+    private void NotificarEdicao() => FormularioAlterado?.Invoke(this, EventArgs.Empty);
     protected static readonly CultureInfo Cultura = CultureInfo.GetCultureInfo("pt-BR");
     private readonly EstadoFormularioTrabalhista _formulario = new();
     private Dictionary<string, CampoMobile> _campos => _formulario.Campos;
@@ -126,6 +136,7 @@ public abstract partial class CalculadoraTrabalhistaViewModel(ICompartilhamentoP
         QuitacaoConfirmada = dados.QuitacaoConfirmada && QuitacaoBancoHoras is not null;
         Demonstrativo = null;
         Mensagem = null;
+        NotificarEdicao();
         return Result.Ok();
     }
 
@@ -145,9 +156,14 @@ public abstract partial class CalculadoraTrabalhistaViewModel(ICompartilhamentoP
     [NotifyPropertyChangedFor(nameof(QuitacaoBancoHorasTexto))]
     private QuitacaoBancoHoras? _quitacaoBancoHoras;
     [ObservableProperty] private bool _quitacaoConfirmada;
-    partial void OnQuitacaoBancoHorasChanged(QuitacaoBancoHoras? value) => Demonstrativo = null;
+    partial void OnQuitacaoBancoHorasChanged(QuitacaoBancoHoras? value)
+    {
+        Demonstrativo = null;
+        NotificarEdicao();
+    }
     partial void OnQuitacaoConfirmadaChanged(bool value)
     {
+        NotificarEdicao();
         Demonstrativo = null;
         Mensagem = null;
     }
@@ -188,6 +204,7 @@ public abstract partial class CalculadoraTrabalhistaViewModel(ICompartilhamentoP
                 Demonstrativo = null;
                 Mensagem = null;
                 AoAlterar(campo);
+                NotificarEdicao();
             }
         };
         return campo;
@@ -214,6 +231,7 @@ public abstract partial class CalculadoraTrabalhistaViewModel(ICompartilhamentoP
         var grade = new GradeMobile(chave, titulo, descricao, nomeLinha, limite, colunas, aoAlterarLinha);
         grade.Alterada += (_, _) =>
         {
+            NotificarEdicao();
             Demonstrativo = null;
             Mensagem = null;
         };

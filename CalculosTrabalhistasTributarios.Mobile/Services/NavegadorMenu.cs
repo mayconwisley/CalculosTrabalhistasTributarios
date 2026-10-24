@@ -30,7 +30,7 @@ public sealed class NavegadorMenu(IServiceProvider services) : INavegacaoMenu
     public Task AbrirPaginaAsync(Page page) => AbrirAsync(page);
 
     // Resolvidos na hora: o histórico também navega por este serviço.
-    public Task AbrirCalculoSalvoAsync(CalculoSalvoDto calculo) => services.GetRequiredService<HistoricoMobileService>().AbrirAsync(calculo);
+    public Task AbrirCalculoSalvoAsync(ResumoCalculoSalvoDto calculo) => services.GetRequiredService<HistoricoMobileService>().AbrirAsync(calculo);
     public Task AbrirManualAsync() => services.GetRequiredService<ManualMobileService>().AbrirAsync();
 
     public void AbrirMenu() => _menu!.IsPresented = true;

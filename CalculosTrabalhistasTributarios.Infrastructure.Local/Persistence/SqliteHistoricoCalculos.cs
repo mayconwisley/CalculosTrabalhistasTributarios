@@ -10,7 +10,7 @@ namespace CalculosTrabalhistasTributarios.Infrastructure.Persistence;
 /// Histórico no mesmo banco das tabelas, que o instalador preserva nas atualizações. A tabela é criada no primeiro uso,
 /// independentemente da versão das sementes, porque guarda dados do usuário e não valores publicados.
 /// </summary>
-public sealed class SqliteHistoricoCalculos(BancoTributario banco) : IHistoricoCalculos
+public sealed class SqliteHistoricoCalculos(BancoTributario banco) : IHistoricoCalculos, IConsultaHistoricoCalculos
 {
     private const string FormatoData = "yyyy-MM-dd HH:mm:ss";
     private const string TipoSimulacaoTributariaAnterior = "SimulacaoTributaria";
@@ -23,6 +23,51 @@ public sealed class SqliteHistoricoCalculos(BancoTributario banco) : IHistoricoC
     {
         await using var conexao = await AbrirAsync(cancellationToken);
         return await conexao.ListarAsync(null, $"SELECT {Colunas} FROM \"CalculosSalvos\" ORDER BY \"AlteradoEm\" DESC, \"Id\" DESC", Ler, cancellationToken);
+    }
+
+    // Microsoft.Data.Sqlite executa parte do I/O sincronamente; a consulta inteira fica fora da UI.
+    public Task<PaginaHistoricoDto> ConsultarAsync(ConsultaHistoricoDto consulta, CancellationToken cancellationToken) =>
+        Task.Run(() => ConsultarPaginaAsync(consulta, cancellationToken), cancellationToken);
+
+    private async Task<PaginaHistoricoDto> ConsultarPaginaAsync(ConsultaHistoricoDto consulta, CancellationToken cancellationToken)
+    {
+        ArgumentOutOfRangeException.ThrowIfNegative(consulta.Deslocamento);
+        if (consulta.Limite is < 1 or > 100 || !Enum.IsDefined(consulta.Ordem))
+            throw new ArgumentOutOfRangeException(nameof(consulta));
+        await using var conexao = await AbrirAsync(cancellationToken);
+        var comparacao = CultureInfo.GetCultureInfo("pt-BR").CompareInfo;
+        conexao.CreateFunction<string, string, bool>("contem_historico", (texto, busca) =>
+            comparacao.IndexOf(texto, busca, CompareOptions.IgnoreCase | CompareOptions.IgnoreNonSpace) >= 0, isDeterministic: true);
+        conexao.CreateCollation("historico_ptbr", (a, b) => comparacao.Compare(a, b, CompareOptions.IgnoreCase));
+        using var transacao = conexao.BeginTransaction();
+        const string filtro = """
+            WHERE ($busca = '' OR contem_historico("Nome", $busca) OR contem_historico("Calculadora", $busca))
+              AND ($calculadora = '' OR "Calculadora" = $calculadora)
+              AND ($desde = '' OR "AlteradoEm" >= $desde)
+              AND ($ate = '' OR "AlteradoEm" < $ate)
+            """;
+        (string Nome, object Valor)[] parametros = [("$busca", consulta.Busca?.Trim() ?? ""), ("$calculadora", consulta.Calculadora ?? ""),
+            ("$desde", consulta.Desde?.ToString(FormatoData, CultureInfo.InvariantCulture) ?? ""),
+            ("$ate", consulta.AteExclusivo?.ToString(FormatoData, CultureInfo.InvariantCulture) ?? "")];
+        var totais = await conexao.ListarAsync(transacao, $"SELECT COUNT(*) FROM CalculosSalvos {filtro}", r => r.GetInt32(0), cancellationToken, parametros);
+        var geral = await conexao.ListarAsync(transacao, "SELECT COUNT(*) FROM CalculosSalvos", r => r.GetInt32(0), cancellationToken);
+        var calculadoras = await conexao.ListarAsync(transacao, "SELECT DISTINCT Calculadora FROM CalculosSalvos ORDER BY Calculadora COLLATE historico_ptbr", r => r.GetString(0), cancellationToken);
+        var ordem = consulta.Ordem switch
+        {
+            OrdemHistorico.MaisAntigos => "AlteradoEm ASC, Id ASC",
+            OrdemHistorico.Nome => "Nome COLLATE historico_ptbr ASC, Id ASC",
+            _ => "AlteradoEm DESC, Id DESC"
+        };
+        var itens = await conexao.ListarAsync(transacao, $"""
+            SELECT Id, Tipo, Calculadora, Nome, CriadoEm, AlteradoEm FROM CalculosSalvos
+            {filtro} ORDER BY {ordem} LIMIT $limite OFFSET $deslocamento
+            """, r => new ResumoCalculoSalvoDto(r.GetInt64(0), r.GetString(1), r.GetString(2), r.GetString(3),
+                DateTime.ParseExact(r.GetString(4), FormatoData, CultureInfo.InvariantCulture),
+                DateTime.ParseExact(r.GetString(5), FormatoData, CultureInfo.InvariantCulture)), cancellationToken,
+            [.. parametros, ("$limite", consulta.Limite), ("$deslocamento", consulta.Deslocamento)]);
+        cancellationToken.ThrowIfCancellationRequested();
+        transacao.Commit();
+        return new(itens, totais[0], geral[0], calculadoras);
     }
 
     public async Task<CalculoSalvoDto?> ObterAsync(long id, CancellationToken cancellationToken)
@@ -87,6 +132,7 @@ public sealed class SqliteHistoricoCalculos(BancoTributario banco) : IHistoricoC
                     "AlteradoEm" TEXT NOT NULL
                 )
                 """, cancellationToken);
+            await conexao.ExecutarAsync(null, "CREATE INDEX IF NOT EXISTS IX_CalculosSalvos_AlteradoEm_Id ON CalculosSalvos (AlteradoEm DESC, Id DESC)", cancellationToken);
             // A simulação tributária tinha janela própria e passou para a janela padrão das calculadoras: os cálculos
             // salvos antes passam a abrir, recalcular e comparar como os da nova calculadora. O formulário é o mesmo,
             // e a calculadora lê os nomes antigos dos campos.

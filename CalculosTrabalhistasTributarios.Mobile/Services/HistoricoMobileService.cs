@@ -17,12 +17,12 @@ namespace CalculosTrabalhistasTributarios.Mobile.Services;
 
 /// <summary>Persiste os formulários no SQLite privado do aparelho e abre novas páginas para cada histórico.</summary>
 public sealed class HistoricoMobileService(IHistoricoCalculos historico, Func<TipoCalculadoraMobile, Page> criarPagina,
-    Func<TipoCalculadoraMobile, IFormularioHistoricoMobile> criarFormulario, NavegadorMenu menu, ILogger<HistoricoMobileService> logger)
+    Func<TipoCalculadoraMobile, IFormularioHistoricoMobile> criarFormulario, NavegadorMenu menu, ILogger<HistoricoMobileService> logger) : IInteracaoHistoricoMobile
 {
     private static Page Pagina => Microsoft.Maui.Controls.Application.Current?.Windows.FirstOrDefault()?.Page
         ?? throw new InvalidOperationException("Janela do aplicativo indisponível.");
 
-    public Task<IReadOnlyList<CalculoSalvoDto>> ListarAsync() => historico.ListarAsync(CancellationToken.None);
+
 
     public async Task SalvarAsync(TipoCalculadoraMobile tipo, IFormularioHistoricoMobile formulario)
     {
@@ -49,7 +49,15 @@ public sealed class HistoricoMobileService(IHistoricoCalculos historico, Func<Ti
         }
     }
 
-    public async Task AbrirAsync(CalculoSalvoDto salvo)
+    private Task<CalculoSalvoDto?> ObterAsync(long id) => Task.Run(() => historico.ObterAsync(id, CancellationToken.None));
+
+    public async Task AbrirAsync(ResumoCalculoSalvoDto resumo)
+    {
+        if (await ObterAsync(resumo.Id) is { } salvo) await AbrirCompletoAsync(salvo);
+        else await Pagina.DisplayAlertAsync("Histórico", "O cálculo não está mais no histórico. Atualize a lista.", "Entendi");
+    }
+
+    private async Task AbrirCompletoAsync(CalculoSalvoDto salvo)
     {
         if (!salvo.Tipo.StartsWith("Calculadora.", StringComparison.Ordinal)
             || !Enum.TryParse<TipoCalculadoraMobile>(salvo.Tipo["Calculadora.".Length..], out var tipo)
@@ -119,7 +127,19 @@ public sealed class HistoricoMobileService(IHistoricoCalculos historico, Func<Ti
         }
     }
 
-    public async Task CompararAsync(CalculoSalvoDto primeiro, CalculoSalvoDto segundo)
+    public async Task CompararAsync(ResumoCalculoSalvoDto primeiro, ResumoCalculoSalvoDto segundo)
+    {
+        var a = await ObterAsync(primeiro.Id);
+        var b = await ObterAsync(segundo.Id);
+        if (a is null || b is null)
+        {
+            await Pagina.DisplayAlertAsync("Comparação", "Um dos cálculos não está mais no histórico. Atualize a lista.", "Entendi");
+            return;
+        }
+        await CompararCompletosAsync(a, b);
+    }
+
+    private async Task CompararCompletosAsync(CalculoSalvoDto primeiro, CalculoSalvoDto segundo)
     {
         if (primeiro.Tipo != segundo.Tipo)
         {
@@ -170,13 +190,13 @@ public sealed class HistoricoMobileService(IHistoricoCalculos historico, Func<Ti
         }
     }
 
-    public async Task DuplicarAsync(CalculoSalvoDto salvo)
+    public async Task DuplicarAsync(ResumoCalculoSalvoDto salvo)
     {
         var resultado = await historico.DuplicarAsync(salvo.Id, CancellationToken.None);
         if (resultado.Falhou) await Pagina.DisplayAlertAsync("Histórico", resultado.Erro.Mensagem, "Entendi");
     }
 
-    public async Task RenomearAsync(CalculoSalvoDto salvo)
+    public async Task RenomearAsync(ResumoCalculoSalvoDto salvo)
     {
         var nome = await Pagina.DisplayPromptAsync("Renomear cálculo", "Nome do formulário salvo", "Salvar", "Cancelar",
             initialValue: salvo.Nome, maxLength: 100);
@@ -189,7 +209,7 @@ public sealed class HistoricoMobileService(IHistoricoCalculos historico, Func<Ti
         await historico.RenomearAsync(salvo.Id, nome.Trim(), CancellationToken.None);
     }
 
-    public async Task ExcluirAsync(CalculoSalvoDto salvo)
+    public async Task ExcluirAsync(ResumoCalculoSalvoDto salvo)
     {
         if (await Pagina.DisplayAlertAsync("Excluir cálculo", $"Excluir “{salvo.Nome}” do histórico?", "Excluir", "Cancelar"))
             await historico.ExcluirAsync(salvo.Id, CancellationToken.None);

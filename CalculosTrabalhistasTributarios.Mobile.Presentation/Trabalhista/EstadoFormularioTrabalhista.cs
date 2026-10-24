@@ -9,6 +9,24 @@ namespace CalculosTrabalhistasTributarios.Mobile.Presentation.Trabalhista;
 /// <summary>Estado e compatibilidade do formulário, sem comandos, navegação ou execução de cálculos.</summary>
 internal sealed class EstadoFormularioTrabalhista
 {
+    internal event EventHandler? Alterado;
+    internal EstadoFormularioTrabalhista()
+    {
+        Observar(DepositosFgts); Observar(BeneficiosDetalhados); Observar(LancamentosBancoHoras);
+    }
+    private void Observar<T>(ObservableCollection<T> colecao) where T : System.ComponentModel.INotifyPropertyChanged
+    {
+        var observados = new HashSet<T>();
+        void AoEditar(object? sender, System.ComponentModel.PropertyChangedEventArgs args) => Alterado?.Invoke(this, EventArgs.Empty);
+        colecao.CollectionChanged += (_, _) =>
+        {
+            foreach (var removido in observados.Where(item => !colecao.Contains(item)).ToArray())
+            { removido.PropertyChanged -= AoEditar; observados.Remove(removido); }
+            foreach (var novo in colecao.Where(item => !observados.Contains(item)))
+            { novo.PropertyChanged += AoEditar; observados.Add(novo); }
+            Alterado?.Invoke(this, EventArgs.Empty);
+        };
+    }
     private static readonly CultureInfo Cultura = CultureInfo.GetCultureInfo("pt-BR");
     internal Dictionary<string, CampoMobile> Campos { get; } = [];
     private Dictionary<string, CampoMobile> _campos => Campos;

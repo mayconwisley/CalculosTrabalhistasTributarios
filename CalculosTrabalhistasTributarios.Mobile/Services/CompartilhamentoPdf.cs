@@ -1,10 +1,12 @@
+using Microsoft.Extensions.Logging;
+using CalculosTrabalhistasTributarios.Infrastructure.Arquivos;
 using CalculosTrabalhistasTributarios.Application.DTOs;
 using CalculosTrabalhistasTributarios.Mobile.Platforms.Android.Reporting;
 using CalculosTrabalhistasTributarios.Mobile.Presentation.Interfaces;
 
 namespace CalculosTrabalhistasTributarios.Mobile.Services;
 
-public sealed class CompartilhamentoPdf(IShare compartilhamento, IFileSystem arquivos) : ICompartilhamentoPdf
+public sealed class CompartilhamentoPdf(IShare compartilhamento, IFileSystem arquivos, ILogger<CompartilhamentoPdf> logger) : ICompartilhamentoPdf
 {
     public async Task CompartilharAsync(DemonstrativoDto demonstrativo, CancellationToken cancellationToken)
     {
@@ -14,12 +16,9 @@ public sealed class CompartilhamentoPdf(IShare compartilhamento, IFileSystem arq
         {
             cancellationToken.ThrowIfCancellationRequested();
             Directory.CreateDirectory(pasta);
-            // Não remova ao fechar o menu: o aplicativo destinatário ainda pode estar lendo o arquivo.
-            foreach (var arquivo in Directory.EnumerateFiles(pasta, "simulacao-*.pdf"))
-            {
-                if (File.GetLastWriteTimeUtc(arquivo) < DateTime.UtcNow.AddDays(-7))
-                    File.Delete(arquivo);
-            }
+            // O destinatário pode continuar lendo depois que o menu é fechado.
+            var falhas = LimpezaCacheCompartilhamento.Executar(pasta, DateTime.UtcNow, cancellationToken);
+            if (falhas > 0) logger.LogWarning("Limpeza do cache de compartilhamento teve {Falhas} falhas de acesso.", falhas);
             try
             {
                 GeradorDemonstrativoPdf.Gerar(demonstrativo, caminho, cancellationToken);

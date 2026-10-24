@@ -1,53 +1,60 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:dto="clr-namespace:CalculosTrabalhistasTributarios.Application.DTOs;assembly=CalculosTrabalhistasTributarios.Application"
-             x:Class="CalculosTrabalhistasTributarios.Mobile.Features.Historico.HistoricoPage" Title="Histórico">
-    <!-- O cabeçalho rola com a lista: com busca, filtros e comparação, ele não pode tomar a tela de um celular pequeno. -->
-    <CollectionView x:Name="Lista" Margin="16,0" SelectionMode="None">
+             xmlns:vm="clr-namespace:CalculosTrabalhistasTributarios.Mobile.Presentation.Historico;assembly=CalculosTrabalhistasTributarios.Mobile.Presentation"
+             x:Class="CalculosTrabalhistasTributarios.Mobile.Features.Historico.HistoricoPage" x:DataType="vm:HistoricoMobileViewModel" Title="Histórico">
+    <CollectionView Margin="16,0" SelectionMode="None" ItemsSource="{Binding Itens}">
         <CollectionView.Header>
             <VerticalStackLayout Spacing="8" Padding="0,16,0,16">
                 <Label Text="Cálculos salvos" Style="{StaticResource TituloPagina}" SemanticProperties.HeadingLevel="Level1" />
                 <Label Text="Formulários guardados neste aparelho. Abra para recalcular com as tabelas disponíveis." Style="{StaticResource TextoSecundario}" />
                 <Border Style="{StaticResource CaixaCampo}">
-                    <Entry x:Name="Busca" Placeholder="Buscar pelo nome ou pela calculadora" Keyboard="Text" HorizontalTextAlignment="Start" FontSize="16"
-                           ClearButtonVisibility="WhileEditing" TextChanged="Filtrar" AutomationId="BuscaHistorico"
+                    <Entry Text="{Binding Busca}" Placeholder="Buscar pelo nome ou pela calculadora" Keyboard="Text" MaxLength="100"
+                           HorizontalTextAlignment="Start" FontSize="16" ClearButtonVisibility="WhileEditing" AutomationId="BuscaHistorico"
                            SemanticProperties.Description="Buscar no histórico pelo nome do cálculo ou da calculadora" />
                 </Border>
-                <Picker x:Name="Calculadora" Title="Calculadora" SelectedIndexChanged="Filtrar" AutomationId="FiltroCalculadoraHistorico"
+                <Picker Title="Calculadora" ItemsSource="{Binding Calculadoras}" SelectedItem="{Binding Calculadora}" AutomationId="FiltroCalculadoraHistorico"
                         SemanticProperties.Description="Filtrar por calculadora" />
                 <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
-                    <Picker x:Name="Periodo" Title="Período" SelectedIndexChanged="Filtrar" SemanticProperties.Description="Filtrar pela data da última alteração" />
-                    <Picker x:Name="Ordem" Grid.Column="1" Title="Ordem" SelectedIndexChanged="Filtrar" SemanticProperties.Description="Ordem da lista" />
+                    <Picker Title="Período" ItemsSource="{Binding Periodos}" SelectedIndex="{Binding Periodo}" SemanticProperties.Description="Filtrar pela data da última alteração" />
+                    <Picker Grid.Column="1" Title="Ordem" ItemsSource="{Binding Ordens}" SelectedIndex="{Binding Ordem}" SemanticProperties.Description="Ordem da lista" />
                 </Grid>
-                <Label x:Name="Resumo" Style="{StaticResource TextoSecundario}" />
-                <Label x:Name="Aviso" IsVisible="False" />
+                <ActivityIndicator IsRunning="{Binding Carregando}" IsVisible="{Binding Carregando}" />
+                <Label Text="{Binding Resumo}" Style="{StaticResource TextoSecundario}" />
+                <Label Text="{Binding Mensagem}" IsVisible="{Binding TemMensagem}" Style="{StaticResource TextoErroCampo}" />
+                <Button Text="Atualizar" Command="{Binding AtualizarCommand}" Style="{StaticResource BotaoSecundario}" AutomationId="AtualizarHistorico" />
                 <Label Text="Comparar dois cálculos" Style="{StaticResource TituloSecao}" Margin="0,8,0,0" />
-                <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
-                    <Picker x:Name="Primeiro" Title="Primeiro cálculo" ItemDisplayBinding="{Binding Nome}" />
-                    <Picker x:Name="Segundo" Grid.Column="1" Title="Segundo cálculo" ItemDisplayBinding="{Binding Nome}" />
-                </Grid>
-                <Button Text="Comparar selecionados" Style="{StaticResource BotaoSecundario}" Clicked="Comparar" AutomationId="CompararHistorico" />
+                <Label Text="{Binding Selecao}" Style="{StaticResource TextoSecundario}" />
+                <Button Text="Comparar selecionados" Style="{StaticResource BotaoSecundario}" Command="{Binding CompararCommand}" AutomationId="CompararHistorico" />
             </VerticalStackLayout>
         </CollectionView.Header>
-        <CollectionView.EmptyView>
-            <Label x:Name="Vazio" Text="Nenhum cálculo salvo ainda." Margin="0,8" Style="{StaticResource TextoSecundario}" />
-        </CollectionView.EmptyView>
+        <CollectionView.EmptyView><Label Text="{Binding Vazio}" Margin="0,8" Style="{StaticResource TextoSecundario}" /></CollectionView.EmptyView>
         <CollectionView.ItemTemplate>
-            <DataTemplate x:DataType="dto:CalculoSalvoDto">
+            <DataTemplate x:DataType="dto:ResumoCalculoSalvoDto">
                 <Border Margin="0,0,0,12" Padding="16">
                     <VerticalStackLayout Spacing="8">
                         <Label Text="{Binding Nome}" FontSize="20" FontFamily="OpenSansSemibold" />
                         <Label Text="{Binding Calculadora}" Style="{StaticResource TextoSecundario}" />
                         <Label Text="{Binding AlteradoEm, StringFormat='Atualizado em {0:dd/MM/yyyy HH:mm}'}" Style="{StaticResource TextoSecundario}" />
-                        <Button Text="Abrir" Clicked="Abrir" AutomationId="AbrirHistorico" />
+                        <Button Text="Abrir" Command="{Binding AbrirCommand, Source={RelativeSource AncestorType={x:Type vm:HistoricoMobileViewModel}}, x:DataType=vm:HistoricoMobileViewModel}" CommandParameter="{Binding .}" AutomationId="AbrirHistorico" />
+                        <Button Text="Selecionar / remover da comparação" Style="{StaticResource BotaoSecundario}" Command="{Binding SelecionarCommand, Source={RelativeSource AncestorType={x:Type vm:HistoricoMobileViewModel}}, x:DataType=vm:HistoricoMobileViewModel}" CommandParameter="{Binding .}" />
                         <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
-                            <Button Text="Duplicar" Style="{StaticResource BotaoSecundario}" Clicked="Duplicar" />
-                            <Button Grid.Column="1" Text="Renomear" Style="{StaticResource BotaoSecundario}" Clicked="Renomear" />
+                            <Button Text="Duplicar" Style="{StaticResource BotaoSecundario}" Command="{Binding DuplicarCommand, Source={RelativeSource AncestorType={x:Type vm:HistoricoMobileViewModel}}, x:DataType=vm:HistoricoMobileViewModel}" CommandParameter="{Binding .}" />
+                            <Button Grid.Column="1" Text="Renomear" Style="{StaticResource BotaoSecundario}" Command="{Binding RenomearCommand, Source={RelativeSource AncestorType={x:Type vm:HistoricoMobileViewModel}}, x:DataType=vm:HistoricoMobileViewModel}" CommandParameter="{Binding .}" />
                         </Grid>
-                        <Button Text="Excluir" Style="{StaticResource BotaoLink}" Clicked="Excluir" />
+                        <Button Text="Excluir" Style="{StaticResource BotaoLink}" Command="{Binding ExcluirCommand, Source={RelativeSource AncestorType={x:Type vm:HistoricoMobileViewModel}}, x:DataType=vm:HistoricoMobileViewModel}" CommandParameter="{Binding .}" />
                     </VerticalStackLayout>
                 </Border>
             </DataTemplate>
         </CollectionView.ItemTemplate>
+        <CollectionView.Footer>
+            <VerticalStackLayout Spacing="8" Padding="0,8,0,16">
+                <Label Text="{Binding ResumoPagina}" HorizontalTextAlignment="Center" />
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                    <Button Text="Anterior" Command="{Binding AnteriorCommand}" Style="{StaticResource BotaoSecundario}" AutomationId="PaginaAnteriorHistorico" />
+                    <Button Grid.Column="1" Text="Próxima" Command="{Binding ProximaCommand}" Style="{StaticResource BotaoSecundario}" AutomationId="ProximaPaginaHistorico" />
+                </Grid>
+            </VerticalStackLayout>
+        </CollectionView.Footer>
     </CollectionView>
 </ContentPage>

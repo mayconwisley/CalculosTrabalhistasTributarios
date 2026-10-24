@@ -12,7 +12,7 @@ using CalculosTrabalhistasTributarios.Domain.Trabalhista;
 
 namespace CalculosTrabalhistasTributarios.Mobile.Presentation.SaqueAniversario;
 
-public sealed partial class SaqueAniversarioViewModel : ObservableObject, IFormularioHistoricoMobile
+public sealed partial class SaqueAniversarioViewModel : ObservableObject, IFormularioEditavelMobile
 {
     private readonly ISimularDemonstrativoUseCase<SimularSaqueAniversarioRequest> _simular;
     private readonly ILogger<SaqueAniversarioViewModel> _logger;
@@ -28,6 +28,7 @@ public sealed partial class SaqueAniversarioViewModel : ObservableObject, IFormu
 
     public IReadOnlyList<string> Meses { get; } = CultureInfo.GetCultureInfo("pt-BR")
         .DateTimeFormat.MonthNames.Take(12).ToArray();
+    public event EventHandler? FormularioAlterado;
     public string Titulo => "Saque-aniversário do FGTS";
     public long? HistoricoId { get; set; }
 
@@ -109,6 +110,7 @@ public sealed partial class SaqueAniversarioViewModel : ObservableObject, IFormu
         {
             Demonstrativo = null;
             Mensagem = null;
+            FormularioAlterado?.Invoke(this, EventArgs.Empty);
         }
     }
 

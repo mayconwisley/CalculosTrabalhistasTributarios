@@ -14,7 +14,7 @@ public interface INavegacaoMenu
     void AbrirMenu();
 
     /// <summary>Reabre um cálculo salvo na sua calculadora, já calculado.</summary>
-    Task AbrirCalculoSalvoAsync(CalculoSalvoDto calculo);
+    Task AbrirCalculoSalvoAsync(ResumoCalculoSalvoDto calculo);
 
     /// <summary>Volta à tela inicial, fechando as telas abertas por cima dela.</summary>
     Task VoltarAoInicioAsync();

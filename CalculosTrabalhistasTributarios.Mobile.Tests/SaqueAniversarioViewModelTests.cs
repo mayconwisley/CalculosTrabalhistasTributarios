@@ -147,6 +147,8 @@ public sealed class SaqueAniversarioViewModelTests
         servicos.AddSingleton<INavegacaoCalculadoras>(new NavegacaoDeTeste());
         servicos.AddSingleton<INavegacaoMenu>(new MenuDeTeste());
         servicos.AddSingleton<IHistoricoCalculos>(new HistoricoDeTeste([]));
+        servicos.AddSingleton<IConsultaHistoricoCalculos>(new HistoricoDeTeste([]));
+        servicos.AddSingleton<IInteracaoHistoricoMobile>(new HistoricoViewModelTests.InteracaoTeste());
         servicos.AddSingleton<IPreferenciasMobile>(new PreferenciasDeTeste());
         servicos.AddSingleton<IPlataformaMobile>(new PlataformaDeTeste());
         servicos.AddSingleton<IAtualizarTodasTabelasUseCase>(new AtualizacaoDeTeste());
@@ -276,15 +278,16 @@ public sealed class SaqueAniversarioViewModelTests
         public Task AbrirHistoricoAsync() => Task.CompletedTask;
         public Task AbrirManualAsync() => Task.CompletedTask;
         public void AbrirMenu() { }
-        public CalculoSalvoDto? CalculoAberto { get; private set; }
-        public Task AbrirCalculoSalvoAsync(CalculoSalvoDto calculo)
+        public ResumoCalculoSalvoDto? CalculoAberto { get; private set; }
+        public Task AbrirCalculoSalvoAsync(ResumoCalculoSalvoDto calculo)
         {
             CalculoAberto = calculo;
             return Task.CompletedTask;
         }
     }
-    private sealed class HistoricoDeTeste(IReadOnlyList<CalculoSalvoDto> salvos) : IHistoricoCalculos
+    private sealed class HistoricoDeTeste(IReadOnlyList<CalculoSalvoDto> salvos) : IHistoricoCalculos, IConsultaHistoricoCalculos
     {
+        public Task<PaginaHistoricoDto> ConsultarAsync(ConsultaHistoricoDto consulta, CancellationToken cancellationToken) => Task.FromResult(new PaginaHistoricoDto(salvos.OrderByDescending(s => s.AlteradoEm).Skip(consulta.Deslocamento).Take(consulta.Limite).Select(s => new ResumoCalculoSalvoDto(s.Id, s.Tipo, s.Calculadora, s.Nome, s.CriadoEm, s.AlteradoEm)).ToArray(), salvos.Count, salvos.Count, salvos.Select(s => s.Calculadora).Distinct().ToArray()));
         public Task<IReadOnlyList<CalculoSalvoDto>> ListarAsync(CancellationToken cancellationToken) => Task.FromResult(salvos);
         public Task<CalculoSalvoDto?> ObterAsync(long id, CancellationToken cancellationToken) => Task.FromResult(salvos.FirstOrDefault(salvo => salvo.Id == id));
         public Task<long> SalvarAsync(long? id, string tipo, string calculadora, string nome, string dados, CancellationToken cancellationToken) => throw new NotSupportedException();

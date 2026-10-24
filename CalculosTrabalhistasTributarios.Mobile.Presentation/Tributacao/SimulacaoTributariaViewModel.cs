@@ -14,9 +14,10 @@ namespace CalculosTrabalhistasTributarios.Mobile.Presentation.Tributacao;
 public sealed partial class SimulacaoTributariaViewModel(
     ISimularDemonstrativoUseCase<SimularImpostoRequest> simular,
     ICompartilhamentoPdf compartilhamento,
-    ILogger<SimulacaoTributariaViewModel> logger) : ObservableObject, IFormularioHistoricoMobile
+    ILogger<SimulacaoTributariaViewModel> logger) : ObservableObject, IFormularioEditavelMobile
 {
     private static readonly CultureInfo Cultura = CultureInfo.GetCultureInfo("pt-BR");
+    public event EventHandler? FormularioAlterado;
     public string Titulo => "Simulação tributária";
     public long? HistoricoId { get; set; }
     public DadosFormularioMobile ExportarDados() => new(1, new Dictionary<string, ValorCampoMobile>
@@ -83,6 +84,7 @@ public sealed partial class SimulacaoTributariaViewModel(
         {
             Demonstrativo = null;
             Mensagem = null;
+            FormularioAlterado?.Invoke(this, EventArgs.Empty);
         }
     }
 

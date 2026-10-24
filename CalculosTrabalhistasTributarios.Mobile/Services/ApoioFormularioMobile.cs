@@ -14,12 +14,13 @@ public sealed class ApoioFormularioMobile(IRascunhosFormularios armazenamento, I
 
     public void Configurar(Page pagina, TipoCalculadoraMobile tipo)
     {
-        if (pagina.BindingContext is not IFormularioHistoricoMobile formulario) return;
-        var sessao = new SessaoRascunhoFormulario(armazenamento, tipo.ToString(), formulario);
+        if (pagina.BindingContext is not IFormularioEditavelMobile formulario) return;
+        NavegacaoTecladoFormulario.Configurar(pagina, logger);
+        var controle = new ControleRascunhoFormulario(armazenamento, tipo.ToString(), formulario);
         var iniciais = formulario.ExportarDados();
         var timer = pagina.Dispatcher.CreateTimer();
-        timer.Interval = TimeSpan.FromSeconds(1);
-        var preparada = false;
+        timer.Interval = TimeSpan.FromMilliseconds(250);
+        var preparando = false;
         var gravando = false;
         var operacao = new SemaphoreSlim(1, 1);
         var visivel = false;
@@ -28,14 +29,14 @@ public sealed class ApoioFormularioMobile(IRascunhosFormularios armazenamento, I
         var conteudo = Descendentes(pagina).OfType<ScrollView>().FirstOrDefault()?.Content as VerticalStackLayout;
         conteudo?.Children.Insert(0, status);
 
-        async Task PersistirAsync()
+        async Task PersistirAsync(bool imediato)
         {
-            if (!preparada) return;
+            if (!controle.Preparada) return;
             await operacao.WaitAsync();
             gravando = true;
             try
             {
-                if (await sessao.SalvarSeAlteradoAsync(sessao.Capturar(), CancellationToken.None))
+                if (await controle.PersistirAsync(imediato, CancellationToken.None))
                     status.Text = "Rascunho salvo neste aparelho. O histórico é salvo pelo botão Salvar.";
             }
             catch (Exception erro)
@@ -46,62 +47,64 @@ public sealed class ApoioFormularioMobile(IRascunhosFormularios armazenamento, I
             finally { gravando = false; operacao.Release(); }
         }
 
-        async void AoParar(object? sender, EventArgs args) => await PersistirAsync();
-        timer.Tick += async (_, _) => { if (!gravando) await PersistirAsync(); };
+        async void AoParar(object? sender, EventArgs args) => await PersistirAsync(imediato: true);
+        timer.Tick += async (_, _) =>
+        {
+            if (!gravando && controle.TemEdicoes) await PersistirAsync(imediato: false);
+            if (!controle.TemEdicoes) timer.Stop();
+        };
+        formulario.FormularioAlterado += (_, _) =>
+        {
+            if (visivel && controle.Preparada) timer.Start();
+        };
         pagina.Appearing += async (_, _) =>
         {
             visivel = true;
-            if (!preparada)
+            if (preparando) return;
+            preparando = true;
+            try
             {
-                try
+                var recuperou = false;
+                var resultado = await controle.PrepararAsync((bool)pagina.GetValue(RecebeuDadosProperty), async _ =>
                 {
-                    if (!(bool)pagina.GetValue(RecebeuDadosProperty) && formulario.HistoricoId is null
-                        && await sessao.ObterAsync(CancellationToken.None) is { } rascunho)
-                    {
-                        if (await pagina.DisplayAlertAsync("Recuperar rascunho?", "Há um preenchimento anterior desta calculadora neste aparelho.", "Recuperar", "Descartar"))
-                        {
-                            var resultado = sessao.Recuperar(rascunho);
-                            if (resultado.Falhou) await pagina.DisplayAlertAsync("Rascunho indisponível", resultado.Erro.Mensagem, "Entendi");
-                            else status.Text = "Rascunho recuperado. Calcule novamente para conferir os valores.";
-                        }
-                        else await sessao.DescartarAsync(sessao.Capturar(), CancellationToken.None);
-                    }
-                }
-                catch (Exception erro)
-                {
-                    logger.LogError(erro, "Falha ao recuperar rascunho móvel {Tipo}.", tipo);
-                    status.Text = "Rascunho indisponível. Você pode descartá-lo pelo menu desta tela.";
-                }
-                preparada = true;
+                    recuperou = await pagina.DisplayAlertAsync("Recuperar rascunho?", "Há um preenchimento anterior desta calculadora neste aparelho.", "Recuperar", "Descartar");
+                    return recuperou;
+                }, CancellationToken.None);
+                if (resultado.Falhou) await pagina.DisplayAlertAsync("Rascunho indisponível", resultado.Erro.Mensagem, "Entendi");
+                else if (recuperou) status.Text = "Rascunho recuperado. Calcule novamente para conferir os valores.";
             }
+            catch (Exception erro)
+            {
+                logger.LogError(erro, "Falha ao recuperar rascunho móvel {Tipo}.", tipo);
+                status.Text = "Rascunho indisponível. Você pode descartá-lo pelo menu desta tela.";
+            }
+            finally { preparando = false; }
             if (!visivel) return;
             janela = pagina.Window;
             janela.Stopped -= AoParar;
             janela.Stopped += AoParar;
-            timer.Start();
+            if (controle.TemEdicoes) timer.Start();
         };
         pagina.Disappearing += async (_, _) =>
         {
             visivel = false;
             timer.Stop();
             if (janela is not null) janela.Stopped -= AoParar;
-            await PersistirAsync();
+            await PersistirAsync(imediato: true);
         };
         pagina.ToolbarItems.Add(new ToolbarItem
         {
             Text = "Descartar rascunho", Order = ToolbarItemOrder.Secondary,
             Command = new Command(async () =>
             {
-                if (gravando || !preparada) return;
+                if (gravando || !controle.Preparada || preparando) return;
                 if (!await pagina.DisplayAlertAsync("Descartar preenchimento?", "O formulário voltará aos valores iniciais e a cópia automática será apagada. Históricos salvos serão preservados.", "Descartar", "Cancelar")) return;
                 await operacao.WaitAsync();
                 gravando = true;
                 try
                 {
-                    var resultado = formulario.TentarImportarDados(iniciais);
+                    var resultado = await controle.DescartarAsync(iniciais, CancellationToken.None);
                     if (resultado.Falhou) { await pagina.DisplayAlertAsync("Rascunho", resultado.Erro.Mensagem, "Entendi"); return; }
-                    formulario.HistoricoId = null;
-                    await sessao.DescartarAsync(sessao.Capturar(), CancellationToken.None);
                     status.Text = "Rascunho descartado. Novas edições serão guardadas automaticamente.";
                 }
                 catch (Exception erro)

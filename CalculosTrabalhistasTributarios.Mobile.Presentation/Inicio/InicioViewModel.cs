@@ -23,7 +23,7 @@ public sealed partial class InicioViewModel : ObservableObject
     private readonly IPlataformaMobile _plataforma;
     private readonly INavegacaoMenu _menu;
     private readonly SituacaoAtualizacaoTabelas _situacao;
-    private readonly IHistoricoCalculos _historico;
+    private readonly IConsultaHistoricoCalculos _historico;
     private readonly ILogger<InicioViewModel> _logger;
     private readonly Dictionary<string, AtalhoMobile> _porChave;
     private bool _exibindoAviso;
@@ -50,7 +50,7 @@ public sealed partial class InicioViewModel : ObservableObject
     private string? _avisoTabelas;
 
     public InicioViewModel(INavegacaoCalculadoras navegacao, INavegacaoMenu menu, IPreferenciasMobile preferencias, IPlataformaMobile plataforma,
-        SituacaoAtualizacaoTabelas situacao, IHistoricoCalculos historico, ILogger<InicioViewModel> logger)
+        SituacaoAtualizacaoTabelas situacao, IConsultaHistoricoCalculos historico, ILogger<InicioViewModel> logger)
     {
         _historico = historico;
         _menu = menu;
@@ -151,10 +151,10 @@ public sealed partial class InicioViewModel : ObservableObject
         try
         {
             // O SQLite responde de forma síncrona; a leitura sai da thread da tela.
-            var salvos = await Task.Run(() => _historico.ListarAsync(CancellationToken.None));
+            var pagina = await _historico.ConsultarAsync(new(Limite: QuantidadeRecentes), CancellationToken.None);
             var hoje = DateTime.Today;
             Recentes.Clear();
-            foreach (var salvo in salvos.OrderByDescending(salvo => salvo.AlteradoEm).Take(QuantidadeRecentes))
+            foreach (var salvo in pagina.Itens)
                 Recentes.Add(CalculoRecenteMobile.Criar(salvo, hoje));
         }
         catch (Exception exception)

@@ -47,7 +47,9 @@ public static class MauiProgram
         builder.Services.AddCalculadoras().AddSaqueAniversario().AddAtualizacaoTodasTabelas().AddPresentation();
         var caminhoBanco = Path.Combine(FileSystem.Current.AppDataDirectory, "BancoDados", "calculoIrrf.db");
         builder.Services.AddInfrastructureLocal(caminhoBanco);
-        builder.Services.AddSingleton<IHistoricoCalculos, SqliteHistoricoCalculos>();
+        builder.Services.AddSingleton<SqliteHistoricoCalculos>();
+        builder.Services.AddSingleton<IHistoricoCalculos>(p => p.GetRequiredService<SqliteHistoricoCalculos>());
+        builder.Services.AddSingleton<IConsultaHistoricoCalculos>(p => p.GetRequiredService<SqliteHistoricoCalculos>());
         builder.Services.AddAtualizacaoTabelas();
         builder.Services.AddSingleton<IConsultaCotacoesTrabalhoExterior, CalculosTrabalhistasTributarios.Infrastructure.Tributacao.ConsultaCotacoesTrabalhoExterior>();
         builder.Services.AddSingleton(provider => new PreparadorBancoLocal(caminhoBanco,
@@ -93,6 +95,7 @@ public static class MauiProgram
         builder.Services.AddScoped<INavegacaoTransferenciasMobile>(provider => provider.GetRequiredService<NavegadorCalculadoras>());
         builder.Services.AddScoped<NavegadorMenu>();
         builder.Services.AddScoped<HistoricoMobileService>();
+        builder.Services.AddScoped<IInteracaoHistoricoMobile>(p => p.GetRequiredService<HistoricoMobileService>());
         builder.Services.AddScoped<ApoioFormularioMobile>();
         builder.Services.AddSingleton<ManualMobileService>();
         builder.Services.AddScoped<INavegacaoMenu>(provider => provider.GetRequiredService<NavegadorMenu>());

@@ -43,7 +43,11 @@ class Android:
         if start < 0:
             return []  # Splash e transições podem não fornecer uma hierarquia ainda.
         try:
-            return list(ET.fromstring(self.xml[start:]).iter("node"))
+            nodes = list(ET.fromstring(self.xml[start:]).iter("node"))
+            if any(n.get("resource-id") == "android:id/aerr_close" for n in nodes):
+                titles = [n.get("text") for n in nodes if n.get("resource-id") == "android:id/alertTitle"]
+                raise AssertionError("Android apresentou ANR: " + "; ".join(titles))
+            return nodes
         except ET.ParseError:
             return []
 
@@ -75,6 +79,8 @@ class Android:
 
     def text(self, value, text, **kwargs):
         self.tap(value, **kwargs)
+        if self.find(value).get("focused") != "true":
+            raise AssertionError("A entrada não recebeu foco antes da digitação: " + value)
         self.run("shell", "input", "keyevent", "123")
         self.run("shell", "input", "keyevent", *(["67"] * 45))
         self.run("shell", "input", "text", text.replace(" ", "%s"))
@@ -87,12 +93,20 @@ class Android:
             y1, y2 = y2, y1
         self.run("shell", "input", "swipe", str(width // 2), str(y1), str(width // 2), str(y2), "300")
 
+    def hide_keyboard(self):
+        state = self.run("shell", "dumpsys", "input_method")
+        if re.search(r"\bmIsInputViewShown=true\b", state):
+            self.back()
+
     def back(self):
         self.run("shell", "input", "keyevent", "4")
 
     def screenshot(self, name):
         (self.artifacts / (name + ".png")).write_bytes(self.run("exec-out", "screencap", "-p", binary=True))
-        self.nodes()
+        try:
+            self.nodes()
+        except AssertionError:
+            pass  # A hierarquia do ANR já foi capturada; preserve a falha original do percurso.
         (self.artifacts / (name + ".xml")).write_text(self.xml, encoding="utf-8")
 
     def launch(self):
@@ -116,9 +130,17 @@ class Android:
 
     def open_calculator(self, query, title, calculate="CalcularTrabalhista"):
         self.text("BuscaInicio", query)
-        self.back()  # fecha o teclado
+        self.screenshot("busca-antes-teclado")
+        self.hide_keyboard()  # Com teclado físico, Back navegaria para fora da página.
+        self.screenshot("busca-apos-teclado")
         self.tap(title, scroll=True)
-        self.find(calculate, timeout=45)
+        deadline = time.monotonic() + 45
+        while time.monotonic() < deadline:
+            nodes = self.nodes()
+            if any(self.matches(n, calculate) or self.matches(n, "Recuperar") for n in nodes):
+                return
+            time.sleep(0.3)
+        raise AssertionError("A calculadora não abriu nem ofereceu recuperação do rascunho")
 
     def ensure_calculator(self, query, title, calculate="CalcularTrabalhista"):
         deadline = time.monotonic() + 60
@@ -147,6 +169,36 @@ class Android:
             self.swipe(down=True)
         raise AssertionError("Não foi possível voltar à busca inicial")
 
+    def prompt(self, title, text, submit):
+        self.find(title)
+        entry = next(n for n in self.nodes() if n.get("package") == self.package and n.get("class") == "android.widget.EditText")
+        self.tap_node(entry)
+        self.run("shell", "input", "keyevent", "123")
+        self.run("shell", "input", "keyevent", *(["67"] * 100))
+        self.run("shell", "input", "text", text.replace(" ", "%s"))
+        self.tap(submit)
+
+    def tap_card(self, title, action):
+        deadline = time.monotonic() + 45
+        while time.monotonic() < deadline:
+            self.nodes()
+            if self.xml:
+                tree = ET.fromstring(self.xml[self.xml.find("<?xml"):])
+                parents = {child: parent for parent in tree.iter() for child in parent}
+                named = next((n for n in tree.iter("node") if self.matches(n, title)), None)
+                while named is not None:
+                    target = next((n for n in named.iter("node") if self.matches(n, action)), None)
+                    if target is not None:
+                        base = title.removesuffix(" (cópia)")
+                        titles = [n for n in named.iter("node") if n.get("class") == "android.widget.TextView" and n.get("text") in [base, base + " (cópia)"]]
+                        if len(titles) != 1:
+                            break  # Não use uma ação de outro cartão quando o desejado estiver fora da tela.
+                        self.tap_node(target)
+                        return
+                    named = parents.get(named)
+            self.swipe()
+        raise AssertionError(f"Ação {action} não encontrada no cálculo {title}")
+
     def overflow(self, item):
         nodes = self.nodes()
         target = next((n for n in nodes if n.get("package") == self.package and any(self.matches(n, v) for v in ["More options", "Mais opções"])), None)
@@ -161,9 +213,21 @@ def smoke(app):
     app.launch()
     app.open_calculator("recibo abono", "Férias")
     print("Preenchendo exemplo de férias...", flush=True)
+    app.screenshot("00-formulario-claro")
     app.overflow("Preencher exemplo")
+    app.tap("Preencher")
     app.find("SEU RESULTADO", timeout=30, scroll=True)
     app.screenshot("01-resultado-claro")
+    app.tap("CompartilharPdf", scroll=True)
+    deadline = time.monotonic() + 40
+    while time.monotonic() < deadline:
+        if any(n.get("package") in ["android", "com.android.intentresolver"] for n in app.nodes()):
+            break
+        time.sleep(0.5)
+    else:
+        raise AssertionError("O compartilhamento de PDF não abriu a seleção de aplicativo")
+    app.screenshot("01b-compartilhamento-pdf")
+    app.back()
     app.tap("Expandir Demonstrativo", scroll=True)
     app.find("Proventos", scroll=True)
     app.tap("IrAoResultado")
@@ -176,16 +240,19 @@ def smoke(app):
         if any(app.matches(n, "Campo_inicio") for n in app.nodes()):
             break
     app.text("Campo_inicio", "31/02/2024", scroll=True)
-    app.back()
+    app.hide_keyboard()
     app.tap("CalcularTrabalhista")
     node = app.find("Campo_inicio")
     assert node.get("focused") == "true", "O primeiro campo inválido deve receber foco"
     app.screenshot("03-erro-no-campo")
     app.text("Campo_inicio", "01/10/2026")
-    app.back()
+    app.hide_keyboard()
     # Persistir e recuperar após encerramento do processo, sem usar Salvar.
     app.text("Campo_salario", "4567.89", scroll=True)
-    app.back()
+    app.run("shell", "input", "keyevent", "66")
+    assert app.find("Campo_medias").get("focused") == "true", "Próximo deve avançar para a próxima entrada disponível"
+    app.screenshot("03b-teclado-proximo")
+    app.hide_keyboard()
     time.sleep(2)
     app.run("shell", "input", "keyevent", "3")  # Stopped também solicita persistência
     time.sleep(1)
@@ -196,6 +263,9 @@ def smoke(app):
     value = app.find("Campo_salario", scroll=True).get("text", "")
     assert value in ["4.567,89", "4567,89"], f"Rascunho recuperado incorretamente: {value}"
     app.screenshot("04-rascunho-recuperado")
+    app.tap("Salvar")
+    app.prompt("Salvar cálculo", "UI Ferias A", "Salvar")
+    app.tap("Entendi")
     # Tema, tela reduzida e fonte ampliada no emulador isolado.
     app.run("shell", "cmd", "uimode", "night", "yes")
     app.run("shell", "wm", "size", "840x1680")
@@ -217,14 +287,33 @@ def smoke(app):
     app.home()
     app.open_calculator("verbas desligamento", "Rescisão")
     app.overflow("Preencher exemplo")
+    app.tap("Preencher")
     app.find("SEU RESULTADO", timeout=30, scroll=True)
     app.screenshot("07-rescisao-escuro-320dp")
     app.home()
     app.open_calculator("duas modalidades", "Simulação tributária", "CalcularTributaria")
     app.overflow("Preencher exemplo")
+    app.tap("Preencher")
     app.overflow("Ir ao resultado")
     app.find("SEU RESULTADO", timeout=30, scroll=True)
     app.screenshot("08-tributacao-escuro-320dp")
+    app.home()
+    app.text("BuscaInicio", "")
+    app.hide_keyboard()
+    app.tap("Ver o histórico", scroll=True)
+    app.find("BuscaHistorico")
+    app.tap_card("UI Ferias A", "Duplicar")
+    for _ in range(5):
+        app.swipe(down=True)
+    app.find("2 de 2 cálculos")
+    app.screenshot("09-historico-paginado")
+    app.tap_card("UI Ferias A (cópia)", "Selecionar / remover da comparação")
+    app.tap_card("UI Ferias A", "Selecionar / remover da comparação")
+    for _ in range(5):
+        app.swipe(down=True)
+    app.tap("Comparar selecionados")
+    app.find("Comparação", timeout=40)
+    app.screenshot("10-comparacao-historico")
 
 
 def verificar_pacote(apk, adb, esperado):
@@ -243,6 +332,7 @@ def main():
     parser.add_argument("--apk", required=True)
     parser.add_argument("--adb", default="adb")
     parser.add_argument("--serial")
+    parser.add_argument("--reuse-installed", action="store_true", help="Diagnóstico: retoma somente o pacote .uitests já instalado, sem limpar dados")
     parser.add_argument("--artifacts", default="TestResults/android-ui")
     args = parser.parse_args()
     app = Android(args.adb, args.serial, "br.com.mayconwisley.calculostrabalhistastributarios.uitests", args.artifacts)
@@ -259,8 +349,9 @@ def main():
     else:
         raise AssertionError("Android não concluiu o boot")
     # Somente este pacote descartável é limpo. O APK é compilado com ApplicationId=.uitests.
-    app.run("install", "-r", args.apk)
-    app.run("shell", "pm", "clear", app.package)
+    if not args.reuse_installed:
+        app.run("install", "-r", args.apk)
+        app.run("shell", "pm", "clear", app.package)
     started = time.monotonic()
     original_font = app.run("shell", "settings", "get", "system", "font_scale").strip()
     original_size = app.run("shell", "wm", "size")
@@ -276,6 +367,10 @@ def main():
         print("Percursos Android concluídos.")
     except Exception:
         app.screenshot("falha")
+        try:
+            (app.artifacts / "ultimo-anr.txt").write_text(app.run("shell", "dumpsys", "activity", "lastanr"), encoding="utf-8")
+        except (RuntimeError, subprocess.TimeoutExpired) as error:
+            (app.artifacts / "diagnostico-indisponivel.txt").write_text(str(error), encoding="utf-8")
         raise
     finally:
         (app.artifacts / "logcat.txt").write_text(app.run("logcat", "-d", "-t", "2000"), encoding="utf-8")
