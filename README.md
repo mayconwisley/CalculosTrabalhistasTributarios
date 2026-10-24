@@ -50,7 +50,7 @@ No celular, baixe **CalculosTrabalhistasTributarios-X.Y.Z-android.apk** e abra o
 - Requer Android 7.0 ou superior. O aplicativo não é distribuído pela Play Store: na primeira instalação, o Android pede permissão para instalar apps da origem do arquivo (o navegador ou o gerenciador de arquivos), e o Play Protect pode pedir confirmação.
 - Para atualizar, instale o APK da versão nova por cima da anterior. Os cálculos salvos e as tabelas editadas no aparelho são preservados.
 - Traz as mesmas calculadoras e tabelas do Windows, com busca e favoritas no menu, histórico de cálculos, **Preencher exemplo**, ajuda com a seção do manual de cada calculadora e atualização diária das tabelas pela internet.
-- O resultado é compartilhado em PDF pelo menu do Android (WhatsApp, e-mail e outros aplicativos), com a mesma organização do relatório do Windows. Não há exportação para o Excel, e as transferências entre calculadoras, exceto a quitação do banco de horas, ainda são exclusivas do Windows.
+- O resultado é compartilhado em PDF pelo menu do Android (WhatsApp, e-mail e outros aplicativos), com a mesma organização do relatório do Windows. As transferências entre calculadoras são as mesmas do Windows. Não há exportação para o Excel.
 
 Detalhes do aplicativo Android, para quem desenvolve, estão em [docs/MAUI.md](docs/MAUI.md).
 
@@ -214,13 +214,14 @@ CalculosTrabalhistasTributarios.Application/     Casos de uso: orquestram o dom�
 ├── Demonstrativos/    Memória de cálculo, formatação e montagem dos demonstrativos
 ├── DTOs/              Pedidos e resultados que atravessam as camadas
 └── Extensoes/, Mapeamentos/
-CalculosTrabalhistasTributarios.Infrastructure/  Adaptadores das portas usados só no Windows
+CalculosTrabalhistasTributarios.Infrastructure/  Adaptadores das portas do Windows
 ├── Reporting/         PDF (QuestPDF) e Excel (ClosedXML), uma classe por relatório
-├── Tributacao/        Cotações do trabalho no exterior
-└── Atualizacao/, Diagnostico/
+├── Atualizacao/       Aviso e download de versão nova no GitHub
+├── Diagnostico/       Registro de erros, arquivo também vinculado ao aplicativo Android
+└── Tributacao/        Fonte da consulta de cotações do trabalho no exterior, compilada no Infrastructure.Tabelas
 CalculosTrabalhistasTributarios.Infrastructure.Tabelas/ Atualização das tabelas pela internet, compartilhada entre WPF e Android
 ├── Interfaces/        Contratos das fontes e atualizações
-└── Tributacao/        Atualizadores de cada tabela e, em Fontes/, a leitura de cada página ou API
+└── Tributacao/        Atualizadores de cada tabela, em Fontes/ a leitura de cada página ou API e as cotações do trabalho no exterior
 CalculosTrabalhistasTributarios.Infrastructure.Local/ SQLite compartilhado entre WPF e Android
 ├── Persistence/       Consultas, histórico e, em Inicializacao/, esquema e sementes
 └── Interfaces/        Cache e inicialização; namespaces preservados por compatibilidade
@@ -287,7 +288,7 @@ dotnet test .\CalculosTrabalhistasTributarios.Tests
 dotnet test .\CalculosTrabalhistasTributarios.Mobile.Tests
 ```
 
-O `gerar-instalador.ps1` e o `gerar-apk.ps1` rodam os testes antes de publicar: se algum falhar, a versão não é gerada. No GitHub, o [CI](.github/workflows/ci.yml) compila a solução e roda os testes em cada push no `master` e em cada pull request.
+O `gerar-instalador.ps1` e o `gerar-apk.ps1` rodam os testes antes de publicar: se algum falhar, a versão não é gerada. No GitHub, o [CI](.github/workflows/ci.yml) compila o filtro do desktop e roda os testes do desktop e do mobile em cada push no `master` e em cada pull request.
 
 ## Gerar o instalador
 
