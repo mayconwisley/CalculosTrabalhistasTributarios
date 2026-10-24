@@ -2,14 +2,15 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:CalculosTrabalhistasTributarios.Mobile.Presentation.Abertura;assembly=CalculosTrabalhistasTributarios.Mobile.Presentation"
              xmlns:views="clr-namespace:CalculosTrabalhistasTributarios.Mobile.Views" x:Class="CalculosTrabalhistasTributarios.Mobile.Features.Abertura.AberturaPage" x:DataType="vm:AtualizacaoTabelasViewModel" Title="Abertura" NavigationPage.HasNavigationBar="False">
-    <Grid Padding="24" RowDefinitions="*,Auto,*"><VerticalStackLayout Grid.Row="1" Spacing="20" HorizontalOptions="Center" MaximumWidthRequest="500">
-        <views:Logotipo HeightRequest="96" WidthRequest="96" />
-        <Label Text="Cálculos Trabalhistas e Tributários" FontSize="25" FontFamily="OpenSansSemibold" HorizontalTextAlignment="Center" SemanticProperties.HeadingLevel="Level1" />
+    <Grid Padding="24" RowDefinitions="*,Auto,*"><VerticalStackLayout Grid.Row="1" Spacing="18" HorizontalOptions="Center" MaximumWidthRequest="500">
+        <views:Logotipo HeightRequest="84" WidthRequest="84" />
+        <Label Text="SIMULAÇÕES LOCAIS" Style="{StaticResource RotuloDestaque}" HorizontalTextAlignment="Center" />
+        <Label Text="Cálculos Trabalhistas e Tributários" Style="{StaticResource TituloPagina}" HorizontalTextAlignment="Center" SemanticProperties.HeadingLevel="Level1" />
         <Label Text="{Binding Mensagem}" HorizontalTextAlignment="Center" />
         <ActivityIndicator IsRunning="{Binding Indeterminado}" IsVisible="{Binding Indeterminado}" />
         <ProgressBar Progress="{Binding Progresso}" IsVisible="{Binding Atualizando}" />
         <Label Text="{Binding Detalhe}" Style="{StaticResource TextoSecundario}" HorizontalTextAlignment="Center" />
-        <Button Text="{Binding TextoInterromper}" Command="{Binding InterromperCommand}" IsVisible="{Binding Atualizando}" />
+        <Button Text="{Binding TextoInterromper}" Style="{StaticResource BotaoSecundario}" Command="{Binding InterromperCommand}" IsVisible="{Binding Atualizando}" />
         <Button Text="Tentar novamente" Clicked="TentarNovamente" IsVisible="{Binding Falhou}" />
         <Label Text="{Binding Versao}" Style="{StaticResource TextoSecundario}" HorizontalTextAlignment="Center" />
     </VerticalStackLayout></Grid>

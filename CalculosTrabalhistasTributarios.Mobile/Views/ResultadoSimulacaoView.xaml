@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:local="clr-namespace:CalculosTrabalhistasTributarios.Mobile.Views" xmlns:dto="clr-namespace:CalculosTrabalhistasTributarios.Application.DTOs;assembly=CalculosTrabalhistasTributarios.Application" x:Class="CalculosTrabalhistasTributarios.Mobile.Views.ResultadoSimulacaoView" x:Name="Root" x:DataType="local:ResultadoSimulacaoView">
     <Grid BindingContext="{Binding Source={x:Reference Root}}">
-        <VerticalStackLayout Spacing="18" IsVisible="{Binding TemResultado}">
-            <Border StrokeThickness="0" Padding="24">
+        <VerticalStackLayout Spacing="16" IsVisible="{Binding TemResultado}">
+            <Border StrokeThickness="0" Padding="20">
                 <Border.Background>
                     <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
                         <GradientStop Color="{StaticResource PrimariaProfunda}" Offset="0" />
@@ -12,11 +12,11 @@
                 <VerticalStackLayout Spacing="10">
                     <Label Text="SEU RESULTADO" TextColor="White" FontSize="11" FontFamily="OpenSansSemibold" />
                     <Label Text="{Binding RotuloResultado}" TextColor="White" FontSize="16" />
-                    <Label Text="{Binding ResultadoFormatado}" IsVisible="{Binding TemVerbas}" TextColor="White" FontSize="36" FontFamily="OpenSansSemibold" SemanticProperties.HeadingLevel="Level2" />
+                    <Label Text="{Binding ResultadoFormatado}" IsVisible="{Binding TemVerbas}" TextColor="White" FontSize="30" FontFamily="OpenSansSemibold" LineBreakMode="WordWrap" SemanticProperties.HeadingLevel="Level2" />
                     <Label Text="{Binding Demonstrativo.Referencia}" TextColor="White" FontSize="12" />
                 </VerticalStackLayout>
             </Border>
-            <Button Text="Compartilhar PDF" Command="{Binding CompartilharPdfCommand}" AutomationId="CompartilharPdf" SemanticProperties.Description="Gerar PDF e escolher aplicativo para compartilhar" />
+            <Button Text="Compartilhar PDF" Style="{StaticResource BotaoSecundario}" Command="{Binding CompartilharPdfCommand}" AutomationId="CompartilharPdf" SemanticProperties.Description="Gerar PDF e escolher aplicativo para compartilhar" />
             <Label Text="Escolha WhatsApp, e-mail ou outro aplicativo instalado. O documento inclui a memória e as premissas da simulação." Style="{StaticResource TextoSecundario}" />
             <VerticalStackLayout Spacing="10" BindableLayout.ItemsSource="{Binding Demonstrativo.Destaques}">
                 <BindableLayout.ItemTemplate>

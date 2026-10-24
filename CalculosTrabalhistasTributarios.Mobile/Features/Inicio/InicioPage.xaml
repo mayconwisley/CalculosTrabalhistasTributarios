@@ -23,19 +23,23 @@
         </DataTemplate>
     </ContentPage.Resources>
     <ScrollView>
-        <VerticalStackLayout Padding="20" Spacing="20" MaximumWidthRequest="640">
-            <!-- Boas-vindas, como a tela inicial do desktop: as calculadoras e as tabelas ficam no menu ☰. -->
-            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="14">
-                <views:Logotipo WidthRequest="56" HeightRequest="56" />
-                <Label Grid.Column="1" Text="Boas-vindas" FontSize="28" FontFamily="OpenSansSemibold" VerticalOptions="Center" SemanticProperties.HeadingLevel="Level1" />
-            </Grid>
-            <Label Text="Escolha uma calculadora ou uma tabela no menu ☰ para começar. As simulações são feitas neste aparelho, com as tabelas da competência informada." Style="{StaticResource TextoSecundario}" FontSize="14" />
-            <Button Text="☰  Ver calculadoras e tabelas" Command="{Binding AbrirMenuCommand}" AutomationId="AbrirMenuInicio" SemanticProperties.Hint="Abre o menu lateral, com as calculadoras e as tabelas por assunto" />
-            <Border Style="{StaticResource CaixaCampo}"><Entry Text="{Binding Busca}" Placeholder="Buscar cálculos e tabelas" Keyboard="Text" HorizontalTextAlignment="Start" AutomationId="BuscaInicio" /></Border>
+        <VerticalStackLayout Padding="20,18,20,28" Spacing="16" MaximumWidthRequest="640">
+            <Border Padding="18" StrokeThickness="0" BackgroundColor="{AppThemeBinding Light={StaticResource AcentoClaro}, Dark={StaticResource AcentoEscuro}}">
+                <VerticalStackLayout Spacing="10">
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                        <views:Logotipo WidthRequest="42" HeightRequest="42" />
+                        <Label Grid.Column="1" Text="Cálculos trabalhistas e tributários" Style="{StaticResource RotuloDestaque}" VerticalOptions="Center" />
+                    </Grid>
+                    <Label Text="O que você deseja calcular?" Style="{StaticResource TituloPagina}" SemanticProperties.HeadingLevel="Level1" />
+                    <Label Text="Simule no aparelho com as tabelas da competência escolhida." Style="{StaticResource TextoSecundario}" />
+                </VerticalStackLayout>
+            </Border>
+            <Border Style="{StaticResource CaixaCampo}"><Entry Text="{Binding Busca}" Placeholder="Buscar cálculos e tabelas" Keyboard="Text" HorizontalTextAlignment="Start" FontSize="16" AutomationId="BuscaInicio" SemanticProperties.Hint="Digite o nome ou assunto da calculadora ou tabela" /></Border>
+            <Button Text="☰  Explorar calculadoras e tabelas" Command="{Binding AbrirMenuCommand}" AutomationId="AbrirMenuInicio" SemanticProperties.Hint="Abre o menu lateral, com as calculadoras e as tabelas por assunto" />
             <Label Text="{Binding MensagemSemResultado}" IsVisible="{Binding SemResultado}" />
             <Button Text="Limpar busca" Command="{Binding LimparBuscaCommand}" IsVisible="{Binding EmBusca}" Style="{StaticResource BotaoLink}" />
             <Border IsVisible="{Binding TemAvisoTabelas}"><VerticalStackLayout Spacing="8"><Label Text="{Binding AvisoTabelas}" />
-                <Button Text="Ver pendências" Command="{Binding VerPendenciasCommand}" /><Button Text="Dispensar" Command="{Binding DispensarAvisoTabelasCommand}" />
+                <Button Text="Ver pendências" Style="{StaticResource BotaoSecundario}" Command="{Binding VerPendenciasCommand}" /><Button Text="Dispensar" Style="{StaticResource BotaoLink}" Command="{Binding DispensarAvisoTabelasCommand}" />
             </VerticalStackLayout></Border>
             <local:BoasVindasView IsVisible="{Binding ExibeBoasVindas}" />
             <!-- Durante a busca, os itens encontrados substituem as boas-vindas. -->

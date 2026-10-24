@@ -4,23 +4,19 @@
              xmlns:vm="clr-namespace:CalculosTrabalhistasTributarios.Mobile.Presentation.Inicio;assembly=CalculosTrabalhistasTributarios.Mobile.Presentation"
              x:Class="CalculosTrabalhistasTributarios.Mobile.Features.Inicio.BoasVindasView" x:DataType="vm:InicioViewModel">
     <VerticalStackLayout Spacing="16">
+        <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+            <Border Padding="14"><VerticalStackLayout Spacing="2">
+                <Label Text="{Binding QuantidadeCalculadoras}" FontSize="27" FontFamily="OpenSansSemibold" TextColor="{AppThemeBinding Light={StaticResource TextoAcentoClaro}, Dark={StaticResource TextoAcentoEscuro}}" />
+                <Label Text="Calculadoras" Style="{StaticResource TextoSecundario}" />
+            </VerticalStackLayout></Border>
+            <Border Grid.Column="1" Padding="14"><VerticalStackLayout Spacing="2">
+                <Label Text="{Binding QuantidadeTabelas}" FontSize="27" FontFamily="OpenSansSemibold" TextColor="{AppThemeBinding Light={StaticResource TextoAcentoClaro}, Dark={StaticResource TextoAcentoEscuro}}" />
+                <Label Text="Tabelas" Style="{StaticResource TextoSecundario}" />
+            </VerticalStackLayout></Border>
+        </Grid>
         <Border><VerticalStackLayout Spacing="6">
-            <Label FontSize="15" FontFamily="OpenSansSemibold" TextColor="{AppThemeBinding Light={StaticResource TextoAcentoClaro}, Dark={StaticResource TextoAcentoEscuro}}"><Label.FormattedText><FormattedString>
-                <Span Text="{Binding QuantidadeCalculadoras}" FontSize="26" FontAttributes="Bold" /><Span Text=" calculadoras" />
-            </FormattedString></Label.FormattedText></Label>
-            <Label Text="Trabalhistas, tributárias, previdenciárias, de pensão e de débitos judiciais, organizadas por assunto no menu ☰." Style="{StaticResource TextoSecundario}" />
-        </VerticalStackLayout></Border>
-        <Border><VerticalStackLayout Spacing="6">
-            <Label FontSize="15" FontFamily="OpenSansSemibold" TextColor="{AppThemeBinding Light={StaticResource TextoAcentoClaro}, Dark={StaticResource TextoAcentoEscuro}}"><Label.FormattedText><FormattedString>
-                <Span Text="{Binding QuantidadeTabelas}" FontSize="26" FontAttributes="Bold" /><Span Text=" tabelas" />
-            </FormattedString></Label.FormattedText></Label>
-            <Label Text="INSS, IRRF, deduções e índices econômicos. Cada registro vale a partir da sua competência e pode ser atualizado pela internet." Style="{StaticResource TextoSecundario}" />
-            <Label Text="{Binding SituacaoTabelas}" Margin="0,4,0,0" />
-            <Button Text="Atualizar nas Configurações" Style="{StaticResource BotaoLink}" Command="{Binding AbrirConfiguracoesCommand}" SemanticProperties.Description="Abrir as Configurações para atualizar todas as tabelas agora" />
-        </VerticalStackLayout></Border>
-        <Border><VerticalStackLayout Spacing="6">
-            <Grid ColumnDefinitions="*,Auto"><Label Text="Continuar de onde parou" Style="{StaticResource TituloSecao}" VerticalOptions="Center" SemanticProperties.HeadingLevel="Level2" />
-                <Button Grid.Column="1" Text="Ver o histórico" Style="{StaticResource BotaoLink}" Command="{Binding AbrirHistoricoCommand}" /></Grid>
+            <Label Text="Continuar de onde parou" Style="{StaticResource TituloSecao}" SemanticProperties.HeadingLevel="Level2" />
+            <Button Text="Ver o histórico" Style="{StaticResource BotaoLink}" Command="{Binding AbrirHistoricoCommand}" />
             <ActivityIndicator IsRunning="{Binding CarregandoRecentes}" IsVisible="{Binding CarregandoRecentes}" HeightRequest="28" SemanticProperties.Description="Lendo os cálculos recentes" />
             <Label Text="Nenhum cálculo salvo ainda. Em uma calculadora, toque em Salvar para retomá-lo depois por aqui." Style="{StaticResource TextoSecundario}" IsVisible="{Binding SemRecentes}" />
             <VerticalStackLayout Spacing="8" BindableLayout.ItemsSource="{Binding Recentes}"><BindableLayout.ItemTemplate>
@@ -34,6 +30,11 @@
                     </Border>
                 </DataTemplate>
             </BindableLayout.ItemTemplate></VerticalStackLayout>
+        </VerticalStackLayout></Border>
+        <Border><VerticalStackLayout Spacing="4">
+            <Label Text="Tabelas da competência" Style="{StaticResource TituloSecao}" SemanticProperties.HeadingLevel="Level2" />
+            <Label Text="{Binding SituacaoTabelas}" Style="{StaticResource TextoSecundario}" />
+            <Button Text="Ver atualização nas Configurações" Style="{StaticResource BotaoLink}" Command="{Binding AbrirConfiguracoesCommand}" SemanticProperties.Description="Abrir as Configurações para atualizar todas as tabelas agora" />
         </VerticalStackLayout></Border>
         <Border><VerticalStackLayout Spacing="14">
             <Label Text="Primeiros passos" Style="{StaticResource TituloSecao}" SemanticProperties.HeadingLevel="Level2" />

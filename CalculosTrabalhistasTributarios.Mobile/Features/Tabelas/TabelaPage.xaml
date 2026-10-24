@@ -3,8 +3,8 @@
              xmlns:vm="clr-namespace:CalculosTrabalhistasTributarios.Mobile.Presentation.Tabelas;assembly=CalculosTrabalhistasTributarios.Mobile.Presentation"
              xmlns:views="clr-namespace:CalculosTrabalhistasTributarios.Mobile.Views"
              x:Class="CalculosTrabalhistasTributarios.Mobile.Features.Tabelas.TabelaPage" x:DataType="vm:TabelaMobileViewModel" Title="Tabela">
-    <ScrollView x:Name="Rolagem"><VerticalStackLayout Padding="20" Spacing="16" MaximumWidthRequest="640">
-        <Label Text="{Binding Titulo}" Style="{StaticResource TituloSecao}" SemanticProperties.HeadingLevel="Level1" />
+    <ScrollView x:Name="Rolagem"><VerticalStackLayout Padding="20,18,20,28" Spacing="16" MaximumWidthRequest="640">
+        <Label Text="{Binding Titulo}" Style="{StaticResource TituloPagina}" SemanticProperties.HeadingLevel="Level1" />
         <Label Text="{Binding Descricao}" Style="{StaticResource TextoSecundario}" />
         <Border><VerticalStackLayout Spacing="12">
             <Label Text="Consultar e editar" Style="{StaticResource TituloSecao}" />
@@ -19,14 +19,14 @@
             <VerticalStackLayout Spacing="6" IsVisible="{Binding ExibeDeducao}"><Label Text="{Binding LabelDeducao}" Style="{StaticResource RotuloCampo}" />
                 <Border Style="{StaticResource CaixaCampo}"><Entry Text="{Binding Deducao}" AutomationId="DeducaoTabela" /></Border></VerticalStackLayout>
             <Button Text="{Binding TextoSalvar}" Command="{Binding SalvarCommand}" AutomationId="SalvarTabela" />
-            <Button Text="Novo registro" Command="{Binding NovoCommand}" />
-            <Button Text="Excluir selecionado" Command="{Binding ExcluirCommand}" IsVisible="{Binding TemSelecionado}" AutomationId="ExcluirTabela" />
+            <Button Text="Novo registro" Style="{StaticResource BotaoSecundario}" Command="{Binding NovoCommand}" />
+            <Button Text="Excluir selecionado" Style="{StaticResource BotaoSecundario}" Command="{Binding ExcluirCommand}" IsVisible="{Binding TemSelecionado}" AutomationId="ExcluirTabela" />
             <Label Text="{Binding Mensagem}" IsVisible="{Binding TemMensagem}" TextColor="{AppThemeBinding Light={StaticResource ErroClaro}, Dark={StaticResource ErroEscuro}}" />
         </VerticalStackLayout></Border>
         <Border><VerticalStackLayout Spacing="10"><Label Text="Atualização" Style="{StaticResource TituloSecao}" />
             <Label Text="{Binding StatusAtualizacao}" Style="{StaticResource TextoSecundario}" />
-            <Button Text="Atualizar pela internet" Command="{Binding AtualizarPelaInternetCommand}" AutomationId="AtualizarTabela" />
-            <Button Text="{Binding TextoFonteOficial}" Command="{Binding AbrirFonteOficialCommand}" />
+            <Button Text="Atualizar pela internet" Style="{StaticResource BotaoSecundario}" Command="{Binding AtualizarPelaInternetCommand}" AutomationId="AtualizarTabela" />
+            <Button Text="{Binding TextoFonteOficial}" Style="{StaticResource BotaoLink}" Command="{Binding AbrirFonteOficialCommand}" />
         </VerticalStackLayout></Border>
         <Label Text="{Binding TituloLista}" Style="{StaticResource TituloSecao}" />
         <ActivityIndicator IsRunning="{Binding Carregando}" IsVisible="{Binding Carregando}" />
@@ -36,7 +36,7 @@
                 <Label Text="{Binding Competencia}" Style="{StaticResource RotuloCampo}" />
                 <Label Text="{Binding Faixa, StringFormat='Faixa: {0}'}" IsVisible="{Binding TemFaixa}" /><Label Text="{Binding Valor, StringFormat='Valor: {0}'}" />
                 <Label Text="{Binding Aliquota, StringFormat='Alíquota: {0}'}" IsVisible="{Binding TemAliquota}" /><Label Text="{Binding Deducao, StringFormat='Dedução: {0}'}" IsVisible="{Binding TemDeducao}" />
-                <Button Text="Editar este registro" CommandParameter="{Binding .}" Command="{Binding SelecionarCommand, Source={RelativeSource AncestorType={x:Type vm:TabelaMobileViewModel}}, x:DataType=vm:TabelaMobileViewModel}" />
+                <Button Text="Editar este registro" Style="{StaticResource BotaoSecundario}" CommandParameter="{Binding .}" Command="{Binding SelecionarCommand, Source={RelativeSource AncestorType={x:Type vm:TabelaMobileViewModel}}, x:DataType=vm:TabelaMobileViewModel}" />
             </VerticalStackLayout></Border></DataTemplate>
         </BindableLayout.ItemTemplate></VerticalStackLayout>
         <views:PaginadorLinhas BindingContext="{Binding Pagina}" />

@@ -3,36 +3,67 @@
              xmlns:vm="clr-namespace:CalculosTrabalhistasTributarios.Mobile.Presentation.Inicio;assembly=CalculosTrabalhistasTributarios.Mobile.Presentation"
              x:Class="CalculosTrabalhistasTributarios.Mobile.Features.Inicio.MenuPage" x:DataType="vm:InicioViewModel" Title="Menu">
     <ContentPage.Resources>
-        <!-- Item do menu: o nome abre a calculadora ou a tabela; a estrela marca ou desmarca a favorita. -->
         <DataTemplate x:Key="ItemMenu" x:DataType="vm:AtalhoMobile">
-            <Grid ColumnDefinitions="*,48" ColumnSpacing="4">
-                <Button Text="{Binding Titulo}" AutomationId="{Binding IdAutomacao}" CommandParameter="{Binding .}" Command="{Binding AbrirCommand, Source={RelativeSource AncestorType={x:Type vm:InicioViewModel}}, x:DataType=vm:InicioViewModel}" />
-                <Button Grid.Column="1" Text="{Binding IconeFavorito}" WidthRequest="48" Style="{StaticResource BotaoFavorito}" SemanticProperties.Description="{Binding DescricaoFavorito}" CommandParameter="{Binding .}" Command="{Binding AlternarFavoritoCommand, Source={RelativeSource AncestorType={x:Type vm:InicioViewModel}}, x:DataType=vm:InicioViewModel}" />
+            <Grid ColumnDefinitions="*,48" ColumnSpacing="6">
+                <Border Style="{StaticResource ItemRecente}" Padding="14,12" AutomationId="{Binding IdAutomacao}"
+                        SemanticProperties.Description="{Binding Titulo}" SemanticProperties.Hint="Abre a calculadora ou tabela">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer CommandParameter="{Binding .}" Command="{Binding AbrirCommand, Source={RelativeSource AncestorType={x:Type vm:InicioViewModel}}, x:DataType=vm:InicioViewModel}" />
+                    </Border.GestureRecognizers>
+                    <VerticalStackLayout Spacing="3">
+                        <Label Text="{Binding Titulo}" Style="{StaticResource RotuloCampo}" />
+                        <Label Text="{Binding Descricao}" Style="{StaticResource TextoSecundario}" MaxLines="2" LineBreakMode="TailTruncation" />
+                    </VerticalStackLayout>
+                </Border>
+                <Button Grid.Column="1" Text="{Binding IconeFavorito}" WidthRequest="48" Style="{StaticResource BotaoFavorito}"
+                        SemanticProperties.Description="{Binding DescricaoFavorito}" CommandParameter="{Binding .}"
+                        Command="{Binding AlternarFavoritoCommand, Source={RelativeSource AncestorType={x:Type vm:InicioViewModel}}, x:DataType=vm:InicioViewModel}" />
             </Grid>
         </DataTemplate>
+        <DataTemplate x:Key="GrupoMenu" x:DataType="vm:GrupoAtalhosMobile">
+            <VerticalStackLayout IsVisible="{Binding Visivel}" Spacing="0">
+                <Border Padding="14,12" StrokeThickness="0" StrokeShape="RoundRectangle 16" IsEnabled="{Binding PodeAlternar}"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource AcentoClaro}, Dark={StaticResource AcentoEscuro}}"
+                        SemanticProperties.Description="{Binding Titulo}" SemanticProperties.Hint="Expande ou recolhe o grupo">
+                    <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding AlternarCommand}" /></Border.GestureRecognizers>
+                    <Grid ColumnDefinitions="*,Auto,24" ColumnSpacing="8">
+                        <Label Text="{Binding Titulo}" Style="{StaticResource RotuloCampo}" TextColor="{AppThemeBinding Light={StaticResource TextoAcentoClaro}, Dark={StaticResource TextoAcentoEscuro}}" VerticalOptions="Center" />
+                        <Label Grid.Column="1" Text="{Binding Quantidade}" Style="{StaticResource RotuloDestaque}" VerticalOptions="Center" />
+                        <Label Grid.Column="2" Text="{Binding IconeExpandir}" IsVisible="{Binding PodeAlternar}" Style="{StaticResource RotuloDestaque}" FontSize="20" HorizontalTextAlignment="Center" VerticalOptions="Center" />
+                    </Grid>
+                </Border>
+                <VerticalStackLayout IsVisible="{Binding ExibirItensMenu}" Padding="0,8,0,0" Spacing="8"
+                                     BindableLayout.ItemsSource="{Binding ItensMenu}" BindableLayout.ItemTemplate="{StaticResource ItemMenu}" />
+            </VerticalStackLayout>
+        </DataTemplate>
     </ContentPage.Resources>
-    <ScrollView><VerticalStackLayout Padding="16,32" Spacing="12">
-        <Label Text="Cálculos" FontSize="26" FontFamily="OpenSansSemibold" />
-        <Border Style="{StaticResource CaixaCampo}"><Entry Text="{Binding Busca}" Placeholder="Buscar cálculos e tabelas" Keyboard="Text" HorizontalTextAlignment="Start" AutomationId="BuscaMenu" /></Border>
-        <Button Text="Início" Command="{Binding VoltarAoInicioCommand}" />
-        <Button Text="Configurações" Command="{Binding AbrirConfiguracoesCommand}" />
-        <Button Text="Histórico" Clicked="AbrirHistorico" AutomationId="HistoricoMenu" />
-        <Button Text="Manual do usuário" Clicked="AbrirManual" AutomationId="ManualMenu" />
-        <Label Text="{Binding MensagemSemResultado}" IsVisible="{Binding SemResultado}" />
-        <VerticalStackLayout IsVisible="{Binding TemFavoritas}" Spacing="8"><Label Text="Favoritas" Style="{StaticResource TituloSecao}" />
-            <VerticalStackLayout BindableLayout.ItemsSource="{Binding Favoritas.Atalhos}" Spacing="4" BindableLayout.ItemTemplate="{StaticResource ItemMenu}" />
+    <ScrollView><VerticalStackLayout Padding="16,20,16,28" Spacing="16" MaximumWidthRequest="640">
+        <VerticalStackLayout Spacing="4">
+            <Label Text="Explorar" Style="{StaticResource TituloPagina}" SemanticProperties.HeadingLevel="Level1" />
+            <Label Text="Calculadoras e tabelas por assunto" Style="{StaticResource TextoSecundario}" />
         </VerticalStackLayout>
-        <Label Text="Calculadoras" Style="{StaticResource TituloSecao}" />
-        <VerticalStackLayout BindableLayout.ItemsSource="{Binding Grupos}" Spacing="6"><BindableLayout.ItemTemplate><DataTemplate x:DataType="vm:GrupoAtalhosMobile">
-            <VerticalStackLayout IsVisible="{Binding Visivel}" Spacing="4"><Button Text="{Binding Titulo}" Command="{Binding AlternarCommand}" />
-                <VerticalStackLayout BindableLayout.ItemsSource="{Binding ItensMenu}" Spacing="4" BindableLayout.ItemTemplate="{StaticResource ItemMenu}" />
-            </VerticalStackLayout>
-        </DataTemplate></BindableLayout.ItemTemplate></VerticalStackLayout>
-        <Label Text="Tabelas" Style="{StaticResource TituloSecao}" />
-        <VerticalStackLayout BindableLayout.ItemsSource="{Binding GruposTabelas}" Spacing="6"><BindableLayout.ItemTemplate><DataTemplate x:DataType="vm:GrupoAtalhosMobile">
-            <VerticalStackLayout IsVisible="{Binding Visivel}" Spacing="4"><Button Text="{Binding Titulo}" Command="{Binding AlternarCommand}" />
-                <VerticalStackLayout BindableLayout.ItemsSource="{Binding ItensMenu}" Spacing="4" BindableLayout.ItemTemplate="{StaticResource ItemMenu}" />
-            </VerticalStackLayout>
-        </DataTemplate></BindableLayout.ItemTemplate></VerticalStackLayout>
+        <Border Style="{StaticResource CaixaCampo}">
+            <Entry Text="{Binding Busca}" Placeholder="Buscar cálculos e tabelas" Keyboard="Text" HorizontalTextAlignment="Start"
+                   FontSize="16" ClearButtonVisibility="WhileEditing" AutomationId="BuscaMenu"
+                   SemanticProperties.Description="Buscar calculadoras e tabelas pelo nome ou descrição" />
+        </Border>
+        <Grid ColumnDefinitions="*,*" ColumnSpacing="8" RowDefinitions="Auto,Auto" RowSpacing="8">
+            <Button Text="Início" Style="{StaticResource BotaoSecundario}" Command="{Binding VoltarAoInicioCommand}" />
+            <Button Grid.Column="1" Text="Histórico" Style="{StaticResource BotaoSecundario}" Clicked="AbrirHistorico" AutomationId="HistoricoMenu" />
+            <Button Grid.Row="1" Text="Configurações" Style="{StaticResource BotaoSecundario}" Command="{Binding AbrirConfiguracoesCommand}" />
+            <Button Grid.Row="1" Grid.Column="1" Text="Manual" Style="{StaticResource BotaoSecundario}" Clicked="AbrirManual" AutomationId="ManualMenu" SemanticProperties.Description="Manual do usuário" />
+        </Grid>
+        <Label Text="{Binding MensagemSemResultado}" IsVisible="{Binding SemResultado}" Style="{StaticResource TextoSecundario}" />
+        <VerticalStackLayout IsVisible="{Binding TemFavoritas}" Spacing="8"><Label Text="Favoritas" Style="{StaticResource TituloSecao}" SemanticProperties.HeadingLevel="Level2" />
+            <VerticalStackLayout BindableLayout.ItemsSource="{Binding Favoritas.Atalhos}" Spacing="8" BindableLayout.ItemTemplate="{StaticResource ItemMenu}" />
+        </VerticalStackLayout>
+        <VerticalStackLayout Spacing="10">
+            <Label Text="Calculadoras" Style="{StaticResource TituloSecao}" SemanticProperties.HeadingLevel="Level2" />
+            <VerticalStackLayout BindableLayout.ItemsSource="{Binding Grupos}" Spacing="8" BindableLayout.ItemTemplate="{StaticResource GrupoMenu}" />
+        </VerticalStackLayout>
+        <VerticalStackLayout Spacing="10">
+            <Label Text="Tabelas" Style="{StaticResource TituloSecao}" SemanticProperties.HeadingLevel="Level2" />
+            <VerticalStackLayout BindableLayout.ItemsSource="{Binding GruposTabelas}" Spacing="8" BindableLayout.ItemTemplate="{StaticResource GrupoMenu}" />
+        </VerticalStackLayout>
     </VerticalStackLayout></ScrollView>
 </ContentPage>

@@ -6,10 +6,10 @@
     <CollectionView x:Name="Lista" Margin="16,0" SelectionMode="None">
         <CollectionView.Header>
             <VerticalStackLayout Spacing="8" Padding="0,16,0,16">
-                <Label Text="Cálculos salvos" FontSize="27" FontFamily="OpenSansSemibold" SemanticProperties.HeadingLevel="Level1" />
+                <Label Text="Cálculos salvos" Style="{StaticResource TituloPagina}" SemanticProperties.HeadingLevel="Level1" />
                 <Label Text="Formulários guardados neste aparelho. Abra para recalcular com as tabelas disponíveis." Style="{StaticResource TextoSecundario}" />
                 <Border Style="{StaticResource CaixaCampo}">
-                    <Entry x:Name="Busca" Placeholder="Buscar pelo nome ou pela calculadora" Keyboard="Text" HorizontalTextAlignment="Start"
+                    <Entry x:Name="Busca" Placeholder="Buscar pelo nome ou pela calculadora" Keyboard="Text" HorizontalTextAlignment="Start" FontSize="16"
                            ClearButtonVisibility="WhileEditing" TextChanged="Filtrar" AutomationId="BuscaHistorico"
                            SemanticProperties.Description="Buscar no histórico pelo nome do cálculo ou da calculadora" />
                 </Border>
@@ -26,7 +26,7 @@
                     <Picker x:Name="Primeiro" Title="Primeiro cálculo" ItemDisplayBinding="{Binding Nome}" />
                     <Picker x:Name="Segundo" Grid.Column="1" Title="Segundo cálculo" ItemDisplayBinding="{Binding Nome}" />
                 </Grid>
-                <Button Text="Comparar selecionados" Clicked="Comparar" AutomationId="CompararHistorico" />
+                <Button Text="Comparar selecionados" Style="{StaticResource BotaoSecundario}" Clicked="Comparar" AutomationId="CompararHistorico" />
             </VerticalStackLayout>
         </CollectionView.Header>
         <CollectionView.EmptyView>
@@ -41,10 +41,10 @@
                         <Label Text="{Binding AlteradoEm, StringFormat='Atualizado em {0:dd/MM/yyyy HH:mm}'}" Style="{StaticResource TextoSecundario}" />
                         <Button Text="Abrir" Clicked="Abrir" AutomationId="AbrirHistorico" />
                         <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
-                            <Button Text="Duplicar" Clicked="Duplicar" />
-                            <Button Grid.Column="1" Text="Renomear" Clicked="Renomear" />
+                            <Button Text="Duplicar" Style="{StaticResource BotaoSecundario}" Clicked="Duplicar" />
+                            <Button Grid.Column="1" Text="Renomear" Style="{StaticResource BotaoSecundario}" Clicked="Renomear" />
                         </Grid>
-                        <Button Text="Excluir" Clicked="Excluir" />
+                        <Button Text="Excluir" Style="{StaticResource BotaoLink}" Clicked="Excluir" />
                     </VerticalStackLayout>
                 </Border>
             </DataTemplate>

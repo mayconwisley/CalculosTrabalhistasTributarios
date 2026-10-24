@@ -2,8 +2,8 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:CalculosTrabalhistasTributarios.Mobile.Presentation.Configuracoes;assembly=CalculosTrabalhistasTributarios.Mobile.Presentation"
              x:Class="CalculosTrabalhistasTributarios.Mobile.Features.Configuracoes.ConfiguracoesPage" x:DataType="vm:ConfiguracoesMobileViewModel" Title="Configurações">
-    <ScrollView><VerticalStackLayout Padding="20" Spacing="16" MaximumWidthRequest="640">
-        <Label Text="Configurações" FontSize="28" FontFamily="OpenSansSemibold" SemanticProperties.HeadingLevel="Level1" />
+    <ScrollView><VerticalStackLayout Padding="20,18,20,28" Spacing="16" MaximumWidthRequest="640">
+        <Label Text="Configurações" Style="{StaticResource TituloPagina}" SemanticProperties.HeadingLevel="Level1" />
         <Border><VerticalStackLayout Spacing="8"><Label Text="Aparência" Style="{StaticResource TituloSecao}" />
             <Label Text="Tema" Style="{StaticResource RotuloCampo}" />
             <Picker ItemsSource="{Binding Temas}" SelectedIndex="{Binding IndiceTema}" AutomationId="TemaMobile" />
@@ -18,10 +18,10 @@
             <VerticalStackLayout IsVisible="{Binding Atualizacao.Iniciada}" Spacing="8"><ActivityIndicator IsRunning="{Binding Atualizacao.Atualizando}" />
                 <Label Text="{Binding Atualizacao.Mensagem}" /><ProgressBar Progress="{Binding Atualizacao.Progresso}" />
                 <Label Text="{Binding Atualizacao.Detalhe}" Style="{StaticResource TextoSecundario}" />
-                <Button Text="{Binding Atualizacao.TextoInterromper}" Command="{Binding Atualizacao.InterromperCommand}" IsVisible="{Binding Atualizacao.Atualizando}" />
+                <Button Text="{Binding Atualizacao.TextoInterromper}" Style="{StaticResource BotaoSecundario}" Command="{Binding Atualizacao.InterromperCommand}" IsVisible="{Binding Atualizacao.Atualizando}" />
             </VerticalStackLayout>
             <Label Text="{Binding Pendencias}" IsVisible="{Binding TemPendencias}" />
-            <Button Text="Ver detalhes das pendências" Command="{Binding VerDetalhesCommand}" IsVisible="{Binding TemPendencias}" />
+            <Button Text="Ver detalhes das pendências" Style="{StaticResource BotaoSecundario}" Command="{Binding VerDetalhesCommand}" IsVisible="{Binding TemPendencias}" />
         </VerticalStackLayout></Border>
         <Border><VerticalStackLayout Spacing="10"><Label Text="Registro de erros" Style="{StaticResource TituloSecao}" />
             <Label Text="Erros inesperados ficam guardados neste aparelho, com a data, a versão e o ponto do aplicativo em que ocorreram, sem os valores dos formulários. Para relatar um problema, envie o registro do mês." Style="{StaticResource TextoSecundario}" />
@@ -29,6 +29,6 @@
                     SemanticProperties.Hint="Abre o compartilhamento do aparelho com o arquivo do mês" />
         </VerticalStackLayout></Border>
         <Label Text="{Binding Versao}" Style="{StaticResource TextoSecundario}" />
-        <Button Text="Abrir projeto" Command="{Binding AbrirProjetoCommand}" />
+        <Button Text="Abrir projeto" Style="{StaticResource BotaoLink}" Command="{Binding AbrirProjetoCommand}" />
     </VerticalStackLayout></ScrollView>
 </ContentPage>

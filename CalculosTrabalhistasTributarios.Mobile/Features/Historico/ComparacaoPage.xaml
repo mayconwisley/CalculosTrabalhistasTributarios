@@ -3,7 +3,7 @@
              xmlns:comparacao="clr-namespace:CalculosTrabalhistasTributarios.Presentation.ViewModels.Historico;assembly=CalculosTrabalhistasTributarios.Mobile.Presentation"
              x:Class="CalculosTrabalhistasTributarios.Mobile.Features.Historico.ComparacaoPage" Title="Comparação">
     <ScrollView><VerticalStackLayout Padding="16" Spacing="14" MaximumWidthRequest="700">
-        <Label Text="Comparar cálculos" FontSize="27" FontFamily="OpenSansSemibold" SemanticProperties.HeadingLevel="Level1" />
+        <Label Text="Comparar cálculos" Style="{StaticResource TituloPagina}" SemanticProperties.HeadingLevel="Level1" />
         <Label x:Name="Cabecalho" Style="{StaticResource TextoSecundario}" />
         <Label Text="Os resultados foram recalculados com as tabelas locais atuais para cada competência. Diferença = segundo menos primeiro." Style="{StaticResource TextoSecundario}" />
         <Label x:Name="Aviso" IsVisible="False" />

@@ -65,10 +65,13 @@
         </trabalhista:SeletorModeloCampo>
     </ContentPage.Resources>
     <ScrollView>
-        <VerticalStackLayout Padding="20" Spacing="20" MaximumWidthRequest="640">
-            <Label Text="{Binding Titulo}" FontSize="30" FontFamily="OpenSansSemibold" SemanticProperties.HeadingLevel="Level1" />
-            <Label Text="{Binding Descricao}" Style="{StaticResource TextoSecundario}" />
-            <Button Text="Consultar cotações oficiais" Command="{Binding ConsultaCotacoesCommand}" IsVisible="{Binding ExibirConsultaCotacoes}"
+        <VerticalStackLayout Padding="20,18,20,28" Spacing="16" MaximumWidthRequest="640">
+            <VerticalStackLayout Spacing="6">
+                <Label Text="SIMULAÇÃO" Style="{StaticResource RotuloDestaque}" />
+                <Label Text="{Binding Titulo}" Style="{StaticResource TituloPagina}" SemanticProperties.HeadingLevel="Level1" />
+                <Label Text="{Binding Descricao}" Style="{StaticResource TextoSecundario}" />
+            </VerticalStackLayout>
+            <Button Text="Consultar cotações oficiais" Style="{StaticResource BotaoSecundario}" Command="{Binding ConsultaCotacoesCommand}" IsVisible="{Binding ExibirConsultaCotacoes}"
                     AutomationId="ConsultarCotacoes" SemanticProperties.Description="Consultar dólar fiscal da Receita Federal e cotação de referência do Banco Central" />
             <Border>
                 <VerticalStackLayout Spacing="14" BindableLayout.ItemsSource="{Binding Campos}" BindableLayout.ItemTemplateSelector="{StaticResource ModeloCampo}">
@@ -84,8 +87,8 @@
                             <VerticalStackLayout Spacing="12">
                                 <Label Text="{Binding Titulo}" Style="{StaticResource TituloSecao}" SemanticProperties.HeadingLevel="Level2" />
                                 <Label Text="{Binding Descricao}" Style="{StaticResource TextoSecundario}" />
-                                <Button Text="{Binding RotuloGerar}" Command="{Binding GerarCommand}" IsVisible="{Binding TemGerar}" SemanticProperties.Description="{Binding RotuloGerar}" />
-                                <Button Text="{Binding RotuloAdicionar}" Command="{Binding AdicionarCommand}" SemanticProperties.Description="{Binding RotuloAdicionar}" />
+                                <Button Text="{Binding RotuloGerar}" Style="{StaticResource BotaoSecundario}" Command="{Binding GerarCommand}" IsVisible="{Binding TemGerar}" SemanticProperties.Description="{Binding RotuloGerar}" />
+                                <Button Text="{Binding RotuloAdicionar}" Style="{StaticResource BotaoSecundario}" Command="{Binding AdicionarCommand}" SemanticProperties.Description="{Binding RotuloAdicionar}" />
                                 <Label Text="{Binding Aviso}" IsVisible="{Binding TemAviso}" Style="{StaticResource TextoSecundario}" />
                                 <views:PaginadorLinhas x:Name="PaginadorTopo" BindingContext="{Binding Pagina}" />
                                 <VerticalStackLayout Spacing="16" BindableLayout.ItemsSource="{Binding Pagina.Exibidas}" IsVisible="{Binding TemLinhas}">
@@ -94,7 +97,7 @@
                                             <VerticalStackLayout Spacing="10">
                                                 <Label Text="{Binding Titulo}" FontAttributes="Bold" />
                                                 <VerticalStackLayout Spacing="10" BindableLayout.ItemsSource="{Binding Campos}" BindableLayout.ItemTemplateSelector="{StaticResource ModeloCampo}" />
-                                                <Button Text="{Binding Source={RelativeSource AncestorType={x:Type vm:GradeMobile}}, Path=RotuloRemover}" HorizontalOptions="End"
+                                                <Button Text="{Binding Source={RelativeSource AncestorType={x:Type vm:GradeMobile}}, Path=RotuloRemover}" Style="{StaticResource BotaoLink}" HorizontalOptions="End"
                                                         Command="{Binding Source={RelativeSource AncestorType={x:Type vm:GradeMobile}}, Path=RemoverCommand}" CommandParameter="{Binding .}"
                                                         SemanticProperties.Description="{Binding Titulo, StringFormat='Remover {0}'}" />
                                             </VerticalStackLayout>
@@ -117,8 +120,8 @@
                     </VerticalStackLayout.Triggers>
                     <Label Text="Depósitos históricos do FGTS" Style="{StaticResource TituloSecao}" />
                     <Label Text="Informe os depósitos devidos antes do mês do desligamento. Valores já digitados são preservados ao gerar os meses novamente." Style="{StaticResource TextoSecundario}" />
-                    <Button Text="Gerar meses do contrato" Command="{Binding GerarDepositosCommand}" AutomationId="GerarDepositosFgts" />
-                    <Button Text="+ Mês" Command="{Binding AdicionarDepositoCommand}" AutomationId="AdicionarDepositoFgts" />
+                    <Button Text="Gerar meses do contrato" Style="{StaticResource BotaoSecundario}" Command="{Binding GerarDepositosCommand}" AutomationId="GerarDepositosFgts" />
+                    <Button Text="+ Mês" Style="{StaticResource BotaoSecundario}" Command="{Binding AdicionarDepositoCommand}" AutomationId="AdicionarDepositoFgts" />
                     <Label Text="{Binding AvisoHistorico}" Style="{StaticResource TextoSecundario}" />
                     <views:PaginadorLinhas x:Name="PaginadorDepositosTopo" BindingContext="{Binding PaginaDepositosFgts}" />
                     <VerticalStackLayout Spacing="16" BindableLayout.ItemsSource="{Binding PaginaDepositosFgts.Exibidas}" IsVisible="{Binding TemDepositosFgts}">
@@ -129,7 +132,7 @@
                                     <Border Style="{StaticResource CaixaCampo}"><Entry Text="{Binding Competencia}" Placeholder="MM/yyyy" Keyboard="Text" MaxLength="7" SemanticProperties.Description="Competência do depósito do FGTS" /></Border>
                                     <Label Text="Depósito (R$)" Style="{StaticResource RotuloCampo}" />
                                     <Border Style="{StaticResource CaixaCampo}"><Entry Text="{Binding Valor}" SemanticProperties.Description="Valor devido do depósito do FGTS" /></Border>
-                                    <Button Text="Remover mês" HorizontalOptions="End" Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CalculadoraTrabalhistaViewModel}}, Path=RemoverDepositoCommand}" CommandParameter="{Binding .}" SemanticProperties.Description="Remover depósito do FGTS" />
+                                    <Button Text="Remover mês" Style="{StaticResource BotaoLink}" HorizontalOptions="End" Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CalculadoraTrabalhistaViewModel}}, Path=RemoverDepositoCommand}" CommandParameter="{Binding .}" SemanticProperties.Description="Remover depósito do FGTS" />
                                 </VerticalStackLayout>
                             </DataTemplate>
                         </BindableLayout.ItemTemplate>
@@ -144,7 +147,7 @@
                     </VerticalStackLayout.Triggers>
                     <Label Text="Benefícios detalhados" Style="{StaticResource TituloSecao}" />
                     <Label Text="Até 30 benefícios opcionais. Informe custo e participação do empregado separadamente. Não repita valores do total agregado." Style="{StaticResource TextoSecundario}" />
-                    <Button Text="+ Benefício" Command="{Binding AdicionarBeneficioCommand}" AutomationId="AdicionarBeneficio" />
+                    <Button Text="+ Benefício" Style="{StaticResource BotaoSecundario}" Command="{Binding AdicionarBeneficioCommand}" AutomationId="AdicionarBeneficio" />
                     <VerticalStackLayout Spacing="16" BindableLayout.ItemsSource="{Binding BeneficiosDetalhados}" IsVisible="{Binding TemBeneficiosDetalhados}">
                         <BindableLayout.ItemTemplate>
                             <DataTemplate x:DataType="vm:LinhaBeneficioMobile">
@@ -155,7 +158,7 @@
                                     <Border Style="{StaticResource CaixaCampo}"><Entry Text="{Binding Custo}" SemanticProperties.Description="Custo mensal do benefício"><Entry.Behaviors><comportamentos:EntradaMonetariaBehavior /></Entry.Behaviors></Entry></Border>
                                     <Label Text="Participação do empregado (R$)" Style="{StaticResource RotuloCampo}" />
                                     <Border Style="{StaticResource CaixaCampo}"><Entry Text="{Binding Participacao}" SemanticProperties.Description="Participação do empregado no benefício"><Entry.Behaviors><comportamentos:EntradaMonetariaBehavior /></Entry.Behaviors></Entry></Border>
-                                    <Button Text="Remover benefício" HorizontalOptions="End" Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CalculadoraTrabalhistaViewModel}}, Path=RemoverBeneficioCommand}" CommandParameter="{Binding .}" SemanticProperties.Description="Remover benefício detalhado" />
+                                    <Button Text="Remover benefício" Style="{StaticResource BotaoLink}" HorizontalOptions="End" Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CalculadoraTrabalhistaViewModel}}, Path=RemoverBeneficioCommand}" CommandParameter="{Binding .}" SemanticProperties.Description="Remover benefício detalhado" />
                                 </VerticalStackLayout>
                             </DataTemplate>
                         </BindableLayout.ItemTemplate>
@@ -169,7 +172,7 @@
                     </VerticalStackLayout.Triggers>
                     <Label Text="Lançamentos do ciclo" Style="{StaticResource TituloSecao}" />
                     <Label Text="De 1 a 500 lançamentos com data dentro do ciclo. Horas de relógio de 0:01 a 10:00; créditos até 2:00 por dia. As folgas compensam primeiro os créditos mais antigos." Style="{StaticResource TextoSecundario}" />
-                    <Button Text="+ Lançamento" Command="{Binding AdicionarLancamentoCommand}" AutomationId="AdicionarLancamentoBanco" />
+                    <Button Text="+ Lançamento" Style="{StaticResource BotaoSecundario}" Command="{Binding AdicionarLancamentoCommand}" AutomationId="AdicionarLancamentoBanco" />
                     <views:PaginadorLinhas x:Name="PaginadorLancamentosTopo" BindingContext="{Binding PaginaLancamentosBancoHoras}" />
                     <VerticalStackLayout Spacing="16" BindableLayout.ItemsSource="{Binding PaginaLancamentosBancoHoras.Exibidas}" IsVisible="{Binding TemLancamentosBancoHoras}">
                         <BindableLayout.ItemTemplate>
@@ -185,7 +188,7 @@
                                     <Border Style="{StaticResource CaixaCampo}" IsVisible="{Binding EhCredito}"><Entry Text="{Binding Adicional}" Placeholder="Vazio usa o adicional padrão" MaxLength="10" SemanticProperties.Description="Adicional próprio do crédito" /></Border>
                                     <Label Text="Descrição (opcional)" Style="{StaticResource RotuloCampo}" />
                                     <Border Style="{StaticResource CaixaCampo}"><Entry Text="{Binding Descricao}" MaxLength="100" Keyboard="Text" SemanticProperties.Description="Descrição do lançamento" /></Border>
-                                    <Button Text="Remover lançamento" HorizontalOptions="End" Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CalculadoraTrabalhistaViewModel}}, Path=RemoverLancamentoCommand}" CommandParameter="{Binding .}" SemanticProperties.Description="Remover lançamento do banco de horas" />
+                                    <Button Text="Remover lançamento" Style="{StaticResource BotaoLink}" HorizontalOptions="End" Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CalculadoraTrabalhistaViewModel}}, Path=RemoverLancamentoCommand}" CommandParameter="{Binding .}" SemanticProperties.Description="Remover lançamento do banco de horas" />
                                 </VerticalStackLayout>
                             </DataTemplate>
                         </BindableLayout.ItemTemplate>
@@ -205,7 +208,7 @@
                         <Switch IsToggled="{Binding QuitacaoConfirmada}" SemanticProperties.Description="Confirmo as incidências da quitação do banco de horas" />
                         <Label Text="Conferi as incidências" VerticalOptions="Center" />
                     </HorizontalStackLayout>
-                    <Button Text="Descartar quitação" Command="{Binding DescartarQuitacaoCommand}" SemanticProperties.Description="Descartar a quitação transferida do banco de horas" />
+                    <Button Text="Descartar quitação" Style="{StaticResource BotaoSecundario}" Command="{Binding DescartarQuitacaoCommand}" SemanticProperties.Description="Descartar a quitação transferida do banco de horas" />
                 </VerticalStackLayout>
             </Border>
             <Label Text="{Binding Mensagem}" IsVisible="{Binding TemMensagem}" TextColor="{AppThemeBinding Light={StaticResource ErroClaro}, Dark={StaticResource ErroEscuro}}" />

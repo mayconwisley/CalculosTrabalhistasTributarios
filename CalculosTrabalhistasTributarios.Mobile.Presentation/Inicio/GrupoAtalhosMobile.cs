@@ -13,6 +13,7 @@ public sealed partial class GrupoAtalhosMobile(string titulo, IReadOnlyList<Atal
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(ItensMenu))]
     [NotifyPropertyChangedFor(nameof(IconeExpandir))]
+    [NotifyPropertyChangedFor(nameof(ExibirItensMenu))]
     private bool _expandido;
 
     [ObservableProperty] private bool _visivel = true;
@@ -26,7 +27,10 @@ public sealed partial class GrupoAtalhosMobile(string titulo, IReadOnlyList<Atal
     /// controles dos itens, para o menu abrir rápido.
     /// </summary>
     public IReadOnlyList<AtalhoMobile> ItensMenu => Expandido || _emBusca ? Atalhos : Nenhum;
+    public bool ExibirItensMenu => Expandido || _emBusca;
     public string IconeExpandir => Expandido || _emBusca ? "▾" : "▸";
+    public int Quantidade => Atalhos.Count;
+    public bool PodeAlternar => !_emBusca;
 
     /// <summary>
     /// Itens da tela inicial, que só aparecem durante a busca. Fora dela a lista fica vazia: uma seção escondida com
@@ -35,7 +39,10 @@ public sealed partial class GrupoAtalhosMobile(string titulo, IReadOnlyList<Atal
     public IReadOnlyList<AtalhoMobile> ItensBusca => _emBusca ? Atalhos : Nenhum;
 
     [RelayCommand]
-    private void Alternar() => Expandido = !Expandido;
+    private void Alternar()
+    {
+        if (!_emBusca) Expandido = !Expandido;
+    }
 
     internal void Atualizar(IEnumerable<AtalhoMobile> itens, bool emBusca)
     {
@@ -46,13 +53,16 @@ public sealed partial class GrupoAtalhosMobile(string titulo, IReadOnlyList<Atal
         {
             Atalhos.Clear();
             foreach (var item in lista) Atalhos.Add(item);
+            OnPropertyChanged(nameof(Quantidade));
         }
         Visivel = lista.Count > 0;
         if (mudouBusca)
         {
             OnPropertyChanged(nameof(ItensMenu));
+            OnPropertyChanged(nameof(ExibirItensMenu));
             OnPropertyChanged(nameof(IconeExpandir));
             OnPropertyChanged(nameof(ItensBusca));
+            OnPropertyChanged(nameof(PodeAlternar));
         }
     }
 }

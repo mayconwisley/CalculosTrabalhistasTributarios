@@ -5,8 +5,8 @@
              xmlns:comportamentos="clr-namespace:CalculosTrabalhistasTributarios.Mobile.Comportamentos"
              x:Class="CalculosTrabalhistasTributarios.Mobile.Features.Tributacao.SimulacaoTributariaPage" x:DataType="vm:SimulacaoTributariaViewModel" Title="Simulação tributária">
     <ScrollView>
-        <VerticalStackLayout Padding="20" Spacing="20" MaximumWidthRequest="640">
-            <Label Text="Do bruto ao líquido" FontSize="30" FontFamily="OpenSansSemibold" SemanticProperties.HeadingLevel="Level1" />
+        <VerticalStackLayout Padding="20,18,20,28" Spacing="16" MaximumWidthRequest="640">
+            <Label Text="Do bruto ao líquido" Style="{StaticResource TituloPagina}" SemanticProperties.HeadingLevel="Level1" />
             <Label Text="INSS, IRRF e FGTS com as mesmas regras do aplicativo Windows." Style="{StaticResource TextoSecundario}" FontSize="14" />
             <Border>
                 <VerticalStackLayout Spacing="12">

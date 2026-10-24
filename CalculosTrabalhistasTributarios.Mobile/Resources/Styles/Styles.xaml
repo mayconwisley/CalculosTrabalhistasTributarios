@@ -15,12 +15,22 @@
     </Style>
     <Style TargetType="Label" BasedOn="{StaticResource RotuloBase}" />
     <Style x:Key="TextoSecundario" TargetType="Label" BasedOn="{StaticResource RotuloBase}">
-        <Setter Property="FontSize" Value="12" />
+        <Setter Property="FontSize" Value="13" />
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource SecundarioClaro}, Dark={StaticResource SecundarioEscuro}}" />
     </Style>
     <Style x:Key="TituloSecao" TargetType="Label" BasedOn="{StaticResource RotuloBase}">
         <Setter Property="FontFamily" Value="OpenSansSemibold" />
         <Setter Property="FontSize" Value="18" />
+    </Style>
+    <Style x:Key="TituloPagina" TargetType="Label" BasedOn="{StaticResource RotuloBase}">
+        <Setter Property="FontFamily" Value="OpenSansSemibold" />
+        <Setter Property="FontSize" Value="27" />
+        <Setter Property="LineBreakMode" Value="WordWrap" />
+    </Style>
+    <Style x:Key="RotuloDestaque" TargetType="Label" BasedOn="{StaticResource RotuloBase}">
+        <Setter Property="FontFamily" Value="OpenSansSemibold" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource TextoAcentoClaro}, Dark={StaticResource TextoAcentoEscuro}}" />
     </Style>
     <Style x:Key="RotuloCampo" TargetType="Label" BasedOn="{StaticResource RotuloBase}">
         <Setter Property="FontFamily" Value="OpenSansSemibold" />
@@ -74,6 +84,15 @@
         <Setter Property="MinimumHeightRequest" Value="44" />
         <Setter Property="HorizontalOptions" Value="Start" />
         <Setter Property="BorderWidth" Value="0" />
+    </Style>
+    <Style x:Key="BotaoSecundario" TargetType="Button">
+        <Setter Property="MinimumHeightRequest" Value="48" />
+        <Setter Property="Padding" Value="14,10" />
+        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource AcentoClaro}, Dark={StaticResource AcentoEscuro}}" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource TextoAcentoClaro}, Dark={StaticResource TextoAcentoEscuro}}" />
+        <Setter Property="CornerRadius" Value="12" />
+        <Setter Property="FontFamily" Value="OpenSansSemibold" />
+        <Setter Property="FontSize" Value="14" />
     </Style>
     <Style x:Key="MarcadorPasso" TargetType="Border">
         <Setter Property="WidthRequest" Value="36" />
