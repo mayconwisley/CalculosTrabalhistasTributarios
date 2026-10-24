@@ -8,7 +8,7 @@
 </p>
 
 <p align="center">
-  Aplicação desktop para simular tributos, verbas trabalhistas, pensão alimentícia e indenizações.
+  Aplicativo para Windows e Android que simula tributos, verbas trabalhistas, pensão alimentícia e indenizações.
 </p>
 
 <p align="center">
@@ -18,33 +18,41 @@
   <img src="https://img.shields.io/badge/.NET-10.0-512BD4?logo=dotnet&logoColor=white" alt=".NET 10" />
   <img src="https://img.shields.io/badge/C%23-14-239120?logo=csharp&logoColor=white" alt="C# 14" />
   <img src="https://img.shields.io/badge/WPF-Windows-0078D4?logo=windows&logoColor=white" alt="WPF para Windows" />
+  <img src="https://img.shields.io/badge/.NET%20MAUI-Android-3DDC84?logo=android&logoColor=white" alt=".NET MAUI para Android" />
   <img src="https://img.shields.io/badge/SQLite-Local%20database-003B57?logo=sqlite&logoColor=white" alt="SQLite" />
   <img src="https://img.shields.io/badge/QuestPDF-2025.12-FF4B4B" alt="QuestPDF" />
 </p>
 
 ## Visão geral
 
-**Cálculos Trabalhistas e Tributários** é um aplicativo de cálculos executados localmente. Reúne simulações de IRRF, INSS e FGTS, holerite e jornada pelo ponto, verbas trabalhistas, IRPF anual e dividendos, pensão alimentícia, débitos judiciais e indenização por estabilidade, com memória de cálculo, relatórios em PDF, planilhas do Excel e histórico de cálculos.
+**Cálculos Trabalhistas e Tributários** é um aplicativo de cálculos executados localmente, para Windows e Android. Reúne simulações de IRRF, INSS e FGTS, holerite e jornada pelo ponto, verbas trabalhistas, IRPF anual e dividendos, pensão alimentícia, débitos judiciais e indenização por estabilidade, com memória de cálculo, relatórios em PDF, planilhas do Excel (no Windows) e histórico de cálculos. As duas versões usam as mesmas regras de cálculo e as mesmas tabelas.
 
 > Os resultados têm caráter de simulação. A conferência com a legislação vigente, o vínculo empregatício e os dados da competência continua sendo indispensável.
 
 ## Instalação
 
-### Versão móvel em desenvolvimento
-
-A solução [CalculosTrabalhistasTributarios.Mobile.sln](CalculosTrabalhistasTributarios.Mobile.sln) contém o aplicativo Android em .NET MAUI 10, com as calculadoras do catálogo WPF, memória e compartilhamento de PDF pelo menu nativo. A tela inicial e o menu agrupam calculadoras e tabelas, com busca e favoritas. As tabelas e os índices podem ser consultados, editados e atualizados pelas fontes usadas no desktop; a abertura prepara o banco e oferece progresso e opção de pular a atualização diária. O SQLite e suas sementes são compartilhados com o desktop, com banco privado no Android. O móvel oferece somente PDF, sem Excel; histórico, exemplos e as transferências entre calculadoras (exceto a quitação do banco de horas) ainda não foram portados.
-
-A solução principal `CalculosTrabalhistasTributarios.sln` inclui os projetos WPF e MAUI no mesmo Solution Explorer. Para trabalhar apenas no desktop sem exigir o SDK Android, use o filtro `CalculosTrabalhistasTributarios.Desktop.slnf`. A solução `CalculosTrabalhistasTributarios.Mobile.sln` permite abrir somente a parte móvel. Consulte [docs/MAUI.md](docs/MAUI.md) para requisitos, comandos e regras de extensão.
+Os arquivos das duas versões ficam juntos em cada versão publicada na página de [Releases](https://github.com/mayconwisley/CalculosTrabalhistasTributarios/releases/latest).
 
 ### Aplicativo Windows
 
-Baixe o instalador **CalculosTrabalhistasTributarios-X.Y.Z-setup.exe** na página de [Releases](https://github.com/mayconwisley/CalculosTrabalhistasTributarios/releases) e execute-o.
+Baixe o instalador **CalculosTrabalhistasTributarios-X.Y.Z-setup.exe** e execute-o.
 
 - A instalação é feita para o usuário atual, em `%LOCALAPPDATA%\Programs\Cálculos Trabalhistas e Tributários`, e não pede permissão de administrador.
 - O .NET já vem incluído: não é preciso instalar nenhum pré-requisito.
 - Ao instalar uma versão nova sobre a anterior, as tabelas editadas pelo usuário são preservadas. A desinstalação também mantém o banco de dados.
 - Nas atualizações de instalações anteriores, o instalador reutiliza a pasta antiga para manter o banco de dados. Em instalações novas, usa a pasta com o nome atual.
 - Como o instalador não é assinado digitalmente, o Windows pode exibir o aviso do SmartScreen: selecione **Mais informações** e depois **Executar assim mesmo**.
+
+### Aplicativo Android
+
+No celular, baixe **CalculosTrabalhistasTributarios-X.Y.Z-android.apk** e abra o arquivo.
+
+- Requer Android 7.0 ou superior. O aplicativo não é distribuído pela Play Store: na primeira instalação, o Android pede permissão para instalar apps da origem do arquivo (o navegador ou o gerenciador de arquivos), e o Play Protect pode pedir confirmação.
+- Para atualizar, instale o APK da versão nova por cima da anterior. Os cálculos salvos e as tabelas editadas no aparelho são preservados.
+- Traz as mesmas calculadoras e tabelas do Windows, com busca e favoritas no menu, histórico de cálculos, **Preencher exemplo**, ajuda com a seção do manual de cada calculadora e atualização diária das tabelas pela internet.
+- O resultado é compartilhado em PDF pelo menu do Android (WhatsApp, e-mail e outros aplicativos), com a mesma organização do relatório do Windows. Não há exportação para o Excel, e as transferências entre calculadoras, exceto a quitação do banco de horas, ainda são exclusivas do Windows.
+
+Detalhes do aplicativo Android, para quem desenvolve, estão em [docs/MAUI.md](docs/MAUI.md).
 
 ## Manual do usuário
 
@@ -179,9 +187,11 @@ As regras da CLT ficam em `CalculosTrabalhistasTributarios.Domain/Trabalhista` (
 | [.NET](https://dotnet.microsoft.com/) | 10 | Plataforma de execução e compilação. |
 | C# | 14 | Linguagem principal da aplicação. |
 | [WPF](https://learn.microsoft.com/dotnet/desktop/wpf/) | .NET 10 | Interface desktop, recursos e temas. |
+| [.NET MAUI](https://learn.microsoft.com/dotnet/maui/) | 10.0.110 | Aplicativo Android. |
+| [CommunityToolkit.Mvvm](https://learn.microsoft.com/dotnet/communitytoolkit/mvvm/) | 8.4.2 | Notificações e comandos dos ViewModels do Android. |
 | [SQLite](https://www.sqlite.org/) | — | Banco de dados local das tabelas tributárias. |
 | [Microsoft.Data.Sqlite](https://learn.microsoft.com/dotnet/standard/data/sqlite/) | 10.0.13 | Acesso direto ao SQLite, com as tabelas mantidas em memória entre os cálculos. |
-| [QuestPDF](https://www.questpdf.com/) | 2025.12.1 | Geração dos relatórios PDF. |
+| [QuestPDF](https://www.questpdf.com/) | 2025.12.1 | Geração dos relatórios PDF no Windows; o Android usa o gerador de PDF nativo do sistema. |
 | [Html Agility Pack](https://html-agility-pack.net/) | 1.13.0 | Leitura das páginas HTML usadas na atualização das tabelas. |
 | [ClosedXML](https://github.com/ClosedXML/ClosedXML) | 0.105.1 | Geração das planilhas do Excel. |
 
@@ -204,10 +214,13 @@ CalculosTrabalhistasTributarios.Application/     Casos de uso: orquestram o dom�
 ├── Demonstrativos/    Memória de cálculo, formatação e montagem dos demonstrativos
 ├── DTOs/              Pedidos e resultados que atravessam as camadas
 └── Extensoes/, Mapeamentos/
-CalculosTrabalhistasTributarios.Infrastructure/  Adaptadores das portas
-├── Interfaces/        Contratos das fontes e atualizações
+CalculosTrabalhistasTributarios.Infrastructure/  Adaptadores das portas usados só no Windows
 ├── Reporting/         PDF (QuestPDF) e Excel (ClosedXML), uma classe por relatório
-└── Tributacao/        Atualização das tabelas pela internet
+├── Tributacao/        Cotações do trabalho no exterior
+└── Atualizacao/, Diagnostico/
+CalculosTrabalhistasTributarios.Infrastructure.Tabelas/ Atualização das tabelas pela internet, compartilhada entre WPF e Android
+├── Interfaces/        Contratos das fontes e atualizações
+└── Tributacao/        Atualizadores de cada tabela e, em Fontes/, a leitura de cada página ou API
 CalculosTrabalhistasTributarios.Infrastructure.Local/ SQLite compartilhado entre WPF e Android
 ├── Persistence/       Consultas, histórico e, em Inicializacao/, esquema e sementes
 └── Interfaces/        Cache e inicialização; namespaces preservados por compatibilidade
@@ -216,6 +229,10 @@ CalculosTrabalhistasTributarios/                 Aplicativo WPF (MVVM)
 ├── Views/             Janelas em XAML
 ├── Assets/            Logos e ícones para os temas claro e escuro
 └── BancoDados/        Banco SQLite distribuído com a aplicação
+CalculosTrabalhistasTributarios.Mobile.Presentation/ ViewModels do Android, sem dependência de MAUI ou WPF
+CalculosTrabalhistasTributarios.Mobile/          Aplicativo Android (.NET MAUI): páginas, PDF nativo e composição
+CalculosTrabalhistasTributarios.Tests/           Testes dos cálculos, do desktop e da arquitetura
+CalculosTrabalhistasTributarios.Mobile.Tests/    Testes da apresentação do Android, sem aparelho
 ```
 
 - **Interfaces:** ficam na pasta `Interfaces` de cada projeto, e um teste de arquitetura falha se alguma ficar fora dela.
@@ -234,6 +251,7 @@ CalculosTrabalhistasTributarios/                 Aplicativo WPF (MVVM)
 
 - Windows 10 ou superior.
 - **.NET 10 SDK** para compilar e desenvolver.
+- Para o aplicativo Android: workload MAUI Android, Android SDK e JDK, além de um emulador ou aparelho (veja [docs/MAUI.md](docs/MAUI.md#preparação-e-execução)).
 - Para gerar e publicar instaladores: [Inno Setup 6](https://jrsoftware.org/isdl.php) e o [GitHub CLI](https://cli.github.com) autenticado (`gh auth login`).
 
 ## Executar localmente
@@ -248,6 +266,8 @@ dotnet run --project .\CalculosTrabalhistasTributarios\CalculosTrabalhistasTribu
 
 O executável de desenvolvimento é gerado como `CalculosTrabalhistasTributarios.exe` em `CalculosTrabalhistasTributarios\bin\<configuração>\net10.0-windows`.
 
+A solução principal `CalculosTrabalhistasTributarios.sln` reúne os projetos do Windows e do Android e exige o ambiente MAUI Android para compilar por completo. O filtro `CalculosTrabalhistasTributarios.Desktop.slnf`, usado acima e no CI, compila só o Windows; `CalculosTrabalhistasTributarios.Mobile.sln` abre só a parte do Android.
+
 ## Testes
 
 O projeto `CalculosTrabalhistasTributarios.Tests` (xUnit) confere os cálculos com valores de referência:
@@ -260,11 +280,14 @@ O projeto `CalculosTrabalhistasTributarios.Tests` (xUnit) confere os cálculos c
 
 Cada execução parte de uma cópia nova do banco do projeto, inicializada como na primeira abertura do aplicativo.
 
+O projeto `CalculosTrabalhistasTributarios.Mobile.Tests` confere a apresentação do Android sem aparelho nem SDK do Android: leitura dos formulários e das grades de cada calculadora, catálogo, exemplos, ajuda do manual, histórico, compartilhamento do PDF e edição das tabelas e atualização diária, com uma fonte simulada.
+
 ```powershell
 dotnet test .\CalculosTrabalhistasTributarios.Tests
+dotnet test .\CalculosTrabalhistasTributarios.Mobile.Tests
 ```
 
-O `gerar-instalador.ps1` roda os testes antes de publicar: se algum falhar, a versão não é gerada. No GitHub, o [CI](.github/workflows/ci.yml) compila a solução e roda os testes em cada push no `master` e em cada pull request.
+O `gerar-instalador.ps1` e o `gerar-apk.ps1` rodam os testes antes de publicar: se algum falhar, a versão não é gerada. No GitHub, o [CI](.github/workflows/ci.yml) compila a solução e roda os testes em cada push no `master` e em cada pull request.
 
 ## Gerar o instalador
 
@@ -358,7 +381,7 @@ As faixas do seguro-desemprego só são gravadas se fecharem entre si: o valor f
 
 As fontes alternativas do IRRF publicam apenas as faixas. Nesse caso, o desconto simplificado é calculado em 25% do limite da faixa isenta, como determina a Lei 9.250/1995, e a dedução por dependente e a redução mensal continuam com os valores cadastrados.
 
-Cada fonte é lida por uma classe em `Infrastructure/Tributacao/Fontes`, a escolha entre elas fica em `ConsultaDeFontes`, e `AtualizadorTabelas` encaminha a atualização de cada tabela da janela de manutenção ao seu atualizador. Na abertura, `AtualizarTodasTabelasUseCase` consulta todas em sequência, uma fonte por tabela, informando o progresso à `AberturaWindow`; a última atualização com resposta fica em `settings.json`, para a consulta ocorrer uma vez por dia. O botão "Atualizar agora" executa o mesmo caso de uso pela `AberturaWindow`, aberta sobre a janela principal. Como a estrutura das páginas públicas pode mudar, uma fonte com falha é apenas ignorada; se nenhuma tabela for confirmada, nada é gravado e a mensagem explica o que aconteceu com cada fonte.
+Cada fonte é lida por uma classe em `Infrastructure.Tabelas/Tributacao/Fontes`, a escolha entre elas fica em `ConsultaDeFontes`, e `AtualizadorTabelas` encaminha a atualização de cada tabela da janela de manutenção ao seu atualizador. Na abertura, `AtualizarTodasTabelasUseCase` consulta todas em sequência, uma fonte por tabela, informando o progresso à `AberturaWindow`; a última atualização com resposta fica em `settings.json`, para a consulta ocorrer uma vez por dia. O botão "Atualizar agora" executa o mesmo caso de uso pela `AberturaWindow`, aberta sobre a janela principal. Como a estrutura das páginas públicas pode mudar, uma fonte com falha é apenas ignorada; se nenhuma tabela for confirmada, nada é gravado e a mensagem explica o que aconteceu com cada fonte.
 
 Revise os valores atualizados antes de utilizá-los em cálculos que exijam precisão legal ou contábil.
 

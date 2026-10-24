@@ -2,7 +2,7 @@
 
 ## Escopo
 
-O aplicativo Android é uma apresentação adicional para o mesmo núcleo de cálculo. A solução principal `CalculosTrabalhistasTributarios.sln` inclui os projetos desktop e móveis. O WPF mantém o fluxo de publicação existente. Não há backend ou sincronização com o computador.
+O aplicativo Android é uma apresentação adicional para o mesmo núcleo de cálculo. A solução principal `CalculosTrabalhistasTributarios.sln` inclui os projetos desktop e móveis. O APK assinado é publicado no mesmo release do instalador do Windows, a cada tag de versão (veja [Publicação do APK](#publicação-do-apk)). Não há backend ou sincronização com o computador.
 
 O menu lateral (☰) é montado a partir de `CatalogoCalculadorasMobile` (`Mobile.Presentation/Inicio`), com os grupos do WPF: Impostos e salário; Pensão e débitos judiciais; Remuneração e custos; Férias, 13º e desligamento; FGTS, afastamentos e benefícios. Cada item indica a calculadora e o formulário da tela comum de cálculo; o registro dos formulários no DI e a navegação partem desse catálogo, e um teste confere que cada valor de `TipoCalculadoraMobile` tem um único cartão. Cada abertura cria um formulário independente; voltar à tela inicial não salva um histórico.
 
@@ -73,7 +73,7 @@ As tabelas distribuídas e suas sementes são consultadas pela competência info
 - **Horas extras:** aceita horas de relógio (`10:30`) ou decimais (`10,5`), duas faixas de adicional, horas noturnas urbanas ou rurais e feriados para o DSR.
 - **Rescisão:** recebe motivo, vínculo, aviso, datas, verbas, descontos e depósitos históricos do FGTS em linhas editáveis. **Gerar meses do contrato** preserva valores já digitados para as competências geradas.
 
-Todas usam os casos de uso compartilhados da Application e as tabelas locais da competência. As entradas de uma calculadora não são transferidas automaticamente para outra. O demonstrativo na tela e o PDF consomem a mesma apuração; FGTS aparece como informativo quando assim definido pelo caso de uso.
+Todas usam os casos de uso compartilhados da Application e as tabelas locais da competência. Fora a quitação do banco de horas, as entradas de uma calculadora não são transferidas automaticamente para outra. O demonstrativo na tela e o PDF consomem a mesma apuração; FGTS aparece como informativo quando assim definido pelo caso de uso.
 
 ## Compartilhar PDF do saque-aniversário
 
@@ -103,6 +103,8 @@ Na simulação tributária, foram conferidos catálogo, navegação, primeira pr
 
 Na ampliação trabalhista, as quatro telas foram abertas no emulador. A rescisão foi conferida com edição do salário, adição e remoção de linha de FGTS e cálculo com resultado exibido. O formulário e a lista de FGTS foram inspecionados em 1080 × 2400 no tema claro e em 840 × 1680 no tema escuro. O PDF das novas calculadoras não foi inspecionado visualmente em aparelho físico.
 
+Com o PDF no formato do desktop, o emulador (1080 × 2400) gerou os relatórios da simulação tributária (6 páginas) e da rescisão (7 páginas). As páginas foram renderizadas e inspecionadas: cabeçalho, resumo, tabela de verbas com totais, barra do resultado, molduras da memória divididas entre páginas sem invadir o rodapé, títulos de fórmula mantidos com a primeira linha e o rodapé com o aviso e "Página X de Y". O PDF não foi aberto em aparelho físico.
+
 Na ampliação para todas as calculadoras, a conferência no emulador Android (API 36, 1080 × 2400, 420 dpi, tema claro) abriu cada tela nova pelo catálogo e acionou **Calcular** com os valores iniciais; todas exibiram a mensagem de validação esperada ou um resultado. Com dados, foram conferidos: gorjetas (Gerar meses com 12 linhas, R$ 1.500,00 em um mês: média R$ 125,00, total R$ 1.791,67 e FGTS R$ 143,33), jornada pelo ponto (geração dos dias e 196:00 horas em 10/2026) e correção de valores pelo IPCA de 01/2025 a 01/2026 (R$ 1.000,00 para R$ 1.042,64). O PDF da jornada chegou ao menu nativo de compartilhamento, sem envio e sem inspeção visual das páginas. Datas, competências, horas e textos usam o teclado de texto, porque o estilo padrão das entradas é numérico e descartaria "/", ":" e letras. Depois da troca das listas com rolagem própria pela grade paginada, o gesto sobre as linhas passou a rolar a página; na compilação Release, gerar 720 competências na conferência do FGTS levou cerca de 3 s, contra cerca de 5 s para 60 linhas exibidas todas de uma vez, e **Próximas** no paginador inferior levou a tela ao início da página seguinte.
 
 Na ampliação da navegação, foram conferidos no emulador o progresso e o botão **Pular** na abertura, o catálogo, o menu lateral, Configurações e a leitura dos registros locais da Tabela INSS. A tela inicial foi inspecionada em 1080 × 2400 no tema claro e 840 × 1680 no tema escuro; os testes automatizados cobrem a busca, as favoritas, a política diária de atualização e a edição da tabela com uma fonte simulada. Depois, na compilação Release instalada do zero (1080 × 2400, temas claro e escuro), a abertura atualizou as 13 tabelas pela internet; **Atualizar agora** mostrou o progresso por tabela e **Cancelar**; o menu abriu a Tabela INSS, cuja seleção de faixa leva a tela ao formulário preenchido; o Histórico vazio e o Manual no leitor de PDF do aparelho também foram abertos. Não foram conferidos salvar, excluir e comparar históricos nem a gravação de registros editados na tabela. Com o ícone, a paleta e as boas-vindas, a compilação Release mostrou o logotipo no lançador e na abertura; um cálculo salvo apareceu em Continuar de onde parou e reabriu calculado, nos temas claro e escuro. Com exemplo, ajuda, filtros, registro de erros e aviso, a compilação Release no emulador (1080 × 2400, tema claro) mostrou o aviso na primeira abertura; em Férias, **Preencher exemplo** preencheu e calculou o exemplo do manual, e **Ajuda** abriu a seção 8.4; o histórico encontrou "Férias" pela busca "ferias"; e **Enviar registro de erros**, sem erros no mês, informou que não há registro. Os testes conferem que os 50 exemplos calculam sem mensagem de erro, mas não comparam seus valores com os destaques do desktop; o tema escuro, os filtros de período e ordem na tela e o compartilhamento de um registro existente não foram conferidos no emulador.
@@ -117,35 +119,40 @@ CalculosTrabalhistasTributarios.Mobile.sln
 ├── Infrastructure.Tabelas          # manutenção e fontes de atualização compartilhadas
 ├── Mobile.Presentation            # net10.0: ViewModels por funcionalidade, sem MAUI/WPF
 │   ├── DependencyInjection.cs
+│   ├── Interfaces/                  # portas da plataforma (PDF, navegação, histórico, preferências)
 │   ├── SaqueAniversario/
 │   ├── Inicio/                      # catálogos, busca e favoritas
 │   ├── Abertura/ e Configuracoes/   # atualização diária e preferências
-│   ├── Tabelas/                    # edição e consulta por competência
-│   └── Trabalhista/                 # formulários da tela comum, campos e grades
+│   ├── Tabelas/                     # edição e consulta por competência
+│   ├── Tributacao/                  # simulação tributária
+│   ├── Trabalhista/                 # formulários da tela comum, campos e grades
+│   ├── Historico/                   # cálculos salvos, filtros e comparação
+│   ├── Exemplos/                    # Preencher exemplo, um JSON por calculadora
+│   └── Ajuda/                       # seção do manual de cada calculadora
 ├── Mobile                         # net10.0-android: composição e controles nativos
 │   ├── MauiProgram.cs
 │   ├── App.xaml
 │   ├── Comportamentos/
-│   ├── Features/SaqueAniversario/
-│   ├── Features/Inicio/ e Tabelas/  # menu e manutenção
-│   ├── Features/Abertura/ e Configuracoes/
-│   ├── Features/Trabalhista/        # tela comum de cálculo
-│   ├── Platforms/Android/
+│   ├── Features/                    # páginas: Inicio, Abertura, Configuracoes, Tabelas, Tributacao,
+│   │                                #   Trabalhista (tela comum), SaqueAniversario, Historico e Ajuda
+│   ├── Services/                    # compartilhamento do PDF, histórico, manual, navegação e registro de erros
+│   ├── Views/                       # logotipo, paginador das grades e resultado
+│   ├── Platforms/Android/           # Reporting/: DiagramacaoPdf e GeradorDemonstrativoPdf
 │   └── Resources/
 └── Mobile.Tests                   # net10.0: testes sem dispositivo ou workload MAUI
 ```
 
 Fluxo: página → binding/command do ViewModel → `ISimularDemonstrativoUseCase<TRequest>` → domínio → `DemonstrativoDto` → página.
 
-- `MauiProgram` é o ponto de composição. Registra `AddCalculadoras`, `AddAtualizacaoTodasTabelas`, `AddInfrastructureLocal`, `AddAtualizacaoTabelas` e `AddPresentation`. A atualização compartilha fontes e critérios com o desktop.
+- `MauiProgram` é o ponto de composição. Registra `AddCalculadoras`, `AddSaqueAniversario`, `AddAtualizacaoTodasTabelas`, `AddInfrastructureLocal`, `AddAtualizacaoTabelas` e `AddPresentation`. A atualização compartilha fontes e critérios com o desktop.
 - `AberturaPage` prepara o SQLite antes da navegação e mostra progresso ou falha; `FlyoutPage` mantém o menu lateral, a busca e as favoritas da mesma janela. As preferências ficam no armazenamento privado do Android. O manifesto declara acesso à internet para atualizar tabelas e abrir a fonte oficial.
 - Calculadoras com resultado próprio no desktop (estabilidade, pensão alimentícia, pensão em atraso, débitos judiciais, jornada) são apresentadas pelos montadores de `Application/Demonstrativos`, que reorganizam o resultado apurado em `DemonstrativoDto` sem recalcular.
 - Cada janela possui um escopo de DI, descartado em `Window.Destroying`. Página e ViewModel são transient; não compartilhe formulários mutáveis em singletons.
 - `Mobile.Presentation` usa CommunityToolkit.Mvvm para notificações e comandos assíncronos. Não depende de controles MAUI, WPF ou Infrastructure.
-- `LeituraNumerica.cs` e `LeituraDeHoras.cs` são incluídos como fontes vinculadas da apresentação existente. Há uma única implementação do parser, sem carregar o assembly WPF. Ao alterá-lo, execute os testes de ambas as apresentações. Se mais componentes independentes precisarem ser compartilhados, avalie uma biblioteca comum de apresentação, sem mover parsing de formulário para o domínio.
+- `LeituraNumerica.cs` e `LeituraDeHoras.cs` são incluídos como fontes vinculadas da apresentação existente, assim como `SecoesDoManual.cs` e a comparação de resultados do histórico. Há uma única implementação do parser, sem carregar o assembly WPF. Ao alterá-lo, execute os testes de ambas as apresentações. Se mais componentes independentes precisarem ser compartilhados, avalie uma biblioteca comum de apresentação, sem mover parsing de formulário para o domínio.
 - Os bindings são tipados com `x:DataType`; mantenha a compilação XAML estrita. Textos e valores usam `pt-BR`; cores acompanham o tema do sistema.
 - O comando impede execução simultânea e recebe `CancellationToken`. A saída da página cancela a operação. Editar uma entrada invalida o resultado exibido.
-- Falhas esperadas usam o `Result` existente. Falhas inesperadas na fronteira de apresentação são registradas com `ILogger`, sem formulário completo, e produzem mensagem ao usuário. O provedor de diagnóstico atual é Debug; antes de distribuição em produção, integrar diagnóstico persistente no armazenamento privado do aplicativo.
+- Falhas esperadas usam o `Result` existente. Falhas inesperadas na fronteira de apresentação são registradas com `ILogger`, sem formulário completo, e produzem mensagem ao usuário. O `RegistroDeErrosLoggerProvider` grava os erros no log mensal do armazenamento privado (`ArquivoRegistroDeErros`, o mesmo do desktop); o provedor Debug só se soma a ele nas compilações de depuração.
 
 ## Preparação e execução
 
@@ -200,7 +207,7 @@ Os APKs gerados antes da chave de publicação, nos testes e no emulador, foram 
 7. Para iOS, acrescente alvo, inicializadores e recursos da plataforma em uma etapa própria, com compilação no Mac, assinatura e verificação real. iOS e Windows MAUI não estão configurados nesta base.
 8. Cubra mapeamento de entradas, validações, falhas e ciclo de vida dos comandos. Verifique no dispositivo temas claro/escuro, teclado, rolagem, fonte ampliada, valores grandes e orientação. Compilação não comprova usabilidade.
 9. Mantenha a thread da tela livre: SQLite e outras operações síncronas rodam com `Task.Run`, e uma seção escondida por `IsVisible` não recebe a lista completa em `BindableLayout.ItemsSource`, porque os itens seriam criados mesmo sem aparecer (a tela inicial usa `GrupoAtalhosMobile.ItensBusca`, vazia fora da busca). Para só ler ou recalcular um formulário, resolva o ViewModel pela fábrica de formulários do `MauiProgram`, sem montar a página.
-10. Antes de publicar, defina o identificador definitivo da aplicação, assinatura, versionamento, ícones finais, política de dados e diagnóstico. O identificador atual é `br.com.mayconwisley.calculostrabalhistastributarios`; não o altere após a primeira distribuição sem planejar a continuidade dos dados.
+10. O aplicativo já é distribuído com o identificador `br.com.mayconwisley.calculostrabalhistastributarios` e a chave de publicação descrita acima. Alterar qualquer um dos dois impede a atualização sobre a versão instalada e faz o usuário perder os cálculos salvos; não os mude sem planejar a continuidade dos dados.
 
 ## Referências
 
