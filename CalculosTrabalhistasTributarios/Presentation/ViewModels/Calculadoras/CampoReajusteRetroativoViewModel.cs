@@ -42,7 +42,7 @@ public sealed class CampoReajusteRetroativoViewModel : CampoViewModel
     {
         if (!TentarCompetencia(Inicio, out var inicio) || !TentarCompetencia(Fim, out var fim) || inicio > fim)
         {
-            Mensagem = "Informe início e fim válidos, no formato MM/AAAA, em ordem cronológica.";
+            Mensagem = "Informe início e fim válidos, no formato mm/aaaa, em ordem cronológica.";
             return false;
         }
         var quantidade = (fim.Year - inicio.Year) * 12 + fim.Month - inicio.Month + 1;

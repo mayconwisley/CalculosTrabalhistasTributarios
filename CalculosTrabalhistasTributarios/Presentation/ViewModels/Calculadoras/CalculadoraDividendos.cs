@@ -6,7 +6,7 @@ namespace CalculosTrabalhistasTributarios.Presentation.ViewModels.Calculadoras;
 
 public sealed class CalculadoraDividendos(ISimularDemonstrativoUseCase<SimularDividendosRequest> simulador) : CalculadoraBase
 {
-    private readonly CampoTextoViewModel _competencia = Competencia(dica: "Mês dos pagamentos (MM/AAAA), desde 01/2026.");
+    private readonly CampoTextoViewModel _competencia = Competencia(dica: "Mês dos pagamentos (mm/aaaa), desde 01/2026.");
     private readonly CampoTextoViewModel _valor = Moeda("Dividendos no mês", "Total pago no mês pela mesma empresa à mesma pessoa, somando todos os pagamentos.");
     private readonly CampoTextoViewModel _transicao = Moeda("Lucros até 2025", "Parte de lucros apurados até 2025, com distribuição aprovada até 31/12/2025, que não sofre retenção.");
     private readonly CampoTextoViewModel _jaRetido = Moeda("IRRF já retido no mês", "Imposto retido em pagamentos anteriores do mesmo mês, descontado do imposto refeito sobre o total.");

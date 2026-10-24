@@ -14,7 +14,7 @@ public sealed class CalculadoraHorasExtras : CalculadoraBase
         _trabalho = CamposNoturnos.Trabalho(_percentualNoturno);
     }
 
-    private readonly CampoTextoViewModel _competencia = Competencia(dica: "Mês das horas, que define os domingos para o DSR e as tabelas de INSS e IRRF (MM/AAAA).");
+    private readonly CampoTextoViewModel _competencia = Competencia(dica: "Mês das horas, que define os domingos para o DSR e as tabelas de INSS e IRRF (mm/aaaa).");
     private readonly CampoTextoViewModel _salario = Moeda("Salário", "Salário-base mensal.");
     private readonly CampoTextoViewModel _adicionais = Moeda("Adicionais salariais", "Insalubridade, periculosidade e outros adicionais fixos do mês, que entram no valor da hora (Súmula 264 do TST).");
     private readonly CampoTextoViewModel _divisor = new("Divisor de horas", TipoCampo.Numero, "220", "220 para 44 horas semanais; 200 para 40; 180 para 36; 150 para 30.");

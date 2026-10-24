@@ -48,7 +48,7 @@ public abstract class CampoCompetenciasViewModel<TLinha> : CampoViewModel where 
     {
         if (!TentarCompetencia(Inicio, out var inicio) || !TentarCompetencia(Fim, out var fim) || inicio > fim)
         {
-            Mensagem = "Informe início e fim válidos, no formato MM/AAAA, em ordem cronológica.";
+            Mensagem = "Informe início e fim válidos, no formato mm/aaaa, em ordem cronológica.";
             return false;
         }
         if (ValidarSugestoes() is { } orientacao)
@@ -101,7 +101,7 @@ public abstract class CampoCompetenciasViewModel<TLinha> : CampoViewModel where 
         foreach (var linha in Linhas)
         {
             if (!TentarCompetencia(linha.Competencia, out var competencia))
-                return Erro.Validacao($"Revise a competência '{linha.Competencia}': use MM/AAAA.");
+                return Erro.Validacao($"Revise a competência '{linha.Competencia}': use mm/aaaa.");
             if (!competencias.Add(competencia))
                 return Erro.Validacao($"A competência {linha.Competencia} aparece mais de uma vez; some os valores do mês na mesma linha.");
             var lida = ler(linha, competencia);

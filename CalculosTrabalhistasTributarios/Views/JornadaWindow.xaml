@@ -51,15 +51,15 @@
                              contratual e o horário padrão usado para gerar os dias; 3ª linha: as ações. -->
                         <StackPanel Margin="0,0,12,14">
                             <TextBlock Text="Competência" Style="{StaticResource Rotulo}" />
-                            <TextBox Text="{Binding Competencia, UpdateSourceTrigger=PropertyChanged}" behaviors:MascaraData.Tipo="Competencia" TextAlignment="Center" AutomationProperties.Name="Competência" ToolTip="Mês da folha em que as horas apuradas são pagas (MM/AAAA). Ao mudar, o período do ponto que era o mês inteiro acompanha." />
+                            <TextBox Text="{Binding Competencia, UpdateSourceTrigger=PropertyChanged}" behaviors:MascaraData.Tipo="Competencia" TextAlignment="Center" AutomationProperties.Name="Competência" ToolTip="Mês da folha em que as horas apuradas são pagas (mm/aaaa). Ao mudar, o período do ponto que era o mês inteiro acompanha." />
                         </StackPanel>
                         <StackPanel Grid.Column="1" Margin="0,0,12,14">
                             <TextBlock Text="Início do ponto" Style="{StaticResource Rotulo}" />
-                            <TextBox Text="{Binding InicioPeriodo, UpdateSourceTrigger=PropertyChanged}" behaviors:MascaraData.Tipo="Data" TextAlignment="Center" AutomationProperties.Name="Início do período do ponto" ToolTip="Primeiro dia do cartão de ponto (DD/MM/AAAA). Para um ponto de 16/09 a 15/10, informe 16/09." />
+                            <TextBox Text="{Binding InicioPeriodo, UpdateSourceTrigger=PropertyChanged}" behaviors:MascaraData.Tipo="Data" TextAlignment="Center" AutomationProperties.Name="Início do período do ponto" ToolTip="Primeiro dia do cartão de ponto (dd/mm/aaaa). Para um ponto de 16/09 a 15/10, informe 16/09." />
                         </StackPanel>
                         <StackPanel Grid.Column="2" Margin="0,0,12,14">
                             <TextBlock Text="Fim do ponto" Style="{StaticResource Rotulo}" />
-                            <TextBox Text="{Binding FimPeriodo, UpdateSourceTrigger=PropertyChanged}" behaviors:MascaraData.Tipo="Data" TextAlignment="Center" AutomationProperties.Name="Fim do período do ponto" ToolTip="Último dia do cartão de ponto (DD/MM/AAAA), com até 62 dias no período." />
+                            <TextBox Text="{Binding FimPeriodo, UpdateSourceTrigger=PropertyChanged}" behaviors:MascaraData.Tipo="Data" TextAlignment="Center" AutomationProperties.Name="Fim do período do ponto" ToolTip="Último dia do cartão de ponto (dd/mm/aaaa), com até 62 dias no período." />
                         </StackPanel>
                         <StackPanel Grid.Column="3" Grid.ColumnSpan="3" Margin="0,0,0,14" ToolTip="Define o período noturno: urbano das 22h às 5h, com hora reduzida; rural das 21h às 5h na lavoura e das 20h às 4h na pecuária, sem redução.">
                             <TextBlock Text="Trabalho noturno" Style="{StaticResource Rotulo}" />

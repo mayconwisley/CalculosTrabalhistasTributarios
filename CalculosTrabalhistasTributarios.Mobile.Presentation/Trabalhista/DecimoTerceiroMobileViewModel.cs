@@ -21,7 +21,7 @@ public sealed class DecimoTerceiroMobileViewModel : CalculadoraTrabalhistaViewMo
         _parcelas = parcelas;
         _complemento = complemento;
         Adicionar("calculo", "Cálculo", TipoCampoMobile.Opcao, opcoes: ["1ª e 2ª parcelas", "Complemento das médias (até 10/01)"]);
-        Adicionar("competencia", "Competência do pagamento (MM/yyyy)", TipoCampoMobile.Competencia, $"12/{DateTime.Today.Year}");
+        Adicionar("competencia", "Competência do pagamento (mm/aaaa)", TipoCampoMobile.Competencia, $"12/{DateTime.Today.Year}");
         Adicionar("salario", "Salário mensal (R$)", TipoCampoMobile.Moeda, "0,00");
         Adicionar("medias", "Médias de variáveis (R$)", TipoCampoMobile.Moeda, "0,00", "Média anual de horas extras, comissões e adicionais.");
         Adicionar("avos", "Avos (meses trabalhados)", TipoCampoMobile.Inteiro, "12", "De 1 a 12; cada mês com pelo menos 15 dias conta um avo.");
@@ -32,7 +32,7 @@ public sealed class DecimoTerceiroMobileViewModel : CalculadoraTrabalhistaViewMo
         Adicionar("previdencia", "Previdência complementar (R$)", TipoCampoMobile.Moeda, "0,00", "Contribuição sobre o 13º, deduzida do IRRF até o limite da regra.");
         Adicionar("variaveisAteNovembro", "Variáveis de janeiro a novembro (R$)", TipoCampoMobile.Moeda, "0,00");
         Adicionar("variaveisDezembro", "Variáveis de dezembro (R$)", TipoCampoMobile.Moeda, "0,00");
-        Adicionar("pagamento", "Pagamento do complemento (MM/yyyy)", TipoCampoMobile.Competencia, $"01/{DateTime.Today.Year + 1}");
+        Adicionar("pagamento", "Pagamento do complemento (mm/aaaa)", TipoCampoMobile.Competencia, $"01/{DateTime.Today.Year + 1}");
         Adicionar("tributacao", "IRRF no ano seguinte", TipoCampoMobile.Opcao,
             opcoes: ["RRA de 1 mês (eSocial)", "Recálculo do 13º (IN 1.500)"]);
         Atualizar();

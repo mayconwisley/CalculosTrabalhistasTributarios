@@ -21,9 +21,9 @@ public sealed class TributoAtrasoMobileViewModel : CalculadoraTrabalhistaViewMod
         Adicionar("guia", "Guia", TipoCampoMobile.Opcao, dica: "Todas seguem a mesma regra de multa e juros.",
             opcoes: ["DARF (tributos federais)", "DAS (Simples Nacional)", "DAE (empregador doméstico)", "GPS (INSS)"]);
         Adicionar("principal", "Valor principal (R$)", TipoCampoMobile.Moeda, "0,00", "Valor da guia no vencimento, sem acréscimos.");
-        Adicionar("vencimento", "Vencimento (dd/MM/yyyy)", TipoCampoMobile.Data, DateTime.Today.AddMonths(-1).ToString("dd/MM/yyyy", Cultura),
+        Adicionar("vencimento", "Vencimento (dd/mm/aaaa)", TipoCampoMobile.Data, DateTime.Today.AddMonths(-1).ToString("dd/MM/yyyy", Cultura),
             "Já prorrogado para o dia útil seguinte quando cai em fim de semana ou feriado.");
-        Adicionar("pagamento", "Pagamento (dd/MM/yyyy)", TipoCampoMobile.Data, DateTime.Today.ToString("dd/MM/yyyy", Cultura),
+        Adicionar("pagamento", "Pagamento (dd/mm/aaaa)", TipoCampoMobile.Data, DateTime.Today.ToString("dd/MM/yyyy", Cultura),
             "Data em que a guia será paga. A Selic do mês anterior precisa estar na tabela local.");
     }
 

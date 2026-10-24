@@ -22,8 +22,8 @@ public sealed class EstabilidadeMobileViewModel : CalculadoraTrabalhistaViewMode
         var hoje = DateTime.Today;
         Adicionar("media", "Média remuneratória (R$)", TipoCampoMobile.Moeda, "0,00", "Média da remuneração usada como referência para a indenização.");
         Adicionar("diasBase", "Dias-base", TipoCampoMobile.Inteiro, "30", "Divisor da média diária para os dias que sobram além dos meses cheios. O padrão é 30.");
-        Adicionar("demissao", "Demissão (dd/MM/yyyy)", TipoCampoMobile.Data, hoje.ToString("dd/MM/yyyy", Cultura));
-        Adicionar("fimEstabilidade", "Fim da estabilidade (dd/MM/yyyy)", TipoCampoMobile.Data, hoje.AddDays(30).ToString("dd/MM/yyyy", Cultura),
+        Adicionar("demissao", "Demissão (dd/mm/aaaa)", TipoCampoMobile.Data, hoje.ToString("dd/MM/yyyy", Cultura));
+        Adicionar("fimEstabilidade", "Fim da estabilidade (dd/mm/aaaa)", TipoCampoMobile.Data, hoje.AddDays(30).ToString("dd/MM/yyyy", Cultura),
             "Último dia do período de estabilidade; deve ser posterior à demissão.");
         Adicionar("complementos", "Complementos (R$, opcional)", TipoCampoMobile.Moeda, "0,00", "Valores adicionais somados ao total, se houver.");
     }

@@ -22,9 +22,9 @@ public sealed class CorrecaoValorMobileViewModel : CalculadoraTrabalhistaViewMod
     {
         _simulador = simulador;
         Adicionar("valor", "Valor original (R$)", TipoCampoMobile.Moeda, "0,00", "Valor na data em que era devido.");
-        Adicionar("inicio", "Mês em que era devido (MM/yyyy)", TipoCampoMobile.Competencia, DateTime.Today.AddYears(-1).ToString("MM/yyyy", Cultura),
+        Adicionar("inicio", "Mês em que era devido (mm/aaaa)", TipoCampoMobile.Competencia, DateTime.Today.AddYears(-1).ToString("MM/yyyy", Cultura),
             "A correção começa nele.");
-        Adicionar("fim", "Mês da atualização (MM/yyyy)", TipoCampoMobile.Competencia, DateTime.Today.ToString("MM/yyyy", Cultura),
+        Adicionar("fim", "Mês da atualização (mm/aaaa)", TipoCampoMobile.Competencia, DateTime.Today.ToString("MM/yyyy", Cultura),
             "A correção vai até o mês anterior.");
         Adicionar("indice", "Índice", TipoCampoMobile.Opcao,
             dica: "Índice do contrato ou da decisão; sem previsão, o IPCA é o índice legal desde a Lei 14.905/2024.",

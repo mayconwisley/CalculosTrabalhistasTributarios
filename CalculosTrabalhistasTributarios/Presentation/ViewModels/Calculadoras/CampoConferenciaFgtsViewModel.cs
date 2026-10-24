@@ -53,7 +53,7 @@ public sealed class CampoConferenciaFgtsViewModel : CampoViewModel
     {
         if (!TentarCompetencia(Inicio, out var inicio) || !TentarCompetencia(Fim, out var fim) || inicio > fim)
         {
-            Mensagem = "Informe início e fim válidos, no formato MM/AAAA, em ordem cronológica.";
+            Mensagem = "Informe início e fim válidos, no formato mm/aaaa, em ordem cronológica.";
             return false;
         }
         if (!LeituraNumerica.TentarLer(RemuneracaoMensal, out var remuneracao) || remuneracao < 0m || !LeituraNumerica.TentarLer(DepositoMensal, out var deposito) || deposito < 0m)
@@ -106,7 +106,7 @@ public sealed class CampoConferenciaFgtsViewModel : CampoViewModel
         foreach (var linha in Linhas)
         {
             if (!TentarCompetencia(linha.Competencia, out var competencia))
-                return Erro.Validacao($"Revise a competência '{linha.Competencia}': use MM/AAAA.");
+                return Erro.Validacao($"Revise a competência '{linha.Competencia}': use mm/aaaa.");
             if (!LeituraNumerica.TentarLer(linha.Remuneracao, out var remuneracao) || !LeituraNumerica.TentarLer(linha.Deposito, out var deposito))
                 return Erro.Validacao($"Revise a remuneração e o depósito de {linha}: use valores monetários, por exemplo 3.000,00.");
             lancamentos.Add(new(competencia, (TipoCompetenciaFgts)linha.Tipo.Valor, remuneracao, deposito));

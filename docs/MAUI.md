@@ -56,7 +56,7 @@ Meses, vínculos, parcelas, aportes e marcações usam a grade comum da tela de 
 
 ## Simulação tributária e tabelas locais
 
-No menu ☰, abra **Simular impostos e salário**. Informe a competência em MM/yyyy, vínculo, valor bruto e dependentes. A base de INSS e FGTS segue o bruto por padrão; desligue essa opção para informar uma base diferente. Aposentadoria ou pensão usa base de INSS zero e permite informar 65 anos ou mais e 13º do benefício, como no WPF.
+No menu ☰, abra **Simular impostos e salário**. Informe a competência em mm/aaaa, vínculo, valor bruto e dependentes. A base de INSS e FGTS segue o bruto por padrão; desligue essa opção para informar uma base diferente. Aposentadoria ou pensão usa base de INSS zero e permite informar 65 anos ou mais e 13º do benefício, como no WPF.
 
 O resultado apresenta proventos, descontos, FGTS informativo, modalidades do IRRF e memória com as faixas. FGTS não reduz o líquido. O PDF inclui os valores exatos e considerados das faixas, preservando a explicação dos truncamentos. Valores e critérios vêm de `SimularImpostoUseCase`, sem nova fórmula na apresentação.
 
@@ -86,7 +86,7 @@ Editar uma entrada invalida o resultado e exige novo cálculo antes de compartil
 
 Os arquivos são gerados em `CacheDirectory/sharing-root`, com nomes exclusivos. O FileProvider expõe apenas essa subpasta. PDFs com mais de sete dias são removidos na próxima geração; o Android também pode limpar seu cache. O arquivo não é apagado ao fechar o menu, pois o destinatário pode ainda estar lendo o conteúdo. Não é solicitada permissão de acesso geral ao armazenamento.
 
-O PDF usa `Android.Graphics.Pdf.PdfDocument`, sem serviços externos. O adaptador `ICompartilhamentoPdf` fica na apresentação móvel; geração e compartilhamento nativos ficam no projeto MAUI. O relatório consome o mesmo `DemonstrativoDto` exibido e não refaz cálculos. O texto obrigatório do rodapé é compartilhado com o desktop por `Application/Demonstrativos/AvisoSimulacao`.
+O PDF usa `Android.Graphics.Pdf.PdfDocument`, sem serviços externos, com a mesma organização e aparência do demonstrativo do desktop (`RelatorioPdfDemonstrativo` e `ComponentesPdf`): cabeçalho com título e referência, resumo, comparativo, tabela de verbas com totais, barra do resultado, informativos, memória em molduras com o quadro de faixas, observações e o rodapé com o aviso de simulação, a versão e "Página X de Y". `DiagramacaoPdf` mede e distribui o conteúdo nas páginas antes de desenhar; tabelas que passam de página repetem o cabeçalho. Ao mudar o PDF do desktop, acompanhe a mudança no gerador móvel. O adaptador `ICompartilhamentoPdf` fica na apresentação móvel; geração e compartilhamento nativos ficam no projeto MAUI. O relatório consome o mesmo `DemonstrativoDto` exibido e não refaz cálculos. O texto obrigatório do rodapé é compartilhado com o desktop por `Application/Demonstrativos/AvisoSimulacao`.
 
 ## Aparência e validação
 

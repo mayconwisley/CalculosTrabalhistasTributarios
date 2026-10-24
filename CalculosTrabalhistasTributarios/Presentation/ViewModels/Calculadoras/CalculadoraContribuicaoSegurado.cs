@@ -8,7 +8,7 @@ namespace CalculosTrabalhistasTributarios.Presentation.ViewModels.Calculadoras;
 public sealed class CalculadoraContribuicaoSegurado : CalculadoraBase
 {
     private readonly ISimularDemonstrativoUseCase<SimularContribuicaoSeguradoRequest> _simulador;
-    private readonly CampoTextoViewModel _competencia = Competencia(dica: "Mês da contribuição (MM/AAAA): define o salário mínimo e o teto. No trimestral, qualquer mês do trimestre civil.");
+    private readonly CampoTextoViewModel _competencia = Competencia(dica: "Mês da contribuição (mm/aaaa): define o salário mínimo e o teto. No trimestral, qualquer mês do trimestre civil.");
     private readonly CampoOpcaoViewModel _categoria = new("Categoria",
         [new("Contribuinte individual (autônomo)", CategoriaSegurado.ContribuinteIndividual), new("Facultativo", CategoriaSegurado.Facultativo)],
         "Contribuinte individual: quem trabalha por conta própria. Facultativo: quem não tem atividade remunerada, como estudante ou dona de casa.") { Largura = 290 };

@@ -22,7 +22,7 @@ public sealed class PensaoMobileViewModel : CalculadoraTrabalhistaViewModel
         ILogger<PensaoMobileViewModel> logger) : base(compartilhamento, logger)
     {
         _simulador = simulador;
-        Adicionar("competencia", "Competência (MM/yyyy)", TipoCampoMobile.Competencia, DateTime.Today.ToString("MM/yyyy", Cultura),
+        Adicionar("competencia", "Competência (mm/aaaa)", TipoCampoMobile.Competencia, DateTime.Today.ToString("MM/yyyy", Cultura),
             "Define as tabelas do INSS e do IRRF e o salário mínimo.");
         Adicionar("valorBruto", "Valor bruto (R$)", TipoCampoMobile.Moeda, "0,00",
             "Rendimentos de quem paga. Deixe 0,00 se a pensão não depende deles e você só quer o valor dela.");

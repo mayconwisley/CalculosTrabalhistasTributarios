@@ -28,18 +28,18 @@ public sealed class GorjetasMobileViewModel : CalculadoraTrabalhistaViewModel
         Adicionar("situacao", "Situação do contrato", TipoCampoMobile.Opcao,
             dica: "Na dispensa sem justa causa entra a multa de 40% do FGTS, e as férias não gozadas são indenizadas, sem FGTS. Gorjetas não entram no aviso prévio (Súmula 354 do TST).",
             opcoes: ["Contrato ativo", "Dispensa sem justa causa"]);
-        Adicionar("admissao", "Admissão (dd/MM/yyyy, opcional)", TipoCampoMobile.Data,
+        Adicionar("admissao", "Admissão (dd/mm/aaaa, opcional)", TipoCampoMobile.Data,
             dica: "Separa as férias por período aquisitivo. Sem ela, todos os meses formam um só período.");
         Secao("gerarSecao", "Gerar meses");
-        Adicionar("inicio", "Início (MM/yyyy)", TipoCampoMobile.Competencia, DateTime.Today.AddMonths(-12).ToString("MM/yyyy", Cultura));
-        Adicionar("fim", "Fim (MM/yyyy)", TipoCampoMobile.Competencia, DateTime.Today.AddMonths(-1).ToString("MM/yyyy", Cultura));
+        Adicionar("inicio", "Início (mm/aaaa)", TipoCampoMobile.Competencia, DateTime.Today.AddMonths(-12).ToString("MM/yyyy", Cultura));
+        Adicionar("fim", "Fim (mm/aaaa)", TipoCampoMobile.Competencia, DateTime.Today.AddMonths(-1).ToString("MM/yyyy", Cultura));
         Adicionar("valorMensal", "Gorjetas por mês (R$)", TipoCampoMobile.Moeda, "0,00",
             "Valor sugerido nos meses novos; ajuste cada mês na grade.");
         var grade = AdicionarGrade("meses", "Gorjetas por competência",
             "Parte do empregado no rateio das gorjetas de cada mês, antes da retenção. Gerar meses preserva os valores já digitados.",
             "Mês", MotorReflexos.MaximoDeMeses,
             [
-                new("competencia", "Competência (MM/yyyy)", TipoCampoMobile.Competencia),
+                new("competencia", "Competência (mm/aaaa)", TipoCampoMobile.Competencia),
                 new("valor", "Gorjetas (R$)", TipoCampoMobile.Moeda, "0,00")
             ]);
         grade.GerarCommand = new RelayCommand(GerarMeses);
@@ -54,7 +54,7 @@ public sealed class GorjetasMobileViewModel : CalculadoraTrabalhistaViewModel
             var fim = Competencia("fim");
             var valor = Numero("valorMensal");
             if (inicio > fim)
-                throw new EntradaInvalidaException("Fim (MM/yyyy): informe uma competência igual ou posterior ao início.");
+                throw new EntradaInvalidaException("Fim (mm/aaaa): informe uma competência igual ou posterior ao início.");
             if (valor < 0m)
                 throw new EntradaInvalidaException("Gorjetas por mês (R$): informe um valor positivo ou zero, como 1.500,00.");
             var quantidade = (fim.Year - inicio.Year) * 12 + fim.Month - inicio.Month + 1;

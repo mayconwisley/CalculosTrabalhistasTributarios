@@ -31,12 +31,12 @@ public sealed class SimplesNacionalMobileViewModel : CalculadoraTrabalhistaViewM
     {
         _simulador = simulador;
         Secao("apuracao", "Apuração");
-        Adicionar("periodo", "Período de apuração (MM/yyyy)", TipoCampoMobile.Competencia, DateTime.Today.ToString("MM/yyyy", Cultura),
+        Adicionar("periodo", "Período de apuração (mm/aaaa)", TipoCampoMobile.Competencia, DateTime.Today.ToString("MM/yyyy", Cultura),
             "Mês do DAS. Define a tabela e os meses que formam a receita e a folha de 12 meses.");
         Adicionar("atividade", "Atividade", TipoCampoMobile.Opcao,
             dica: "O anexo depende da atividade do CNAE e do serviço prestado (Resolução CGSN 140/2018, art. 25). Confira o enquadramento da empresa.",
             opcoes: ["Serviços sujeitos ao fator r (Anexo III ou V)", "Serviços do Anexo III", "Serviços do Anexo IV", "Comércio (Anexo I)", "Indústria (Anexo II)"]);
-        Adicionar("inicio", "Início das atividades (opcional) (MM/yyyy)", TipoCampoMobile.Competencia, "",
+        Adicionar("inicio", "Início das atividades (opcional) (mm/aaaa)", TipoCampoMobile.Competencia, "",
             "Mês de abertura, só se a empresa tem menos de 14 meses de atividade. Deixe vazio nos demais casos.");
         Adicionar("receitaMes", "Receita bruta do mês (R$)", TipoCampoMobile.Moeda, "0,00",
             "Receita do período de apuração, sobre a qual incide a alíquota efetiva.");
@@ -60,7 +60,7 @@ public sealed class SimplesNacionalMobileViewModel : CalculadoraTrabalhistaViewM
             "Competências que formam a receita (RBT12) e a folha (FS12) de 12 meses do período de apuração. Gerar novamente preserva os valores dos meses que continuam.",
             "Mês", LimiteMeses,
             [
-                new("competencia", "Competência (MM/yyyy)", TipoCampoMobile.Competencia),
+                new("competencia", "Competência (mm/aaaa)", TipoCampoMobile.Competencia),
                 new("receita", "Receita bruta (R$)", TipoCampoMobile.Moeda, "0,00"),
                 new("folha", "Folha com encargos (R$)", TipoCampoMobile.Moeda, "0,00")
             ]);

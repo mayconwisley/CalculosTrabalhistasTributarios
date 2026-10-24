@@ -18,7 +18,7 @@ public sealed class PlrMobileViewModel : CalculadoraTrabalhistaViewModel
         ICompartilhamentoPdf compartilhamento, ILogger<PlrMobileViewModel> logger) : base(compartilhamento, logger)
     {
         _simulador = simulador;
-        Adicionar("competencia", "Competência do pagamento (MM/yyyy)", TipoCampoMobile.Competencia,
+        Adicionar("competencia", "Competência do pagamento (mm/aaaa)", TipoCampoMobile.Competencia,
             DateTime.Today.ToString("MM/yyyy", Cultura), "Define a tabela anual de IRRF da PLR.");
         Adicionar("valor", "Valor desta PLR (R$)", TipoCampoMobile.Moeda, "0,00");
         Adicionar("anterior", "PLR já paga no ano (R$)", TipoCampoMobile.Moeda, "0,00",

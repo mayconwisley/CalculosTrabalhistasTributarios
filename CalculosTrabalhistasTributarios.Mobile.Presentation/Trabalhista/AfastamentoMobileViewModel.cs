@@ -22,7 +22,7 @@ public sealed class AfastamentoMobileViewModel : CalculadoraTrabalhistaViewModel
         Adicionar("tipo", "Tipo", TipoCampoMobile.Opcao,
             dica: "Na doença e no acidente, a empresa paga os 15 primeiros dias e o INSS, o restante.",
             opcoes: ["Doença", "Acidente de trabalho", "Licença-maternidade", "Licença-paternidade"]);
-        Adicionar("inicio", "Início (dd/MM/yyyy)", TipoCampoMobile.Data, DateTime.Today.ToString("dd/MM/yyyy", Cultura),
+        Adicionar("inicio", "Início (dd/mm/aaaa)", TipoCampoMobile.Data, DateTime.Today.ToString("dd/MM/yyyy", Cultura),
             "Primeiro dia do afastamento ou da licença.");
         Adicionar("dias", "Dias de afastamento", TipoCampoMobile.Inteiro, "30",
             "Dias do atestado ou da perícia, contando o primeiro.");
@@ -33,7 +33,7 @@ public sealed class AfastamentoMobileViewModel : CalculadoraTrabalhistaViewModel
         Adicionar("anterior", "Afastamento anterior pelo mesmo motivo", TipoCampoMobile.Opcao,
             dica: "Novo afastamento em até 60 dias do retorno ou da cessação do benefício soma os dias, e a empresa não paga de novo os 15 dias (Decreto 3.048/1999, art. 75).",
             opcoes: ["Não houve", "Pago pela empresa", "Benefício do INSS"]);
-        Adicionar("fimAnterior", "Fim do afastamento anterior (dd/MM/yyyy)", TipoCampoMobile.Data, "",
+        Adicionar("fimAnterior", "Fim do afastamento anterior (dd/mm/aaaa)", TipoCampoMobile.Data, "",
             "Último dia do afastamento ou do benefício anterior.");
         Adicionar("diasAnteriores", "Dias pagos pela empresa no anterior", TipoCampoMobile.Inteiro, "0",
             "De 1 a 15 dias.");

@@ -85,7 +85,7 @@ public sealed class CalculadoraTrabalhoExterior : CalculadoraBase
     {
         if (!DateOnly.TryParseExact(_recebimento.Valor.Trim(), "dd/MM/yyyy", Cultura, DateTimeStyles.None, out var recebimento))
         {
-            _atualizacao.Estado = "Recebimento: informe uma data válida em DD/MM/AAAA antes de atualizar.";
+            _atualizacao.Estado = "Recebimento: informe uma data válida em dd/mm/aaaa antes de atualizar.";
             return;
         }
         _atualizacao.Estado = "Consultando Receita Federal e Banco Central...";

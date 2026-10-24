@@ -17,7 +17,7 @@ public sealed class ComissoesMobileViewModel : CalculadoraTrabalhistaViewModel
         ICompartilhamentoPdf compartilhamento, ILogger<ComissoesMobileViewModel> logger) : base(compartilhamento, logger)
     {
         _simulador = simulador;
-        Adicionar("competencia", "Competência (MM/yyyy)", TipoCampoMobile.Competencia, DateTime.Today.ToString("MM/yyyy", Cultura));
+        Adicionar("competencia", "Competência (mm/aaaa)", TipoCampoMobile.Competencia, DateTime.Today.ToString("MM/yyyy", Cultura));
         Adicionar("salario", "Salário fixo (R$)", TipoCampoMobile.Moeda, "0,00", "Use 0,00 para comissionista puro.");
         Adicionar("comissoes", "Valor das comissões (R$)", TipoCampoMobile.Moeda, "0,00",
             "Informe sem DSR, exceto se marcar que o valor já inclui o repouso.");

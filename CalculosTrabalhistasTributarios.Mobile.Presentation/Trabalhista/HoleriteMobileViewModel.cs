@@ -20,7 +20,7 @@ public sealed class HoleriteMobileViewModel : CalculadoraTrabalhistaViewModel
     {
         _simulador = simulador;
         Secao("remuneracao", "Remuneração");
-        Adicionar("competencia", "Competência (MM/yyyy)", TipoCampoMobile.Competencia, DateTime.Today.ToString("MM/yyyy", Cultura),
+        Adicionar("competencia", "Competência (mm/aaaa)", TipoCampoMobile.Competencia, DateTime.Today.ToString("MM/yyyy", Cultura),
             "Define domingos, feriados e tabelas de INSS, IRRF e salário-família.");
         Adicionar("salario", "Salário-base mensal (R$)", TipoCampoMobile.Moeda, "0,00",
             "Sem adicionais. Use 0,00 para comissionista puro e informe as comissões abaixo.");

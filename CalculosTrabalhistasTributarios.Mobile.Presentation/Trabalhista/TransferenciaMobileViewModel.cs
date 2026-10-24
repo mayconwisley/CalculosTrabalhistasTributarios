@@ -25,22 +25,22 @@ public sealed class TransferenciaMobileViewModel : CalculadoraTrabalhistaViewMod
         Adicionar("situacao", "Situação do contrato", TipoCampoMobile.Opcao,
             dica: "Na dispensa durante a transferência entram o reflexo no aviso prévio indenizado e a multa de 40% do FGTS; férias não gozadas são indenizadas, sem FGTS (OJ 195 do TST).",
             opcoes: ["Contrato ativo", "Dispensa sem justa causa"]);
-        Adicionar("admissao", "Admissão (dd/MM/yyyy, opcional)", TipoCampoMobile.Data,
+        Adicionar("admissao", "Admissão (dd/mm/aaaa, opcional)", TipoCampoMobile.Data,
             dica: "Separa as férias por período aquisitivo. Sem ela, todos os meses formam um só período.");
         Adicionar("diasAviso", "Dias de aviso prévio", TipoCampoMobile.Inteiro, "30",
             "De 30 a 90 dias: 30 mais 3 por ano completo de serviço (Lei 12.506/2011).");
         Adicionar("despesas", "Despesas da mudança (R$, opcional)", TipoCampoMobile.Moeda, "0,00",
             "Transporte e frete pagos pelo empregador (CLT, art. 470): reembolso, sem FGTS nem reflexos. 0,00 se não houver.");
         Secao("gerarSecao", "Gerar meses");
-        Adicionar("inicio", "Início (MM/yyyy)", TipoCampoMobile.Competencia, DateTime.Today.AddMonths(-12).ToString("MM/yyyy", Cultura));
-        Adicionar("fim", "Fim (MM/yyyy)", TipoCampoMobile.Competencia, DateTime.Today.AddMonths(-1).ToString("MM/yyyy", Cultura));
+        Adicionar("inicio", "Início (mm/aaaa)", TipoCampoMobile.Competencia, DateTime.Today.AddMonths(-12).ToString("MM/yyyy", Cultura));
+        Adicionar("fim", "Fim (mm/aaaa)", TipoCampoMobile.Competencia, DateTime.Today.AddMonths(-1).ToString("MM/yyyy", Cultura));
         Adicionar("salarioMensal", "Salário por mês (R$)", TipoCampoMobile.Moeda, "0,00",
             "Salário da origem sugerido nos meses novos; ajuste cada mês na grade.");
         var grade = AdicionarGrade("meses", "Competências da transferência",
             "Salário da origem e dias transferido em cada mês. Gerar meses preserva os valores já digitados.",
             "Mês", MotorReflexos.MaximoDeMeses,
             [
-                new("competencia", "Competência (MM/yyyy)", TipoCampoMobile.Competencia),
+                new("competencia", "Competência (mm/aaaa)", TipoCampoMobile.Competencia),
                 new("salario", "Salário da origem (R$)", TipoCampoMobile.Moeda, "0,00", "Base do adicional (CLT, art. 469, § 3º)."),
                 new("dias", "Dias transferido", TipoCampoMobile.Inteiro, "30", "De 0 a 30; 30 é o mês inteiro, inclusive em meses de 31 dias.")
             ]);
@@ -64,7 +64,7 @@ public sealed class TransferenciaMobileViewModel : CalculadoraTrabalhistaViewMod
             var fim = Competencia("fim");
             var salario = Numero("salarioMensal");
             if (inicio > fim)
-                throw new EntradaInvalidaException("Fim (MM/yyyy): informe uma competência igual ou posterior ao início.");
+                throw new EntradaInvalidaException("Fim (mm/aaaa): informe uma competência igual ou posterior ao início.");
             if (salario < 0m)
                 throw new EntradaInvalidaException("Salário por mês (R$): informe um valor positivo ou zero, como 4.000,00.");
             var quantidade = (fim.Year - inicio.Year) * 12 + fim.Month - inicio.Month + 1;

@@ -17,7 +17,7 @@ public sealed class SalarioFamiliaMobileViewModel : CalculadoraTrabalhistaViewMo
         ICompartilhamentoPdf compartilhamento, ILogger<SalarioFamiliaMobileViewModel> logger) : base(compartilhamento, logger)
     {
         _simulador = simulador;
-        Adicionar("competencia", "Competência (MM/yyyy)", TipoCampoMobile.Competencia, DateTime.Today.ToString("MM/yyyy", Cultura),
+        Adicionar("competencia", "Competência (mm/aaaa)", TipoCampoMobile.Competencia, DateTime.Today.ToString("MM/yyyy", Cultura),
             "Mês do pagamento, que define o limite e a cota.");
         Adicionar("remuneracao", "Remuneração do mês cheio (R$)", TipoCampoMobile.Moeda, "0,00",
             "Inclua horas extras e adicionais, sem o 13º e o 1/3 de férias. Na admissão ou dispensa, informe o valor do mês completo.");

@@ -8,7 +8,7 @@ namespace CalculosTrabalhistasTributarios.Presentation.ViewModels.Calculadoras;
 public sealed class CalculadoraSimplesNacional : CalculadoraBase
 {
     private readonly ISimularDemonstrativoUseCase<SimularSimplesNacionalRequest> _simulador;
-    private readonly CampoTextoViewModel _periodo = Competencia("Período de apuração", "Mês do DAS (MM/AAAA). Define a tabela e os meses que formam a receita e a folha de 12 meses.");
+    private readonly CampoTextoViewModel _periodo = Competencia("Período de apuração", "Mês do DAS (mm/aaaa). Define a tabela e os meses que formam a receita e a folha de 12 meses.");
     private readonly CampoOpcaoViewModel _atividade = new("Atividade",
         [
             new("Serviços sujeitos ao fator r (Anexo III ou V)", AtividadeSimples.ServicosFatorR),
@@ -19,7 +19,7 @@ public sealed class CalculadoraSimplesNacional : CalculadoraBase
         ],
         "O anexo depende da atividade do CNAE e do serviço prestado (Resolução CGSN 140/2018, art. 25). Confira o enquadramento da empresa.") { Largura = 330 };
     private readonly CampoTextoViewModel _inicio = new("Início das atividades (opcional)", TipoCampo.Competencia, string.Empty,
-        "Mês de abertura, só se a empresa tem menos de 14 meses de atividade (MM/AAAA). Deixe vazio nos demais casos.", permiteVazio: true);
+        "Mês de abertura, só se a empresa tem menos de 14 meses de atividade (mm/aaaa). Deixe vazio nos demais casos.", permiteVazio: true);
     private readonly CampoTextoViewModel _receitaMes = Moeda("Receita bruta do mês", "Receita do período de apuração, sobre a qual incide a alíquota efetiva.");
     private readonly CampoTextoViewModel _folhaMes = Moeda("Folha do mês com encargos", "Usada só no 1º mês de atividade até 2026, para o fator r do próprio mês.");
     private readonly CampoMesesSimplesViewModel _meses;

@@ -16,7 +16,7 @@ public sealed class HorasExtrasMobileViewModel : CalculadoraTrabalhistaViewModel
         ICompartilhamentoPdf compartilhamento, ILogger<HorasExtrasMobileViewModel> logger) : base(compartilhamento, logger)
     {
         _simulador = simulador;
-        Adicionar("competencia", "Competência das horas (MM/yyyy)", TipoCampoMobile.Competencia, DateTime.Today.ToString("MM/yyyy", Cultura));
+        Adicionar("competencia", "Competência das horas (mm/aaaa)", TipoCampoMobile.Competencia, DateTime.Today.ToString("MM/yyyy", Cultura));
         Adicionar("salario", "Salário base (R$)", TipoCampoMobile.Moeda, "0,00");
         Adicionar("adicionais", "Adicionais salariais (R$)", TipoCampoMobile.Moeda, "0,00", "Adicionais fixos que integram o valor da hora.");
         Adicionar("divisor", "Divisor de horas", TipoCampoMobile.Numero, "220", "Exemplos: 220 para 44 h/semana, 200 para 40.");

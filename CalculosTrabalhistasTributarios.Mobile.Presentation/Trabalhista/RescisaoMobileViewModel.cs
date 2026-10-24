@@ -31,11 +31,11 @@ public sealed class RescisaoMobileViewModel : CalculadoraTrabalhistaViewModel
     {
         _simulador = simulador;
         Adicionar("vinculo", "Vínculo", TipoCampoMobile.Opcao, opcoes: ["Empregado (CLT)", "Empregado doméstico", "Jovem aprendiz"]);
-        Adicionar("admissao", "Data de admissão (dd/MM/yyyy)", TipoCampoMobile.Data, DateTime.Today.AddYears(-2).ToString("dd/MM/yyyy", Cultura));
-        Adicionar("desligamento", "Data de desligamento (dd/MM/yyyy)", TipoCampoMobile.Data, DateTime.Today.ToString("dd/MM/yyyy", Cultura));
+        Adicionar("admissao", "Data de admissão (dd/mm/aaaa)", TipoCampoMobile.Data, DateTime.Today.AddYears(-2).ToString("dd/MM/yyyy", Cultura));
+        Adicionar("desligamento", "Data de desligamento (dd/mm/aaaa)", TipoCampoMobile.Data, DateTime.Today.ToString("dd/MM/yyyy", Cultura));
         Adicionar("motivo", "Motivo do desligamento", TipoCampoMobile.Opcao, opcoes: ["Dispensa sem justa causa", "Pedido de demissão", "Acordo (art. 484-A)", "Dispensa por justa causa", "Fim de contrato a prazo", "Antecipada pela empresa", "Antecipada pelo empregado"]);
         Adicionar("aviso", "Aviso prévio", TipoCampoMobile.Opcao, opcoes: ["Indenizado", "Trabalhado ou dispensado", "Não cumprido pelo empregado"]);
-        Adicionar("fimPrevisto", "Fim previsto do contrato (dd/MM/yyyy)", TipoCampoMobile.Data, dica: "Informe nas rescisões antecipadas do contrato a prazo.");
+        Adicionar("fimPrevisto", "Fim previsto do contrato (dd/mm/aaaa)", TipoCampoMobile.Data, dica: "Informe nas rescisões antecipadas do contrato a prazo.");
         Adicionar("salario", "Último salário mensal (R$)", TipoCampoMobile.Moeda, "0,00");
         Adicionar("medias", "Médias de variáveis (R$)", TipoCampoMobile.Moeda, "0,00");
         Adicionar("outrosProventos", "Outros proventos do mês (R$)", TipoCampoMobile.Moeda, "0,00");
@@ -48,7 +48,7 @@ public sealed class RescisaoMobileViewModel : CalculadoraTrabalhistaViewModel
         Adicionar("adiantamento13", "13º já adiantado (R$)", TipoCampoMobile.Moeda, "0,00");
         Adicionar("outrosDescontos", "Outros descontos (R$)", TipoCampoMobile.Moeda, "0,00");
         Adicionar("dependentes", "Dependentes para IRRF", TipoCampoMobile.Inteiro, "0");
-        Adicionar("pagamento", "Data do pagamento (dd/MM/yyyy, opcional)", TipoCampoMobile.Data, dica: "Em branco considera pagamento no prazo, no mês do desligamento.");
+        Adicionar("pagamento", "Data do pagamento (dd/mm/aaaa, opcional)", TipoCampoMobile.Data, dica: "Em branco considera pagamento no prazo, no mês do desligamento.");
         Adicionar("dataBase", "Mês da data-base da categoria", TipoCampoMobile.Opcao,
             opcoes: ["Não informar", .. Enumerable.Range(1, 12).Select(m => Cultura.TextInfo.ToTitleCase(Cultura.DateTimeFormat.GetMonthName(m)))]);
         AdicionarPensao();
@@ -148,7 +148,7 @@ public sealed class RescisaoMobileViewModel : CalculadoraTrabalhistaViewModel
             var valorValido = LeituraNumerica.TentarLer(linha.Valor, out var valor);
             if (!competenciaValida || !valorValido) PaginaDepositosFgts.Exibir(linha);
             if (!competenciaValida)
-                throw new EntradaInvalidaException($"FGTS {linha.Competencia}: informe a competência em MM/yyyy.");
+                throw new EntradaInvalidaException($"FGTS {linha.Competencia}: informe a competência em mm/aaaa.");
             if (!valorValido)
                 throw new EntradaInvalidaException($"FGTS {linha.Competencia}: informe o depósito em reais, por exemplo 250,00.");
             valores.Add(new(competencia, valor));

@@ -74,7 +74,7 @@ public abstract class CalculadoraBase : ICalculadora
     }
 
     protected static CampoTextoViewModel Competencia(string rotulo = "Competência", string? dica = null) =>
-        new(rotulo, TipoCampo.Competencia, DateTime.Today.ToString("MM/yyyy", Cultura), dica ?? "Mês e ano das tabelas de INSS e IRRF (MM/AAAA).");
+        new(rotulo, TipoCampo.Competencia, DateTime.Today.ToString("MM/yyyy", Cultura), dica ?? "Mês e ano das tabelas de INSS e IRRF (mm/aaaa).");
 
     protected static CampoTextoViewModel Moeda(string rotulo, string? dica = null) => new(rotulo, TipoCampo.Moeda, "0,00", dica);
 

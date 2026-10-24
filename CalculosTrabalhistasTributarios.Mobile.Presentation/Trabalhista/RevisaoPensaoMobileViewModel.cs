@@ -24,7 +24,7 @@ public sealed class RevisaoPensaoMobileViewModel : CalculadoraTrabalhistaViewMod
     {
         _simulador = simulador;
         Secao("pagadorSecao", "Quem paga a pensão");
-        Adicionar("competencia", "Competência (MM/yyyy)", TipoCampoMobile.Competencia, DateTime.Today.ToString("MM/yyyy", Cultura),
+        Adicionar("competencia", "Competência (mm/aaaa)", TipoCampoMobile.Competencia, DateTime.Today.ToString("MM/yyyy", Cultura),
             "Mês e ano das tabelas de INSS, IRRF e salário mínimo.");
         Adicionar("valorBruto", "Valor bruto (R$)", TipoCampoMobile.Moeda, "0,00",
             "Rendimentos de quem paga a pensão, que definem o INSS e o IRRF.");

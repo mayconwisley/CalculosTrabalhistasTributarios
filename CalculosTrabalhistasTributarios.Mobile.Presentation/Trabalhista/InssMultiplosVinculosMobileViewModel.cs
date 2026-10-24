@@ -26,7 +26,7 @@ public sealed class InssMultiplosVinculosMobileViewModel : CalculadoraTrabalhist
         ICompartilhamentoPdf compartilhamento, ILogger<InssMultiplosVinculosMobileViewModel> logger) : base(compartilhamento, logger)
     {
         _simulador = simulador;
-        Adicionar("competencia", "Competência (MM/yyyy)", TipoCampoMobile.Competencia, DateTime.Today.ToString("MM/yyyy", Cultura),
+        Adicionar("competencia", "Competência (mm/aaaa)", TipoCampoMobile.Competencia, DateTime.Today.ToString("MM/yyyy", Cultura),
             "Mês comum a todos os vínculos; define as faixas e o teto do INSS.");
         var vinculos = AdicionarGrade("vinculos", "Vínculos em ordem de desconto",
             "A ordem define qual vínculo usa cada faixa e a parte disponível do teto. Na mesma fonte pagadora, coloque empregado antes de "

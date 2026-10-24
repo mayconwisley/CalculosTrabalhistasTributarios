@@ -64,7 +64,7 @@ public static class CalculadoraRescisao
             foreach (var deposito in historico)
             {
                 if (deposito is null || deposito.Competencia.Day != 1 || deposito.Competencia < primeira || deposito.Competencia >= ultimaExclusiva)
-                    return Erro.Validacao("Cada depósito histórico do FGTS deve ter competência MM/AAAA desde a admissão até o mês anterior ao desligamento; retire o mês da rescisão.");
+                    return Erro.Validacao("Cada depósito histórico do FGTS deve ter competência mm/aaaa desde a admissão até o mês anterior ao desligamento; retire o mês da rescisão.");
                 if (deposito.Valor is < 0m or > 1_000_000_000m || decimal.Round(deposito.Valor, 2) != deposito.Valor)
                     return Erro.Validacao($"Revise o depósito do FGTS de {deposito.Competencia:MM/yyyy}: informe valor de 0 a R$ 1.000.000.000,00, com até dois decimais.");
                 if (!competencias.Add(deposito.Competencia))

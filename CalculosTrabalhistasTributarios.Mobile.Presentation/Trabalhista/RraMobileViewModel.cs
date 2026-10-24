@@ -26,7 +26,7 @@ public sealed class RraMobileViewModel : CalculadoraTrabalhistaViewModel
     {
         _simulador = simulador;
         Secao("pagamentoSecao", "Pagamento");
-        Adicionar("dataPagamento", "Data do pagamento (dd/MM/yyyy)", TipoCampoMobile.Data, DateTime.Today.ToString("dd/MM/yyyy", Cultura),
+        Adicionar("dataPagamento", "Data do pagamento (dd/mm/aaaa)", TipoCampoMobile.Data, DateTime.Today.ToString("dd/MM/yyyy", Cultura),
             "Dia do recebimento ou crédito. Define as tabelas e separa os anos anteriores do ano do pagamento.");
         Adicionar("origem", "Quem paga", TipoCampoMobile.Opcao,
             dica: "Empregador, INSS, Justiça do Trabalho ou Estadual usam a tabela mensal na parte do ano do pagamento; na Justiça Federal, essa parte tem retenção de 3%.",
@@ -36,9 +36,9 @@ public sealed class RraMobileViewModel : CalculadoraTrabalhistaViewModel
             opcoes: ["Aplicar, proporcional aos meses", "Não aplicar"]);
 
         Secao("geradorSecao", "Gerar parcelas mensais");
-        Adicionar("inicioParcelas", "Primeiro mês (MM/yyyy)", TipoCampoMobile.Competencia, DateTime.Today.AddYears(-1).ToString("01/yyyy", Cultura),
+        Adicionar("inicioParcelas", "Primeiro mês (mm/aaaa)", TipoCampoMobile.Competencia, DateTime.Today.AddYears(-1).ToString("01/yyyy", Cultura),
             "Primeira competência a que o pagamento se refere.");
-        Adicionar("fimParcelas", "Último mês (MM/yyyy)", TipoCampoMobile.Competencia, DateTime.Today.AddYears(-1).ToString("12/yyyy", Cultura));
+        Adicionar("fimParcelas", "Último mês (mm/aaaa)", TipoCampoMobile.Competencia, DateTime.Today.AddYears(-1).ToString("12/yyyy", Cultura));
         Adicionar("valorMensal", "Valor por mês (R$)", TipoCampoMobile.Moeda, "0,00",
             "Valor tributável sugerido nas competências novas; ajuste cada mês na grade.");
 
@@ -74,7 +74,7 @@ public sealed class RraMobileViewModel : CalculadoraTrabalhistaViewModel
             "Parcela", RegraRra.LimiteParcelas,
             [
                 new("tipo", "Tipo", TipoCampoMobile.Opcao, Opcoes: ["Mensal", "13º salário"]),
-                new("competencia", "Competência (MM/yyyy)", TipoCampoMobile.Competencia),
+                new("competencia", "Competência (mm/aaaa)", TipoCampoMobile.Competencia),
                 new("valor", "Valor tributável (R$)", TipoCampoMobile.Moeda, "0,00")
             ], SugerirAnoDecimoTerceiro);
         _parcelas.GerarCommand = new RelayCommand(GerarMeses);

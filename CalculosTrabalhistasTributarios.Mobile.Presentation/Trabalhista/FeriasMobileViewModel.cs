@@ -16,9 +16,9 @@ public sealed class FeriasMobileViewModel : CalculadoraTrabalhistaViewModel
         ICompartilhamentoPdf compartilhamento, ILogger<FeriasMobileViewModel> logger) : base(compartilhamento, logger)
     {
         _simulador = simulador;
-        Adicionar("competencia", "Competência do pagamento (MM/yyyy)", TipoCampoMobile.Competencia, DateTime.Today.ToString("MM/yyyy", Cultura));
-        Adicionar("inicio", "Início do gozo (dd/MM/yyyy, opcional)", TipoCampoMobile.Data, dica: "Informe para separar férias e INSS pelas competências do descanso.");
-        Adicionar("fimConcessivo", "Concessão até (dd/MM/yyyy, opcional)", TipoCampoMobile.Data, dica: "Dias gozados depois dessa data são apurados em dobro.");
+        Adicionar("competencia", "Competência do pagamento (mm/aaaa)", TipoCampoMobile.Competencia, DateTime.Today.ToString("MM/yyyy", Cultura));
+        Adicionar("inicio", "Início do gozo (dd/mm/aaaa, opcional)", TipoCampoMobile.Data, dica: "Informe para separar férias e INSS pelas competências do descanso.");
+        Adicionar("fimConcessivo", "Concessão até (dd/mm/aaaa, opcional)", TipoCampoMobile.Data, dica: "Dias gozados depois dessa data são apurados em dobro.");
         Adicionar("salario", "Salário mensal (R$)", TipoCampoMobile.Moeda, "0,00");
         Adicionar("medias", "Médias de variáveis (R$)", TipoCampoMobile.Moeda, "0,00");
         Adicionar("faltas", "Faltas injustificadas no período", TipoCampoMobile.Inteiro, "0");

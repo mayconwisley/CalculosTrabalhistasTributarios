@@ -22,9 +22,9 @@ public sealed class GanhoCapitalMobileViewModel : CalculadoraTrabalhistaViewMode
         Adicionar("bem", "Bem vendido", TipoCampoMobile.Opcao,
             dica: "Imóveis têm fatores de redução pelo tempo de posse; o residencial pode ter isenção pelo reinvestimento.",
             opcoes: ["Imóvel residencial", "Outro imóvel (comercial, terreno)", "Outro bem (veículo, participação, outros)"]);
-        Adicionar("aquisicao", "Data da compra (dd/MM/yyyy)", TipoCampoMobile.Data, DateTime.Today.AddYears(-10).ToString("dd/MM/yyyy", Cultura),
+        Adicionar("aquisicao", "Data da compra (dd/mm/aaaa)", TipoCampoMobile.Data, DateTime.Today.AddYears(-10).ToString("dd/MM/yyyy", Cultura),
             "Data da escritura ou do contrato de compra.");
-        Adicionar("venda", "Data da venda (dd/MM/yyyy)", TipoCampoMobile.Data, DateTime.Today.ToString("dd/MM/yyyy", Cultura),
+        Adicionar("venda", "Data da venda (dd/mm/aaaa)", TipoCampoMobile.Data, DateTime.Today.ToString("dd/MM/yyyy", Cultura),
             "Data do contrato de venda.");
         Adicionar("custo", "Custo de aquisição (R$)", TipoCampoMobile.Moeda, "0,00", "Valor de compra declarado no IRPF, com as benfeitorias.");
         Adicionar("valorVenda", "Valor da venda (R$)", TipoCampoMobile.Moeda, "0,00", "Valor total da venda.");

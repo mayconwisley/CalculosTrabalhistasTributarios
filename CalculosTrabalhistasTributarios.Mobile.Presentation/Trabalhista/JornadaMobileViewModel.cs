@@ -44,10 +44,10 @@ public sealed class JornadaMobileViewModel : CalculadoraTrabalhistaViewModel
         _ultimaCompetencia = new DateOnly(DateTime.Today.Year, DateTime.Today.Month, 1);
         var (inicio, fim) = MesInteiro(_ultimaCompetencia);
         Secao("periodo", "Período do ponto");
-        Adicionar("competencia", "Competência (MM/yyyy)", TipoCampoMobile.Competencia, _ultimaCompetencia.ToString("MM/yyyy", Cultura),
+        Adicionar("competencia", "Competência (mm/aaaa)", TipoCampoMobile.Competencia, _ultimaCompetencia.ToString("MM/yyyy", Cultura),
             "Mês da folha em que as horas são pagas. Ao mudar, o período que era o mês inteiro acompanha.");
-        Adicionar("inicio", "Início do ponto (dd/MM/yyyy)", TipoCampoMobile.Data, inicio, "Para um ponto de 16/09 a 15/10, informe 16/09.");
-        Adicionar("fim", "Fim do ponto (dd/MM/yyyy)", TipoCampoMobile.Data, fim, $"Até {ApurarJornadaRequest.MaximoDias} dias no período.");
+        Adicionar("inicio", "Início do ponto (dd/mm/aaaa)", TipoCampoMobile.Data, inicio, "Para um ponto de 16/09 a 15/10, informe 16/09.");
+        Adicionar("fim", "Fim do ponto (dd/mm/aaaa)", TipoCampoMobile.Data, fim, $"Até {ApurarJornadaRequest.MaximoDias} dias no período.");
         Adicionar("noturno", "Trabalho noturno", TipoCampoMobile.Opcao,
             dica: "Urbano das 22h às 5h, com hora reduzida; rural das 21h às 5h na lavoura e das 20h às 4h na pecuária, sem redução.",
             opcoes: ["Urbano (22h às 5h)", "Rural, lavoura (21h às 5h)", "Rural, pecuária (20h às 4h)"]);
@@ -56,7 +56,7 @@ public sealed class JornadaMobileViewModel : CalculadoraTrabalhistaViewModel
             dica: "Semanal: seg. a sex. com a jornada do dia útil, sábado com a jornada de sábado e domingo de descanso. 6x1: seis dias de trabalho e um de folga. 12x36: um dia de trabalho e um de descanso, com os feriados da escala compensados (CLT, art. 59-A).",
             opcoes: ["Semanal: seg. a sex. e sábado", "6x1: seis dias de trabalho e uma folga", "12x36: um dia de trabalho e um de descanso"]);
         Adicionar("inicioEscala", "1º dia de trabalho da escala (opcional)", TipoCampoMobile.Data,
-            dica: "Um dia de trabalho que inicia o ciclo (dd/MM/yyyy). Em branco, o ciclo começa no início do ponto.");
+            dica: "Um dia de trabalho que inicia o ciclo (dd/mm/aaaa). Em branco, o ciclo começa no início do ponto.");
         Adicionar("jornadaSemana", "Jornada do dia útil (h)", TipoCampoMobile.Horas, "8:00",
             "Horas previstas por dia, como 8:00 ou 8:48: de seg. a sex. na escala semanal; nas escalas 6x1 e 12x36, cada dia de trabalho, sem o intervalo.");
         Adicionar("jornadaSabado", "Jornada de sábado (h)", TipoCampoMobile.Horas, "4:00", "0:00 quando o sábado é compensado durante a semana.");
@@ -68,7 +68,7 @@ public sealed class JornadaMobileViewModel : CalculadoraTrabalhistaViewModel
             "Gere os dias e ajuste o tipo e as marcações; horários depois da meia-noite continuam no mesmo dia. Sem dias, Calcular gera e apura direto.",
             "Dia", ApurarJornadaRequest.MaximoDias,
             [
-                new ColunaGradeMobile("data", "Data (dd/MM/yyyy)", TipoCampoMobile.Data),
+                new ColunaGradeMobile("data", "Data (dd/mm/aaaa)", TipoCampoMobile.Data),
                 new ColunaGradeMobile("tipo", "Tipo do dia", TipoCampoMobile.Opcao, Opcoes: ["Útil", "Descanso", "Feriado"]),
                 new ColunaGradeMobile("previsto", "Jornada prevista (h)", TipoCampoMobile.Horas, "0:00"),
                 new ColunaGradeMobile("entrada1", "Entrada", TipoCampoMobile.Horas),

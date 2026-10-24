@@ -28,7 +28,7 @@ public sealed class ResgatePrevidenciaMobileViewModel : CalculadoraTrabalhistaVi
         Adicionar("regime", "Regime de tributação", TipoCampoMobile.Opcao,
             dica: "Regressivo: IR definitivo pelo prazo de cada aporte. Progressivo: 15% retidos e ajuste na declaração. Desde a Lei 14.803/2024, a escolha pode ser feita até o primeiro resgate.",
             opcoes: ["Regressivo (35% a 10%)", "Progressivo (15% retidos)"]);
-        Adicionar("dataResgate", "Data do resgate (dd/MM/yyyy)", TipoCampoMobile.Data, DateTime.Today.ToString("dd/MM/yyyy", Cultura),
+        Adicionar("dataResgate", "Data do resgate (dd/mm/aaaa)", TipoCampoMobile.Data, DateTime.Today.ToString("dd/MM/yyyy", Cultura),
             "Define o prazo de cada aporte na tabela regressiva.");
         Adicionar("resgate", "Resgate", TipoCampoMobile.Opcao,
             dica: "Total: todo o saldo. Parcial: o valor informado, consumindo primeiro os aportes mais antigos.", opcoes: ["Total", "Parcial"]);
@@ -36,7 +36,7 @@ public sealed class ResgatePrevidenciaMobileViewModel : CalculadoraTrabalhistaVi
             "Valor bruto a resgatar, antes do IR; no máximo o saldo total dos aportes.");
 
         Secao("gerador", "Gerar aportes mensais (opcional)");
-        Adicionar("primeiroAporte", "Primeiro aporte (dd/MM/yyyy)", TipoCampoMobile.Data, DateTime.Today.AddYears(-3).ToString("dd/MM/yyyy", Cultura),
+        Adicionar("primeiroAporte", "Primeiro aporte (dd/mm/aaaa)", TipoCampoMobile.Data, DateTime.Today.AddYears(-3).ToString("dd/MM/yyyy", Cultura),
             "Os aportes seguintes são mensais, a partir desta data.");
         Adicionar("quantidade", "Quantidade de aportes", TipoCampoMobile.Inteiro, "12", $"De 1 a {RegraResgate.LimiteAportes}, sem passar da data do resgate.");
         Adicionar("valorAporte", "Valor por aporte (R$)", TipoCampoMobile.Moeda, "0,00", "Também sugerido nas linhas acrescentadas com + Aporte.");
@@ -47,7 +47,7 @@ public sealed class ResgatePrevidenciaMobileViewModel : CalculadoraTrabalhistaVi
             "Data, valor aportado e saldo atual de cada aporte, conforme o extrato. Gerar aportes substitui a grade após confirmação.",
             "Aporte", RegraResgate.LimiteAportes,
             [
-                new("data", "Data (dd/MM/yyyy)", TipoCampoMobile.Data),
+                new("data", "Data (dd/mm/aaaa)", TipoCampoMobile.Data),
                 new("aportado", "Valor aportado (R$)", TipoCampoMobile.Moeda, "0,00"),
                 new("saldo", "Saldo atual (R$)", TipoCampoMobile.Moeda, "0,00", "Saldo do aporte no extrato, na data do resgate.")
             ], SugerirValores);

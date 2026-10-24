@@ -1,207 +1,140 @@
-using Android.Graphics;
-using Android.Graphics.Pdf;
 using CalculosTrabalhistasTributarios.Application.DTOs;
-using CalculosTrabalhistasTributarios.Application.Demonstrativos;
 using System.Globalization;
-using Cor = Android.Graphics.Color;
-using Paint = Android.Graphics.Paint;
+using static CalculosTrabalhistasTributarios.Mobile.Platforms.Android.Reporting.DiagramacaoPdf;
 
 namespace CalculosTrabalhistasTributarios.Mobile.Platforms.Android.Reporting;
 
-/// <summary>PDF A4 nativo do Android. Consome a apuração pronta, sem recalcular regras de negócio.</summary>
+/// <summary>
+/// PDF A4 nativo do Android com a organização do demonstrativo do desktop (RelatorioPdfDemonstrativo): resumo, comparativo,
+/// verbas com totais e resultado, informativos, memória e observações. Consome a apuração pronta, sem recalcular regras de negócio.
+/// </summary>
 internal static class GeradorDemonstrativoPdf
 {
+    private static readonly CultureInfo Cultura = CultureInfo.GetCultureInfo("pt-BR");
+
     public static void Gerar(DemonstrativoDto dto, string caminho, CancellationToken cancellationToken)
     {
-        using var documento = new PdfDocument();
-        using var escritor = new EscritorPaginado(documento, cancellationToken);
-        escritor.Texto("CÁLCULOS TRABALHISTAS E TRIBUTÁRIOS", 10, true);
-        escritor.Texto(dto.Titulo, 22, true);
-        escritor.Texto(dto.Referencia);
-        escritor.Texto($"Emissão: {DateTime.Now:dd/MM/yyyy HH:mm}");
-        if (dto.TemVerbas || dto.Comparativo is null)
-        {
-            escritor.Secao(dto.RotuloResultado);
-            escritor.Texto(Moeda(dto.Resultado), 25, true);
-        }
-        foreach (var destaque in dto.Destaques)
-        {
-            escritor.Texto($"{destaque.Rotulo}: {destaque.Valor}", 11, true);
-            escritor.Texto(destaque.Complemento);
-        }
+        using var pdf = new DiagramacaoPdf(dto.Titulo, $"{dto.Referencia}  |  Emissão: {DateTime.Now:dd/MM/yyyy HH:mm}",
+            $"Cálculos Trabalhistas e Tributários - versão {AppInfo.Current.VersionString} - dados processados localmente", cancellationToken);
+        if (dto.Destaques.Count > 0)
+            Resumo(pdf, dto.Destaques);
         if (dto.Comparativo is { } comparativo)
-        {
-            escritor.Secao(comparativo.Titulo);
-            foreach (var linha in comparativo.Linhas)
-            {
-                escritor.Texto(linha.Descricao, 11, true);
-                foreach (var (coluna, valor) in comparativo.Colunas.Zip(linha.Valores))
-                    escritor.Texto($"{coluna}: {valor}");
-            }
-        }
-        if (dto.TemVerbas || dto.Comparativo is null)
-        {
-            Verbas(escritor, dto.RotuloProventos, dto.Proventos);
-            escritor.Texto($"Total: {Moeda(dto.TotalProventos)}", 11, true);
-            Verbas(escritor, "Descontos", dto.Descontos);
-            escritor.Texto($"Total de descontos: {Moeda(dto.TotalDescontos)}", 11, true);
-        }
+            Comparativo(pdf, comparativo);
+        if (dto.TemVerbas)
+            Verbas(pdf, dto);
+        else if (dto.Comparativo is null)
+            Bloco(pdf, () => pdf.BarraResultado(dto.RotuloResultado, Moeda(dto.Resultado)));
         if (dto.Informativos.Count > 0)
-            Verbas(escritor, "Informativos (fora do resultado)", dto.Informativos);
-        escritor.Secao("Memória de cálculo");
+            Informativos(pdf, dto.Informativos);
         foreach (var grupo in dto.Memoria)
+            Memoria(pdf, grupo);
+        if (dto.Observacoes.Count > 0)
         {
-            escritor.Texto(grupo.Titulo, 12, true);
-            escritor.Texto(grupo.Destaque);
-            foreach (var formula in grupo.Formulas)
+            pdf.Secao("Observações");
+            foreach (var observacao in dto.Observacoes)
             {
-                escritor.Texto(formula.Titulo, 10, true);
-                escritor.Texto(formula.Formula);
-            }
-            if (grupo.Quadro is { } quadro)
-            {
-                foreach (var faixa in quadro.Faixas)
-                {
-                    escritor.Texto($"Faixa {faixa.Numero}: {Moeda(faixa.De)} a {(faixa.Ate is { } ate ? Moeda(ate) : "sem limite")}", 10, true);
-                    escritor.Texto($"Base na faixa: {Moeda(faixa.ParteDaBase)} | Alíquota: {faixa.Aliquota.ToString("0.##", CultureInfo.GetCultureInfo("pt-BR"))}%");
-                    escritor.Texto($"Valor exato: {Exato(faixa.ValorExato)} | Considerado: {Exato(faixa.Valor)}");
-                }
-                escritor.Texto($"Base total: {Moeda(quadro.BaseCalculo)} | Soma exata: {Exato(quadro.ValorExato)} | Considerado: {Moeda(quadro.Valor)}", 10, true);
+                pdf.Paragrafo(observacao, prefixo: "• ");
+                pdf.Espaco(4);
             }
         }
-        escritor.Secao("Premissas e limites");
-        foreach (var observacao in dto.Observacoes)
-            escritor.Texto(observacao);
-        escritor.Concluir();
-        cancellationToken.ThrowIfCancellationRequested();
-        using var arquivo = File.Create(caminho);
-        documento.WriteTo(arquivo);
+        pdf.Salvar(caminho);
     }
 
-    private static string Moeda(decimal valor) => valor.ToString("C2", CultureInfo.GetCultureInfo("pt-BR"));
-    private static string Exato(decimal valor) => "R$ " + valor.ToString("#,##0.00####", CultureInfo.GetCultureInfo("pt-BR"));
-
-    private static void Verbas(EscritorPaginado escritor, string titulo, IReadOnlyList<VerbaDto> verbas)
+    private static void Resumo(DiagramacaoPdf pdf, IReadOnlyList<DestaqueDto> destaques) => Bloco(pdf, () =>
     {
-        escritor.Secao(titulo);
-        if (verbas.Count == 0)
-            escritor.Texto("Nenhum valor informado.");
-        foreach (var verba in verbas)
-        {
-            escritor.Texto($"{verba.Descricao}: {Moeda(verba.Valor)}", 11, true);
-            if (!string.IsNullOrWhiteSpace(verba.Referencia))
-                escritor.Texto(verba.Referencia);
-        }
-    }
+        pdf.Secao("Resumo");
+        pdf.Tabela([new(string.Empty, 2), new(string.Empty, 2), new(string.Empty, 3)],
+            destaques.Select(destaque => new Celula[]
+            {
+                new(destaque.Rotulo, true, Fundo: AzulClaro),
+                new(destaque.Valor, true),
+                new(destaque.Complemento, Tamanho: 8)
+            }), comCabecalho: false);
+    });
 
-    private sealed class EscritorPaginado : IDisposable
+    private static void Comparativo(DiagramacaoPdf pdf, TabelaComparativaDto comparativo) => Bloco(pdf, () =>
     {
-        private const int Largura = 595;
-        private const int Altura = 842;
-        private const float Margem = 36;
-        private const float LimiteConteudo = 720;
-        private readonly PdfDocument _documento;
-        private readonly CancellationToken _cancellationToken;
-        private readonly Paint _pincel = new(PaintFlags.AntiAlias);
-        private PdfDocument.Page? _pagina;
-        private int _numero;
-        private float _y;
+        pdf.Secao(comparativo.Titulo);
+        pdf.Tabela([new(string.Empty, 3), .. comparativo.Colunas.Select(titulo => new Coluna(titulo, 2, Alinhamento.Direita))],
+            comparativo.Linhas.Select(linha => (IReadOnlyList<Celula>)[new(linha.Descricao, linha.Destaque), .. linha.Valores.Select(valor => new Celula(valor, linha.Destaque))]));
+    });
 
-        public EscritorPaginado(PdfDocument documento, CancellationToken cancellationToken)
-        {
-            _documento = documento;
-            _cancellationToken = cancellationToken;
-        }
+    private static void Verbas(DiagramacaoPdf pdf, DemonstrativoDto dto) => Bloco(pdf, () =>
+    {
+        var temDescontos = dto.Descontos.Count > 0;
+        List<Coluna> colunas = [new("Descrição", 4), new("Referência", 1.4f), new(dto.RotuloProventos, 1.6f, Alinhamento.Direita)];
+        if (temDescontos)
+            colunas.Add(new("Descontos", 1.6f, Alinhamento.Direita));
+        IReadOnlyList<Celula> Linha(VerbaDto verba, string provento, string desconto) => temDescontos
+            ? [new(verba.Descricao), new(verba.Referencia), new(provento), new(desconto)]
+            : [new(verba.Descricao), new(verba.Referencia), new(provento)];
+        List<IReadOnlyList<Celula>> linhas = [
+            .. dto.Proventos.Select(verba => Linha(verba, Moeda(verba.Valor), string.Empty)),
+            .. dto.Descontos.Select(verba => Linha(verba, string.Empty, Moeda(verba.Valor)))];
+        List<Celula> totais = [new("Totais", true, Fundo: AzulClaro, Abrange: 2), new(Moeda(dto.TotalProventos), true, Fundo: AzulClaro)];
+        if (temDescontos)
+            totais.Add(new(Moeda(dto.TotalDescontos), true, Fundo: AzulClaro));
+        linhas.Add(totais);
+        pdf.Secao("Demonstrativo");
+        pdf.Tabela(colunas, linhas);
+        pdf.BarraResultado(dto.RotuloResultado, Moeda(dto.Resultado));
+    });
 
-        public void Secao(string titulo)
-        {
-            GarantirEspaco(54);
-            _y += 12;
-            Texto(titulo, 14, true);
-        }
+    private static void Informativos(DiagramacaoPdf pdf, IReadOnlyList<VerbaDto> informativos) => Bloco(pdf, () =>
+    {
+        pdf.Secao("Valores informativos", "Não entram nos totais nem no resultado");
+        pdf.Tabela([new("Descrição", 4), new("Referência", 1.4f), new("Valor", 1.6f, Alinhamento.Direita)],
+            informativos.Select(verba => (IReadOnlyList<Celula>)[new(verba.Descricao), new(verba.Referencia), new(Moeda(verba.Valor))]));
+    });
 
-        public void Texto(string texto, float tamanho = 10, bool negrito = false)
+    private static void Memoria(DiagramacaoPdf pdf, GrupoMemoriaDto grupo) => Bloco(pdf, () =>
+    {
+        pdf.Secao($"Memória de cálculo - {grupo.Titulo}", grupo.Destaque, 100);
+        pdf.IniciarCaixa();
+        foreach (var formula in grupo.Formulas)
+            pdf.Formula(formula.Titulo, formula.Formula);
+        if (grupo.Quadro is { } quadro)
         {
-            _cancellationToken.ThrowIfCancellationRequested();
-            if (negrito)
-                GarantirEspaco(tamanho * 3 + 12);
-            _pincel.TextSize = tamanho;
-            _pincel.Color = negrito ? Cor.Rgb(23, 74, 103) : Cor.Rgb(43, 55, 68);
-            _pincel.SetTypeface(negrito ? Typeface.DefaultBold : Typeface.Default);
-            foreach (var paragrafo in texto.Replace("\r", string.Empty).Split('\n'))
-            {
-                var restante = paragrafo.Trim();
-                while (restante.Length > 0)
-                {
-                    GarantirEspaco(tamanho * 1.5f);
-                    // O rodapé usa o mesmo Paint; restaure o estilo após eventual troca de página.
-                    _pincel.TextSize = tamanho;
-                    _pincel.Color = negrito ? Cor.Rgb(23, 74, 103) : Cor.Rgb(43, 55, 68);
-                    _pincel.SetTypeface(negrito ? Typeface.DefaultBold : Typeface.Default);
-                    var quantidade = Math.Max(1, _pincel.BreakText(restante, true, Largura - 2 * Margem, null));
-                    if (quantidade < restante.Length)
-                    {
-                        var espaco = restante.LastIndexOf(' ', quantidade - 1, quantidade);
-                        if (espaco > 0)
-                            quantidade = espaco;
-                    }
-                    var canvas = _pagina?.Canvas ?? throw new InvalidOperationException("Página PDF não iniciada.");
-                    _y += tamanho * 1.4f;
-                    canvas.DrawText(restante[..quantidade], Margem, _y, _pincel);
-                    restante = restante[quantidade..].TrimStart();
-                }
-                _y += 6;
-            }
+            pdf.Espaco(6);
+            QuadroFaixas(pdf, quadro);
         }
+        pdf.FinalizarCaixa();
+    });
 
-        private void GarantirEspaco(float altura)
-        {
-            _cancellationToken.ThrowIfCancellationRequested();
-            if (_pagina is not null && _y + altura <= LimiteConteudo)
-                return;
-            Concluir();
-            using var info = new PdfDocument.PageInfo.Builder(Largura, Altura, ++_numero).Create();
-            _pagina = _documento.StartPage(info);
-            _y = Margem;
-        }
-
-        public void Concluir()
-        {
-            if (_pagina is null)
-                return;
-            var canvas = _pagina.Canvas ?? throw new InvalidOperationException("Página PDF sem canvas.");
-            _pincel.Color = Cor.Rgb(23, 74, 103);
-            canvas.DrawLine(Margem, 748, Largura - Margem, 748, _pincel);
-            _pincel.TextSize = 9;
-            _pincel.SetTypeface(Typeface.DefaultBold);
-            canvas.DrawText(AvisoSimulacao.Titulo, Margem, 767, _pincel);
-            _pincel.SetTypeface(Typeface.Default);
-            var restante = AvisoSimulacao.Orientacao;
-            var linha = 782f;
-            while (restante.Length > 0)
-            {
-                var quantidade = Math.Max(1, _pincel.BreakText(restante, true, Largura - 2 * Margem, null));
-                if (quantidade < restante.Length)
-                {
-                    var espaco = restante.LastIndexOf(' ', quantidade - 1, quantidade);
-                    if (espaco > 0)
-                        quantidade = espaco;
-                }
-                canvas.DrawText(restante[..quantidade], Margem, linha, _pincel);
-                restante = restante[quantidade..].TrimStart();
-                linha += 11;
-            }
-            canvas.DrawText($"Processado localmente | Página {_numero}", Margem, 816, _pincel);
-            _documento.FinishPage(_pagina);
-            _pagina.Dispose();
-            _pagina = null;
-        }
-
-        public void Dispose()
-        {
-            // PdfDocument não pode ser fechado com uma página em aberto, inclusive após cancelamento.
-            Concluir();
-            _pincel.Dispose();
-        }
+    /// <summary>As faixas em tabela: a parte da base de cada uma e o valor antes e depois de truncar.</summary>
+    private static void QuadroFaixas(DiagramacaoPdf pdf, QuadroFaixasDto quadro)
+    {
+        Coluna[] colunas =
+        [
+            new("Faixa", 0.7f, Alinhamento.Direita), new("De", 1.4f, Alinhamento.Direita), new("Até", 1.4f, Alinhamento.Direita),
+            new("Parte da base", 1.5f, Alinhamento.Direita), new("Alíquota", 0.9f, Alinhamento.Direita),
+            new("Valor exato", 1.6f, Alinhamento.Direita), new("Valor considerado", 1.5f, Alinhamento.Direita)
+        ];
+        List<IReadOnlyList<Celula>> linhas = [.. quadro.Faixas.Select(faixa => (IReadOnlyList<Celula>)
+        [
+            new(faixa.Numero.ToString(Cultura), Tamanho: 8), new(Moeda(faixa.De), Tamanho: 8),
+            new(faixa.Ate is { } ate ? Moeda(ate) : "Sem limite", Tamanho: 8), new(Moeda(faixa.ParteDaBase), Tamanho: 8),
+            new(faixa.Aliquota.ToString("0.##", Cultura) + "%", Tamanho: 8), new(MoedaExata(faixa.ValorExato), Tamanho: 8),
+            new(MoedaExata(faixa.Valor), Tamanho: 8)
+        ])];
+        linhas.Add(
+        [
+            new("Soma das faixas", true, 8, AzulClaro, Abrange: 3), new(Moeda(quadro.BaseCalculo), true, 8, AzulClaro),
+            new(string.Empty, Tamanho: 8, Fundo: AzulClaro), new(MoedaExata(quadro.ValorExato), true, 8, AzulClaro),
+            new(Moeda(quadro.Valor), true, 8, AzulClaro)
+        ]);
+        pdf.Tabela(colunas, linhas, padding: 4, tamanho: 8);
     }
+
+    // Separa os blocos do relatório como o espaçamento de 16 pontos da coluna do desktop.
+    private static void Bloco(DiagramacaoPdf pdf, Action conteudo)
+    {
+        conteudo();
+        pdf.Espaco(16);
+    }
+
+    private static string Moeda(decimal valor) => valor.ToString("C2", Cultura);
+
+    /// <summary>Moeda com as casas que o valor tiver, até seis, como na memória: "R$ 115,3656".</summary>
+    private static string MoedaExata(decimal valor) => "R$ " + valor.ToString("#,##0.00####", Cultura);
 }

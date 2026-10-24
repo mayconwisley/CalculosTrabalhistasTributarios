@@ -117,8 +117,8 @@ Ao trocar de calculadora ou voltar à tela de boas-vindas, o aplicativo confirma
 
 Estas regras valem para todas as telas do aplicativo:
 
-- **Competência:** informe mês e ano no formato **MM/AAAA**, por exemplo `10/2026`.
-- **Datas:** informe no formato **dd/MM/aaaa**, por exemplo `02/10/2026`. Nos campos de data e de competência, digite só os números: as barras entram sozinhas (`02102026` vira `02/10/2026`). Digitar a barra depois de um único número completa o zero (`2/10/2026` vira `02/10/2026`), e uma data colada em outro formato, como `2026-10-02`, é convertida.
+- **Competência:** informe mês e ano no formato **mm/aaaa**, por exemplo `10/2026`.
+- **Datas:** informe no formato **dd/mm/aaaa**, por exemplo `02/10/2026`. Nos campos de data e de competência, digite só os números: as barras entram sozinhas (`02102026` vira `02/10/2026`). Digitar a barra depois de um único número completa o zero (`2/10/2026` vira `02/10/2026`), e uma data colada em outro formato, como `2026-10-02`, é convertida.
 - **Valores em reais:** use vírgula para os centavos, como em `8500,00` ou `8.500,00`. O ponto de milhar é opcional.
 - **Ponto no lugar da vírgula:** sem vírgula, o ponto só é lido como separador de milhar quando separa grupos de três dígitos, como em `3.500`. Nos demais casos, ele vale como vírgula decimal: `1.5` é 1,5 hora, `62.5` é 62,5% e `2200.50` é R$ 2.200,50.
 - **Formatação automática:** ao entrar em um campo numérico que está zerado, ele é limpo para você digitar. Ao sair do campo vazio, ele volta a zero: `0,00` nos valores em reais, `0` nos campos inteiros e nos percentuais, como **Dependentes** e **Faltas**, e `0:00` nas horas. Os valores em reais também são formatados com duas casas decimais ao sair do campo (`8.500,00`).
@@ -134,7 +134,7 @@ Abra **Simulação tributária** pelo menu lateral. Os dados ficam no topo da á
 
 | Campo | O que informar |
 | --- | --- |
-| Competência | Mês e ano das tabelas de INSS e IRRF (MM/AAAA). As tabelas usadas são as vigentes nessa competência. |
+| Competência | Mês e ano das tabelas de INSS e IRRF (mm/aaaa). As tabelas usadas são as vigentes nessa competência. |
 | Valor bruto | Total de rendimentos tributáveis do mês, base do IRRF. |
 | Base de INSS | Acompanha o valor bruto ao digitá-lo. Altere só quando parte do valor não tiver incidência de INSS. É também a base do FGTS. |
 | Dependentes | Quantidade de dependentes para a dedução do IRRF, de 0 a 99. |
@@ -199,7 +199,7 @@ Abra **Pensão alimentícia** pelo menu lateral, no grupo **Pensão e débitos**
 2. Na linha do beneficiário, informe o nome dele em **Beneficiário**, usado no resultado e no relatório. Em **Base da pensão**, escolha como a decisão ou o acordo define a pensão:
    - **% dos rendimentos líquidos:** percentual sobre os rendimentos menos o INSS e o IRRF. É a forma mais comum para quem tem vínculo de emprego.
    - **% dos rendimentos brutos:** percentual sobre os rendimentos, sem descontos.
-   - **% do salário mínimo:** percentual sobre o salário mínimo da competência. Ao lado do percentual aparece o campo **Salário mínimo de MM/AAAA**, preenchido automaticamente com o valor da tabela **Salário mínimo** e atualizado quando você muda a competência. Ele é só para leitura: para corrigir o valor, edite a tabela.
+   - **% do salário mínimo:** percentual sobre o salário mínimo da competência. Ao lado do percentual aparece o campo **Salário mínimo de mm/aaaa**, preenchido automaticamente com o valor da tabela **Salário mínimo** e atualizado quando você muda a competência. Ele é só para leitura: para corrigir o valor, edite a tabela.
    - **Valor fixo:** o valor mensal definido na decisão. Nesta opção, o campo do percentual dá lugar a **Valor da pensão**.
 3. Em **Percentual da pensão**, informe o percentual definido em decisão ou acordo, por exemplo `30,00`: de 0 a 100 sobre os rendimentos e até 1.000 sobre o salário mínimo, como `150` para uma pensão de 1,5 salário mínimo. Com mais de um beneficiário na mesma base, os percentuais somados não podem passar de 100%.
 4. **Calcular** calcula e mostra a explicação, o resumo executivo e o comparativo entre as modalidades. A tecla **Enter** também calcula.
@@ -227,7 +227,7 @@ Na base do salário mínimo, a tela fica assim:
 ![Pensão sobre o salário mínimo](imagens/33-pensao-salario-minimo.png)
 
 1. **Base da pensão** com a opção **% do salário mínimo**.
-2. **Salário mínimo de MM/AAAA:** o valor vigente na competência, preenchido automaticamente.
+2. **Salário mínimo de mm/aaaa:** o valor vigente na competência, preenchido automaticamente.
 3. **Como a pensão foi calculada:** 30% de R$ 1.621,00 = R$ 486,30, sem relação com os rendimentos de quem paga.
 4. **Economia de IRRF:** com a pensão deduzida, o IRRF de quem paga cai de R$ 1.052,78 para R$ 919,04.
 
@@ -316,7 +316,7 @@ Abra **Pensão em atraso** pelo menu lateral. Ela atualiza o débito de pensões
 | Nº | Campo | O que informar |
 | --- | --- | --- |
 | 1 | Valor da pensão | **Valor fixo**, com o **Valor mensal**, ou **% do salário mínimo**, com o percentual. Na segunda opção, cada parcela usa o salário mínimo do seu mês, que acompanha os reajustes. |
-| — | Dia do vencimento, Primeira parcela e Última parcela | O dia do mês em que a pensão vence e o período em atraso (MM/AAAA). Nos meses mais curtos, vale o último dia do mês. |
+| — | Dia do vencimento, Primeira parcela e Última parcela | O dia do mês em que a pensão vence e o período em atraso (mm/aaaa). Nos meses mais curtos, vale o último dia do mês. |
 | — | Data do cálculo | Até quando o débito é atualizado. Todas as parcelas precisam vencer até essa data. |
 | 2 | Data do ajuizamento | Data em que a execução foi proposta, se já foi. Vazia, o cálculo considera a data do cálculo. |
 | — | Correção monetária | **INPC**, **IPCA** ou **Sem correção**, conforme a decisão. Quando a decisão não fixa o índice, o Código Civil adota o IPCA (art. 389). |
@@ -383,8 +383,8 @@ Abra **Estabilidade** pelo menu lateral.
 | --- | --- | --- |
 | 1 | Média remuneratória | Média da remuneração usada como referência para a indenização. |
 | 2 | Dias-base | Divisor para obter o valor diário da média. O padrão é 30. |
-| 3 | Data de demissão | Data do desligamento (dd/MM/aaaa). |
-| 4 | Fim da estabilidade | Último dia do período de estabilidade (dd/MM/aaaa). Deve ser posterior à demissão. |
+| 3 | Data de demissão | Data do desligamento (dd/mm/aaaa). |
+| 4 | Fim da estabilidade | Último dia do período de estabilidade (dd/mm/aaaa). Deve ser posterior à demissão. |
 | 5 | Complementos | Valores adicionais a somar no total, se houver. |
 | 6 | Resultado da apuração | Mostra, enquanto você digita as datas, quantos dias de estabilidade restam. |
 
@@ -476,7 +476,7 @@ Em raros casos, o arredondamento em centavos impede chegar exatamente ao valor. 
 | Campo | O que informar |
 | --- | --- |
 | Cálculo | **1ª e 2ª parcelas** (padrão) ou **Complemento das médias (até 10/01)**, descrito em 8.3.1. |
-| Competência do pagamento | Mês da 2ª parcela, normalmente 12/AAAA. |
+| Competência do pagamento | Mês da 2ª parcela, normalmente 12/aaaa. |
 | Salário e Médias de variáveis | Salário de dezembro e a média anual de horas extras, comissões e adicionais. |
 | Avos | Meses do ano com 15 dias ou mais de trabalho, de 1 a 12. |
 | 1ª parcela | **50% do 13º**, **Não houve adiantamento** ou **Valor informado**. Na última opção aparece o campo **Valor da 1ª parcela**. |
@@ -518,7 +518,7 @@ Para quem recebe horas extras, comissões ou adicionais, a 2ª parcela usa a mé
 | Campo | O que informar |
 | --- | --- |
 | Competência do pagamento | Mês em que o recibo é pago; define a tabela do IRRF das férias. |
-| Início do gozo (opcional) | Data em **dd/MM/aaaa**. Ao informá-la, o aplicativo distribui os dias de descanso, as férias e o terço pelas competências de gozo e calcula o INSS de cada folha com a tabela desse mês. Deixe em branco para manter a simulação antiga de uma só competência. |
+| Início do gozo (opcional) | Data em **dd/mm/aaaa**. Ao informá-la, o aplicativo distribui os dias de descanso, as férias e o terço pelas competências de gozo e calcula o INSS de cada folha com a tabela desse mês. Deixe em branco para manter a simulação antiga de uma só competência. |
 | Salário e Médias de variáveis | Salário na data das férias e a média de variáveis do período aquisitivo. |
 | Faltas injustificadas | Faltas no período aquisitivo, que definem os dias de direito (tabela abaixo). |
 | Concessão até (opcional) | O fim do período concessivo: o último dia dos 12 meses seguintes ao período aquisitivo para conceder as férias. Com o início do gozo, os dias gozados depois dele são pagos em dobro. |
@@ -1268,7 +1268,7 @@ Abra **Média de verbas variáveis** pelo menu lateral. Esta calculadora organiz
 
 ![Formulário de médias de verbas variáveis com três meses fictícios](imagens/82-media-verbas-formulario.png)
 
-1. Informe início e fim do período em **MM/AAAA** e clique em **Gerar meses**. O limite é de 24 competências. Gerar novamente preserva os valores dos meses que continuarem no período e mantém o divisor digitado. Se algum mês sair do período, o primeiro clique avisa quantos serão removidos; clique novamente para confirmar e confira o divisor.
+1. Informe início e fim do período em **mm/aaaa** e clique em **Gerar meses**. O limite é de 24 competências. Gerar novamente preserva os valores dos meses que continuarem no período e mantém o divisor digitado. Se algum mês sair do período, o primeiro clique avisa quantos serão removidos; clique novamente para confirmar e confira o divisor.
 2. Informe, em cada mês, comissões, DSR, horas extras, adicionais e outras parcelas **de natureza salarial**. Se não houve pagamento em um mês do período, deixe as colunas desse mês zeradas. Não repita na coluna DSR o valor que já estiver incluído nas comissões ou em outra coluna. Quando a regra exigir atualizar o valor das horas ou dos adicionais, ajuste os lançamentos antes de calcular.
 3. Confira o **divisor**. A geração sugere o número de competências, inclusive as zeradas. Altere-o somente quando o critério aplicável ao vínculo e à verba exigir outro divisor. A memória mostra o total e a média de cada categoria, além dos valores lançados em cada mês.
 
@@ -1282,7 +1282,7 @@ Fundamentos: [CLT, art. 142, §§ 1º a 6º](https://www.planalto.gov.br/ccivil_
 
 Abra **Banco de horas** pelo menu lateral. A tela concilia um **ciclo** de compensação por vez.
 
-1. Informe início e fim em **dd/MM/aaaa** e escolha o regime: compensação no **mesmo mês**, acordo **individual escrito** de até **seis meses** ou acordo/convenção **coletiva** de até **um ano**. A tela rejeita um ciclo maior que o prazo escolhido.
+1. Informe início e fim em **dd/mm/aaaa** e escolha o regime: compensação no **mesmo mês**, acordo **individual escrito** de até **seis meses** ou acordo/convenção **coletiva** de até **um ano**. A tela rejeita um ciclo maior que o prazo escolhido.
 2. Escolha **Acompanhamento**, **Fechamento do ciclo** ou **Rescisão**. O salário atual é opcional para acompanhar apenas as horas; para estimar quitação no fechamento ou na rescisão, informe o salário, o divisor de horas e o adicional padrão de pelo menos 50%.
 3. Adicione um lançamento por **Crédito (hora extra)** ou **Compensação (folga)**. Informe a data e a duração em **horas:minutos**, como `1:30`. O **Adicional (%)** da linha é opcional para créditos: vazio usa o padrão do ciclo. A descrição é opcional. Os movimentos são mostrados em ordem cronológica. O limite de créditos lançados no mesmo dia é de duas horas; confira também se a jornada total do dia respeita os limites legais e a norma coletiva.
 4. O resultado mostra créditos, compensações e saldo em minutos. No acompanhamento, a quitação é apenas uma estimativa informativa; sem salário informado, aparece como **Não calculada**. No fechamento ou na rescisão, um saldo **positivo** é estimado pelo valor da hora normal acrescido do adicional de cada crédito, com uma linha de quitação por adicional, por exemplo **Horas positivas a 50%** e **Horas positivas a 100%**. Saldo negativo aparece como horas a compensar e **não** é lançado automaticamente como desconto.
@@ -1337,7 +1337,7 @@ Abra **Simples Nacional e fator r** pelo menu lateral. Ela estima o DAS de um pe
 ![Formulário do Simples Nacional com 12 meses de receita e folha](imagens/88-simples-formulario.png)
 
 1. Informe o **Período de apuração**, o mês do DAS, e escolha a **Atividade**: **Serviços sujeitos ao fator r** (Anexo III com folha de pelo menos 28% da receita, Anexo V abaixo disso), **Serviços do Anexo III**, **Serviços do Anexo IV**, **Comércio (Anexo I)** ou **Indústria (Anexo II)**. O anexo depende do CNAE e do serviço prestado; confira o enquadramento com o contador.
-2. Se a empresa tem menos de 14 meses de atividade, informe o **Início das atividades** (MM/AAAA). Nos demais casos, deixe vazio.
+2. Se a empresa tem menos de 14 meses de atividade, informe o **Início das atividades** (mm/aaaa). Nos demais casos, deixe vazio.
 3. Informe a **Receita bruta do mês**. A **Folha do mês com encargos** só é usada no 1º mês de atividade até 2026.
 4. Em **Receita e folha dos meses anteriores**, informe valores sugeridos e clique em **Gerar meses**. O aplicativo cria exatamente as competências que o período exige. Ajuste a receita e a folha de cada mês. Gerar de novo, após mudar o período, preserva os valores dos meses que continuam.
 5. Nos serviços sujeitos ao fator r, informe o **Pró-labore mensal atual** e os **Dependentes do sócio**. No Anexo IV, informe os **Salários e pró-labore do mês**. Clique em **Calcular**.
@@ -1482,7 +1482,7 @@ Abra **Contribuição do autônomo e do facultativo** pelo menu lateral. Ela cal
 
 ![Formulário da contribuição do facultativo no plano simplificado](imagens/108-contribuicao-formulario.png)
 
-1. Informe a **Competência** (MM/AAAA): ela define o salário mínimo e o teto do INSS. No trimestral, informe qualquer mês do trimestre civil.
+1. Informe a **Competência** (mm/aaaa): ela define o salário mínimo e o teto do INSS. No trimestral, informe qualquer mês do trimestre civil.
 2. Escolha a **Categoria** e o **Plano**:
    - **Normal (20%):** 20% de um **Salário de contribuição** entre o salário mínimo e o teto; acima do teto, a base é limitada a ele.
    - **Simplificado (11% do mínimo):** para o facultativo e para o contribuinte individual que trabalha por conta própria, sem prestar serviço a empresa.
@@ -1540,7 +1540,7 @@ Abra **Simulação de aposentadoria** pelo menu lateral. Ela projeta, mês a mê
 1. Informe o **Sexo**, a **Data de nascimento** e a **Data da simulação**: a projeção começa nela, com o salário mínimo e o teto do mês.
 2. Informe o tempo de contribuição até a data da simulação, em **anos** e **meses (0 a 11)**, como no CNIS.
 3. Informe o tempo de contribuição **em 13/11/2019**, data da reforma. Use 0 se começou a contribuir depois dela: nesse caso, só vale a regra permanente.
-4. Em **Média dos salários**, escolha **Calcular pelos salários** e preencha a grade **Salários de contribuição** como no extrato do CNIS: cada linha é uma sequência de meses com o mesmo salário, com o mês inicial em **De** e o final em **Até** (MM/AAAA); para um só mês, repita a competência. Some os vínculos do mesmo mês numa linha. **+ Período** começa uma linha no mês seguinte ao fim da anterior, e **×** a remove. Se já tem a média do simulador do Meu INSS, escolha **Informar a média pronta** e preencha a **Média informada**.
+4. Em **Média dos salários**, escolha **Calcular pelos salários** e preencha a grade **Salários de contribuição** como no extrato do CNIS: cada linha é uma sequência de meses com o mesmo salário, com o mês inicial em **De** e o final em **Até** (mm/aaaa); para um só mês, repita a competência. Some os vínculos do mesmo mês numa linha. **+ Período** começa uma linha no mês seguinte ao fim da anterior, e **×** a remove. Se já tem a média do simulador do Meu INSS, escolha **Informar a média pronta** e preencha a **Média informada**.
 5. Em **Continua contribuindo?**, escolha **Sim** para que o tempo cresça um mês a cada mês da projeção, ou **Não** para que só a idade avance.
 6. Opcional: informe a **Sobrevida do IBGE**, a expectativa de sobrevida na idade da aposentadoria, para calcular o fator previdenciário do pedágio de 50%.
 7. Clique em **Calcular**.
@@ -1797,11 +1797,11 @@ As preferências ficam no arquivo `%LOCALAPPDATA%\CalculoIRRF\settings.json`, qu
 | Mensagem ou situação | O que fazer |
 | --- | --- |
 | "Ocorreu um erro inesperado..." ou "Não foi possível abrir o aplicativo." | O aplicativo registra os detalhes no arquivo indicado na mensagem, em `%LOCALAPPDATA%\CalculoIRRF\logs`, um por mês. Ao relatar o problema, anexe esse arquivo, que traz a mensagem técnica do erro. |
-| "Falta o valor de Selic de MM/AAAA na tabela de índices." | No tributo em atraso e na correção de valores, atualize a tabela do índice pela internet ou cadastre o mês. |
+| "Falta o valor de Selic de mm/aaaa na tabela de índices." | No tributo em atraso e na correção de valores, atualize a tabela do índice pela internet ou cadastre o mês. |
 | "O limite de renda do calendário de AAAA não está no aplicativo." | No abono salarial, informe o limite do calendário divulgado pelo Ministério do Trabalho. |
 | "Os outros descontos não podem passar de uma remuneração mensal..." | Na rescisão, a compensação de descontos é limitada a uma remuneração (CLT, art. 477, § 5º). |
-| "O campo \"Valor bruto\" está em formato inválido..." ou "Dependentes: informe de 0 a 99 dependentes..." | O aviso aparece no formulário, com o campo destacado. Corrija o campo indicado: competência no formato MM/AAAA, valores com vírgula nos centavos e dependentes como número inteiro. |
-| "Informe média, dias-base, datas (dd/MM/aaaa) e complementos em formatos válidos." | Confira as datas da estabilidade e os valores digitados. |
+| "O campo \"Valor bruto\" está em formato inválido..." ou "Dependentes: informe de 0 a 99 dependentes..." | O aviso aparece no formulário, com o campo destacado. Corrija o campo indicado: competência no formato mm/aaaa, valores com vírgula nos centavos e dependentes como número inteiro. |
+| "Informe média, dias-base, datas (dd/mm/aaaa) e complementos em formatos válidos." | Confira as datas da estabilidade e os valores digitados. |
 | "O fim da estabilidade deve ser posterior à data de demissão." | Corrija a data final, que precisa ser depois da demissão. |
 | "Os dias-base devem ser maiores que zero." | Informe o divisor da média, normalmente 30. |
 | "O percentual da pensão deve estar entre 0 e 100." | Corrija o percentual da pensão. Sobre o salário mínimo, o limite é 1.000 (150 para 1,5 salário mínimo). |
@@ -1809,13 +1809,13 @@ As preferências ficam no arquivo `%LOCALAPPDATA%\CalculoIRRF\settings.json`, qu
 | "Abatimentos dos rendimentos: o valor não pode superar o valor bruto." | Na pensão, reduza os abatimentos ou confira o valor bruto. |
 | "A pensão informada (...) é maior que o 13º integral (...)", "... que as férias + 1/3 (...)" ou "A pensão alimentícia não pode ser maior que a PLR paga." | O valor informado da pensão não pode superar a verba sobre a qual ela é descontada. |
 | "O percentual da pensão de (nome) deve estar entre 0 e 100." | Com mais de um beneficiário, a mensagem diz de quem é o percentual a corrigir. |
-| "A parcela de MM/AAAA vence em ..., depois da data do cálculo." | Na pensão em atraso, mude a última parcela ou a data do cálculo: só entram parcelas já vencidas. |
-| "O valor pago na parcela de MM/AAAA é maior que o valor devido." | Corrija o valor pago ou o devido dessa parcela na lista. |
-| "Falta o INPC de MM/AAAA na tabela de índices." (ou o IPCA) | Atualize a tabela do índice pela internet ou cadastre o valor do mês. |
-| "Não há taxa legal cadastrada para MM/AAAA." | Atualize a tabela **Taxa legal** pela internet ou cadastre o valor do mês. |
-| "Não há salário mínimo cadastrado para a competência MM/AAAA." | Na pensão sobre o salário mínimo, cadastre o salário mínimo da competência ou atualize a tabela **Salário mínimo** pela internet. |
-| "Não há tabela de INSS cadastrada para MM/AAAA: as tabelas começam em 01/2017." (ou de IRRF e demais tabelas) | Não existe tabela vigente para a competência. Informe uma competência a partir da data indicada ou cadastre a tabela correspondente. |
-| "Informe valores válidos para competência e campos numéricos." | Na manutenção de tabelas, confira a competência (MM/AAAA), a faixa (inteiro maior que zero) e os valores. |
+| "A parcela de mm/aaaa vence em ..., depois da data do cálculo." | Na pensão em atraso, mude a última parcela ou a data do cálculo: só entram parcelas já vencidas. |
+| "O valor pago na parcela de mm/aaaa é maior que o valor devido." | Corrija o valor pago ou o devido dessa parcela na lista. |
+| "Falta o INPC de mm/aaaa na tabela de índices." (ou o IPCA) | Atualize a tabela do índice pela internet ou cadastre o valor do mês. |
+| "Não há taxa legal cadastrada para mm/aaaa." | Atualize a tabela **Taxa legal** pela internet ou cadastre o valor do mês. |
+| "Não há salário mínimo cadastrado para a competência mm/aaaa." | Na pensão sobre o salário mínimo, cadastre o salário mínimo da competência ou atualize a tabela **Salário mínimo** pela internet. |
+| "Não há tabela de INSS cadastrada para mm/aaaa: as tabelas começam em 01/2017." (ou de IRRF e demais tabelas) | Não existe tabela vigente para a competência. Informe uma competência a partir da data indicada ou cadastre a tabela correspondente. |
+| "Informe valores válidos para competência e campos numéricos." | Na manutenção de tabelas, confira a competência (mm/aaaa), a faixa (inteiro maior que zero) e os valores. |
 | "Não foi possível atualizar a tabela pela internet." | A mensagem lista o que aconteceu com cada fonte. Verifique a conexão com a internet e tente novamente mais tarde; os dados locais não foram alterados. Se uma fonte alternativa já mostra a tabela nova sem a confirmação da outra, aguarde ou cadastre os valores manualmente. Se o problema persistir, as páginas podem ter mudado de formato: cadastre os valores manualmente. |
 | "As tabelas não foram atualizadas ao abrir..." ou "Ao abrir, N de 13 tabelas não foram atualizadas..." | A atualização da tela de abertura não confirmou essas tabelas, e os dados locais delas foram preservados. **Ver detalhes** mostra o motivo de cada uma. Confira a conexão e use **Atualizar pela internet** na tela da tabela, ou aguarde a próxima abertura do dia seguinte. |
 | "O campo "..." está em formato inválido: ..." ou "Corrija os ... campos destacados: ..." | Nas calculadoras trabalhistas, corrija os campos com borda vermelha conforme a orientação abaixo de cada um: valores com vírgula nos centavos, datas no formato dd/mm/aaaa, competência no formato mm/aaaa e horas como `10:30` ou `10,5`. |

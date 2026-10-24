@@ -17,7 +17,7 @@ public sealed class CarneLeaoMobileViewModel : CalculadoraTrabalhistaViewModel
         ICompartilhamentoPdf compartilhamento, ILogger<CarneLeaoMobileViewModel> logger) : base(compartilhamento, logger)
     {
         _simulador = simulador;
-        Adicionar("competencia", "Competência (MM/yyyy)", TipoCampoMobile.Competencia, DateTime.Today.ToString("MM/yyyy", Cultura),
+        Adicionar("competencia", "Competência (mm/aaaa)", TipoCampoMobile.Competencia, DateTime.Today.ToString("MM/yyyy", Cultura),
             "Mês do recebimento: o carnê-leão segue o regime de caixa.");
         Secao("secaoRendimentos", "Rendimentos do mês");
         Adicionar("rendimentos", "Rendimentos de pessoas físicas (R$)", TipoCampoMobile.Moeda, "0,00",

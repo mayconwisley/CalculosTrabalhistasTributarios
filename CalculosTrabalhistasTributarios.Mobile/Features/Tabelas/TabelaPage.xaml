@@ -8,7 +8,7 @@
         <Label Text="{Binding Descricao}" Style="{StaticResource TextoSecundario}" />
         <Border><VerticalStackLayout Spacing="12">
             <Label Text="Consultar e editar" Style="{StaticResource TituloSecao}" />
-            <Label Text="Competência (MM/yyyy)" Style="{StaticResource RotuloCampo}" />
+            <Label Text="Competência (mm/aaaa)" Style="{StaticResource RotuloCampo}" />
             <Border Style="{StaticResource CaixaCampo}"><Entry Text="{Binding Competencia}" Keyboard="Text" HorizontalTextAlignment="Start" AutomationId="CompetenciaTabela" /></Border>
             <VerticalStackLayout Spacing="6" IsVisible="{Binding ExibeFaixa}"><Label Text="Faixa" Style="{StaticResource RotuloCampo}" />
                 <Border Style="{StaticResource CaixaCampo}"><Entry Text="{Binding Faixa}" AutomationId="FaixaTabela" /></Border></VerticalStackLayout>

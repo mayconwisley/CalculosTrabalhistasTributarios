@@ -17,7 +17,7 @@ public sealed class DomesticoMobileViewModel : CalculadoraTrabalhistaViewModel
         ICompartilhamentoPdf compartilhamento, ILogger<DomesticoMobileViewModel> logger) : base(compartilhamento, logger)
     {
         _simulador = simulador;
-        Adicionar("competencia", "Competência (MM/yyyy)", TipoCampoMobile.Competencia, DateTime.Today.ToString("MM/yyyy", Cultura),
+        Adicionar("competencia", "Competência (mm/aaaa)", TipoCampoMobile.Competencia, DateTime.Today.ToString("MM/yyyy", Cultura),
             "Mês e ano das tabelas de INSS e IRRF.");
         Adicionar("salario", "Salário mensal (R$)", TipoCampoMobile.Moeda, "0,00", "Salário registrado na carteira.");
         Adicionar("adicionais", "Horas extras e adicionais (R$)", TipoCampoMobile.Moeda, "0,00",

@@ -23,8 +23,8 @@ internal static class SalariosContribuicaoMobile
 
     public static IReadOnlyList<ColunaGradeMobile> Colunas { get; } =
     [
-        new("inicio", "De (MM/AAAA)", TipoCampoMobile.Competencia, Dica: "Primeira competência do período, desde 07/1994."),
-        new("fim", "Até (MM/AAAA)", TipoCampoMobile.Competencia, Dica: "Última competência; para um só mês, repita a de início."),
+        new("inicio", "De (mm/aaaa)", TipoCampoMobile.Competencia, Dica: "Primeira competência do período, desde 07/1994."),
+        new("fim", "Até (mm/aaaa)", TipoCampoMobile.Competencia, Dica: "Última competência; para um só mês, repita a de início."),
         new("salario", "Salário (R$)", TipoCampoMobile.Moeda, "0,00", "Salário de contribuição do mês, como no CNIS; some os vínculos do mesmo mês.")
     ];
 
@@ -66,7 +66,7 @@ internal static class SalariosContribuicaoMobile
             }
             catch (EntradaInvalidaException)
             {
-                throw new EntradaInvalidaException("informe o início e o fim no formato MM/AAAA; para um só mês, repita a competência.");
+                throw new EntradaInvalidaException("informe o início e o fim no formato mm/aaaa; para um só mês, repita a competência.");
             }
             return new PeriodoSalarioContribuicao(inicio, fim, LeituraCampoMobile.Numero(linha.Campo("salario")));
         });

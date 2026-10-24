@@ -41,7 +41,7 @@ public sealed class CampoSalariosContribuicaoViewModel : CampoViewModel
         foreach (var linha in Linhas)
         {
             if (!TentarCompetencia(linha.Inicio, out var inicio) || !TentarCompetencia(linha.Fim, out var fim))
-                return Erro.Validacao($"Revise o período '{linha}': informe o início e o fim no formato MM/AAAA; para um só mês, repita a competência.");
+                return Erro.Validacao($"Revise o período '{linha}': informe o início e o fim no formato mm/aaaa; para um só mês, repita a competência.");
             if (!LeituraNumerica.TentarLer(linha.Salario, out var salario))
                 return Erro.Validacao($"Revise o salário do período {linha}: use um valor monetário, por exemplo 3.500,00.");
             periodos.Add(new PeriodoSalarioContribuicao(inicio, fim, salario));

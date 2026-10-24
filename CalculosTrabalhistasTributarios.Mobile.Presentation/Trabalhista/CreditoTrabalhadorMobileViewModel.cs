@@ -19,7 +19,7 @@ public sealed class CreditoTrabalhadorMobileViewModel : CalculadoraTrabalhistaVi
     {
         _simulador = simulador;
         Secao("secaoMargem", "Remuneração e margem");
-        Adicionar("competencia", "Competência (MM/yyyy)", TipoCampoMobile.Competencia, DateTime.Today.ToString("MM/yyyy", Cultura),
+        Adicionar("competencia", "Competência (mm/aaaa)", TipoCampoMobile.Competencia, DateTime.Today.ToString("MM/yyyy", Cultura),
             "Mês e ano das tabelas de INSS e IRRF.");
         Adicionar("salario", "Remuneração habitual (R$)", TipoCampoMobile.Moeda, "0,00",
             "Salário e adicionais habituais com INSS do vínculo, sem verbas variáveis como horas extras. INSS e IRRF são estimados.");
@@ -51,9 +51,9 @@ public sealed class CreditoTrabalhadorMobileViewModel : CalculadoraTrabalhistaVi
         Adicionar("modoIof", "Cálculo do IOF", TipoCampoMobile.Opcao,
             dica: "Automático: 0,38% + 0,0082% ao dia por amortização, limitado a 365 dias.",
             opcoes: ["Automático (estimado)", "Informado pelo banco"]);
-        Adicionar("dataLiberacao", "Data de liberação (dd/MM/yyyy)", TipoCampoMobile.Data, DateTime.Today.ToString("dd/MM/yyyy", Cultura),
+        Adicionar("dataLiberacao", "Data de liberação (dd/mm/aaaa)", TipoCampoMobile.Data, DateTime.Today.ToString("dd/MM/yyyy", Cultura),
             "Data em que o crédito é disponibilizado; usada só no IOF.");
-        Adicionar("primeiroVencimento", "Primeiro vencimento (dd/MM/yyyy)", TipoCampoMobile.Data, DateTime.Today.AddMonths(1).ToString("dd/MM/yyyy", Cultura),
+        Adicionar("primeiroVencimento", "Primeiro vencimento (dd/mm/aaaa)", TipoCampoMobile.Data, DateTime.Today.AddMonths(1).ToString("dd/MM/yyyy", Cultura),
             "Sugestão: um mês após hoje. Os seguintes vencem no mesmo dia mensal, sem ajuste por feriados; usado só no IOF.");
         Adicionar("iof", "IOF financiado (R$)", TipoCampoMobile.Moeda, "0,00", "IOF da proposta incluído no financiamento.");
         Adicionar("outros", "Custos financiados (R$, opcional)", TipoCampoMobile.Moeda, "0,00",

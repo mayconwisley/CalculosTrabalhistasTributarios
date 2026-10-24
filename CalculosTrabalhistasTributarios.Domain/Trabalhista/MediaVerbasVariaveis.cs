@@ -32,7 +32,7 @@ public static class CalculadoraMediaVerbasVariaveis
         foreach (var mes in meses)
         {
             if (mes.Competencia.Day != 1 || !competencias.Add(mes.Competencia))
-                return Erro.Validacao("Cada competência deve aparecer uma única vez no formato MM/AAAA.");
+                return Erro.Validacao("Cada competência deve aparecer uma única vez no formato mm/aaaa.");
             if (new[] { mes.Comissoes, mes.Dsr, mes.HorasExtras, mes.Adicionais, mes.Outras }
                 .Any(valor => valor < 0m || valor > 1_000_000_000m || decimal.Round(valor, 2) != valor))
                 return Erro.Validacao($"Revise os valores de {mes.Competencia:MM/yyyy}: use valores não negativos em reais e centavos.");

@@ -21,7 +21,7 @@ public sealed class SeguroDesempregoMobileViewModel : CalculadoraTrabalhistaView
         Adicionar("vinculo", "Vínculo", TipoCampoMobile.Opcao,
             dica: "Doméstico: uma parcela de um salário mínimo, até 3 parcelas, conforme a LC 150/2015.",
             opcoes: ["Empregado (CLT)", "Empregado doméstico"]);
-        Adicionar("dispensa", "Data da dispensa (dd/MM/yyyy)", TipoCampoMobile.Data, DateTime.Today.ToString("dd/MM/yyyy", Cultura),
+        Adicionar("dispensa", "Data da dispensa (dd/mm/aaaa)", TipoCampoMobile.Data, DateTime.Today.ToString("dd/MM/yyyy", Cultura),
             "Define a tabela do benefício.");
         Adicionar("ultimo", "Salário do último mês (R$)", TipoCampoMobile.Moeda, "0,00",
             "Mês anterior à dispensa, incluindo horas extras e adicionais.");

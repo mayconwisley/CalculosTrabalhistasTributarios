@@ -67,11 +67,11 @@
                         </StackPanel>
                         <StackPanel Grid.Column="3" Margin="0,0,12,14">
                             <TextBlock Text="Primeira parcela" Style="{StaticResource Rotulo}" />
-                            <TextBox Text="{Binding PrimeiraParcela, UpdateSourceTrigger=PropertyChanged}" behaviors:MascaraData.Tipo="Competencia" TextAlignment="Center" AutomationProperties.Name="Primeira parcela" ToolTip="Mês da primeira parcela em atraso (MM/AAAA)." />
+                            <TextBox Text="{Binding PrimeiraParcela, UpdateSourceTrigger=PropertyChanged}" behaviors:MascaraData.Tipo="Competencia" TextAlignment="Center" AutomationProperties.Name="Primeira parcela" ToolTip="Mês da primeira parcela em atraso (mm/aaaa)." />
                         </StackPanel>
                         <StackPanel Grid.Column="4" Margin="0,0,0,14">
                             <TextBlock Text="Última parcela" Style="{StaticResource Rotulo}" />
-                            <TextBox Text="{Binding UltimaParcela, UpdateSourceTrigger=PropertyChanged}" behaviors:MascaraData.Tipo="Competencia" TextAlignment="Center" AutomationProperties.Name="Última parcela" ToolTip="Mês da última parcela em atraso (MM/AAAA); ela precisa vencer até a data do cálculo." />
+                            <TextBox Text="{Binding UltimaParcela, UpdateSourceTrigger=PropertyChanged}" behaviors:MascaraData.Tipo="Competencia" TextAlignment="Center" AutomationProperties.Name="Última parcela" ToolTip="Mês da última parcela em atraso (mm/aaaa); ela precisa vencer até a data do cálculo." />
                         </StackPanel>
 
                         <StackPanel Grid.Row="1" Margin="0,0,12,14">

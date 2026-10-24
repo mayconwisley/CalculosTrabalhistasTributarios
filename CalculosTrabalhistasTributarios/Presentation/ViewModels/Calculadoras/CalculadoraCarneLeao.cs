@@ -6,7 +6,7 @@ namespace CalculosTrabalhistasTributarios.Presentation.ViewModels.Calculadoras;
 
 public sealed class CalculadoraCarneLeao(ISimularDemonstrativoUseCase<SimularCarneLeaoRequest> simulador) : CalculadoraBase
 {
-    private readonly CampoTextoViewModel _competencia = Competencia("Competência", "Mês do recebimento (MM/AAAA): o carnê-leão segue o regime de caixa.");
+    private readonly CampoTextoViewModel _competencia = Competencia("Competência", "Mês do recebimento (mm/aaaa): o carnê-leão segue o regime de caixa.");
     private readonly CampoTextoViewModel _rendimentos = Moeda("Rendimentos de pessoas físicas", "Honorários, consultas, aulas e outros rendimentos de trabalho recebidos de pessoas físicas ou do exterior.");
     private readonly CampoTextoViewModel _alugueis = Moeda("Aluguéis recebidos", "Aluguéis recebidos de pessoas físicas; os pagos por empresas têm IRRF retido por elas.");
     private readonly CampoTextoViewModel _despesasAluguel = Moeda("Despesas do aluguel", "IPTU, condomínio e taxa de administração pagos por você, como locador.");

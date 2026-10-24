@@ -21,15 +21,15 @@ public sealed class MediaVerbasVariaveisMobileViewModel : CalculadoraTrabalhista
         ICompartilhamentoPdf compartilhamento, ILogger<MediaVerbasVariaveisMobileViewModel> logger) : base(compartilhamento, logger)
     {
         _simulador = simulador;
-        Adicionar("inicio", "Início (MM/yyyy)", TipoCampoMobile.Competencia, DateTime.Today.AddMonths(-12).ToString("MM/yyyy", Cultura));
-        Adicionar("fim", "Fim (MM/yyyy)", TipoCampoMobile.Competencia, DateTime.Today.AddMonths(-1).ToString("MM/yyyy", Cultura));
+        Adicionar("inicio", "Início (mm/aaaa)", TipoCampoMobile.Competencia, DateTime.Today.AddMonths(-12).ToString("MM/yyyy", Cultura));
+        Adicionar("fim", "Fim (mm/aaaa)", TipoCampoMobile.Competencia, DateTime.Today.AddMonths(-1).ToString("MM/yyyy", Cultura));
         Adicionar("divisor", "Divisor da média (meses)", TipoCampoMobile.Inteiro, "12",
             "De 1 a 24. Na primeira geração recebe a quantidade de meses; meses zerados também contam.");
         var grade = AdicionarGrade("meses", "Valores por competência",
             "Somente parcelas variáveis salariais efetivamente recebidas no período. Gerar meses preserva os valores já digitados.",
             "Mês", LimiteMeses,
             [
-                new("competencia", "Competência (MM/yyyy)", TipoCampoMobile.Competencia),
+                new("competencia", "Competência (mm/aaaa)", TipoCampoMobile.Competencia),
                 new("comissoes", "Comissões (R$)", TipoCampoMobile.Moeda, "0,00"),
                 new("dsr", "DSR (R$)", TipoCampoMobile.Moeda, "0,00"),
                 new("horasExtras", "Horas extras (R$)", TipoCampoMobile.Moeda, "0,00"),
@@ -47,7 +47,7 @@ public sealed class MediaVerbasVariaveisMobileViewModel : CalculadoraTrabalhista
             var inicio = Competencia("inicio");
             var fim = Competencia("fim");
             if (inicio > fim)
-                throw new EntradaInvalidaException("Fim (MM/yyyy): informe uma competência igual ou posterior ao início.");
+                throw new EntradaInvalidaException("Fim (mm/aaaa): informe uma competência igual ou posterior ao início.");
             var quantidade = (fim.Year - inicio.Year) * 12 + fim.Month - inicio.Month + 1;
             if (quantidade > grade.Limite)
                 throw new EntradaInvalidaException($"O período tem {quantidade} meses; a média aceita até {grade.Limite}.");

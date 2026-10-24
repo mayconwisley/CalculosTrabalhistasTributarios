@@ -37,12 +37,12 @@ public sealed class CalculadoraDecimoTerceiro : CalculadoraBase
         "O complemento refaz o 13º com as variáveis de dezembro e apura a diferença paga até 10 de janeiro (Decreto 57.155/1965, art. 2º).") { Largura = 260 };
     private readonly CampoTextoViewModel _variaveisAteNovembro = Moeda("Variáveis de janeiro a novembro", "Soma das horas extras, comissões, adicionais e outras variáveis do ano até novembro.");
     private readonly CampoTextoViewModel _variaveisDezembro = Moeda("Variáveis de dezembro", "Variáveis de dezembro, que não entraram na média da 2ª parcela.");
-    private readonly CampoTextoViewModel _pagamento = new("Pagamento do complemento", TipoCampo.Competencia, $"01/{DateTime.Today.Year + 1}", "Mês do pagamento da diferença, normalmente janeiro do ano seguinte (MM/AAAA).");
+    private readonly CampoTextoViewModel _pagamento = new("Pagamento do complemento", TipoCampo.Competencia, $"01/{DateTime.Today.Year + 1}", "Mês do pagamento da diferença, normalmente janeiro do ano seguinte (mm/aaaa).");
     private readonly CampoOpcaoViewModel _tributacao = new("IRRF no ano seguinte",
         [new("RRA de 1 mês (eSocial)", TributacaoComplementoDecimoTerceiro.Rra), new("Recálculo do 13º (IN 1.500, art. 13)", TributacaoComplementoDecimoTerceiro.Recalculo)],
         "Pago no ano seguinte, o eSocial trata a diferença de 13º como RRA de um mês; a IN RFB 1.500/2014, art. 13, § 3º, prevê recalcular o 13º total. Pago no mesmo ano, vale o recálculo.") { Largura = 260 };
 
-    private readonly CampoTextoViewModel _competencia = new("Competência do pagamento", TipoCampo.Competencia, $"12/{DateTime.Today.Year}", "Mês da 2ª parcela, normalmente dezembro (MM/AAAA).");
+    private readonly CampoTextoViewModel _competencia = new("Competência do pagamento", TipoCampo.Competencia, $"12/{DateTime.Today.Year}", "Mês da 2ª parcela, normalmente dezembro (mm/aaaa).");
     private readonly CampoTextoViewModel _salario = Moeda("Salário", "Salário mensal de dezembro.");
     private readonly CampoTextoViewModel _medias = Moeda("Médias de variáveis", "Média anual de horas extras, comissões e adicionais; deixe 0,00 se não houver. No complemento, a média usada na 2ª parcela.");
     private readonly CampoTextoViewModel _avos = Inteiro("Avos (meses trabalhados)", 12, "Meses do ano com 15 dias ou mais de trabalho, de 1 a 12.");

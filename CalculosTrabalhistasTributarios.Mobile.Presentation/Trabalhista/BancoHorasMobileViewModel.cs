@@ -39,9 +39,9 @@ public sealed class BancoHorasMobileViewModel : CalculadoraTrabalhistaViewModel
         Adicionar("situacao", "Situação", TipoCampoMobile.Opcao,
             dica: "Acompanhamento mostra só o saldo. Fechamento e rescisão estimam o pagamento das horas positivas restantes.",
             opcoes: ["Acompanhamento", "Fechamento do ciclo", "Rescisão"]);
-        Adicionar("inicio", "Início do ciclo (dd/MM/yyyy)", TipoCampoMobile.Data,
+        Adicionar("inicio", "Início do ciclo (dd/mm/aaaa)", TipoCampoMobile.Data,
             new DateOnly(DateTime.Today.Year, DateTime.Today.Month, 1).ToString("dd/MM/yyyy", Cultura));
-        Adicionar("fim", "Fim do ciclo (dd/MM/yyyy)", TipoCampoMobile.Data, DateTime.Today.ToString("dd/MM/yyyy", Cultura),
+        Adicionar("fim", "Fim do ciclo (dd/mm/aaaa)", TipoCampoMobile.Data, DateTime.Today.ToString("dd/MM/yyyy", Cultura),
             "No fechamento, define a competência do holerite; na rescisão, a data de desligamento.");
         Adicionar("salario", "Salário mensal (R$)", TipoCampoMobile.Moeda, "0,00",
             "Opcional no acompanhamento; obrigatório para estimar a quitação.");
@@ -106,7 +106,7 @@ public sealed class BancoHorasMobileViewModel : CalculadoraTrabalhistaViewModel
                 var linha = atual = LancamentosBancoHoras[i];
                 var nome = $"Lançamento {i + 1}";
                 if (!DateOnly.TryParseExact(linha.Data.Trim(), "dd/MM/yyyy", Cultura, DateTimeStyles.None, out var data))
-                    throw new EntradaInvalidaException($"{nome}: informe a data em dd/MM/yyyy.");
+                    throw new EntradaInvalidaException($"{nome}: informe a data em dd/mm/aaaa.");
                 if (linha.Tipo is < 0 or > 1)
                     throw new EntradaInvalidaException($"{nome}: selecione crédito ou compensação.");
                 if (!TentarMinutos(linha.Horas, out var minutos))

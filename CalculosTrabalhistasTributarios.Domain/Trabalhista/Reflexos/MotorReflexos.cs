@@ -133,7 +133,7 @@ public static class MotorReflexos
         foreach (var mes in verba.Meses)
         {
             if (mes.Competencia.Day != 1 || !competencias.Add(mes.Competencia))
-                return Erro.Validacao($"Cada competência da verba {verba.Descricao} deve aparecer uma vez, no formato MM/AAAA.");
+                return Erro.Validacao($"Cada competência da verba {verba.Descricao} deve aparecer uma vez, no formato mm/aaaa.");
             if (mes.Valor < 0m || mes.Valor > 1_000_000_000m || decimal.Round(mes.Valor, 2) != mes.Valor || mes.Feriados < 0)
                 return Erro.Validacao($"Revise o valor e os feriados de {mes.Competencia:MM/yyyy} da verba {verba.Descricao}: use valores não negativos em reais e centavos.");
         }

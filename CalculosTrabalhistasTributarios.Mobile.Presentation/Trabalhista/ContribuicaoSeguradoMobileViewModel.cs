@@ -18,7 +18,7 @@ public sealed class ContribuicaoSeguradoMobileViewModel : CalculadoraTrabalhista
         ICompartilhamentoPdf compartilhamento, ILogger<ContribuicaoSeguradoMobileViewModel> logger) : base(compartilhamento, logger)
     {
         _simulador = simulador;
-        Adicionar("competencia", "Competência (MM/yyyy)", TipoCampoMobile.Competencia, DateTime.Today.ToString("MM/yyyy", Cultura),
+        Adicionar("competencia", "Competência (mm/aaaa)", TipoCampoMobile.Competencia, DateTime.Today.ToString("MM/yyyy", Cultura),
             "Define o salário mínimo e o teto. No trimestral, qualquer mês do trimestre civil.");
         // Opções na mesma ordem de CategoriaSegurado, PlanoContribuicao e PeriodicidadeContribuicao.
         Adicionar("categoria", "Categoria", TipoCampoMobile.Opcao,

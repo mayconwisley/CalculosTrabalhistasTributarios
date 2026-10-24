@@ -40,7 +40,7 @@ public sealed class CampoMesesSimplesViewModel : CampoViewModel
     {
         if (!TentarCompetencia(_periodo.Valor, out var periodo))
         {
-            Mensagem = "Informe o período de apuração (MM/AAAA) antes de gerar os meses.";
+            Mensagem = "Informe o período de apuração (mm/aaaa) antes de gerar os meses.";
             return false;
         }
         DateOnly? inicio = null;
@@ -48,7 +48,7 @@ public sealed class CampoMesesSimplesViewModel : CampoViewModel
         {
             if (!TentarCompetencia(_inicio.Valor, out var mes) || mes > periodo)
             {
-                Mensagem = "O início das atividades deve estar em MM/AAAA e não pode ser posterior ao período de apuração.";
+                Mensagem = "O início das atividades deve estar em mm/aaaa e não pode ser posterior ao período de apuração.";
                 return false;
             }
             inicio = mes;
@@ -87,7 +87,7 @@ public sealed class CampoMesesSimplesViewModel : CampoViewModel
         foreach (var linha in Meses)
         {
             if (!TentarCompetencia(linha.Competencia, out var competencia))
-                return Erro.Validacao($"Revise a competência '{linha.Competencia}': use MM/AAAA.");
+                return Erro.Validacao($"Revise a competência '{linha.Competencia}': use mm/aaaa.");
             if (!LeituraNumerica.TentarLer(linha.Receita, out var receita) || !LeituraNumerica.TentarLer(linha.Folha, out var folha))
                 return Erro.Validacao($"Revise a receita e a folha de {linha.Competencia}: use valores monetários, por exemplo 20.000,00.");
             meses.Add(new(competencia, receita, folha));

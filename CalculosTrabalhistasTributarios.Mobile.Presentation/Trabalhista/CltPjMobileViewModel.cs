@@ -18,7 +18,7 @@ public sealed class CltPjMobileViewModel : CalculadoraTrabalhistaViewModel
         ICompartilhamentoPdf compartilhamento, ILogger<CltPjMobileViewModel> logger) : base(compartilhamento, logger)
     {
         _simulador = simulador;
-        Adicionar("competencia", "Competência (MM/yyyy)", TipoCampoMobile.Competencia, DateTime.Today.ToString("MM/yyyy", Cultura));
+        Adicionar("competencia", "Competência (mm/aaaa)", TipoCampoMobile.Competencia, DateTime.Today.ToString("MM/yyyy", Cultura));
         Adicionar("salario", "Salário CLT (R$)", TipoCampoMobile.Moeda, "0,00");
         Adicionar("dependentes", "Dependentes para IRRF", TipoCampoMobile.Inteiro, "0", "Aplica-se aos dois regimes.");
         Adicionar("beneficios", "Benefícios do CLT (R$)", TipoCampoMobile.Moeda, "0,00",

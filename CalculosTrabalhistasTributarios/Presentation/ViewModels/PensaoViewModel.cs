@@ -356,7 +356,7 @@ public sealed class PensaoViewModel : ViewModelBase, ICalculoSalvavel, IAtalhosD
     public string Error => string.Empty;
     public string this[string campo] => campo switch
     {
-        nameof(Competencia) => DateTime.TryParseExact(Competencia.Trim(), "MM/yyyy", Cultura, DateTimeStyles.None, out _) ? "" : "Informe MM/AAAA.",
+        nameof(Competencia) => DateTime.TryParseExact(Competencia.Trim(), "MM/yyyy", Cultura, DateTimeStyles.None, out _) ? "" : "Informe mm/aaaa.",
         nameof(Dependentes) => int.TryParse(Dependentes, out var quantidade) && quantidade is >= 0 and <= 100 ? "" : "Informe de 0 a 100 dependentes.",
         nameof(ValorBruto) => ValidarMoeda(ValorBruto),
         nameof(BaseInss) => ValidarMoeda(BaseInss),

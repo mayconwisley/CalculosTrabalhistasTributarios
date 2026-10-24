@@ -17,7 +17,7 @@ public sealed class IntermitenteMobileViewModel : CalculadoraTrabalhistaViewMode
         ICompartilhamentoPdf compartilhamento, ILogger<IntermitenteMobileViewModel> logger) : base(compartilhamento, logger)
     {
         _simulador = simulador;
-        Adicionar("competencia", "Competência (MM/yyyy)", TipoCampoMobile.Competencia, DateTime.Today.ToString("MM/yyyy", Cultura),
+        Adicionar("competencia", "Competência (mm/aaaa)", TipoCampoMobile.Competencia, DateTime.Today.ToString("MM/yyyy", Cultura),
             "Mês e ano das tabelas de INSS e IRRF.");
         Adicionar("valorHora", "Valor da hora (R$)", TipoCampoMobile.Moeda, "0,00",
             "Valor da hora no contrato, não menor que o do salário mínimo.");

@@ -12,7 +12,7 @@ public sealed class SimularCreditoTrabalhadorUseCase(ITributacaoConsulta consult
     public async Task<Result<DemonstrativoDto>> ExecutarAsync(SimularCreditoTrabalhadorRequest r, CancellationToken cancellationToken)
     {
         if (r.Competencia.Day != 1 || r.Competencia < new DateOnly(2025, 3, 1) || r.Competencia.Year > 2100)
-            return Erro.Validacao("Competência: informe MM/AAAA entre 03/2025 e 12/2100.");
+            return Erro.Validacao("Competência: informe mm/aaaa entre 03/2025 e 12/2100.");
         if (r.RemuneracaoHabitual <= 0m || r.Dependentes is < 0 or > 100 ||
             new[] { r.RemuneracaoHabitual, r.DescontosPrevidenciarios, r.Pensao, r.OutrosDescontosCompulsorios }
                 .Any(v => v < 0m || v > 10_000_000m || decimal.Round(v, 2) != v) || r.DescontosPrevidenciarios >= r.RemuneracaoHabitual)

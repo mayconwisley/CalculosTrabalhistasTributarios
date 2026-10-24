@@ -8,7 +8,7 @@ namespace CalculosTrabalhistasTributarios.Presentation.ViewModels.Calculadoras;
 public sealed class CalculadoraAdicionais : CalculadoraBase
 {
     private readonly ISimularDemonstrativoUseCase<SimularAdicionaisRequest> _simulador;
-    private readonly CampoTextoViewModel _competencia = Competencia(dica: "Mês do cálculo, que define o salário mínimo e as tabelas de INSS e IRRF (MM/AAAA).");
+    private readonly CampoTextoViewModel _competencia = Competencia(dica: "Mês do cálculo, que define o salário mínimo e as tabelas de INSS e IRRF (mm/aaaa).");
     private readonly CampoTextoViewModel _salario = Moeda("Salário", "Salário-base, sem gratificações, prêmios ou outros adicionais.");
     private readonly CampoOpcaoViewModel _grau = new("Insalubridade",
         [

@@ -160,7 +160,7 @@ public sealed class EstabilidadeViewModel : ViewModelBase, ICalculoSalvavel, IAt
             !DateOnly.TryParseExact(FimEstabilidade.Trim(), "dd/MM/yyyy", Cultura, DateTimeStyles.None, out var fimEstabilidade) ||
             !LeituraNumerica.TentarLer(Complementos, out var complementos))
         {
-            _notificador.MostrarAviso("Informe média, dias-base, datas (dd/MM/aaaa) e complementos em formatos válidos.");
+            _notificador.MostrarAviso("Informe média, dias-base, datas (dd/mm/aaaa) e complementos em formatos válidos.");
             return false;
         }
 

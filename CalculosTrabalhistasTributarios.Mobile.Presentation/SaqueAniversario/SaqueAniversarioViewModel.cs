@@ -125,7 +125,7 @@ public sealed partial class SaqueAniversarioViewModel : ObservableObject, IFormu
 
         if (!DateOnly.TryParseExact(DataAnalise, "dd/MM/yyyy", CultureInfo.GetCultureInfo("pt-BR"), DateTimeStyles.None, out var dataAnalise))
         {
-            Mensagem = "Data da análise: informe uma data no formato dd/MM/yyyy.";
+            Mensagem = "Data da análise: informe uma data no formato dd/mm/aaaa.";
             return;
         }
         var analise = new EntradaAnaliseAntecipacaoFgts(dataAnalise, Confirmacao(IndiceCarencia), Confirmacao(IndiceContratoNovo),

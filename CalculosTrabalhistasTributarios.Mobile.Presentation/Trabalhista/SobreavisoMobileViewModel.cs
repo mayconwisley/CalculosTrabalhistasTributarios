@@ -28,7 +28,7 @@ public sealed class SobreavisoMobileViewModel : CalculadoraTrabalhistaViewModel
         Adicionar("situacao", "Situação do contrato", TipoCampoMobile.Opcao,
             dica: "Na dispensa sem justa causa entram o reflexo no aviso prévio indenizado e a multa de 40% do FGTS; férias não gozadas são indenizadas, sem FGTS (OJ 195 do TST).",
             opcoes: ["Contrato ativo", "Dispensa sem justa causa"]);
-        Adicionar("admissao", "Admissão (dd/MM/yyyy, opcional)", TipoCampoMobile.Data,
+        Adicionar("admissao", "Admissão (dd/mm/aaaa, opcional)", TipoCampoMobile.Data,
             dica: "Separa as férias por período aquisitivo. Sem ela, todos os meses formam um só período.");
         Adicionar("dsr", "DSR sobre as horas?", TipoCampoMobile.SimNao,
             dica: "Repouso sobre as horas habituais: valor do mês ÷ dias úteis × domingos e feriados (Lei 605/1949, art. 7º).");
@@ -37,8 +37,8 @@ public sealed class SobreavisoMobileViewModel : CalculadoraTrabalhistaViewModel
         Adicionar("diasAviso", "Dias de aviso prévio", TipoCampoMobile.Inteiro, "30",
             "De 30 a 90 dias: 30 mais 3 por ano completo de serviço (Lei 12.506/2011).");
         Secao("gerarSecao", "Gerar meses");
-        Adicionar("inicio", "Início (MM/yyyy)", TipoCampoMobile.Competencia, DateTime.Today.AddMonths(-12).ToString("MM/yyyy", Cultura));
-        Adicionar("fim", "Fim (MM/yyyy)", TipoCampoMobile.Competencia, DateTime.Today.AddMonths(-1).ToString("MM/yyyy", Cultura));
+        Adicionar("inicio", "Início (mm/aaaa)", TipoCampoMobile.Competencia, DateTime.Today.AddMonths(-12).ToString("MM/yyyy", Cultura));
+        Adicionar("fim", "Fim (mm/aaaa)", TipoCampoMobile.Competencia, DateTime.Today.AddMonths(-1).ToString("MM/yyyy", Cultura));
         Adicionar("salarioMensal", "Salário por mês (R$)", TipoCampoMobile.Moeda, "0,00",
             "Valor sugerido nos meses novos; sem o adicional de periculosidade (Súmula 132, II, do TST).");
         Adicionar("sobreavisoMensal", "Sobreaviso por mês (h)", TipoCampoMobile.Horas, "0:00",
@@ -49,7 +49,7 @@ public sealed class SobreavisoMobileViewModel : CalculadoraTrabalhistaViewModel
             "Salário, horas de sobreaviso e de prontidão e feriados de cada mês. Gerar meses preserva os valores já digitados.",
             "Mês", MotorReflexos.MaximoDeMeses,
             [
-                new("competencia", "Competência (MM/yyyy)", TipoCampoMobile.Competencia),
+                new("competencia", "Competência (mm/aaaa)", TipoCampoMobile.Competencia),
                 new("salario", "Salário (R$)", TipoCampoMobile.Moeda, "0,00", "Salário normal do mês, base do salário-hora."),
                 new("sobreaviso", "Sobreaviso (h)", TipoCampoMobile.Horas, "0:00", "Horas aguardando chamado fora da empresa, sem as horas trabalhadas."),
                 new("prontidao", "Prontidão (h)", TipoCampoMobile.Horas, "0:00", "Horas aguardando ordens nas dependências da empresa."),
@@ -84,7 +84,7 @@ public sealed class SobreavisoMobileViewModel : CalculadoraTrabalhistaViewModel
             var sobreaviso = HorasNaoNegativas(Campo("sobreavisoMensal"));
             var prontidao = HorasNaoNegativas(Campo("prontidaoMensal"));
             if (inicio > fim)
-                throw new EntradaInvalidaException("Fim (MM/yyyy): informe uma competência igual ou posterior ao início.");
+                throw new EntradaInvalidaException("Fim (mm/aaaa): informe uma competência igual ou posterior ao início.");
             if (salario < 0m)
                 throw new EntradaInvalidaException("Salário por mês (R$): informe um valor positivo ou zero, como 3.300,00.");
             var quantidade = (fim.Year - inicio.Year) * 12 + fim.Month - inicio.Month + 1;

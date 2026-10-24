@@ -17,7 +17,7 @@ public sealed class DividendosMobileViewModel : CalculadoraTrabalhistaViewModel
         ICompartilhamentoPdf compartilhamento, ILogger<DividendosMobileViewModel> logger) : base(compartilhamento, logger)
     {
         _simulador = simulador;
-        Adicionar("competencia", "Competência (MM/yyyy)", TipoCampoMobile.Competencia, DateTime.Today.ToString("MM/yyyy", Cultura),
+        Adicionar("competencia", "Competência (mm/aaaa)", TipoCampoMobile.Competencia, DateTime.Today.ToString("MM/yyyy", Cultura),
             "Mês dos pagamentos, desde 01/2026.");
         Adicionar("valor", "Dividendos no mês (R$)", TipoCampoMobile.Moeda, "0,00",
             "Total pago no mês pela mesma empresa à mesma pessoa, somando todos os pagamentos.");

@@ -25,7 +25,7 @@ public sealed class EmprestimoPessoalMobileViewModel : CalculadoraTrabalhistaVie
             "De 1 a 120 meses; primeira parcela um mês após a liberação.");
         Adicionar("juros", "Juros (% ao mês)", TipoCampoMobile.Numero, "0",
             "Taxa mensal da proposta, de 0 a 20%, até seis casas decimais. Não use taxa anual nem CET.");
-        Adicionar("data", "Data de liberação (dd/MM/yyyy)", TipoCampoMobile.Data, DateTime.Today.ToString("dd/MM/yyyy", Cultura),
+        Adicionar("data", "Data de liberação (dd/mm/aaaa)", TipoCampoMobile.Data, DateTime.Today.ToString("dd/MM/yyyy", Cultura),
             "De 01/01/2025 a 31/12/2100. Define o calendário das parcelas e os dias do IOF.");
 
         Secao("iofSecao", "IOF");

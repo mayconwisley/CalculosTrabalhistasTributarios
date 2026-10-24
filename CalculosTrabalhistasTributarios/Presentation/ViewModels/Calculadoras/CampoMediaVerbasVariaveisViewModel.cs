@@ -34,7 +34,7 @@ public sealed class CampoMediaVerbasVariaveisViewModel : CampoViewModel
     {
         if (!TentarCompetencia(Inicio, out var inicio) || !TentarCompetencia(Fim, out var fim) || inicio > fim)
         {
-            Mensagem = "Informe início e fim válidos em MM/AAAA, em ordem cronológica.";
+            Mensagem = "Informe início e fim válidos em mm/aaaa, em ordem cronológica.";
             return false;
         }
         var quantidade = (fim.Year - inicio.Year) * 12 + fim.Month - inicio.Month + 1;
@@ -89,7 +89,7 @@ public sealed class CampoMediaVerbasVariaveisViewModel : CampoViewModel
                 || !Moeda(linha.Comissoes, out var comissoes) || !Moeda(linha.Dsr, out var dsr)
                 || !Moeda(linha.HorasExtras, out var extras) || !Moeda(linha.Adicionais, out var adicionais)
                 || !Moeda(linha.Outras, out var outras))
-                return Erro.Validacao($"Revise competência e valores de {linha.Competencia}: use MM/AAAA e reais com centavos.");
+                return Erro.Validacao($"Revise competência e valores de {linha.Competencia}: use mm/aaaa e reais com centavos.");
             meses.Add(new(competencia, comissoes, dsr, extras, adicionais, outras));
         }
         return (meses, divisor);

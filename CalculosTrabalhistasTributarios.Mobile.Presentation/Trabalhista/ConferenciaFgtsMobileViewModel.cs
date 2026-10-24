@@ -32,11 +32,11 @@ public sealed class ConferenciaFgtsMobileViewModel : CalculadoraTrabalhistaViewM
         Adicionar("categoria", "Categoria", TipoCampoMobile.Opcao,
             dica: "Define a alíquota: 8% em geral e 2% no aprendiz; no doméstico, 8% de FGTS e 3,2% de indenização compensatória.",
             opcoes: ["Empregado (8%)", "Aprendiz (2%)", "Doméstico (8% + 3,2%)"]);
-        Adicionar("desligamento", "Desligamento (dd/MM/yyyy, opcional)", TipoCampoMobile.Data,
+        Adicionar("desligamento", "Desligamento (dd/mm/aaaa, opcional)", TipoCampoMobile.Data,
             dica: "Exigido para a competência rescisória. Deixe vazio sem rescisão.");
         Secao("gerarSecao", "Gerar competências");
-        Adicionar("inicio", "Início (MM/yyyy)", TipoCampoMobile.Competencia, DateTime.Today.AddMonths(-12).ToString("MM/yyyy", Cultura));
-        Adicionar("fim", "Fim (MM/yyyy)", TipoCampoMobile.Competencia, DateTime.Today.AddMonths(-1).ToString("MM/yyyy", Cultura));
+        Adicionar("inicio", "Início (mm/aaaa)", TipoCampoMobile.Competencia, DateTime.Today.AddMonths(-12).ToString("MM/yyyy", Cultura));
+        Adicionar("fim", "Fim (mm/aaaa)", TipoCampoMobile.Competencia, DateTime.Today.AddMonths(-1).ToString("MM/yyyy", Cultura));
         Adicionar("remuneracaoMensal", "Remuneração por mês (R$)", TipoCampoMobile.Moeda, "0,00",
             "Valor sugerido nas competências novas; ajuste cada mês na grade.");
         Adicionar("depositoMensal", "Depósito por mês (R$)", TipoCampoMobile.Moeda, "0,00",
@@ -46,7 +46,7 @@ public sealed class ConferenciaFgtsMobileViewModel : CalculadoraTrabalhistaViewM
             "Remuneração e depósito informado de cada competência. Gerar meses preserva os valores já digitados.",
             "Competência", ConferenciaFgts.LimiteLinhas,
             [
-                new("competencia", "Competência (MM/yyyy)", TipoCampoMobile.Competencia),
+                new("competencia", "Competência (mm/aaaa)", TipoCampoMobile.Competencia),
                 new("tipo", "Tipo", TipoCampoMobile.Opcao,
                     Dica: "Rescisória: competência do desligamento, com as verbas rescisórias que integram o FGTS, inclusive o aviso prévio indenizado.",
                     Opcoes: ["Mensal", "Rescisória"]),
@@ -78,7 +78,7 @@ public sealed class ConferenciaFgtsMobileViewModel : CalculadoraTrabalhistaViewM
             var remuneracao = Numero("remuneracaoMensal");
             var deposito = Numero("depositoMensal");
             if (inicio > fim)
-                throw new EntradaInvalidaException("Fim (MM/yyyy): informe uma competência igual ou posterior ao início.");
+                throw new EntradaInvalidaException("Fim (mm/aaaa): informe uma competência igual ou posterior ao início.");
             if (remuneracao < 0m || deposito < 0m)
                 throw new EntradaInvalidaException("Informe remuneração e depósito por mês positivos ou zero, por exemplo 3.000,00.");
             var quantidade = (fim.Year - inicio.Year) * 12 + fim.Month - inicio.Month + 1;

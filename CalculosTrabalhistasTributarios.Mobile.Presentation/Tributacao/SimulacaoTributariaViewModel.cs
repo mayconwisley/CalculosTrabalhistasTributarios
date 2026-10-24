@@ -96,7 +96,7 @@ public sealed partial class SimulacaoTributariaViewModel(
         Mensagem = null;
         if (!DateOnly.TryParseExact("01/" + Competencia.Trim(), "dd/MM/yyyy", Cultura, DateTimeStyles.None, out var competencia))
         {
-            Mensagem = "Competência: informe mês e ano no formato MM/yyyy, por exemplo 01/2026.";
+            Mensagem = "Competência: informe mês e ano no formato mm/aaaa, por exemplo 01/2026.";
             return;
         }
         if (!LeituraNumerica.TentarLer(ValorBruto, out var bruto))

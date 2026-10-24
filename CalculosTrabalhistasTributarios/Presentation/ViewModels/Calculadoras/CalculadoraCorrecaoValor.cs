@@ -8,8 +8,8 @@ namespace CalculosTrabalhistasTributarios.Presentation.ViewModels.Calculadoras;
 public sealed class CalculadoraCorrecaoValor(ISimularDemonstrativoUseCase<SimularCorrecaoValorRequest> simulador) : CalculadoraBase
 {
     private readonly CampoTextoViewModel _valor = Moeda("Valor", "Valor na data em que era devido.");
-    private readonly CampoTextoViewModel _inicio = new("Mês em que era devido", TipoCampo.Competencia, DateTime.Today.AddYears(-1).ToString("MM/yyyy", Cultura), "Mês e ano do valor original (MM/AAAA): a correção começa nele.");
-    private readonly CampoTextoViewModel _fim = Competencia("Mês da atualização", "Mês e ano para o qual o valor é atualizado (MM/AAAA): a correção vai até o mês anterior.");
+    private readonly CampoTextoViewModel _inicio = new("Mês em que era devido", TipoCampo.Competencia, DateTime.Today.AddYears(-1).ToString("MM/yyyy", Cultura), "Mês e ano do valor original (mm/aaaa): a correção começa nele.");
+    private readonly CampoTextoViewModel _fim = Competencia("Mês da atualização", "Mês e ano para o qual o valor é atualizado (mm/aaaa): a correção vai até o mês anterior.");
     private readonly CampoOpcaoViewModel _indice = new("Índice",
         [
             new("IPCA (inflação oficial)", IndiceEconomico.Ipca),

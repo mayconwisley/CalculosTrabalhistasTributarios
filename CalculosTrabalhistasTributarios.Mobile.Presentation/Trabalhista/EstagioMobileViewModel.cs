@@ -18,7 +18,7 @@ public sealed class EstagioMobileViewModel : CalculadoraTrabalhistaViewModel
     {
         _simulador = simulador;
         Secao("bolsaSecao", "Bolsa do mês");
-        Adicionar("competencia", "Competência (MM/yyyy)", TipoCampoMobile.Competencia, DateTime.Today.ToString("MM/yyyy", Cultura),
+        Adicionar("competencia", "Competência (mm/aaaa)", TipoCampoMobile.Competencia, DateTime.Today.ToString("MM/yyyy", Cultura),
             "Mês e ano das tabelas de IRRF.");
         Adicionar("bolsa", "Bolsa mensal (R$)", TipoCampoMobile.Moeda, "0,00", "Valor mensal da bolsa de estágio.");
         Adicionar("auxilio", "Auxílio-transporte (R$)", TipoCampoMobile.Moeda, "0,00", "Auxílio-transporte pago com a bolsa.");
@@ -26,9 +26,9 @@ public sealed class EstagioMobileViewModel : CalculadoraTrabalhistaViewModel
             "No mês de início ou de fim: dias de estágio na competência, para a bolsa proporcional com 30 dias por mês. Deixe 0 para o mês inteiro.");
 
         Secao("recessoSecao", "Recesso e IRRF");
-        Adicionar("inicio", "Início do estágio (dd/MM/yyyy)", TipoCampoMobile.Data, DateTime.Today.AddYears(-1).ToString("dd/MM/yyyy", Cultura),
+        Adicionar("inicio", "Início do estágio (dd/mm/aaaa)", TipoCampoMobile.Data, DateTime.Today.AddYears(-1).ToString("dd/MM/yyyy", Cultura),
             "Data de início no termo de compromisso.");
-        Adicionar("fim", "Fim do estágio (dd/MM/yyyy)", TipoCampoMobile.Data, DateTime.Today.ToString("dd/MM/yyyy", Cultura),
+        Adicionar("fim", "Fim do estágio (dd/mm/aaaa)", TipoCampoMobile.Data, DateTime.Today.ToString("dd/MM/yyyy", Cultura),
             "Fim do estágio, ou a data até a qual o recesso é contado.");
         Adicionar("gozados", "Recesso já usufruído (dias)", TipoCampoMobile.Numero, "0", "Dias de recesso que o estagiário já tirou.");
         Adicionar("dependentes", "Dependentes para IRRF", TipoCampoMobile.Inteiro, "0");

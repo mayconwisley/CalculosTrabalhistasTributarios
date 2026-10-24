@@ -40,13 +40,13 @@ public sealed class PensaoAtrasoMobileViewModel : CalculadoraTrabalhistaViewMode
         Adicionar("percentual", "Percentual do salário mínimo (%)", TipoCampoMobile.Numero, "0,00",
             "Aplicado ao salário mínimo de cada mês; por exemplo, 30.");
         Adicionar("diaVencimento", "Dia do vencimento", TipoCampoMobile.Inteiro, "10", "De 1 a 31; nos meses mais curtos, vence no último dia.");
-        Adicionar("primeiraParcela", "Primeira parcela (MM/yyyy)", TipoCampoMobile.Competencia, ultima.AddMonths(-11).ToString("MM/yyyy", Cultura));
-        Adicionar("ultimaParcela", "Última parcela (MM/yyyy)", TipoCampoMobile.Competencia, ultima.ToString("MM/yyyy", Cultura),
+        Adicionar("primeiraParcela", "Primeira parcela (mm/aaaa)", TipoCampoMobile.Competencia, ultima.AddMonths(-11).ToString("MM/yyyy", Cultura));
+        Adicionar("ultimaParcela", "Última parcela (mm/aaaa)", TipoCampoMobile.Competencia, ultima.ToString("MM/yyyy", Cultura),
             "Até 240 parcelas (20 anos).");
         Secao("secaoAtualizacao", "Atualização e cobrança");
-        Adicionar("dataCalculo", "Data do cálculo (dd/MM/yyyy)", TipoCampoMobile.Data, DateTime.Today.ToString("dd/MM/yyyy", Cultura),
+        Adicionar("dataCalculo", "Data do cálculo (dd/mm/aaaa)", TipoCampoMobile.Data, DateTime.Today.ToString("dd/MM/yyyy", Cultura),
             "Correção e juros vão até esta data; nenhuma parcela pode vencer depois dela.");
-        Adicionar("dataAjuizamento", "Ajuizamento (dd/MM/yyyy, opcional)", TipoCampoMobile.Data, "",
+        Adicionar("dataAjuizamento", "Ajuizamento (dd/mm/aaaa, opcional)", TipoCampoMobile.Data, "",
             "Data em que a execução foi proposta. Vazio: a separação dos ritos considera a data do cálculo.");
         Adicionar("correcao", "Correção monetária", TipoCampoMobile.Opcao, opcoes: ["INPC", "IPCA", "Sem correção"]);
         Adicionar("juros", "Juros de mora", TipoCampoMobile.Opcao,
@@ -60,8 +60,8 @@ public sealed class PensaoAtrasoMobileViewModel : CalculadoraTrabalhistaViewMode
             "Toque em Gerar parcelas e informe os pagamentos parciais. Ao gerar de novo, as parcelas do período são refeitas e os valores pagos continuam nos mesmos meses.",
             "Parcela", MaximoParcelas,
             [
-                new("mes", "Mês (MM/yyyy)", TipoCampoMobile.Competencia),
-                new("vencimento", "Vencimento (dd/MM/yyyy)", TipoCampoMobile.Data),
+                new("mes", "Mês (mm/aaaa)", TipoCampoMobile.Competencia),
+                new("vencimento", "Vencimento (dd/mm/aaaa)", TipoCampoMobile.Data),
                 new("devido", "Devido (R$)", TipoCampoMobile.Moeda, "0,00"),
                 new("pago", "Pago (R$)", TipoCampoMobile.Moeda, "0,00", "Pagamento parcial abatido no vencimento; 0,00 se não houve.")
             ]);

@@ -46,7 +46,7 @@ public sealed class CalculadorasLoteFMobileTests
         Alterar(vm, "demissao", "32/01/2025");
         await vm.CalcularCommand.ExecuteAsync(null);
         Assert.Null(caso.Pedido);
-        Assert.Equal("Demissão (dd/MM/yyyy): informe uma data em dd/MM/yyyy.", vm.Mensagem);
+        Assert.Equal("Demissão (dd/mm/aaaa): informe uma data em dd/mm/aaaa.", vm.Mensagem);
     }
 
     [Fact]

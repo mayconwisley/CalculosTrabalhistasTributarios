@@ -17,7 +17,7 @@ public sealed class SalarioPeloLiquidoMobileViewModel : CalculadoraTrabalhistaVi
         ICompartilhamentoPdf compartilhamento, ILogger<SalarioPeloLiquidoMobileViewModel> logger) : base(compartilhamento, logger)
     {
         _simulador = simulador;
-        Adicionar("competencia", "Competência (MM/yyyy)", TipoCampoMobile.Competencia, DateTime.Today.ToString("MM/yyyy", Cultura),
+        Adicionar("competencia", "Competência (mm/aaaa)", TipoCampoMobile.Competencia, DateTime.Today.ToString("MM/yyyy", Cultura),
             "Mês e ano das tabelas de INSS e IRRF.");
         Adicionar("liquido", "Salário líquido desejado (R$)", TipoCampoMobile.Moeda, "0,00",
             "Valor que o trabalhador deve receber, já descontados INSS e IRRF.");

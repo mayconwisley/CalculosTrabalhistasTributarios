@@ -57,7 +57,7 @@ public sealed class CampoParcelasRraViewModel : CampoViewModel
     {
         if (!TentarCompetencia(Inicio, out var inicio) || !TentarCompetencia(Fim, out var fim) || inicio > fim)
         {
-            Mensagem = "Informe início e fim válidos, no formato MM/AAAA, em ordem cronológica.";
+            Mensagem = "Informe início e fim válidos, no formato mm/aaaa, em ordem cronológica.";
             return false;
         }
         if (!LeituraNumerica.TentarLer(ValorMensal, out var valor) || valor < 0m)
@@ -115,7 +115,7 @@ public sealed class CampoParcelasRraViewModel : CampoViewModel
         foreach (var linha in Parcelas)
         {
             if (!TentarCompetencia(linha.Competencia, out var competencia))
-                return Erro.Validacao($"Revise a competência '{linha.Competencia}' das parcelas: use MM/AAAA; no 13º salário, vale o ano (por exemplo 12/2024).");
+                return Erro.Validacao($"Revise a competência '{linha.Competencia}' das parcelas: use mm/aaaa; no 13º salário, vale o ano (por exemplo 12/2024).");
             if (!LeituraNumerica.TentarLer(linha.Valor, out var valor))
                 return Erro.Validacao($"Revise o valor da parcela {linha}: use valor monetário, por exemplo 1.250,00.");
             parcelas.Add(new(competencia, (TipoParcelaRra)linha.Tipo.Valor, valor));

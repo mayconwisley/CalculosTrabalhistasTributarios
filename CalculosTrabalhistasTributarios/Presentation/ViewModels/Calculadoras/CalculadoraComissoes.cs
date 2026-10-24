@@ -8,7 +8,7 @@ public sealed class CalculadoraComissoes : CalculadoraBase
 {
     private readonly ISimularDemonstrativoUseCase<SimularComissoesRequest> _simulador;
 
-    private readonly CampoTextoViewModel _competencia = Competencia(dica: "Mês das comissões, dos repousos e das tabelas de INSS e IRRF (MM/AAAA).");
+    private readonly CampoTextoViewModel _competencia = Competencia(dica: "Mês das comissões, dos repousos e das tabelas de INSS e IRRF (mm/aaaa).");
     private readonly CampoTextoViewModel _salario = Moeda("Salário fixo", "Opcional; use 0,00 para comissionista puro. Entra na estimativa de INSS, IRRF e líquido.");
     private readonly CampoTextoViewModel _comissoes = Moeda("Valor das comissões", "Informe apenas as comissões, sem o DSR, salvo se marcar que o valor já inclui o repouso.");
     private readonly CampoOpcaoViewModel _incluiDsr = CampoOpcaoViewModel.SimNao("Valor já inclui DSR?", false,

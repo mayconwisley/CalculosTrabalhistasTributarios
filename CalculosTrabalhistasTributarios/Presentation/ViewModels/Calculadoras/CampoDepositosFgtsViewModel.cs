@@ -41,7 +41,7 @@ public sealed class CampoDepositosFgtsViewModel : CampoViewModel
         foreach (var linha in Depositos)
         {
             if (!DateTime.TryParseExact(linha.Competencia.Trim(), "MM/yyyy", Cultura, DateTimeStyles.None, out var data))
-                return Erro.Validacao($"Revise a competência '{linha.Competencia}' do FGTS: use MM/AAAA.");
+                return Erro.Validacao($"Revise a competência '{linha.Competencia}' do FGTS: use mm/aaaa.");
             if (!LeituraNumerica.TentarLer(linha.Valor, out var valor))
                 return Erro.Validacao($"Revise o depósito do FGTS de {linha.Competencia}: use valor monetário, por exemplo 250,00.");
             valores.Add(new(new DateOnly(data.Year, data.Month, 1), valor));

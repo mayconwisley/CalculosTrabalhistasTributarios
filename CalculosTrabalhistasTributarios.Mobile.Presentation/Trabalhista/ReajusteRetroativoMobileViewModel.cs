@@ -37,9 +37,9 @@ public sealed class ReajusteRetroativoMobileViewModel : CalculadoraTrabalhistaVi
         _transferencias = transferencias;
         CalcularRraCommand = new AsyncRelayCommand(CalcularRraAsync);
         Secao("periodo", "1. Gere as competências");
-        Adicionar("inicio", "Início (MM/yyyy)", TipoCampoMobile.Competencia, DateTime.Today.AddMonths(-3).ToString("MM/yyyy", Cultura),
+        Adicionar("inicio", "Início (mm/aaaa)", TipoCampoMobile.Competencia, DateTime.Today.AddMonths(-3).ToString("MM/yyyy", Cultura),
             "Primeiro mês com direito ao reajuste.");
-        Adicionar("fim", "Fim (MM/yyyy)", TipoCampoMobile.Competencia, DateTime.Today.AddMonths(-1).ToString("MM/yyyy", Cultura),
+        Adicionar("fim", "Fim (mm/aaaa)", TipoCampoMobile.Competencia, DateTime.Today.AddMonths(-1).ToString("MM/yyyy", Cultura),
             "Último mês pago sem o reajuste; até 120 meses no período.");
         Adicionar("salarioAnterior", "Salário anterior (R$)", TipoCampoMobile.Moeda, "0,00",
             "Valor pago antes do reajuste; preenche as linhas novas de Gerar meses.");
@@ -50,7 +50,7 @@ public sealed class ReajusteRetroativoMobileViewModel : CalculadoraTrabalhistaVi
             "Edite os valores nos meses com antecipação, promoção, afastamento ou férias. Gerar novamente preserva os meses já digitados.",
             "Mês", LimiteMeses,
             [
-                new("competencia", "Competência (MM/yyyy)", TipoCampoMobile.Competencia),
+                new("competencia", "Competência (mm/aaaa)", TipoCampoMobile.Competencia),
                 new("pago", "Salário pago (R$)", TipoCampoMobile.Moeda, "0,00"),
                 new("devido", "Salário devido (R$)", TipoCampoMobile.Moeda, "0,00", "Salário com o reajuste.")
             ]);
@@ -62,7 +62,7 @@ public sealed class ReajusteRetroativoMobileViewModel : CalculadoraTrabalhistaVi
             "Reflexo", LimiteReflexos,
             [
                 new("tipo", "Lançamento", TipoCampoMobile.Opcao, Opcoes: ["13º salário", "Férias gozadas + 1/3"]),
-                new("competencia", "Competência (MM/yyyy)", TipoCampoMobile.Competencia),
+                new("competencia", "Competência (mm/aaaa)", TipoCampoMobile.Competencia),
                 new("pago", "Base paga (R$)", TipoCampoMobile.Moeda, "0,00"),
                 new("devido", "Base correta (R$)", TipoCampoMobile.Moeda, "0,00"),
                 new("quantidade", "Avos (13º) ou dias (férias)", TipoCampoMobile.Inteiro, AvosDecimoTerceiro,

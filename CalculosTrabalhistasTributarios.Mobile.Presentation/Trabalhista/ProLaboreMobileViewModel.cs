@@ -18,7 +18,7 @@ public sealed class ProLaboreMobileViewModel : CalculadoraTrabalhistaViewModel
         ICompartilhamentoPdf compartilhamento, ILogger<ProLaboreMobileViewModel> logger) : base(compartilhamento, logger)
     {
         _simulador = simulador;
-        Adicionar("competencia", "Competência (MM/yyyy)", TipoCampoMobile.Competencia, DateTime.Today.ToString("MM/yyyy", Cultura));
+        Adicionar("competencia", "Competência (mm/aaaa)", TipoCampoMobile.Competencia, DateTime.Today.ToString("MM/yyyy", Cultura));
         Adicionar("tipo", "Tipo", TipoCampoMobile.Opcao,
             dica: "Pró-labore remunera o sócio; RPA é o recibo de pagamento ao autônomo.",
             opcoes: ["Pró-labore (sócio)", "Autônomo (RPA)"]);

@@ -17,7 +17,7 @@ public sealed class CalculadoraHolerite : CalculadoraBase
         AtualizarCamposComissoes();
     }
 
-    private readonly CampoTextoViewModel _competencia = Competencia(dica: "Mês do holerite, que define os domingos para o DSR e as tabelas de INSS, IRRF e salário-família (MM/AAAA).");
+    private readonly CampoTextoViewModel _competencia = Competencia(dica: "Mês do holerite, que define os domingos para o DSR e as tabelas de INSS, IRRF e salário-família (mm/aaaa).");
     private readonly CampoTextoViewModel _salario = Moeda("Salário", "Salário-base mensal, sem adicionais. Deixe 0,00 para comissionista puro e informe as comissões no campo próprio.");
     private readonly CampoOpcaoViewModel _insalubridade = new("Insalubridade",
         [

@@ -161,7 +161,7 @@ public sealed partial class TabelaMobileViewModel : ObservableObject
     {
         if (!Ler(out var request))
         {
-            Mensagem = "Informe a competência em MM/aaaa e valores numéricos válidos (sem negativos, exceto na variação de um índice).";
+            Mensagem = "Informe a competência em mm/aaaa e valores numéricos válidos (sem negativos, exceto na variação de um índice).";
             return;
         }
         var salvo = await Task.Run(() => _service.SalvarAsync(Tipo, request, CancellationToken.None));

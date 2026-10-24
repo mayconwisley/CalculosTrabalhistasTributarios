@@ -18,7 +18,7 @@ public sealed class AdicionaisMobileViewModel : CalculadoraTrabalhistaViewModel
         ICompartilhamentoPdf compartilhamento, ILogger<AdicionaisMobileViewModel> logger) : base(compartilhamento, logger)
     {
         _simulador = simulador;
-        Adicionar("competencia", "Competência (MM/yyyy)", TipoCampoMobile.Competencia, DateTime.Today.ToString("MM/yyyy", Cultura),
+        Adicionar("competencia", "Competência (mm/aaaa)", TipoCampoMobile.Competencia, DateTime.Today.ToString("MM/yyyy", Cultura),
             "Define o salário mínimo e as tabelas de INSS e IRRF.");
         Adicionar("salario", "Salário-base (R$)", TipoCampoMobile.Moeda, "0,00", "Sem gratificações, prêmios ou outros adicionais.");
         Adicionar("grau", "Insalubridade", TipoCampoMobile.Opcao, dica: "Grau definido por laudo técnico, conforme a NR-15.",

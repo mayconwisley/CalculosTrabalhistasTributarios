@@ -79,7 +79,7 @@ public sealed class PaginaLinhasTests
     [Fact]
     public void Grade_gera_todas_as_linhas_mas_exibe_uma_pagina_e_mostra_a_linha_adicionada()
     {
-        var grade = new GradeMobile("meses", "Meses", "", "Mês", 720, [new("competencia", "Competência (MM/yyyy)", TipoCampoMobile.Competencia)]);
+        var grade = new GradeMobile("meses", "Meses", "", "Mês", 720, [new("competencia", "Competência (mm/aaaa)", TipoCampoMobile.Competencia)]);
         var competencias = Enumerable.Range(0, 60).Select(i => new DateOnly(2021, 10, 1).AddMonths(i).ToString("MM/yyyy")).ToList();
 
         grade.Gerar(competencias, "competencia");

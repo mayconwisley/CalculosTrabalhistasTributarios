@@ -6,7 +6,7 @@ namespace CalculosTrabalhistasTributarios.Presentation.ViewModels.Calculadoras;
 
 public sealed class CalculadoraSalarioFamilia(ISimularDemonstrativoUseCase<SimularSalarioFamiliaRequest> simulador) : CalculadoraBase
 {
-    private readonly CampoTextoViewModel _competencia = Competencia(dica: "Mês do pagamento, que define o limite e a cota do salário-família (MM/AAAA).");
+    private readonly CampoTextoViewModel _competencia = Competencia(dica: "Mês do pagamento, que define o limite e a cota do salário-família (mm/aaaa).");
     private readonly CampoTextoViewModel _remuneracao = Moeda("Remuneração do mês cheio", "Salário de contribuição do mês inteiro, com horas extras e adicionais, sem o 13º e o 1/3 de férias. Na admissão e no desligamento, informe a remuneração do mês completo, não a proporcional.");
     private readonly CampoTextoViewModel _filhos = Inteiro("Filhos com direito", 1, "Filhos ou equiparados de até 14 anos, ou inválidos de qualquer idade.");
     private readonly CampoTextoViewModel _dias = Inteiro("Dias trabalhados", 30, "30 no mês completo; nos meses de admissão e desligamento, os dias trabalhados.");

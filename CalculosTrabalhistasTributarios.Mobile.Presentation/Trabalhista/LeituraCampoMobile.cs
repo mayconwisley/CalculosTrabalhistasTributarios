@@ -43,7 +43,7 @@ public static class LeituraCampoMobile
     public static DateOnly Data(CampoMobile campo)
     {
         if (DateOnly.TryParseExact(campo.Valor.Trim(), "dd/MM/yyyy", Cultura, DateTimeStyles.None, out var data)) return data;
-        throw new EntradaInvalidaException($"{campo.Rotulo}: informe uma data em dd/MM/yyyy.");
+        throw new EntradaInvalidaException($"{campo.Rotulo}: informe uma data em dd/mm/aaaa.");
     }
 
     public static DateOnly? DataOpcional(CampoMobile campo) => campo.Valor.Trim().Length == 0 ? null : Data(campo);
@@ -51,6 +51,6 @@ public static class LeituraCampoMobile
     public static DateOnly Competencia(CampoMobile campo)
     {
         if (DateOnly.TryParseExact("01/" + campo.Valor.Trim(), "dd/MM/yyyy", Cultura, DateTimeStyles.None, out var data)) return data;
-        throw new EntradaInvalidaException($"{campo.Rotulo}: informe mês e ano em MM/yyyy.");
+        throw new EntradaInvalidaException($"{campo.Rotulo}: informe mês e ano em mm/aaaa.");
     }
 }

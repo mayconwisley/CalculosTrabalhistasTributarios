@@ -175,7 +175,7 @@
                         <BindableLayout.ItemTemplate>
                             <DataTemplate x:DataType="vm:LinhaLancamentoBancoHorasMobile">
                                 <VerticalStackLayout Spacing="6">
-                                    <Label Text="Data (dd/MM/yyyy)" Style="{StaticResource RotuloCampo}" />
+                                    <Label Text="Data (dd/mm/aaaa)" Style="{StaticResource RotuloCampo}" />
                                     <Border Style="{StaticResource CaixaCampo}"><Entry Text="{Binding Data}" Placeholder="dd/MM/yyyy" Keyboard="Text" MaxLength="10" SemanticProperties.Description="Data do lançamento" /></Border>
                                     <Label Text="Tipo" Style="{StaticResource RotuloCampo}" />
                                     <Border Style="{StaticResource CaixaCampo}"><Picker ItemsSource="{Binding Tipos}" SelectedIndex="{Binding Tipo}" Title="Selecione" SemanticProperties.Description="Tipo do lançamento" /></Border>

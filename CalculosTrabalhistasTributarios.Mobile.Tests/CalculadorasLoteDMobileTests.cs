@@ -135,7 +135,7 @@ public sealed class CalculadorasLoteDMobileTests
         Assert.Equal("500,00", quarto.Campo("aportado").Valor);
         await vm.CalcularCommand.ExecuteAsync(null);
         Assert.Null(captura.Pedido);
-        Assert.StartsWith("Aporte 4: Data (dd/MM/yyyy)", vm.Mensagem);
+        Assert.StartsWith("Aporte 4: Data (dd/mm/aaaa)", vm.Mensagem);
 
         quarto.Campo("data").Valor = "15/04/2026";
         quarto.Campo("saldo").Valor = "520,00";

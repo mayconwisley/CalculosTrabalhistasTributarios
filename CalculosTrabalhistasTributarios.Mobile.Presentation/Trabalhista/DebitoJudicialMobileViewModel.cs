@@ -28,14 +28,14 @@ public sealed class DebitoJudicialMobileViewModel : CalculadoraTrabalhistaViewMo
         Adicionar("natureza", "Natureza do débito", TipoCampoMobile.Opcao,
             dica: "Trabalhista: IPCA-E e TR antes do ajuizamento, Selic até 29/08/2024 e IPCA com taxa legal depois. Cível: o índice da decisão, a Selic com os juros até 29/08/2024 e IPCA com taxa legal depois.",
             opcoes: ["Trabalhista", "Cível"]);
-        Adicionar("dataCalculo", "Data do cálculo (dd/MM/yyyy)", TipoCampoMobile.Data, DateTime.Today.ToString("dd/MM/yyyy", Cultura),
+        Adicionar("dataCalculo", "Data do cálculo (dd/mm/aaaa)", TipoCampoMobile.Data, DateTime.Today.ToString("dd/MM/yyyy", Cultura),
             "Data até a qual o débito é atualizado.");
         Adicionar("ajuizamento", "Data do ajuizamento (opcional)", TipoCampoMobile.Data,
-            dica: "Data em que a ação foi proposta (dd/MM/yyyy). Vazia: todo o período é pré-judicial, com IPCA-E e TR.");
+            dica: "Data em que a ação foi proposta (dd/mm/aaaa). Vazia: todo o período é pré-judicial, com IPCA-E e TR.");
         Adicionar("inicioJuros", "Juros", TipoCampoMobile.Opcao,
             dica: "Mora desde o vencimento (Código Civil, art. 397) ou desde a citação (art. 405), conforme a decisão.",
             opcoes: ["Do vencimento", "Da citação"]);
-        Adicionar("citacao", "Data da citação (dd/MM/yyyy)", TipoCampoMobile.Data, dica: "Início dos juros das parcelas vencidas até ela.");
+        Adicionar("citacao", "Data da citação (dd/mm/aaaa)", TipoCampoMobile.Data, dica: "Início dos juros das parcelas vencidas até ela.");
         Adicionar("indice", "Índice até 29/08/2024", TipoCampoMobile.Opcao,
             dica: "Índice da decisão ou da tabela do tribunal para a correção antes dos juros e antes de 30/08/2024; depois, vale o IPCA (Código Civil, art. 389).",
             opcoes: ["INPC", "IPCA"]);
@@ -45,7 +45,7 @@ public sealed class DebitoJudicialMobileViewModel : CalculadoraTrabalhistaViewMo
         var parcelas = AdicionarGrade("parcelas", "Parcelas", "Informe a descrição, o vencimento e o valor de cada parcela.", "Parcela", LimiteParcelas,
         [
             new ColunaGradeMobile("descricao", "Descrição (opcional)", TipoCampoMobile.Texto, Dica: "Vazia: Parcela 1, Parcela 2..."),
-            new ColunaGradeMobile("vencimento", "Vencimento (dd/MM/yyyy)", TipoCampoMobile.Data),
+            new ColunaGradeMobile("vencimento", "Vencimento (dd/mm/aaaa)", TipoCampoMobile.Data),
             new ColunaGradeMobile("valor", "Valor (R$)", TipoCampoMobile.Moeda, "0,00")
         ]);
         parcelas.AdicionarLinha(new Dictionary<string, string> { ["descricao"] = "Parcela 1" });

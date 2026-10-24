@@ -43,7 +43,7 @@ public sealed class CalculadorasLoteEMobileTests
         Assert.Equal("01/2000", grade.Linhas[1].Campo("inicio").Valor);
         await vm.CalcularCommand.ExecuteAsync(null);
         Assert.Null(captura.Pedido);
-        Assert.Equal("Período 2: informe o início e o fim no formato MM/AAAA; para um só mês, repita a competência.", vm.Mensagem);
+        Assert.Equal("Período 2: informe o início e o fim no formato mm/aaaa; para um só mês, repita a competência.", vm.Mensagem);
 
         grade.Linhas[1].Campo("fim").Valor = "05/2025";
         grade.Linhas[1].Campo("salario").Valor = "3.500,00";
