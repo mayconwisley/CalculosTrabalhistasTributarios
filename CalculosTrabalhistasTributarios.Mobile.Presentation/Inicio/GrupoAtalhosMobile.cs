@@ -1,4 +1,3 @@
-using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
@@ -20,7 +19,7 @@ public sealed partial class GrupoAtalhosMobile(string titulo, IReadOnlyList<Atal
 
     public string Titulo { get; } = titulo;
     public IReadOnlyList<AtalhoMobile> Todos { get; } = todos;
-    public ObservableCollection<AtalhoMobile> Atalhos { get; } = [.. todos];
+    public IReadOnlyList<AtalhoMobile> Atalhos { get; private set; } = [.. todos];
 
     /// <summary>
     /// Itens do menu lateral: só os do grupo aberto ou, durante a busca, os encontrados. O grupo fechado não cria os
@@ -48,20 +47,25 @@ public sealed partial class GrupoAtalhosMobile(string titulo, IReadOnlyList<Atal
     {
         var lista = itens.ToList();
         var mudouBusca = _emBusca != emBusca;
+        var mudouLista = !Atalhos.SequenceEqual(lista);
         _emBusca = emBusca;
-        if (!Atalhos.SequenceEqual(lista))
+        if (mudouLista)
         {
-            Atalhos.Clear();
-            foreach (var item in lista) Atalhos.Add(item);
+            // Publica somente o conjunto pronto, sem recriar cartões a cada remoção/inclusão.
+            Atalhos = lista;
+            OnPropertyChanged(nameof(Atalhos));
             OnPropertyChanged(nameof(Quantidade));
         }
         Visivel = lista.Count > 0;
-        if (mudouBusca)
+        if (mudouBusca || mudouLista)
         {
             OnPropertyChanged(nameof(ItensMenu));
+            OnPropertyChanged(nameof(ItensBusca));
+        }
+        if (mudouBusca)
+        {
             OnPropertyChanged(nameof(ExibirItensMenu));
             OnPropertyChanged(nameof(IconeExpandir));
-            OnPropertyChanged(nameof(ItensBusca));
             OnPropertyChanged(nameof(PodeAlternar));
         }
     }

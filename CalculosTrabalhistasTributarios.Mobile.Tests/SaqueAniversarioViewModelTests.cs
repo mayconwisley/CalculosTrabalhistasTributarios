@@ -177,7 +177,7 @@ public sealed class SaqueAniversarioViewModelTests
     }
 
     [Fact]
-    public void Busca_do_catalogo_encontra_calculadoras_e_tabelas_sem_acentos_e_mantem_favoritas()
+    public async Task Busca_do_catalogo_encontra_calculadoras_e_tabelas_sem_acentos_e_mantem_favoritas()
     {
         var preferencias = new PreferenciasDeTeste();
         var vm = new InicioViewModel(new NavegacaoDeTeste(), new MenuDeTeste(), preferencias, new PlataformaDeTeste(),
@@ -186,18 +186,34 @@ public sealed class SaqueAniversarioViewModelTests
         Assert.Equal(16, vm.QuantidadeTabelas);
         Assert.True(vm.ExibeBoasVindas);
         Assert.Equal("Cálculos Trabalhistas e Tributários 1.0 • Dados processados no aparelho • Desenvolvido por: Maycon Wisley", vm.Assinatura);
+        vm.Busca = "nenhum resultado anterior";
+        var anterior = vm.AtualizacaoBusca;
         vm.Busca = "salario familia";
+        await vm.AtualizacaoBusca;
+        await anterior;
         Assert.False(vm.ExibeBoasVindas);
         var calculadora = Assert.Single(vm.Grupos.SelectMany(grupo => grupo.Atalhos), atalho => atalho.Titulo == "Salário-família");
         Assert.Contains(vm.GruposTabelas.SelectMany(grupo => grupo.Atalhos), atalho => atalho.Titulo == "Salário-família");
+        var grupoExibido = vm.Grupos.First(grupo => grupo.Atalhos.Contains(calculadora));
+        var fonteExibida = grupoExibido.ItensBusca;
+        var titulosExibidos = fonteExibida.Select(atalho => atalho.Titulo).ToArray();
         vm.AlternarFavoritoCommand.Execute(calculadora);
         Assert.True(calculadora.Favorito);
         Assert.Contains(calculadora, vm.Favoritas.Atalhos);
         Assert.DoesNotContain(calculadora, vm.Grupos.SelectMany(grupo => grupo.Atalhos));
         vm.Busca = "nenhum cálculo com estas palavras";
+        await vm.AtualizacaoBusca;
         Assert.True(vm.SemResultado);
         vm.LimparBuscaCommand.Execute(null);
         Assert.False(vm.SemResultado);
+        Assert.True(vm.ExibeBoasVindas);
+        Assert.Empty(grupoExibido.ItensBusca);
+        Assert.Equal(titulosExibidos, fonteExibida.Select(atalho => atalho.Titulo));
+        vm.Busca = "rescisao";
+        var pendente = vm.AtualizacaoBusca;
+        vm.LimparBuscaCommand.Execute(null);
+        await pendente;
+        Assert.True(vm.ExibeBoasVindas);
     }
 
     [Fact]

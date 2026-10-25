@@ -2,14 +2,14 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:dto="clr-namespace:CalculosTrabalhistasTributarios.Application.DTOs;assembly=CalculosTrabalhistasTributarios.Application"
              xmlns:vm="clr-namespace:CalculosTrabalhistasTributarios.Mobile.Presentation.Historico;assembly=CalculosTrabalhistasTributarios.Mobile.Presentation"
-             x:Class="CalculosTrabalhistasTributarios.Mobile.Features.Historico.HistoricoPage" x:DataType="vm:HistoricoMobileViewModel" Title="Histórico">
+             x:Class="CalculosTrabalhistasTributarios.Mobile.Features.Historico.HistoricoPage" x:DataType="vm:HistoricoMobileViewModel" Title="Histórico" SafeAreaEdges="Container">
     <CollectionView Margin="16,0" SelectionMode="None" ItemsSource="{Binding Itens}">
         <CollectionView.Header>
             <VerticalStackLayout Spacing="8" Padding="0,16,0,16">
                 <Label Text="Cálculos salvos" Style="{StaticResource TituloPagina}" SemanticProperties.HeadingLevel="Level1" />
                 <Label Text="Formulários guardados neste aparelho. Abra para recalcular com as tabelas disponíveis." Style="{StaticResource TextoSecundario}" />
                 <Border Style="{StaticResource CaixaCampo}">
-                    <Entry Text="{Binding Busca}" Placeholder="Buscar pelo nome ou pela calculadora" Keyboard="Text" MaxLength="100"
+                    <Entry Text="{Binding Busca}" Placeholder="Buscar no histórico" Keyboard="Text" MaxLength="100"
                            HorizontalTextAlignment="Start" FontSize="16" ClearButtonVisibility="WhileEditing" AutomationId="BuscaHistorico"
                            SemanticProperties.Description="Buscar no histórico pelo nome do cálculo ou da calculadora" />
                 </Border>
@@ -37,7 +37,7 @@
                         <Label Text="{Binding Calculadora}" Style="{StaticResource TextoSecundario}" />
                         <Label Text="{Binding AlteradoEm, StringFormat='Atualizado em {0:dd/MM/yyyy HH:mm}'}" Style="{StaticResource TextoSecundario}" />
                         <Button Text="Abrir" Command="{Binding AbrirCommand, Source={RelativeSource AncestorType={x:Type vm:HistoricoMobileViewModel}}, x:DataType=vm:HistoricoMobileViewModel}" CommandParameter="{Binding .}" AutomationId="AbrirHistorico" />
-                        <Button Text="Selecionar / remover da comparação" Style="{StaticResource BotaoSecundario}" Command="{Binding SelecionarCommand, Source={RelativeSource AncestorType={x:Type vm:HistoricoMobileViewModel}}, x:DataType=vm:HistoricoMobileViewModel}" CommandParameter="{Binding .}" />
+                        <Button Text="Selecionar / remover da comparação" LineBreakMode="WordWrap" Style="{StaticResource BotaoSecundario}" Command="{Binding SelecionarCommand, Source={RelativeSource AncestorType={x:Type vm:HistoricoMobileViewModel}}, x:DataType=vm:HistoricoMobileViewModel}" CommandParameter="{Binding .}" />
                         <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
                             <Button Text="Duplicar" Style="{StaticResource BotaoSecundario}" Command="{Binding DuplicarCommand, Source={RelativeSource AncestorType={x:Type vm:HistoricoMobileViewModel}}, x:DataType=vm:HistoricoMobileViewModel}" CommandParameter="{Binding .}" />
                             <Button Grid.Column="1" Text="Renomear" Style="{StaticResource BotaoSecundario}" Command="{Binding RenomearCommand, Source={RelativeSource AncestorType={x:Type vm:HistoricoMobileViewModel}}, x:DataType=vm:HistoricoMobileViewModel}" CommandParameter="{Binding .}" />

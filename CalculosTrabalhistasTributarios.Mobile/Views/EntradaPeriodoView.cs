@@ -56,8 +56,9 @@ public sealed class EntradaPeriodoView : ContentView
         if (Tipo == TipoCampoMobile.Data)
         {
             _sincronizando = true;
+            // Sem data válida, null permite que confirmar o dia inicial também dispare DateSelected.
             _calendario.Date = DateTime.TryParseExact(Texto, "dd/MM/yyyy", CultureInfo.GetCultureInfo("pt-BR"), DateTimeStyles.None, out var data)
-                && data >= _calendario.MinimumDate && data <= _calendario.MaximumDate ? data : DateTime.Today;
+                && data >= _calendario.MinimumDate && data <= _calendario.MaximumDate ? data : null;
             _sincronizando = false;
             _calendario.IsOpen = true;
             return;

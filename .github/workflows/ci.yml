@@ -73,12 +73,12 @@ jobs:
       - name: Testar navegação, validação, rascunho e resultado
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 36
-          target: google_apis
+          api-level: 35
+          target: default
           arch: x86_64
           profile: pixel_7
-          ram-size: 3072M
-          enable-hw-keyboard: true
+          ram-size: 2048M
+          enable-hw-keyboard: false
           disable-animations: true
           script: python3 tools/mobile-ui/smoke_android.py --apk CalculosTrabalhistasTributarios.Mobile/bin/Release/net10.0-android/android-x64/br.com.mayconwisley.calculostrabalhistastributarios.uitests-Signed.apk
       - name: Guardar evidências Android

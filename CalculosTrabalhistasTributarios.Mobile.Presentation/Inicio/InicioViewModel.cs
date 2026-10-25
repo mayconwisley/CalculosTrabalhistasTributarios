@@ -27,6 +27,7 @@ public sealed partial class InicioViewModel : ObservableObject
     private readonly ILogger<InicioViewModel> _logger;
     private readonly Dictionary<string, AtalhoMobile> _porChave;
     private bool _exibindoAviso;
+    private CancellationTokenSource? _cancelamentoBusca;
 
     [ObservableProperty] private string? _mensagem;
     [ObservableProperty]
@@ -115,7 +116,32 @@ public sealed partial class InicioViewModel : ObservableObject
     public ObservableCollection<CalculoRecenteMobile> Recentes { get; } = [];
     public bool SemRecentes => !CarregandoRecentes && Recentes.Count == 0;
 
-    partial void OnBuscaChanged(string value) => Atualizar();
+    public Task AtualizacaoBusca { get; private set; } = Task.CompletedTask;
+
+    partial void OnBuscaChanged(string value)
+    {
+        _cancelamentoBusca?.Cancel();
+        _cancelamentoBusca?.Dispose();
+        _cancelamentoBusca = new CancellationTokenSource();
+        AtualizacaoBusca = AtualizarBuscaAsync(value, _cancelamentoBusca.Token);
+    }
+
+    private async Task AtualizarBuscaAsync(string busca, CancellationToken cancellationToken)
+    {
+        try
+        {
+            // Evita criar e remover cartões a cada tecla; limpar continua imediato.
+            if (!string.IsNullOrWhiteSpace(busca)) await Task.Delay(300, cancellationToken);
+            cancellationToken.ThrowIfCancellationRequested();
+            Atualizar();
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested) { }
+        catch (Exception erro)
+        {
+            _logger.LogError(erro, "Falha ao atualizar busca do catálogo móvel.");
+            Mensagem = "Não foi possível atualizar a busca. Tente novamente.";
+        }
+    }
 
     private bool PodeAbrir(AtalhoMobile? atalho) => !Ocupado;
 

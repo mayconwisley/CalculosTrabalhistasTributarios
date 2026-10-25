@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:comparacao="clr-namespace:CalculosTrabalhistasTributarios.Presentation.ViewModels.Historico;assembly=CalculosTrabalhistasTributarios.Mobile.Presentation"
-             x:Class="CalculosTrabalhistasTributarios.Mobile.Features.Historico.ComparacaoPage" Title="Comparação">
+             x:Class="CalculosTrabalhistasTributarios.Mobile.Features.Historico.ComparacaoPage" Title="Comparação" SafeAreaEdges="Container">
     <ScrollView><VerticalStackLayout Padding="16" Spacing="14" MaximumWidthRequest="700">
         <Label Text="Comparar cálculos" Style="{StaticResource TituloPagina}" SemanticProperties.HeadingLevel="Level1" />
         <Label x:Name="Cabecalho" Style="{StaticResource TextoSecundario}" />
