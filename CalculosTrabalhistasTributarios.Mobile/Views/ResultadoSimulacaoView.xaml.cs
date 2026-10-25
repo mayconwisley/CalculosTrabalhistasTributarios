@@ -11,9 +11,12 @@ public partial class ResultadoSimulacaoView : ContentView
         typeof(DemonstrativoDto), typeof(ResultadoSimulacaoView), null, propertyChanged: AoAlterarDemonstrativo);
     public static readonly BindableProperty CompartilharPdfCommandProperty = BindableProperty.Create(nameof(CompartilharPdfCommand),
         typeof(ICommand), typeof(ResultadoSimulacaoView));
+    public static readonly BindableProperty CompartilharResumoCommandProperty = BindableProperty.Create(nameof(CompartilharResumoCommand),
+        typeof(ICommand), typeof(ResultadoSimulacaoView));
     public ResultadoSimulacaoView() => InitializeComponent();
     public DemonstrativoDto? Demonstrativo { get => (DemonstrativoDto?)GetValue(DemonstrativoProperty); set => SetValue(DemonstrativoProperty, value); }
     public ICommand? CompartilharPdfCommand { get => (ICommand?)GetValue(CompartilharPdfCommandProperty); set => SetValue(CompartilharPdfCommandProperty, value); }
+    public ICommand? CompartilharResumoCommand { get => (ICommand?)GetValue(CompartilharResumoCommandProperty); set => SetValue(CompartilharResumoCommandProperty, value); }
     private DetalhesResultadoMobile? _detalhes;
     public DetalhesResultadoMobile? Detalhes => _detalhes ??= Demonstrativo is { } dto ? new(dto) : null;
     public bool TemResultado => Demonstrativo is not null;

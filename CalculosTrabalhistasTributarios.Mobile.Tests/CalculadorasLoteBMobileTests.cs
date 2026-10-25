@@ -272,6 +272,7 @@ public sealed class CalculadorasLoteBMobileTests
 
     private sealed class PdfTeste : ICompartilhamentoPdf
     {
+        public Task CompartilharResumoAsync(DemonstrativoDto demonstrativo, CancellationToken cancellationToken) => Task.CompletedTask;
         public DemonstrativoDto? Ultimo { get; private set; }
         public Task CompartilharAsync(DemonstrativoDto demonstrativo, CancellationToken cancellationToken)
         {

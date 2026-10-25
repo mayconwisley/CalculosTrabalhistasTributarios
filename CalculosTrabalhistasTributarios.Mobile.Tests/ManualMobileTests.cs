@@ -41,4 +41,22 @@ public sealed class ManualMobileTests
         Assert.DoesNotContain(ferias, bloco => bloco.Texto.Contains("](", StringComparison.Ordinal) || bloco.Texto.Contains("![", StringComparison.Ordinal));
         Assert.Empty(ManualMobile.Secao("99"));
     }
+
+    [Fact]
+    public void Prints_do_manual_viram_imagens_empacotadas_com_descricao()
+    {
+        var imagens = Enum.GetValues<TipoCalculadoraMobile>()
+            .Select(ManualMobile.NumeroSecao).OfType<string>().Distinct()
+            .SelectMany(ManualMobile.Secao)
+            .Where(bloco => bloco.Tipo == TipoBlocoManualMobile.Imagem).ToList();
+
+        Assert.NotEmpty(imagens);
+        var pasta = Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "docs", "imagens");
+        foreach (var imagem in imagens)
+        {
+            Assert.False(string.IsNullOrWhiteSpace(imagem.Texto), $"{imagem.Arquivo} sem descrição para o leitor de tela.");
+            Assert.StartsWith(ManualMobile.PastaImagens + "/", imagem.Arquivo);
+            Assert.True(File.Exists(Path.Combine(pasta, Path.GetFileName(imagem.Arquivo ?? ""))), $"{imagem.Arquivo} não existe em docs/imagens.");
+        }
+    }
 }

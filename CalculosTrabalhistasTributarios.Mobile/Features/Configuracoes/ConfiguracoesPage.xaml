@@ -23,6 +23,15 @@
             <Label Text="{Binding Pendencias}" IsVisible="{Binding TemPendencias}" />
             <Button Text="Ver detalhes das pendências" Style="{StaticResource BotaoSecundario}" Command="{Binding VerDetalhesCommand}" IsVisible="{Binding TemPendencias}" />
         </VerticalStackLayout></Border>
+        <Border><VerticalStackLayout Spacing="10"><Label Text="Cópia de segurança do histórico" Style="{StaticResource TituloSecao}" />
+            <Label Text="Os cálculos salvos ficam só neste aparelho e são apagados se o aplicativo for desinstalado. Faça uma cópia e guarde o arquivo no Drive, no e-mail ou no computador. Ao restaurar, os cálculos da cópia são acrescentados ao histórico; nada é apagado e o que já existe não é repetido." Style="{StaticResource TextoSecundario}" />
+            <Label Text="A cópia contém os dados digitados nos formulários. Guarde-a num local de sua confiança." Style="{StaticResource TextoSecundario}" />
+            <Button Text="Fazer cópia de segurança" Command="{Binding FazerCopiaSegurancaCommand}" AutomationId="FazerCopiaSeguranca"
+                    SemanticProperties.Hint="Gera um arquivo com todos os cálculos salvos e abre o compartilhamento do aparelho" />
+            <Button Text="Restaurar cópia de segurança" Style="{StaticResource BotaoSecundario}" Command="{Binding RestaurarCopiaSegurancaCommand}" AutomationId="RestaurarCopiaSeguranca"
+                    SemanticProperties.Hint="Escolhe um arquivo de cópia e acrescenta os cálculos ao histórico" />
+            <ActivityIndicator IsRunning="{Binding ProcessandoCopia}" IsVisible="{Binding ProcessandoCopia}" />
+        </VerticalStackLayout></Border>
         <Border><VerticalStackLayout Spacing="10"><Label Text="Registro de erros" Style="{StaticResource TituloSecao}" />
             <Label Text="Erros inesperados ficam guardados neste aparelho, com a data, a versão e o ponto do aplicativo em que ocorreram, sem os valores dos formulários. Para relatar um problema, envie o registro do mês." Style="{StaticResource TextoSecundario}" />
             <Button Text="Enviar registro de erros" Command="{Binding EnviarRegistroDeErrosCommand}" AutomationId="EnviarRegistroErros"

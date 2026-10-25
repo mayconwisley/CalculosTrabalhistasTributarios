@@ -125,6 +125,7 @@ public sealed class PensaoAtrasoMobileViewModel : CalculadoraTrabalhistaViewMode
         var grade = Grade("parcelas");
         var pagos = grade.Linhas.GroupBy(linha => linha.Campo("mes").Valor.Trim())
             .ToDictionary(grupo => grupo.Key, grupo => grupo.Last().Campo("pago").Valor);
+        grade.Remocao.Descartar();
         grade.Linhas.Clear();
         foreach (var parcela in geradas.Valor)
         {

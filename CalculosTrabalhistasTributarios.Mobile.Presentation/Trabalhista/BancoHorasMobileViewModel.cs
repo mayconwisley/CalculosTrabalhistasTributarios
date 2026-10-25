@@ -51,7 +51,7 @@ public sealed class BancoHorasMobileViewModel : CalculadoraTrabalhistaViewModel
         _adicionarLancamento = new RelayCommand(AdicionarLinha, () => LancamentosBancoHoras.Count < LimiteLancamentos);
         RemoverLancamentoCommand = new RelayCommand<LinhaLancamentoBancoHorasMobile>(linha =>
         {
-            if (linha is not null) LancamentosBancoHoras.Remove(linha);
+            if (linha is not null) RemocaoLinhas.Remover(LancamentosBancoHoras, linha, $"Lançamento de {linha.Data}", LimiteLancamentos);
         });
         UsarNoHoleriteCommand = new AsyncRelayCommand(() => TransferirAsync(TipoCalculadoraMobile.Holerite, SituacaoBancoHoras.Fechamento));
         UsarNaRescisaoCommand = new AsyncRelayCommand(() => TransferirAsync(TipoCalculadoraMobile.Rescisao, SituacaoBancoHoras.Rescisao));

@@ -6,5 +6,6 @@ public enum TipoBlocoManualMobile
     Subtitulo,
     Paragrafo,
     Item,
-    Destaque
+    Destaque,
+    Imagem
 }

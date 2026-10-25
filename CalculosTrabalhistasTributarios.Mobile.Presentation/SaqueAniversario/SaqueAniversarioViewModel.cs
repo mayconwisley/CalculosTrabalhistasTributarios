@@ -84,11 +84,13 @@ public sealed partial class SaqueAniversarioViewModel : ObservableObject, IFormu
     private string? _mensagem;
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(CompartilharPdfCommand))]
+    [NotifyCanExecuteChangedFor(nameof(CompartilharResumoCommand))]
     [NotifyPropertyChangedFor(nameof(TemResultado))]
     private DemonstrativoDto? _demonstrativo;
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(CalcularCommand))]
     [NotifyCanExecuteChangedFor(nameof(CompartilharPdfCommand))]
+    [NotifyCanExecuteChangedFor(nameof(CompartilharResumoCommand))]
     private bool _ocupado;
 
     public bool TemResultado => Demonstrativo is not null;
@@ -190,6 +192,26 @@ public sealed partial class SaqueAniversarioViewModel : ObservableObject, IFormu
         finally
         {
             Ocupado = false;
+        }
+    }
+
+    [RelayCommand(CanExecute = nameof(PodeCompartilharPdf))]
+    private async Task CompartilharResumoAsync(CancellationToken cancellationToken)
+    {
+        if (Demonstrativo is not { } demonstrativo)
+            return;
+        Mensagem = null;
+        try
+        {
+            await _compartilhamento.CompartilharResumoAsync(demonstrativo, cancellationToken);
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+        }
+        catch (Exception exception)
+        {
+            _logger.LogError(exception, "Falha ao compartilhar o resumo da simulação móvel.");
+            Mensagem = "Não foi possível compartilhar o resumo. Tente novamente.";
         }
     }
 

@@ -48,7 +48,9 @@ public sealed class CustoFuncionarioMobileViewModel : CalculadoraTrabalhistaView
         _adicionarBeneficio = new RelayCommand(AdicionarLinha, () => BeneficiosDetalhados.Count < CalculadoraCustoFuncionario.LimiteBeneficios);
         RemoverBeneficioCommand = new RelayCommand<LinhaBeneficioMobile>(linha =>
         {
-            if (linha is not null) BeneficiosDetalhados.Remove(linha);
+            if (linha is not null)
+                RemocaoLinhas.Remover(BeneficiosDetalhados, linha, string.IsNullOrWhiteSpace(linha.Descricao) ? "Benefício" : $"Benefício {linha.Descricao.Trim()}",
+                    CalculadoraCustoFuncionario.LimiteBeneficios);
         });
         BeneficiosDetalhados.CollectionChanged += (_, args) =>
         {

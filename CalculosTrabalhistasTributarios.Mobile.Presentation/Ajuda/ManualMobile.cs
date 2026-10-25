@@ -10,6 +10,9 @@ namespace CalculosTrabalhistasTributarios.Mobile.Presentation.Ajuda;
 /// </summary>
 public static partial class ManualMobile
 {
+    /// <summary>Pasta dos prints de docs/imagens dentro do pacote do aplicativo.</summary>
+    public const string PastaImagens = "manual";
+
     private static readonly Lazy<string[]> Linhas = new(() =>
     {
         using var stream = typeof(ManualMobile).Assembly.GetManifestResourceStream("Manual.MANUAL.md")
@@ -54,6 +57,11 @@ public static partial class ManualMobile
                 FecharParagrafo();
                 blocos.Add(new(i == inicio ? TipoBlocoManualMobile.Titulo : TipoBlocoManualMobile.Subtitulo, Limpar(titulo.Texto)));
             }
+            else if (Imagem().Match(linha) is { Success: true } imagem)
+            {
+                FecharParagrafo();
+                blocos.Add(new(TipoBlocoManualMobile.Imagem, imagem.Groups[1].Value, $"{PastaImagens}/{imagem.Groups[2].Value}"));
+            }
             else if (linha.Length == 0 || linha.StartsWith("![", StringComparison.Ordinal) || Separador().IsMatch(linha)) FecharParagrafo();
             else if (linha.StartsWith('|'))
             {
@@ -93,6 +101,10 @@ public static partial class ManualMobile
 
     [GeneratedRegex(@"^(#{2,4}) (\d+(?:\.\d+)*)\.? (.+)$")]
     private static partial Regex TituloNumerado();
+
+    // Os prints do manual ficam em docs/imagens, referenciados como "![descrição](imagens/arquivo.png)".
+    [GeneratedRegex(@"^!\[([^\]]*)\]\(imagens/([\w.-]+\.png)\)$")]
+    private static partial Regex Imagem();
 
     [GeneratedRegex(@"^(?:[-*]|\d+\.) (.+)$")]
     private static partial Regex ItemDeLista();

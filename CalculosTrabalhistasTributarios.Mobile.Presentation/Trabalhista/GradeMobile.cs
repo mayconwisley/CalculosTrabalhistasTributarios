@@ -38,6 +38,9 @@ public sealed partial class GradeMobile : ObservableObject
                     foreach (var campo in linha.Campos) campo.PropertyChanged += CampoAlterado;
             for (var i = 0; i < Linhas.Count; i++) Linhas[i].Titulo = $"{NomeLinha} {i + 1}";
             AdicionarCommand.NotifyCanExecuteChanged();
+            DuplicarCommand.NotifyCanExecuteChanged();
+            SubirCommand.NotifyCanExecuteChanged();
+            DescerCommand.NotifyCanExecuteChanged();
             OnPropertyChanged(nameof(TemLinhas));
             Alterada?.Invoke(this, EventArgs.Empty);
         };
@@ -52,6 +55,11 @@ public sealed partial class GradeMobile : ObservableObject
     public IReadOnlyList<ColunaGradeMobile> Colunas => _colunas;
     public string RotuloAdicionar => $"+ {NomeLinha}";
     public string RotuloRemover => $"Remover {NomeLinha.ToLowerInvariant()}";
+    public string RotuloDuplicar => $"Duplicar {NomeLinha.ToLowerInvariant()}";
+    /// <summary>Mostra Subir e Descer nas grades em que a ordem muda o cálculo, como os vínculos do INSS.</summary>
+    public bool Reordenavel { get; init; }
+    /// <summary>A última linha removida, que pode voltar à mesma posição.</summary>
+    public DesfazerRemocaoMobile Remocao { get; } = new();
     public ObservableCollection<LinhaGradeMobile> Linhas { get; } = [];
     /// <summary>Linhas mostradas na tela; o cálculo lê <see cref="Linhas"/> inteira.</summary>
     public PaginaLinhas<LinhaGradeMobile> Pagina { get; }
@@ -75,7 +83,47 @@ public sealed partial class GradeMobile : ObservableObject
     [RelayCommand]
     private void Remover(LinhaGradeMobile? linha)
     {
-        if (linha is not null) Linhas.Remove(linha);
+        if (linha is not null) Remocao.Remover(Linhas, linha, linha.Titulo, Limite);
+    }
+
+    private bool PodeDuplicar(LinhaGradeMobile? linha) => linha is not null && Linhas.Count < Limite;
+
+    /// <summary>Copia os valores da linha para uma nova, logo abaixo dela.</summary>
+    [RelayCommand(CanExecute = nameof(PodeDuplicar))]
+    private void Duplicar(LinhaGradeMobile? linha)
+    {
+        var indice = linha is null ? -1 : Linhas.IndexOf(linha);
+        if (indice < 0 || Linhas.Count >= Limite) return;
+        var copia = new LinhaGradeMobile(_colunas);
+        foreach (var origem in linha!.Campos)
+        {
+            var destino = copia.Campo(origem.Chave);
+            destino.Valor = origem.Valor;
+            destino.Indice = origem.Indice;
+            destino.Marcado = origem.Marcado;
+        }
+        _aoAlterarLinha?.Invoke(copia);
+        Linhas.Insert(indice + 1, copia);
+        Pagina.Exibir(copia);
+    }
+
+    private bool PodeSubir(LinhaGradeMobile? linha) => linha is not null && Linhas.IndexOf(linha) > 0;
+    private bool PodeDescer(LinhaGradeMobile? linha) => linha is not null && Linhas.IndexOf(linha) is var indice && indice >= 0 && indice < Linhas.Count - 1;
+
+    [RelayCommand(CanExecute = nameof(PodeSubir))]
+    private void Subir(LinhaGradeMobile? linha) => Mover(linha, -1);
+
+    [RelayCommand(CanExecute = nameof(PodeDescer))]
+    private void Descer(LinhaGradeMobile? linha) => Mover(linha, 1);
+
+    // A página acompanha a linha quando ela passa para a página vizinha.
+    private void Mover(LinhaGradeMobile? linha, int deslocamento)
+    {
+        var indice = linha is null ? -1 : Linhas.IndexOf(linha);
+        var destino = indice + deslocamento;
+        if (indice < 0 || destino < 0 || destino >= Linhas.Count) return;
+        Linhas.Move(indice, destino);
+        Pagina.Exibir(linha!);
     }
 
     /// <summary>Acrescenta uma linha com os valores iniciais das colunas; nulo quando o limite foi atingido.</summary>
@@ -109,6 +157,7 @@ public sealed partial class GradeMobile : ObservableObject
             Aviso = $"Remova as linhas fora do período antes de gerar: a grade aceita até {Limite} linhas.";
             return;
         }
+        Remocao.Descartar();
         var ordenadas = new List<LinhaGradeMobile>(chaves.Count + foraDoPeriodo.Count);
         var novas = 0;
         foreach (var chave in chaves)

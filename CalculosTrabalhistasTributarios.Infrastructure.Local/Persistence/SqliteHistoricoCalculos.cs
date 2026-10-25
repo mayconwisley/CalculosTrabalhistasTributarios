@@ -10,7 +10,7 @@ namespace CalculosTrabalhistasTributarios.Infrastructure.Persistence;
 /// Histórico no mesmo banco das tabelas, que o instalador preserva nas atualizações. A tabela é criada no primeiro uso,
 /// independentemente da versão das sementes, porque guarda dados do usuário e não valores publicados.
 /// </summary>
-public sealed class SqliteHistoricoCalculos(BancoTributario banco) : IHistoricoCalculos, IConsultaHistoricoCalculos
+public sealed class SqliteHistoricoCalculos(BancoTributario banco) : IHistoricoCalculos, IConsultaHistoricoCalculos, IImportacaoHistoricoCalculos
 {
     private const string FormatoData = "yyyy-MM-dd HH:mm:ss";
     private const string TipoSimulacaoTributariaAnterior = "SimulacaoTributaria";
@@ -111,6 +111,29 @@ public sealed class SqliteHistoricoCalculos(BancoTributario banco) : IHistoricoC
         await using var conexao = await AbrirAsync(cancellationToken);
         await conexao.ExecutarAsync(null, "DELETE FROM \"CalculosSalvos\" WHERE \"Id\" = $id", cancellationToken, ("$id", id));
     }
+
+    // Tudo ou nada: uma falha no meio da cópia não deixa o histórico com parte dela.
+    public Task<int> IncluirAsync(IReadOnlyList<CalculoSalvoDto> calculos, CancellationToken cancellationToken) =>
+        Task.Run(async () =>
+        {
+            await using var conexao = await AbrirAsync(cancellationToken);
+            using var transacao = conexao.BeginTransaction();
+            var incluidos = 0;
+            foreach (var calculo in calculos)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                (string Nome, object Valor)[] parametros = [("$tipo", calculo.Tipo), ("$calculadora", calculo.Calculadora), ("$nome", calculo.Nome),
+                    ("$dados", calculo.Dados), ("$criado", calculo.CriadoEm.ToString(FormatoData, CultureInfo.InvariantCulture)),
+                    ("$alterado", calculo.AlteradoEm.ToString(FormatoData, CultureInfo.InvariantCulture))];
+                incluidos += await conexao.ExecutarAsync(transacao, """
+                    INSERT INTO "CalculosSalvos" ("Tipo", "Calculadora", "Nome", "Dados", "CriadoEm", "AlteradoEm")
+                    SELECT $tipo, $calculadora, $nome, $dados, $criado, $alterado
+                    WHERE NOT EXISTS (SELECT 1 FROM "CalculosSalvos" WHERE "Tipo" = $tipo AND "Nome" = $nome AND "Dados" = $dados AND "CriadoEm" = $criado)
+                    """, cancellationToken, parametros);
+            }
+            transacao.Commit();
+            return incluidos;
+        }, cancellationToken);
 
     private async Task<SqliteConnection> AbrirAsync(CancellationToken cancellationToken)
     {

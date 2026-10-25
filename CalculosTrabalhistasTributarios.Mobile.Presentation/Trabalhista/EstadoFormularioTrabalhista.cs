@@ -34,6 +34,8 @@ internal sealed class EstadoFormularioTrabalhista
     internal ObservableCollection<LinhaDepositoFgtsMobile> DepositosFgts { get; } = [];
     internal ObservableCollection<LinhaBeneficioMobile> BeneficiosDetalhados { get; } = [];
     internal ObservableCollection<LinhaLancamentoBancoHorasMobile> LancamentosBancoHoras { get; } = [];
+    /// <summary>Última linha removida dos depósitos do FGTS, dos benefícios detalhados ou dos lançamentos do banco de horas.</summary>
+    internal DesfazerRemocaoMobile RemocaoLinhas { get; } = new();
     public DadosFormularioMobile ExportarDados(QuitacaoBancoHoras? quitacao, bool confirmada) => new(1,
         _campos.Values.Where(campo => campo.EhEntrada).ToDictionary(campo => campo.Chave, Capturar),
         Grades.ToDictionary(grade => grade.Chave, grade => (IReadOnlyList<IReadOnlyDictionary<string, ValorCampoMobile>>)
@@ -84,8 +86,10 @@ internal sealed class EstadoFormularioTrabalhista
         }
 
         foreach (var (chave, valor) in dados.Campos) Restaurar(_campos[chave], valor);
+        RemocaoLinhas.Descartar();
         foreach (var grade in Grades)
         {
+            grade.Remocao.Descartar();
             while (grade.Linhas.Count > 0) grade.Linhas.RemoveAt(grade.Linhas.Count - 1);
             if (!dados.Grades.TryGetValue(grade.Chave, out var linhas)) continue;
             foreach (var valores in linhas)

@@ -129,6 +129,7 @@ public sealed class TributacaoMobileTests
 
     private sealed class CompartilhamentoDeTeste : ICompartilhamentoPdf
     {
+        public Task CompartilharResumoAsync(DemonstrativoDto demonstrativo, CancellationToken cancellationToken) => Task.CompletedTask;
         public Task CompartilharAsync(DemonstrativoDto demonstrativo, CancellationToken cancellationToken) => Task.CompletedTask;
     }
 

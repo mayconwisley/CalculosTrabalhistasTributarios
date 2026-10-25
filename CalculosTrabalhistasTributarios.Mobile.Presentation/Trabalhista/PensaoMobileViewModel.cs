@@ -48,7 +48,7 @@ public sealed class PensaoMobileViewModel : CalculadoraTrabalhistaViewModel
                     "Até 100 sobre os rendimentos; sobre o salário mínimo, até 1.000 (150 = 1,5 salário)."),
                 new("valor", "Valor da pensão (R$)", TipoCampoMobile.Moeda, "0,00", "Valor fixo definido na decisão ou no acordo.")
             ],
-            AtualizarLinha);
+            AtualizarLinha, reordenavel: true);
         beneficiarios.AdicionarLinha();
         beneficiarios.Alterada += (_, _) => AtualizarOrdem();
         Campo("brutoComoBaseInss").Marcado = true;

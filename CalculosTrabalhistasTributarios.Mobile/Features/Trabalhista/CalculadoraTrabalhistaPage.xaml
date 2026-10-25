@@ -42,6 +42,7 @@
                                 <Button Text="{Binding RotuloGerar}" Style="{StaticResource BotaoSecundario}" Command="{Binding GerarCommand}" IsVisible="{Binding TemGerar}" SemanticProperties.Description="{Binding RotuloGerar}" />
                                 <Button Text="{Binding RotuloAdicionar}" Style="{StaticResource BotaoSecundario}" Command="{Binding AdicionarCommand}" SemanticProperties.Description="{Binding RotuloAdicionar}" />
                                 <Label Text="{Binding Aviso}" IsVisible="{Binding TemAviso}" Style="{StaticResource TextoSecundario}" />
+                                <views:BarraDesfazerView BindingContext="{Binding Remocao}" />
                                 <views:PaginadorLinhas x:Name="PaginadorTopo" BindingContext="{Binding Pagina}" />
                                 <VerticalStackLayout Spacing="16" BindableLayout.ItemsSource="{Binding Pagina.Exibidas}" IsVisible="{Binding TemLinhas}">
                                     <BindableLayout.ItemTemplate>
@@ -49,9 +50,20 @@
                                             <VerticalStackLayout Spacing="10">
                                                 <Label Text="{Binding Titulo}" FontAttributes="Bold" />
                                                 <VerticalStackLayout Spacing="10" BindableLayout.ItemsSource="{Binding Campos}" BindableLayout.ItemTemplate="{StaticResource ModeloCampo}" />
-                                                <Button Text="{Binding Source={RelativeSource AncestorType={x:Type vm:GradeMobile}}, Path=RotuloRemover}" Style="{StaticResource BotaoLink}" HorizontalOptions="End"
-                                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:GradeMobile}}, Path=RemoverCommand}" CommandParameter="{Binding .}"
-                                                        SemanticProperties.Description="{Binding Titulo, StringFormat='Remover {0}'}" />
+                                                <Grid ColumnDefinitions="*,*" ColumnSpacing="8" IsVisible="{Binding Reordenavel, Source={RelativeSource AncestorType={x:Type vm:GradeMobile}}, x:DataType=vm:GradeMobile}">
+                                                    <Button Text="↑ Subir" Style="{StaticResource BotaoSecundario}" Command="{Binding SubirCommand, Source={RelativeSource AncestorType={x:Type vm:GradeMobile}}, x:DataType=vm:GradeMobile}" comportamentos:RetornoTatil.Ativo="True" CommandParameter="{Binding .}"
+                                                            SemanticProperties.Description="{Binding Titulo, StringFormat='Subir {0} uma posição'}" ToolTipProperties.Text="Subir uma posição" />
+                                                    <Button Grid.Column="1" Text="↓ Descer" Style="{StaticResource BotaoSecundario}" Command="{Binding DescerCommand, Source={RelativeSource AncestorType={x:Type vm:GradeMobile}}, x:DataType=vm:GradeMobile}" comportamentos:RetornoTatil.Ativo="True" CommandParameter="{Binding .}"
+                                                            SemanticProperties.Description="{Binding Titulo, StringFormat='Descer {0} uma posição'}" ToolTipProperties.Text="Descer uma posição" />
+                                                </Grid>
+                                                <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                                                    <Button Text="{Binding RotuloDuplicar, Source={RelativeSource AncestorType={x:Type vm:GradeMobile}}, x:DataType=vm:GradeMobile}" Style="{StaticResource BotaoLink}" HorizontalOptions="Start"
+                                                            Command="{Binding DuplicarCommand, Source={RelativeSource AncestorType={x:Type vm:GradeMobile}}, x:DataType=vm:GradeMobile}" comportamentos:RetornoTatil.Ativo="True" CommandParameter="{Binding .}"
+                                                            SemanticProperties.Description="{Binding Titulo, StringFormat='Duplicar {0}'}" ToolTipProperties.Text="Cria uma cópia logo abaixo" />
+                                                    <Button Grid.Column="1" Text="{Binding RotuloRemover, Source={RelativeSource AncestorType={x:Type vm:GradeMobile}}, x:DataType=vm:GradeMobile}" Style="{StaticResource BotaoLink}" HorizontalOptions="End"
+                                                            Command="{Binding RemoverCommand, Source={RelativeSource AncestorType={x:Type vm:GradeMobile}}, x:DataType=vm:GradeMobile}" comportamentos:RetornoTatil.Ativo="True" CommandParameter="{Binding .}"
+                                                            SemanticProperties.Description="{Binding Titulo, StringFormat='Remover {0}'}" ToolTipProperties.Text="Remove a linha; é possível desfazer" />
+                                                </Grid>
                                             </VerticalStackLayout>
                                         </DataTemplate>
                                     </BindableLayout.ItemTemplate>
@@ -59,7 +71,7 @@
                                 <views:PaginadorLinhas BindingContext="{Binding Pagina}" RolarAte="{x:Reference PaginadorTopo}" />
                             </VerticalStackLayout>
                             <Border.Triggers>
-                                <DataTrigger TargetType="Border" Binding="{Binding Source={RelativeSource AncestorType={x:Type vm:CalculadoraTrabalhistaViewModel}}, Path=Ocupado}" Value="True"><Setter Property="IsEnabled" Value="False" /></DataTrigger>
+                                <DataTrigger TargetType="Border" Binding="{Binding Ocupado, Source={RelativeSource AncestorType={x:Type vm:CalculadoraTrabalhistaViewModel}}, x:DataType=vm:CalculadoraTrabalhistaViewModel}" Value="True"><Setter Property="IsEnabled" Value="False" /></DataTrigger>
                             </Border.Triggers>
                         </Border>
                     </DataTemplate>
@@ -75,6 +87,7 @@
                     <Button Text="Gerar meses do contrato" Style="{StaticResource BotaoSecundario}" Command="{Binding GerarDepositosCommand}" AutomationId="GerarDepositosFgts" />
                     <Button Text="+ Mês" Style="{StaticResource BotaoSecundario}" Command="{Binding AdicionarDepositoCommand}" AutomationId="AdicionarDepositoFgts" />
                     <Label Text="{Binding AvisoHistorico}" Style="{StaticResource TextoSecundario}" />
+                    <views:BarraDesfazerView BindingContext="{Binding RemocaoLinhas}" />
                     <views:PaginadorLinhas x:Name="PaginadorDepositosTopo" BindingContext="{Binding PaginaDepositosFgts}" />
                     <VerticalStackLayout Spacing="16" BindableLayout.ItemsSource="{Binding PaginaDepositosFgts.Exibidas}" IsVisible="{Binding TemDepositosFgts}">
                         <BindableLayout.ItemTemplate>
@@ -84,7 +97,7 @@
                                     <Border Style="{StaticResource CaixaCampo}"><views:EntradaPeriodoView Texto="{Binding Competencia}" Tipo="Competencia" Rotulo="Competência do depósito do FGTS" /></Border>
                                     <Label Text="Depósito (R$)" Style="{StaticResource RotuloCampo}" />
                                     <Border Style="{StaticResource CaixaCampo}"><Entry Text="{Binding Valor}" SemanticProperties.Description="Valor devido do depósito do FGTS" /></Border>
-                                    <Button Text="Remover mês" Style="{StaticResource BotaoLink}" HorizontalOptions="End" Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CalculadoraTrabalhistaViewModel}}, Path=RemoverDepositoCommand}" CommandParameter="{Binding .}" SemanticProperties.Description="Remover depósito do FGTS" />
+                                    <Button Text="Remover mês" ToolTipProperties.Text="Remove a linha; é possível desfazer" Style="{StaticResource BotaoLink}" HorizontalOptions="End" Command="{Binding RemoverDepositoCommand, Source={RelativeSource AncestorType={x:Type vm:CalculadoraTrabalhistaViewModel}}, x:DataType=vm:CalculadoraTrabalhistaViewModel}" comportamentos:RetornoTatil.Ativo="True" CommandParameter="{Binding .}" SemanticProperties.Description="Remover depósito do FGTS" />
                                 </VerticalStackLayout>
                             </DataTemplate>
                         </BindableLayout.ItemTemplate>
@@ -100,6 +113,7 @@
                     <Label Text="Benefícios detalhados" Style="{StaticResource TituloSecao}" />
                     <Label Text="Até 30 benefícios opcionais. Informe custo e participação do empregado separadamente. Não repita valores do total agregado." Style="{StaticResource TextoSecundario}" />
                     <Button Text="+ Benefício" Style="{StaticResource BotaoSecundario}" Command="{Binding AdicionarBeneficioCommand}" AutomationId="AdicionarBeneficio" />
+                    <views:BarraDesfazerView BindingContext="{Binding RemocaoLinhas}" />
                     <VerticalStackLayout Spacing="16" BindableLayout.ItemsSource="{Binding BeneficiosDetalhados}" IsVisible="{Binding TemBeneficiosDetalhados}">
                         <BindableLayout.ItemTemplate>
                             <DataTemplate x:DataType="vm:LinhaBeneficioMobile">
@@ -110,7 +124,7 @@
                                     <Border Style="{StaticResource CaixaCampo}"><Entry Text="{Binding Custo}" SemanticProperties.Description="Custo mensal do benefício"><Entry.Behaviors><comportamentos:EntradaMonetariaBehavior /></Entry.Behaviors></Entry></Border>
                                     <Label Text="Participação do empregado (R$)" Style="{StaticResource RotuloCampo}" />
                                     <Border Style="{StaticResource CaixaCampo}"><Entry Text="{Binding Participacao}" SemanticProperties.Description="Participação do empregado no benefício"><Entry.Behaviors><comportamentos:EntradaMonetariaBehavior /></Entry.Behaviors></Entry></Border>
-                                    <Button Text="Remover benefício" Style="{StaticResource BotaoLink}" HorizontalOptions="End" Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CalculadoraTrabalhistaViewModel}}, Path=RemoverBeneficioCommand}" CommandParameter="{Binding .}" SemanticProperties.Description="Remover benefício detalhado" />
+                                    <Button Text="Remover benefício" ToolTipProperties.Text="Remove a linha; é possível desfazer" Style="{StaticResource BotaoLink}" HorizontalOptions="End" Command="{Binding RemoverBeneficioCommand, Source={RelativeSource AncestorType={x:Type vm:CalculadoraTrabalhistaViewModel}}, x:DataType=vm:CalculadoraTrabalhistaViewModel}" comportamentos:RetornoTatil.Ativo="True" CommandParameter="{Binding .}" SemanticProperties.Description="Remover benefício detalhado" />
                                 </VerticalStackLayout>
                             </DataTemplate>
                         </BindableLayout.ItemTemplate>
@@ -125,6 +139,7 @@
                     <Label Text="Lançamentos do ciclo" Style="{StaticResource TituloSecao}" />
                     <Label Text="De 1 a 500 lançamentos com data dentro do ciclo. Horas de relógio de 0:01 a 10:00; créditos até 2:00 por dia. As folgas compensam primeiro os créditos mais antigos." Style="{StaticResource TextoSecundario}" />
                     <Button Text="+ Lançamento" Style="{StaticResource BotaoSecundario}" Command="{Binding AdicionarLancamentoCommand}" AutomationId="AdicionarLancamentoBanco" />
+                    <views:BarraDesfazerView BindingContext="{Binding RemocaoLinhas}" />
                     <views:PaginadorLinhas x:Name="PaginadorLancamentosTopo" BindingContext="{Binding PaginaLancamentosBancoHoras}" />
                     <VerticalStackLayout Spacing="16" BindableLayout.ItemsSource="{Binding PaginaLancamentosBancoHoras.Exibidas}" IsVisible="{Binding TemLancamentosBancoHoras}">
                         <BindableLayout.ItemTemplate>
@@ -140,7 +155,7 @@
                                     <Border Style="{StaticResource CaixaCampo}" IsVisible="{Binding EhCredito}"><Entry Text="{Binding Adicional}" Placeholder="Vazio usa o adicional padrão" MaxLength="10" SemanticProperties.Description="Adicional próprio do crédito" /></Border>
                                     <Label Text="Descrição (opcional)" Style="{StaticResource RotuloCampo}" />
                                     <Border Style="{StaticResource CaixaCampo}"><Entry Text="{Binding Descricao}" MaxLength="100" Keyboard="Text" SemanticProperties.Description="Descrição do lançamento" /></Border>
-                                    <Button Text="Remover lançamento" Style="{StaticResource BotaoLink}" HorizontalOptions="End" Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CalculadoraTrabalhistaViewModel}}, Path=RemoverLancamentoCommand}" CommandParameter="{Binding .}" SemanticProperties.Description="Remover lançamento do banco de horas" />
+                                    <Button Text="Remover lançamento" ToolTipProperties.Text="Remove a linha; é possível desfazer" Style="{StaticResource BotaoLink}" HorizontalOptions="End" Command="{Binding RemoverLancamentoCommand, Source={RelativeSource AncestorType={x:Type vm:CalculadoraTrabalhistaViewModel}}, x:DataType=vm:CalculadoraTrabalhistaViewModel}" comportamentos:RetornoTatil.Ativo="True" CommandParameter="{Binding .}" SemanticProperties.Description="Remover lançamento do banco de horas" />
                                 </VerticalStackLayout>
                             </DataTemplate>
                         </BindableLayout.ItemTemplate>
@@ -165,7 +180,7 @@
             </Border>
             <Label Text="{Binding Mensagem}" IsVisible="{Binding TemMensagem}" TextColor="{AppThemeBinding Light={StaticResource ErroClaro}, Dark={StaticResource ErroEscuro}}" />
             <ActivityIndicator IsVisible="{Binding Ocupado}" IsRunning="{Binding Ocupado}" />
-            <views:ResultadoSimulacaoView x:Name="Resultado" Demonstrativo="{Binding Demonstrativo}" CompartilharPdfCommand="{Binding CompartilharPdfCommand}" />
+            <views:ResultadoSimulacaoView x:Name="Resultado" Demonstrativo="{Binding Demonstrativo}" CompartilharPdfCommand="{Binding CompartilharPdfCommand}" CompartilharResumoCommand="{Binding CompartilharResumoCommand}" />
             <Button Text="Usar no holerite" Command="{Binding UsarNoHoleriteCommand}" IsVisible="{Binding PodeUsarNoHolerite}" AutomationId="UsarNoHolerite" SemanticProperties.Description="Abrir o holerite com a quitação do banco de horas" />
             <Button Text="Usar na rescisão" Command="{Binding UsarNaRescisaoCommand}" IsVisible="{Binding PodeUsarNaRescisao}" AutomationId="UsarNaRescisao" SemanticProperties.Description="Abrir a rescisão com a quitação do banco de horas" />
             <Button Text="Calcular o IR (RRA)" Command="{Binding CalcularRraCommand}" IsVisible="{Binding PodeCalcularRra}"
@@ -181,7 +196,7 @@
     </ScrollView>
         <Border Grid.Row="1" Padding="16,8" StrokeShape="Rectangle">
             <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
-                <Button Text="Calcular" Command="{Binding CalcularCommand}" AutomationId="CalcularTrabalhista" />
+                <Button Text="Calcular" Command="{Binding CalcularCommand}" AutomationId="CalcularTrabalhista" comportamentos:RetornoTatil.Ativo="True" />
                 <Button Grid.Column="1" Text="Resultado" IsVisible="{Binding TemResultado}" Style="{StaticResource BotaoSecundario}" Clicked="IrAoResultado" AutomationId="IrAoResultado" />
             </Grid>
         </Border>

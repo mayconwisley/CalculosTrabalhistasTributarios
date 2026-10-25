@@ -65,10 +65,12 @@ public sealed partial class SimulacaoTributariaViewModel(
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(TemResultado))]
     [NotifyCanExecuteChangedFor(nameof(CompartilharPdfCommand))]
+    [NotifyCanExecuteChangedFor(nameof(CompartilharResumoCommand))]
     private DemonstrativoDto? _demonstrativo;
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(CalcularCommand))]
     [NotifyCanExecuteChangedFor(nameof(CompartilharPdfCommand))]
+    [NotifyCanExecuteChangedFor(nameof(CompartilharResumoCommand))]
     private bool _ocupado;
 
     public bool EhAposentadoria => IndiceVinculo == 3;
@@ -167,5 +169,20 @@ public sealed partial class SimulacaoTributariaViewModel(
             Mensagem = "Não foi possível compartilhar o PDF. Confira o espaço disponível e tente novamente.";
         }
         finally { Ocupado = false; }
+    }
+
+    [RelayCommand(CanExecute = nameof(PodeCompartilhar))]
+    private async Task CompartilharResumoAsync(CancellationToken cancellationToken)
+    {
+        if (Demonstrativo is not { } demonstrativo)
+            return;
+        Mensagem = null;
+        try { await compartilhamento.CompartilharResumoAsync(demonstrativo, cancellationToken); }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested) { }
+        catch (Exception exception)
+        {
+            logger.LogError(exception, "Falha ao compartilhar resumo tributário.");
+            Mensagem = "Não foi possível compartilhar o resumo. Tente novamente.";
+        }
     }
 }

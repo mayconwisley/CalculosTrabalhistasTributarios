@@ -6,4 +6,7 @@ namespace CalculosTrabalhistasTributarios.Mobile.Presentation.Interfaces;
 public interface ICompartilhamentoPdf
 {
     Task CompartilharAsync(DemonstrativoDto demonstrativo, CancellationToken cancellationToken);
+
+    /// <summary>Compartilha o resumo em texto (destaques e totais), para colar numa conversa sem anexar o PDF.</summary>
+    Task CompartilharResumoAsync(DemonstrativoDto demonstrativo, CancellationToken cancellationToken);
 }

@@ -17,7 +17,8 @@ namespace CalculosTrabalhistasTributarios.Mobile.Services;
 
 /// <summary>Persiste os formulários no SQLite privado do aparelho e abre novas páginas para cada histórico.</summary>
 public sealed class HistoricoMobileService(IHistoricoCalculos historico, Func<TipoCalculadoraMobile, Page> criarPagina,
-    Func<TipoCalculadoraMobile, IFormularioHistoricoMobile> criarFormulario, NavegadorMenu menu, ILogger<HistoricoMobileService> logger) : IInteracaoHistoricoMobile
+    Func<TipoCalculadoraMobile, IFormularioHistoricoMobile> criarFormulario, NavegadorMenu menu, ICompartilhamentoPdf compartilhamento,
+    ILogger<HistoricoMobileService> logger) : IInteracaoHistoricoMobile
 {
     private static Page Pagina => Microsoft.Maui.Controls.Application.Current?.Windows.FirstOrDefault()?.Page
         ?? throw new InvalidOperationException("Janela do aplicativo indisponível.");
@@ -151,8 +152,11 @@ public sealed class HistoricoMobileService(IHistoricoCalculos historico, Func<Ti
             var a = await RecalcularAsync(primeiro);
             var b = await RecalcularAsync(segundo);
             var linhas = a is not null && b is not null ? ComparacaoResultados.Linhas(a, b) : [];
+            var demonstrativo = linhas.Count > 0
+                ? DemonstrativoComparacaoHistorico.Montar(primeiro.Nome, segundo.Nome, linhas, DateTime.Now) : null;
             await menu.AbrirPaginaAsync(new ComparacaoPage(primeiro.Nome, segundo.Nome, linhas,
-                a is null || b is null ? "Um dos formulários não pôde ser recalculado. Abra cada cálculo para conferir os dados." : null));
+                a is null || b is null ? "Um dos formulários não pôde ser recalculado. Abra cada cálculo para conferir os dados." : null,
+                demonstrativo is null ? null : () => CompartilharComAvisoAsync(demonstrativo, "Comparação")));
         }
         catch (Exception erro)
         {
@@ -187,6 +191,35 @@ public sealed class HistoricoMobileService(IHistoricoCalculos historico, Func<Ti
             case CalculadoraTrabalhistaViewModel trabalhista: await trabalhista.CalcularCommand.ExecuteAsync(null); break;
             case SaqueAniversarioViewModel saque: await saque.CalcularCommand.ExecuteAsync(null); break;
             case SimulacaoTributariaViewModel tributaria: await tributaria.CalcularCommand.ExecuteAsync(null); break;
+        }
+    }
+
+    public async Task CompartilharPdfAsync(ResumoCalculoSalvoDto resumo)
+    {
+        if (await ObterAsync(resumo.Id) is not { } salvo)
+        {
+            await Pagina.DisplayAlertAsync("Histórico", "O cálculo não está mais no histórico. Atualize a lista.", "Entendi");
+            return;
+        }
+        DemonstrativoDto? demonstrativo;
+        try { demonstrativo = await RecalcularAsync(salvo); }
+        catch (JsonException) { demonstrativo = null; }
+        if (demonstrativo is null)
+        {
+            await Pagina.DisplayAlertAsync("Histórico",
+                "O formulário salvo não pôde ser recalculado. Abra o cálculo para conferir os dados antes de gerar o PDF.", "Entendi");
+            return;
+        }
+        await CompartilharComAvisoAsync(demonstrativo, "Histórico");
+    }
+
+    private async Task CompartilharComAvisoAsync(DemonstrativoDto demonstrativo, string titulo)
+    {
+        try { await compartilhamento.CompartilharAsync(demonstrativo, CancellationToken.None); }
+        catch (Exception erro)
+        {
+            logger.LogError(erro, "Falha ao compartilhar PDF a partir do histórico móvel.");
+            await Pagina.DisplayAlertAsync(titulo, "Não foi possível compartilhar o PDF. Confira o espaço disponível e tente novamente.", "Entendi");
         }
     }
 

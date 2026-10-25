@@ -106,6 +106,7 @@ public sealed class UsabilidadeFormularioMobileTests
     }
     private sealed class PdfTeste : ICompartilhamentoPdf
     {
+        public Task CompartilharResumoAsync(DemonstrativoDto demonstrativo, CancellationToken cancellationToken) => Task.CompletedTask;
         public Task CompartilharAsync(DemonstrativoDto demonstrativo, CancellationToken cancellationToken) => Task.CompletedTask;
     }
 }

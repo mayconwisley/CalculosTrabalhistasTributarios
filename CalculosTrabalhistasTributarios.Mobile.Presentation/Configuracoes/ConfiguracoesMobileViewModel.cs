@@ -1,3 +1,4 @@
+using CalculosTrabalhistasTributarios.Application.DTOs;
 using CalculosTrabalhistasTributarios.Application.Interfaces;
 using CalculosTrabalhistasTributarios.Application.UseCases;
 using CalculosTrabalhistasTributarios.Mobile.Presentation.Abertura;
@@ -14,15 +15,21 @@ public sealed partial class ConfiguracoesMobileViewModel : ObservableObject
     private readonly IPreferenciasMobile _preferencias;
     private readonly IPlataformaMobile _plataforma;
     private readonly IRegistroDeErros _registroDeErros;
+    private readonly ICopiaSegurancaHistoricoUseCase _copiaSeguranca;
 
     [ObservableProperty] private string _situacaoTabelas;
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(TemPendencias))]
     private string? _pendencias;
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(FazerCopiaSegurancaCommand))]
+    [NotifyCanExecuteChangedFor(nameof(RestaurarCopiaSegurancaCommand))]
+    private bool _processandoCopia;
 
     public ConfiguracoesMobileViewModel(IPreferenciasMobile preferencias, IPlataformaMobile plataforma, AtualizacaoTabelasViewModel atualizacao,
-        SituacaoAtualizacaoTabelas situacao, IRegistroDeErros registroDeErros)
+        SituacaoAtualizacaoTabelas situacao, IRegistroDeErros registroDeErros, ICopiaSegurancaHistoricoUseCase copiaSeguranca)
     {
+        _copiaSeguranca = copiaSeguranca;
         _registroDeErros = registroDeErros;
         _preferencias = preferencias;
         _plataforma = plataforma;
@@ -93,6 +100,57 @@ public sealed partial class ConfiguracoesMobileViewModel : ObservableObject
         }
         await _plataforma.CompartilharArquivoAsync("Registro de erros", arquivo);
     }
+
+    /// <summary>Identifica as cópias deste aplicativo: os formulários do desktop têm outro formato e não reabrem no celular.</summary>
+    public const string OrigemCopiaSeguranca = "Android";
+
+    private bool PodeProcessarCopia() => !ProcessandoCopia;
+
+    /// <summary>Gera o arquivo com todo o histórico e abre o compartilhamento; o usuário escolhe onde guardá-lo.</summary>
+    [RelayCommand(CanExecute = nameof(PodeProcessarCopia))]
+    private async Task FazerCopiaSeguranca()
+    {
+        ProcessandoCopia = true;
+        try
+        {
+            var copia = await _copiaSeguranca.ExportarAsync(OrigemCopiaSeguranca, DateTime.Now, CancellationToken.None);
+            if (copia.Falhou)
+            {
+                await _plataforma.MostrarAsync("Cópia de segurança", copia.Erro.Mensagem);
+                return;
+            }
+            await _plataforma.CompartilharConteudoAsync($"Cópia de segurança: {copia.Valor.Quantidade} cálculo(s)", copia.Valor.NomeArquivo,
+                copia.Valor.Conteudo, "application/json");
+        }
+        finally { ProcessandoCopia = false; }
+    }
+
+    /// <summary>Acrescenta ao histórico os cálculos de uma cópia; nada do histórico atual é apagado ou substituído.</summary>
+    [RelayCommand(CanExecute = nameof(PodeProcessarCopia))]
+    private async Task RestaurarCopiaSeguranca()
+    {
+        ProcessandoCopia = true;
+        try
+        {
+            if (await _plataforma.EscolherArquivoTextoAsync("Escolha a cópia de segurança do histórico", CopiaSegurancaHistoricoUseCase.MaximoCaracteres) is not { } arquivo)
+                return;
+            if (arquivo.Falhou)
+            {
+                await _plataforma.MostrarAsync("Restaurar cópia", arquivo.Erro.Mensagem);
+                return;
+            }
+            var restauracao = await _copiaSeguranca.RestaurarAsync(arquivo.Valor, OrigemCopiaSeguranca, CancellationToken.None);
+            await _plataforma.MostrarAsync("Restaurar cópia", restauracao.Falhou ? restauracao.Erro.Mensagem : DescreverRestauracao(restauracao.Valor));
+        }
+        finally { ProcessandoCopia = false; }
+    }
+
+    internal static string DescreverRestauracao(ResumoRestauracaoHistoricoDto resumo) => (resumo.Incluidos, resumo.JaExistentes) switch
+    {
+        (0, _) => "Todos os cálculos da cópia já estavam no histórico. Nada foi alterado.",
+        (_, 0) => $"{resumo.Incluidos} cálculo(s) restaurado(s) no histórico.",
+        _ => $"{resumo.Incluidos} cálculo(s) restaurado(s) no histórico. {resumo.JaExistentes} já estavam salvos e não foram repetidos."
+    };
 
     [RelayCommand]
     private Task AbrirProjeto() => _plataforma.AbrirEnderecoAsync(Projeto);

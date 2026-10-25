@@ -51,7 +51,7 @@ public sealed partial class HistoricoMobileViewModel(IConsultaHistoricoCalculos 
     {
         AtualizarCommand.NotifyCanExecuteChanged(); AnteriorCommand.NotifyCanExecuteChanged(); ProximaCommand.NotifyCanExecuteChanged();
         AbrirCommand.NotifyCanExecuteChanged(); DuplicarCommand.NotifyCanExecuteChanged(); RenomearCommand.NotifyCanExecuteChanged();
-        ExcluirCommand.NotifyCanExecuteChanged(); SelecionarCommand.NotifyCanExecuteChanged(); CompararCommand.NotifyCanExecuteChanged();
+        ExcluirCommand.NotifyCanExecuteChanged(); SelecionarCommand.NotifyCanExecuteChanged(); CompararCommand.NotifyCanExecuteChanged(); CompartilharPdfCommand.NotifyCanExecuteChanged();
     }
     private void AgendarFiltro()
     {
@@ -136,6 +136,8 @@ public sealed partial class HistoricoMobileViewModel(IConsultaHistoricoCalculos 
     private Task CompararAsync() => Primeiro is { } a && Segundo is { } b ? ExecutarAsync(() => interacao.CompararAsync(a, b)) : Task.CompletedTask;
     [RelayCommand(CanExecute = nameof(PodeExecutar))]
     private Task AbrirAsync(ResumoCalculoSalvoDto salvo) => ExecutarAsync(() => interacao.AbrirAsync(salvo));
+    [RelayCommand(CanExecute = nameof(PodeExecutar))]
+    private Task CompartilharPdfAsync(ResumoCalculoSalvoDto salvo) => ExecutarAsync(() => interacao.CompartilharPdfAsync(salvo));
     [RelayCommand(CanExecute = nameof(PodeExecutar))]
     private Task DuplicarAsync(ResumoCalculoSalvoDto salvo) => AlterarAsync(() => interacao.DuplicarAsync(salvo));
     [RelayCommand(CanExecute = nameof(PodeExecutar))]

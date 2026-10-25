@@ -144,6 +144,7 @@ public sealed class RraMobileViewModel : CalculadoraTrabalhistaViewModel
             var foraDoPeriodo = demais.Count(linha => linha.Campo("tipo").Indice == TipoMensal);
 
             var ordenados = itens.OrderBy(item => Ordem(item.Competencia, item.Tipo)).ToList();
+            _parcelas.Remocao.Descartar();
             while (_parcelas.Linhas.Count > 0) _parcelas.Linhas.RemoveAt(_parcelas.Linhas.Count - 1);
             var novas = 0;
             foreach (var item in ordenados)

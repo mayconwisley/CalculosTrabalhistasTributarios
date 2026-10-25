@@ -3,6 +3,7 @@ using CalculosTrabalhistasTributarios.Infrastructure.Arquivos;
 using CalculosTrabalhistasTributarios.Application.DTOs;
 using CalculosTrabalhistasTributarios.Mobile.Platforms.Android.Reporting;
 using CalculosTrabalhistasTributarios.Mobile.Presentation.Interfaces;
+using CalculosTrabalhistasTributarios.Mobile.Presentation.Resultado;
 
 namespace CalculosTrabalhistasTributarios.Mobile.Services;
 
@@ -38,6 +39,21 @@ public sealed class CompartilhamentoPdf(IShare compartilhamento, IFileSystem arq
             {
                 Title = "Compartilhar simulação em PDF",
                 File = new ShareFile(caminho, "application/pdf")
+            });
+        });
+    }
+
+    public Task CompartilharResumoAsync(DemonstrativoDto demonstrativo, CancellationToken cancellationToken)
+    {
+        var texto = ResumoTextoDemonstrativo.Montar(demonstrativo);
+        return MainThread.InvokeOnMainThreadAsync(async () =>
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            await compartilhamento.RequestAsync(new ShareTextRequest
+            {
+                Title = "Compartilhar resumo da simulação",
+                Subject = demonstrativo.Titulo,
+                Text = texto
             });
         });
     }

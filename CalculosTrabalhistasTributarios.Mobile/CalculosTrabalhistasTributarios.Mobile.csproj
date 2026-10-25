@@ -8,6 +8,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <MauiStrictXamlCompilation>true</MauiStrictXamlCompilation>
+    <!-- Binding sem x:DataType (inclusive com RelativeSource) é resolvido por reflexão e pode falhar com trimming; não deixe voltar. -->
+    <WarningsAsErrors>$(WarningsAsErrors);XC0022;XC0025</WarningsAsErrors>
     <ApplicationTitle>Cálculos Trabalhistas e Tributários</ApplicationTitle>
     <ApplicationId>br.com.mayconwisley.calculostrabalhistastributarios</ApplicationId>
     <!-- Compilações locais: mesma versão da última tag do desktop. Na publicação, instalador\gerar-apk.ps1 usa a versão da
@@ -27,6 +29,8 @@
     <MauiAsset Include="..\CalculosTrabalhistasTributarios\BancoDados\calculoIrrf.db" LogicalName="calculoIrrf.db" />
     <MauiAsset Include="..\THIRD-PARTY-NOTICES.md" LogicalName="THIRD-PARTY-NOTICES.txt" />
     <MauiAsset Include="..\docs\ManualDoUsuario.pdf" LogicalName="ManualDoUsuario.pdf" />
+    <!-- Prints do manual exibidos na Ajuda; a pasta precisa ser igual a ManualMobile.PastaImagens. -->
+    <MauiAsset Include="..\docs\imagens\*.png" LogicalName="manual/%(Filename)%(Extension)" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Maui.Controls" />

@@ -66,10 +66,12 @@ public abstract partial class CalculadoraTrabalhistaViewModel : ObservableObject
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(TemResultado))]
     [NotifyCanExecuteChangedFor(nameof(CompartilharPdfCommand))]
+    [NotifyCanExecuteChangedFor(nameof(CompartilharResumoCommand))]
     private DemonstrativoDto? _demonstrativo;
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(CalcularCommand))]
     [NotifyCanExecuteChangedFor(nameof(CompartilharPdfCommand))]
+    [NotifyCanExecuteChangedFor(nameof(CompartilharResumoCommand))]
     private bool _ocupado;
 
     public abstract string Titulo { get; }
@@ -99,6 +101,8 @@ public abstract partial class CalculadoraTrabalhistaViewModel : ObservableObject
     public virtual ICommand? AdicionarBeneficioCommand => null;
     public virtual ICommand? RemoverBeneficioCommand => null;
     public ObservableCollection<GradeMobile> Grades => _formulario.Grades;
+    /// <summary>Desfaz a última remoção nas listas de depósitos do FGTS, benefícios detalhados e lançamentos do banco de horas.</summary>
+    public DesfazerRemocaoMobile RemocaoLinhas => _formulario.RemocaoLinhas;
     public ObservableCollection<LinhaLancamentoBancoHorasMobile> LancamentosBancoHoras => _formulario.LancamentosBancoHoras;
     public PaginaLinhas<LinhaLancamentoBancoHorasMobile> PaginaLancamentosBancoHoras => field ??= new(LancamentosBancoHoras);
     public virtual bool ExibirLancamentosBancoHoras => false;
@@ -226,9 +230,9 @@ public abstract partial class CalculadoraTrabalhistaViewModel : ObservableObject
     protected DateOnly Competencia(string chave) => LeituraCampoMobile.Competencia(Campo(chave));
 
     protected GradeMobile AdicionarGrade(string chave, string titulo, string descricao, string nomeLinha, int limite,
-        IReadOnlyList<ColunaGradeMobile> colunas, Action<LinhaGradeMobile>? aoAlterarLinha = null)
+        IReadOnlyList<ColunaGradeMobile> colunas, Action<LinhaGradeMobile>? aoAlterarLinha = null, bool reordenavel = false)
     {
-        var grade = new GradeMobile(chave, titulo, descricao, nomeLinha, limite, colunas, aoAlterarLinha);
+        var grade = new GradeMobile(chave, titulo, descricao, nomeLinha, limite, colunas, aoAlterarLinha) { Reordenavel = reordenavel };
         grade.Alterada += (_, _) =>
         {
             NotificarEdicao();
@@ -308,5 +312,19 @@ public abstract partial class CalculadoraTrabalhistaViewModel : ObservableObject
             Mensagem = "Não foi possível compartilhar o PDF. Tente novamente.";
         }
         finally { Ocupado = false; }
+    }
+
+    [RelayCommand(CanExecute = nameof(PodeCompartilhar))]
+    private async Task CompartilharResumoAsync(CancellationToken cancellationToken)
+    {
+        if (Demonstrativo is not { } demonstrativo) return;
+        Mensagem = null;
+        try { await compartilhamento.CompartilharResumoAsync(demonstrativo, cancellationToken); }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested) { }
+        catch (Exception erro)
+        {
+            logger.LogError(erro, "Falha ao compartilhar o resumo da calculadora {Calculadora}.", Titulo);
+            Mensagem = "Não foi possível compartilhar o resumo. Tente novamente.";
+        }
     }
 }

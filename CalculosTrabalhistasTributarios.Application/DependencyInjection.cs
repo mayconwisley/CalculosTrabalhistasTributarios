@@ -75,6 +75,10 @@ public static class DependencyInjection
     public static IServiceCollection AddSaqueAniversario(this IServiceCollection services) => services
         .AddScoped<ISimularDemonstrativoUseCase<SimularSaqueAniversarioRequest>, SimularSaqueAniversarioUseCase>();
 
+    /// <summary>Cópia de segurança do histórico; as portas <see cref="IHistoricoCalculos"/> e <see cref="IImportacaoHistoricoCalculos"/> vêm da infraestrutura.</summary>
+    public static IServiceCollection AddCopiaSegurancaHistorico(this IServiceCollection services) => services
+        .AddScoped<ICopiaSegurancaHistoricoUseCase, CopiaSegurancaHistoricoUseCase>();
+
     public static IServiceCollection AddSimulacaoTributaria(this IServiceCollection services) => services
         .AddScoped<ISimularDemonstrativoUseCase<SimularImpostoRequest>, SimularImpostoUseCase>();
 }

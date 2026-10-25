@@ -72,5 +72,8 @@ public sealed class TabelaMobileTests
         public Task AbrirEnderecoAsync(Uri endereco) => Task.CompletedTask;
         public void AplicarTema(TemaMobile tema) { }
         public Task CompartilharArquivoAsync(string titulo, string caminho) => Task.CompletedTask;
+        public Task CompartilharConteudoAsync(string titulo, string nomeArquivo, string conteudo, string tipoConteudo) => Task.CompletedTask;
+        public Task<CalculosTrabalhistasTributarios.Domain.Comum.Result<string>?> EscolherArquivoTextoAsync(string titulo, int limiteCaracteres) =>
+            Task.FromResult<CalculosTrabalhistasTributarios.Domain.Comum.Result<string>?>(null);
     }
 }

@@ -19,7 +19,7 @@ public sealed class AjudaPage : ContentPage
         });
         if (blocos.Count == 0)
             conteudo.Add(new Label { Text = $"O manual não tem uma seção própria para {tituloCalculadora}. Abra o manual completo." });
-        foreach (var bloco in blocos) conteudo.Add(Criar(bloco));
+        foreach (var bloco in blocos) conteudo.Add(bloco.Tipo == TipoBlocoManualMobile.Imagem ? CriarImagem(bloco, manual) : Criar(bloco));
         var completo = new Button { Text = "Abrir o manual completo (PDF)", Margin = new Thickness(0, 8, 0, 0) };
         completo.Clicked += async (_, _) => await manual.AbrirAsync();
         SemanticProperties.SetHint(completo, "Abre o manual inteiro no leitor de PDF do aparelho");
@@ -53,6 +53,30 @@ public sealed class AjudaPage : ContentPage
             default:
                 return texto;
         }
+    }
+
+    // Prints do computador, como no manual; tocar abre a imagem no visualizador do aparelho para ampliar.
+    private View CriarImagem(BlocoManualMobile bloco, ManualMobileService manual)
+    {
+        var arquivo = bloco.Arquivo ?? string.Empty;
+        var imagem = new Image
+        {
+            Source = ImageSource.FromStream(_ => FileSystem.Current.OpenAppPackageFileAsync(arquivo)),
+            Aspect = Aspect.AspectFit,
+            HorizontalOptions = LayoutOptions.Fill
+        };
+        var legenda = new Label { Text = $"{bloco.Texto} (toque para ampliar)", Style = Estilo("TextoSecundario"), HorizontalTextAlignment = TextAlignment.Center };
+        var quadro = new VerticalStackLayout { Spacing = 4, Children = { imagem, legenda } };
+        SemanticProperties.SetDescription(quadro, bloco.Texto);
+        SemanticProperties.SetHint(quadro, "Toque duas vezes para abrir a imagem ampliada");
+        var toque = new TapGestureRecognizer();
+        toque.Tapped += async (_, _) =>
+        {
+            if (!await manual.AbrirImagemAsync(arquivo, bloco.Texto))
+                await DisplayAlertAsync("Ajuda", "Não foi possível abrir a imagem. Confira se há um visualizador de imagens instalado.", "Entendi");
+        };
+        quadro.GestureRecognizers.Add(toque);
+        return new Border { Style = Estilo("CartaoBase"), Padding = 8, Content = quadro };
     }
 
     // O negrito do manual ("**texto**") vira um trecho em seminegrito.

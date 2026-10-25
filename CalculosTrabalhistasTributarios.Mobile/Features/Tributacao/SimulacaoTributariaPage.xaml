@@ -41,9 +41,9 @@
                 </VerticalStackLayout>
             </Border>
             <Label Text="{Binding Mensagem}" IsVisible="{Binding TemMensagem}" TextColor="{AppThemeBinding Light={StaticResource ErroClaro}, Dark={StaticResource ErroEscuro}}" />
-            <Button Text="Calcular salário e impostos" Command="{Binding CalcularCommand}" AutomationId="CalcularTributaria" />
+            <Button Text="Calcular salário e impostos" Command="{Binding CalcularCommand}" AutomationId="CalcularTributaria" comportamentos:RetornoTatil.Ativo="True" />
             <ActivityIndicator IsVisible="{Binding Ocupado}" IsRunning="{Binding Ocupado}" />
-            <views:ResultadoSimulacaoView Demonstrativo="{Binding Demonstrativo}" CompartilharPdfCommand="{Binding CompartilharPdfCommand}" />
+            <views:ResultadoSimulacaoView Demonstrativo="{Binding Demonstrativo}" CompartilharPdfCommand="{Binding CompartilharPdfCommand}" CompartilharResumoCommand="{Binding CompartilharResumoCommand}" />
             <Label Text="Simulação com valores estimados. FGTS e encargos do empregador são informativos e não reduzem automaticamente o líquido. Procure um profissional especializado para conferir os valores." Style="{StaticResource TextoSecundario}" />
         </VerticalStackLayout>
     </ScrollView>

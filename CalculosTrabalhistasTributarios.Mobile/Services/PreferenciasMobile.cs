@@ -12,8 +12,11 @@ public sealed class PreferenciasMobile : IPreferenciasMobile
     private const string ChaveAvisoSimulacao = "aviso.simulacaoLido";
     private readonly List<string> _favoritos;
 
-    public PreferenciasMobile()
+    private readonly AtalhosDoIcone _atalhos;
+
+    public PreferenciasMobile(AtalhosDoIcone atalhos)
     {
+        _atalhos = atalhos;
         try { _favoritos = JsonSerializer.Deserialize<List<string>>(Preferences.Default.Get(ChaveFavoritos, "[]")) ?? []; }
         catch (JsonException) { _favoritos = []; }
     }
@@ -25,6 +28,8 @@ public sealed class PreferenciasMobile : IPreferenciasMobile
         _favoritos.Remove(chave);
         if (favorito) _favoritos.Add(chave);
         Preferences.Default.Set(ChaveFavoritos, JsonSerializer.Serialize(_favoritos));
+        // Os atalhos do ícone acompanham as calculadoras favoritas.
+        _ = _atalhos.PublicarAsync([.. _favoritos]);
     }
 
     public bool AtualizarTabelasAoAbrir

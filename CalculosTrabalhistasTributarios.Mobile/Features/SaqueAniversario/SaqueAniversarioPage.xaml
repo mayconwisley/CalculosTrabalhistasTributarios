@@ -102,10 +102,10 @@
 
             <Label IsVisible="{Binding TemMensagem}" Text="{Binding Mensagem}" TextColor="{AppThemeBinding Light={StaticResource ErroClaro}, Dark={StaticResource ErroEscuro}}" SemanticProperties.Description="Aviso da simulação">
             </Label>
-            <Button Text="Calcular meu saque" Command="{Binding CalcularCommand}" AutomationId="Calcular" SemanticProperties.Description="Calcular saque-aniversário" />
+            <Button Text="Calcular meu saque" Command="{Binding CalcularCommand}" AutomationId="Calcular" comportamentos:RetornoTatil.Ativo="True" SemanticProperties.Description="Calcular saque-aniversário" />
             <ActivityIndicator IsRunning="{Binding Ocupado}" IsVisible="{Binding Ocupado}" Color="{StaticResource Primaria}" />
 
-            <views:ResultadoSimulacaoView Demonstrativo="{Binding Demonstrativo}" CompartilharPdfCommand="{Binding CompartilharPdfCommand}" />
+            <views:ResultadoSimulacaoView Demonstrativo="{Binding Demonstrativo}" CompartilharPdfCommand="{Binding CompartilharPdfCommand}" CompartilharResumoCommand="{Binding CompartilharResumoCommand}" />
             <Border Padding="16" StrokeThickness="0" BackgroundColor="{AppThemeBinding Light={StaticResource AcentoClaro}, Dark={StaticResource AcentoEscuro}}">
                 <VerticalStackLayout Spacing="6">
                     <Label Text="Uma estimativa para orientar sua decisão" FontFamily="OpenSansSemibold" />

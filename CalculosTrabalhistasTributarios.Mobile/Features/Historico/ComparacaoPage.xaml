@@ -7,6 +7,8 @@
         <Label x:Name="Cabecalho" Style="{StaticResource TextoSecundario}" />
         <Label Text="Os resultados foram recalculados com as tabelas locais atuais para cada competência. Diferença = segundo menos primeiro." Style="{StaticResource TextoSecundario}" />
         <Label x:Name="Aviso" IsVisible="False" />
+        <Button x:Name="CompartilharPdf" Text="Compartilhar PDF da comparação" Style="{StaticResource BotaoSecundario}" Clicked="AoCompartilharPdf"
+                AutomationId="CompartilharPdfComparacao" SemanticProperties.Description="Gerar PDF com os resultados comparados e escolher aplicativo para compartilhar" />
         <VerticalStackLayout x:Name="Linhas" Spacing="10" />
     </VerticalStackLayout></ScrollView>
 </ContentPage>

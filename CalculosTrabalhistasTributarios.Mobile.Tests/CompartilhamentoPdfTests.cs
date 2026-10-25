@@ -90,6 +90,7 @@ public sealed class CompartilhamentoPdfTests
 
     private sealed class CompartilhamentoDeTeste(Func<CancellationToken, Task>? executar = null) : ICompartilhamentoPdf
     {
+        public Task CompartilharResumoAsync(DemonstrativoDto demonstrativo, CancellationToken cancellationToken) => Task.CompletedTask;
         public DemonstrativoDto? Demonstrativo { get; private set; }
         public Task CompartilharAsync(DemonstrativoDto demonstrativo, CancellationToken cancellationToken)
         {

@@ -98,6 +98,7 @@ public sealed class HistoricoViewModelTests
         public (long, long)? Comparados { get; private set; }
         public Task AbrirAsync(ResumoCalculoSalvoDto salvo) => AoAbrir?.Invoke() ?? Task.CompletedTask;
         public Task CompararAsync(ResumoCalculoSalvoDto a, ResumoCalculoSalvoDto b) { Comparados = (a.Id, b.Id); return Task.CompletedTask; }
+        public Task CompartilharPdfAsync(ResumoCalculoSalvoDto salvo) => Task.CompletedTask;
         public Task DuplicarAsync(ResumoCalculoSalvoDto salvo) => Task.CompletedTask;
         public Task RenomearAsync(ResumoCalculoSalvoDto salvo) => Task.CompletedTask;
         public Task ExcluirAsync(ResumoCalculoSalvoDto salvo) => Task.CompletedTask;

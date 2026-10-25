@@ -104,6 +104,7 @@ public sealed class ResgatePrevidenciaMobileViewModel : CalculadoraTrabalhistaVi
             }
 
             var aportado = decimal.Round(valor, 2);
+            _aportes.Remocao.Descartar();
             while (_aportes.Linhas.Count > 0) _aportes.Linhas.RemoveAt(_aportes.Linhas.Count - 1);
             for (var indice = 0; indice < quantidade; indice++)
             {

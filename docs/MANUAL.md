@@ -1911,13 +1911,15 @@ O aplicativo para celular traz as mesmas calculadoras e tabelas do Windows, com 
 2. Em *Assets*, baixe o arquivo terminado em **-android.apk** e abra-o.
 3. Na primeira instalação, o Android pede permissão para instalar aplicativos daquela origem (o navegador ou o gerenciador de arquivos): permita e volte à instalação. O aplicativo não é distribuído pela Play Store, e o Play Protect pode pedir confirmação.
 
-Requer Android 7.0 ou superior. Para atualizar, instale o APK da versão nova por cima da anterior: os cálculos salvos, os rascunhos e as tabelas editadas no aparelho são preservados. Desinstalar o aplicativo apaga esses dados.
+Requer Android 7.0 ou superior. Para atualizar, instale o APK da versão nova por cima da anterior: os cálculos salvos, os rascunhos e as tabelas editadas no aparelho são preservados. Desinstalar o aplicativo apaga esses dados; antes de desinstalar ou trocar de aparelho, faça a cópia de segurança do histórico (seção [15.7](#157-tabelas-e-configurações)).
 
 ### 15.2 Navegando
 
 A tela de abertura prepara o banco do aparelho e, na primeira abertura do dia, atualiza as tabelas pela internet; **Pular** adia a atualização para a próxima abertura. A tela inicial mostra as boas-vindas, **Continuar de onde parou** com os cinco cálculos salvos mais recentes e a busca de calculadoras e tabelas. O menu lateral, aberto pelo botão de três linhas no canto superior, agrupa as calculadoras e as tabelas como no Windows; a estrela ao lado de cada item marca as favoritas, que aparecem no alto.
 
-Em cada calculadora, a barra superior traz **Salvar** e **Ajuda** (a seção deste manual da calculadora, com **Abrir o manual completo (PDF)**); o menu de opções (três pontos, no canto direito da barra) traz **Preencher exemplo** (os dados fictícios deste manual), **Ir ao resultado** e **Descartar rascunho**.
+Tocar e segurar o ícone do aplicativo mostra atalhos para até quatro calculadoras: as favoritas, na ordem em que foram marcadas, completadas por Simulação tributária, Rescisão, Férias e 13º salário. O atalho abre a calculadora direto, depois da tela de abertura.
+
+Em cada calculadora, a barra superior traz **Salvar** e **Ajuda** (a seção deste manual da calculadora, com as imagens e **Abrir o manual completo (PDF)**; as imagens mostram a tela do Windows, e tocar numa delas a abre ampliada); o menu de opções (três pontos, no canto direito da barra) traz **Preencher exemplo** (os dados fictícios deste manual), **Ir ao resultado** e **Descartar rascunho**.
 
 ### 15.3 Preenchendo
 
@@ -1926,6 +1928,8 @@ Em cada calculadora, a barra superior traz **Salvar** e **Ajuda** (a seção des
 - Um campo com erro mostra a mensagem logo abaixo dele: o aplicativo abre a seção e coloca o cursor no campo. Nas listas de meses e lançamentos, a página da linha com erro é exibida. Erros que não dependem de um único campo aparecem como mensagem geral.
 - No teclado do celular, **Próximo** passa para o próximo campo visível; no último, **Concluir** fecha o teclado. Seções recolhidas ficam fora dessa sequência.
 - Listas longas, como meses, lançamentos e depósitos do FGTS, mostram 12 linhas por vez, com **Anterior** e **Próxima**; o cálculo sempre considera todas as linhas.
+- Em cada linha, **Duplicar** cria uma cópia logo abaixo e **Remover** a retira. Depois de remover, **Desfazer** devolve a linha com os valores e na mesma posição; só a última remoção pode ser desfeita, e gerar os meses de novo, abrir um histórico ou preencher o exemplo descarta essa opção.
+- Nos vínculos do INSS em múltiplos vínculos e nos beneficiários da pensão alimentícia, em que a ordem muda o cálculo, **↑ Subir** e **↓ Descer** mudam a posição da linha.
 
 ### 15.4 Rascunho automático
 
@@ -1939,15 +1943,15 @@ Ao abrir de novo a calculadora, o aviso **Recuperar rascunho?** oferece **Recupe
 
 O resultado mostra o resumo e três partes que se abrem e fecham separadamente: **Premissas e limites** (aberta de início), **Demonstrativo** e **Memória de cálculo**. Listas longas do resultado são divididas em páginas na tela; o PDF traz o conteúdo completo.
 
-**Compartilhar PDF** gera o relatório, com a mesma organização do PDF do Windows e o aviso de simulação em todas as páginas, e abre o menu do Android para escolher o aplicativo (WhatsApp, e-mail e outros). O envio só acontece quando você o confirma no aplicativo escolhido. Alterar um campo depois do cálculo exige calcular de novo antes de compartilhar. Não há planilha do Excel no celular.
+**Compartilhar PDF** gera o relatório, com a mesma organização do PDF do Windows e o aviso de simulação em todas as páginas, e abre o menu do Android para escolher o aplicativo (WhatsApp, e-mail e outros). O envio só acontece quando você o confirma no aplicativo escolhido. **Compartilhar resumo** envia em texto os destaques, os totais e o aviso de simulação, sem a memória, para colar numa conversa. Alterar um campo depois do cálculo exige calcular de novo antes de compartilhar. Não há planilha do Excel no celular.
 
 As transferências entre calculadoras são as mesmas do Windows: a quitação do banco de horas para o holerite ou a rescisão, a jornada pelo ponto para as horas extras ou o holerite, as diferenças do reajuste retroativo para o RRA e os depósitos da conferência do FGTS para a rescisão. A calculadora de destino abre preenchida.
 
 ### 15.6 Histórico
 
-**Salvar** guarda o formulário no histórico com um nome. O **Histórico** tem busca pelo nome ou pela calculadora, filtros de calculadora e período e a ordem da lista, em páginas de até 20 cálculos, percorridas por **Anterior** e **Próxima**. Cada cálculo tem **Abrir**, **Duplicar**, **Renomear** e **Excluir**; **Atualizar** lê a lista de novo, por exemplo depois de uma falha.
+**Salvar** guarda o formulário no histórico com um nome. O **Histórico** tem busca pelo nome ou pela calculadora, filtros de calculadora e período e a ordem da lista, em páginas de até 20 cálculos, percorridas por **Anterior** e **Próxima**. Cada cálculo tem **Abrir**, **Duplicar**, **Renomear**, **Compartilhar PDF** (refaz o cálculo com as tabelas atuais e gera o PDF, sem abrir a calculadora) e **Excluir**; **Atualizar** lê a lista de novo, por exemplo depois de uma falha.
 
-Para comparar, toque em **Selecionar / remover da comparação** em dois cálculos da mesma calculadora, mesmo em páginas diferentes, e depois em **Comparar selecionados**. A mensagem acima da lista mostra o que está selecionado. A comparação refaz os dois cálculos e mostra as diferenças, como no Windows (seção [10.3](#103-histórico-de-cálculos)).
+Para comparar, toque em **Selecionar / remover da comparação** em dois cálculos da mesma calculadora, mesmo em páginas diferentes, e depois em **Comparar selecionados**. A mensagem acima da lista mostra o que está selecionado. A comparação refaz os dois cálculos e mostra as diferenças, como no Windows (seção [10.3](#103-histórico-de-cálculos)); **Compartilhar PDF da comparação** gera o PDF com os resultados lado a lado.
 
 ### 15.7 Tabelas e configurações
 
@@ -1957,6 +1961,7 @@ Em **Configurações**:
 
 - **Tema:** automático (acompanha o aparelho), claro ou escuro.
 - **Atualizar pela internet ao abrir:** liga ou desliga a atualização diária na abertura. **Atualizar agora** consulta todas as tabelas na hora, com **Cancelar**, e **Ver detalhes das pendências** mostra o motivo das que não foram atualizadas. Uma falha preserva os dados do aparelho.
+- **Cópia de segurança do histórico:** **Fazer cópia de segurança** gera um arquivo com todos os cálculos salvos e abre o menu do Android para guardá-lo (no Drive, por e-mail ou em outro aplicativo). **Restaurar cópia de segurança** lê esse arquivo e acrescenta ao histórico os cálculos que ainda não estão nele, com as datas originais; restaurar o mesmo arquivo de novo não duplica nada. Só são aceitas cópias feitas pelo aplicativo Android; um arquivo com algum cálculo inválido é recusado inteiro, sem alterar o histórico. A cópia não inclui rascunhos nem tabelas editadas.
 - **Enviar registro de erros:** os erros inesperados ficam guardados no aparelho, com a data, a versão e o ponto do aplicativo em que ocorreram, sem os valores dos formulários. Ao relatar um problema, envie o registro do mês pelo aplicativo que escolher.
 
 ---

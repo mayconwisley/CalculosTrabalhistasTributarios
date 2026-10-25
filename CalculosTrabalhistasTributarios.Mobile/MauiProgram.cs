@@ -42,14 +42,17 @@ public static class MauiProgram
             {
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                 fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
-            });
+            })
+            .ConfigureEssentials(essentials => essentials.OnAppAction(acao =>
+                IPlatformApplication.Current?.Services.GetService<AtalhosDoIcone>()?.Receber(acao)));
 
-        builder.Services.AddCalculadoras().AddSaqueAniversario().AddAtualizacaoTodasTabelas().AddPresentation();
+        builder.Services.AddCalculadoras().AddSaqueAniversario().AddAtualizacaoTodasTabelas().AddCopiaSegurancaHistorico().AddPresentation();
         var caminhoBanco = Path.Combine(FileSystem.Current.AppDataDirectory, "BancoDados", "calculoIrrf.db");
         builder.Services.AddInfrastructureLocal(caminhoBanco);
         builder.Services.AddSingleton<SqliteHistoricoCalculos>();
         builder.Services.AddSingleton<IHistoricoCalculos>(p => p.GetRequiredService<SqliteHistoricoCalculos>());
         builder.Services.AddSingleton<IConsultaHistoricoCalculos>(p => p.GetRequiredService<SqliteHistoricoCalculos>());
+        builder.Services.AddSingleton<IImportacaoHistoricoCalculos>(p => p.GetRequiredService<SqliteHistoricoCalculos>());
         builder.Services.AddAtualizacaoTabelas();
         builder.Services.AddSingleton<IConsultaCotacoesTrabalhoExterior, CalculosTrabalhistasTributarios.Infrastructure.Tributacao.ConsultaCotacoesTrabalhoExterior>();
         builder.Services.AddSingleton(provider => new PreparadorBancoLocal(caminhoBanco,
@@ -62,6 +65,7 @@ public static class MauiProgram
         builder.Services.AddSingleton<IShare>(Share.Default);
         builder.Services.AddSingleton<IFileSystem>(FileSystem.Current);
         builder.Services.AddSingleton<ICompartilhamentoPdf, CompartilhamentoPdf>();
+        builder.Services.AddSingleton<AtalhosDoIcone>();
         builder.Services.AddSingleton<IPreferenciasMobile, PreferenciasMobile>();
         builder.Services.AddSingleton<IPlataformaMobile, PlataformaMobile>();
         builder.Services.AddTransient<SaqueAniversarioPage>();
@@ -112,9 +116,14 @@ public static class MauiProgram
                     var menu = scope.ServiceProvider.GetRequiredService<MenuPage>();
                     var navigation = new NavigationPage(inicio);
                     var flyout = new FlyoutPage { Title = "Menu", Flyout = menu, Detail = navigation };
-                    scope.ServiceProvider.GetRequiredService<NavegadorCalculadoras>().Configurar(navigation.Navigation, flyout);
+                    var navegador = scope.ServiceProvider.GetRequiredService<NavegadorCalculadoras>();
+                    navegador.Configurar(navigation.Navigation, flyout);
                     scope.ServiceProvider.GetRequiredService<NavegadorMenu>().Configurar(navigation.Navigation, flyout);
                     window.Page = flyout;
+                    var atalhos = provider.GetRequiredService<AtalhosDoIcone>();
+                    atalhos.Registrar(navegador);
+                    window.Destroying += (_, _) => atalhos.Esquecer(navegador);
+                    _ = atalhos.PublicarAsync(provider.GetRequiredService<IPreferenciasMobile>().Favoritos);
                 };
                 window.Destroying += (_, _) => scope.Dispose();
                 return window;

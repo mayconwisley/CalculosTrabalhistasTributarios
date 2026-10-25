@@ -24,8 +24,11 @@
                     <Label Text="{Binding Demonstrativo.Referencia}" TextColor="White" FontSize="12" />
                 </VerticalStackLayout>
             </Border>
-            <Button Text="Compartilhar PDF" Style="{StaticResource BotaoSecundario}" Command="{Binding CompartilharPdfCommand}" AutomationId="CompartilharPdf" SemanticProperties.Description="Gerar PDF e escolher aplicativo para compartilhar" />
-            <Label Text="Escolha WhatsApp, e-mail ou outro aplicativo instalado. O documento inclui a memória e as premissas da simulação." Style="{StaticResource TextoSecundario}" />
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                <Button Text="Compartilhar PDF" Style="{StaticResource BotaoSecundario}" Command="{Binding CompartilharPdfCommand}" AutomationId="CompartilharPdf" SemanticProperties.Description="Gerar PDF e escolher aplicativo para compartilhar" />
+                <Button Grid.Column="1" Text="Compartilhar resumo" Style="{StaticResource BotaoSecundario}" Command="{Binding CompartilharResumoCommand}" AutomationId="CompartilharResumo" SemanticProperties.Description="Compartilhar os destaques e totais em texto" />
+            </Grid>
+            <Label Text="Escolha WhatsApp, e-mail ou outro aplicativo instalado. O PDF inclui a memória e as premissas da simulação; o resumo leva só os destaques e os totais em texto." Style="{StaticResource TextoSecundario}" />
             <VerticalStackLayout Spacing="10" BindableLayout.ItemsSource="{Binding Demonstrativo.Destaques}">
                 <BindableLayout.ItemTemplate>
                     <DataTemplate x:DataType="dto:DestaqueDto">

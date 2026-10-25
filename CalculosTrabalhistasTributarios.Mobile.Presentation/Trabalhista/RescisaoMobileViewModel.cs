@@ -57,7 +57,10 @@ public sealed class RescisaoMobileViewModel : CalculadoraTrabalhistaViewModel
             opcoes: ["Não informar", .. Enumerable.Range(1, 12).Select(m => Cultura.TextInfo.ToTitleCase(Cultura.DateTimeFormat.GetMonthName(m)))]);
         AdicionarPensao();
         _adicionarDeposito = new RelayCommand(AdicionarLinha, () => DepositosFgts.Count < 720);
-        RemoverDepositoCommand = new RelayCommand<LinhaDepositoFgtsMobile>(linha => { if (linha is not null) DepositosFgts.Remove(linha); });
+        RemoverDepositoCommand = new RelayCommand<LinhaDepositoFgtsMobile>(linha =>
+        {
+            if (linha is not null) RemocaoLinhas.Remover(DepositosFgts, linha, $"Depósito do FGTS de {linha.Competencia}", 720);
+        });
         GerarDepositosCommand = new RelayCommand(GerarMeses);
         DepositosFgts.CollectionChanged += (_, _) =>
         {
@@ -127,6 +130,7 @@ public sealed class RescisaoMobileViewModel : CalculadoraTrabalhistaViewModel
         var quantidade = (desligamento.Year - admissao.Year) * 12 + desligamento.Month - admissao.Month;
         if (quantidade > 720) { Mensagem = "O histórico aceita até 720 competências; informe o saldo do extrato."; return; }
         var existentes = DepositosFgts.GroupBy(linha => linha.Competencia).ToDictionary(grupo => grupo.Key, grupo => grupo.First().Valor);
+        RemocaoLinhas.Descartar();
         DepositosFgts.Clear();
         var primeiro = new DateOnly(admissao.Year, admissao.Month, 1);
         for (var i = 0; i < quantidade; i++)

@@ -138,7 +138,7 @@ public sealed class SaqueAniversarioViewModelTests
     [Fact]
     public void Composicao_valida_escopos_e_cria_formularios_independentes()
     {
-        var servicos = new ServiceCollection().AddCalculadoras().AddPresentation();
+        var servicos = new ServiceCollection().AddCalculadoras().AddCopiaSegurancaHistorico().AddPresentation();
         servicos.AddSingleton<ICompartilhamentoPdf, CompartilhamentoDeTeste>();
         servicos.AddSingleton<ILogger<SaqueAniversarioViewModel>>(NullLogger<SaqueAniversarioViewModel>.Instance);
         servicos.AddSingleton(typeof(ILogger<>), typeof(NullLogger<>));
@@ -148,6 +148,7 @@ public sealed class SaqueAniversarioViewModelTests
         servicos.AddSingleton<INavegacaoMenu>(new MenuDeTeste());
         servicos.AddSingleton<IHistoricoCalculos>(new HistoricoDeTeste([]));
         servicos.AddSingleton<IConsultaHistoricoCalculos>(new HistoricoDeTeste([]));
+        servicos.AddSingleton<IImportacaoHistoricoCalculos>(new ImportacaoDeTeste());
         servicos.AddSingleton<IInteracaoHistoricoMobile>(new HistoricoViewModelTests.InteracaoTeste());
         servicos.AddSingleton<IPreferenciasMobile>(new PreferenciasDeTeste());
         servicos.AddSingleton<IPlataformaMobile>(new PlataformaDeTeste());
@@ -338,6 +339,9 @@ public sealed class SaqueAniversarioViewModelTests
         public Task AbrirEnderecoAsync(Uri endereco) => Task.CompletedTask;
         public void AplicarTema(TemaMobile tema) { }
         public Task CompartilharArquivoAsync(string titulo, string caminho) => Task.CompletedTask;
+        public Task CompartilharConteudoAsync(string titulo, string nomeArquivo, string conteudo, string tipoConteudo) => Task.CompletedTask;
+        public Task<CalculosTrabalhistasTributarios.Domain.Comum.Result<string>?> EscolherArquivoTextoAsync(string titulo, int limiteCaracteres) =>
+            Task.FromResult<CalculosTrabalhistasTributarios.Domain.Comum.Result<string>?>(null);
     }
     private sealed class RegistroDeTeste : IRegistroDeErros
     {
@@ -352,6 +356,7 @@ public sealed class SaqueAniversarioViewModelTests
     }
     private sealed class CompartilhamentoDeTeste : ICompartilhamentoPdf
     {
+        public Task CompartilharResumoAsync(DemonstrativoDto demonstrativo, CancellationToken cancellationToken) => Task.CompletedTask;
         public Task CompartilharAsync(DemonstrativoDto demonstrativo, CancellationToken cancellationToken) => Task.CompletedTask;
     }
 
@@ -376,5 +381,10 @@ public sealed class SaqueAniversarioViewModelTests
         public IDisposable? BeginScope<TState>(TState state) where TState : notnull => null;
         public bool IsEnabled(LogLevel logLevel) => true;
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter) => Excecao = exception;
+    }
+
+    private sealed class ImportacaoDeTeste : IImportacaoHistoricoCalculos
+    {
+        public Task<int> IncluirAsync(IReadOnlyList<CalculoSalvoDto> calculos, CancellationToken cancellationToken) => Task.FromResult(0);
     }
 }

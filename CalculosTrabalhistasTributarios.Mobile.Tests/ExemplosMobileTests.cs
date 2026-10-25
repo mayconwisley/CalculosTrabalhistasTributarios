@@ -4,6 +4,7 @@ using CalculosTrabalhistasTributarios.Application.Interfaces;
 using CalculosTrabalhistasTributarios.Infrastructure.Local;
 using CalculosTrabalhistasTributarios.Infrastructure.Persistence;
 using CalculosTrabalhistasTributarios.Mobile.Presentation;
+using CalculosTrabalhistasTributarios.Mobile.Presentation.Ajuda;
 using CalculosTrabalhistasTributarios.Mobile.Presentation.Exemplos;
 using CalculosTrabalhistasTributarios.Mobile.Presentation.Historico;
 using CalculosTrabalhistasTributarios.Mobile.Presentation.Inicio;
@@ -11,6 +12,7 @@ using CalculosTrabalhistasTributarios.Mobile.Presentation.Interfaces;
 using CalculosTrabalhistasTributarios.Mobile.Presentation.SaqueAniversario;
 using CalculosTrabalhistasTributarios.Mobile.Presentation.Trabalhista;
 using CalculosTrabalhistasTributarios.Mobile.Presentation.Tributacao;
+using CalculosTrabalhistasTributarios.Tests;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -46,6 +48,20 @@ public sealed class ExemplosMobileTests : IClassFixture<ExemplosMobileTests.Ambi
 
         Assert.Null(mensagem);
         Assert.NotNull(demonstrativo);
+        // Mesmo exemplo do desktop: os destaques da imagem do manual precisam sair iguais no Android.
+        foreach (var (rotulo, valor) in DestaquesDoManual.Esperados.GetValueOrDefault(ManualMobile.ChaveDesktop(tipo), []))
+        {
+            var destaque = demonstrativo.Destaques.SingleOrDefault(destaque => destaque.Rotulo == rotulo);
+            Assert.True(destaque is not null, $"{tipo}: destaque “{rotulo}” ausente no Android.");
+            Assert.Equal(valor, destaque.Valor.Replace(' ', ' ').Replace(' ', ' '));
+        }
+    }
+
+    [Fact]
+    public void Todo_destaque_conferido_no_desktop_tem_calculadora_no_android()
+    {
+        var chaves = Enum.GetValues<TipoCalculadoraMobile>().Select(ManualMobile.ChaveDesktop);
+        Assert.Empty(DestaquesDoManual.Esperados.Keys.Except(chaves));
     }
 
     [Fact]
@@ -129,6 +145,7 @@ public sealed class ExemplosMobileTests : IClassFixture<ExemplosMobileTests.Ambi
 
     private sealed class PdfDeTeste : ICompartilhamentoPdf
     {
+        public Task CompartilharResumoAsync(DemonstrativoDto demonstrativo, CancellationToken cancellationToken) => Task.CompletedTask;
         public Task CompartilharAsync(DemonstrativoDto demonstrativo, CancellationToken cancellationToken) => Task.CompletedTask;
     }
 }

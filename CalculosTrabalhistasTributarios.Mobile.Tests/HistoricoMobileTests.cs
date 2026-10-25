@@ -62,6 +62,7 @@ public sealed class HistoricoMobileTests
 
     private sealed class PdfFalso : ICompartilhamentoPdf
     {
+        public Task CompartilharResumoAsync(DemonstrativoDto demonstrativo, CancellationToken cancellationToken) => Task.CompletedTask;
         public Task CompartilharAsync(DemonstrativoDto demonstrativo, CancellationToken cancellationToken) => throw new NotSupportedException();
     }
 }

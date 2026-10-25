@@ -37,7 +37,7 @@ public sealed class InssMultiplosVinculosMobileViewModel : CalculadoraTrabalhist
                     Opcoes: ["Empregado", "Doméstico", "Avulso", "Individual (11%)", "Individual EBAS (20%)"]),
                 new("remuneracao", "Remuneração (R$)", TipoCampoMobile.Moeda, "0,00", "Maior que zero, em reais e centavos."),
                 new("identificacao", "Fonte pagadora (opcional)", TipoCampoMobile.Texto, "", "Nome da empresa ou do tomador; vazio usa \"Vínculo N\".")
-            ]);
+            ], reordenavel: true);
         vinculos.AdicionarLinha();
         vinculos.AdicionarLinha();
     }
