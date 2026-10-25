@@ -52,7 +52,7 @@ No celular, baixe **CalculosTrabalhistasTributarios-X.Y.Z-android.apk** e abra o
 - Traz as mesmas calculadoras e tabelas do Windows, com busca e favoritas no menu, histórico de cálculos, **Preencher exemplo**, ajuda com a seção do manual de cada calculadora e atualização diária das tabelas pela internet.
 - O resultado é compartilhado em PDF pelo menu do Android (WhatsApp, e-mail e outros aplicativos), com a mesma organização do relatório do Windows. As transferências entre calculadoras são as mesmas do Windows. Não há exportação para o Excel.
 
-Os formulários Android oferecem rascunhos automáticos locais, recuperação de preenchimentos, campos de data e competência com seleção assistida e detalhes do resultado carregados sob demanda. Na tela comum, Calcular fica no rodapé e erros de leitura aparecem junto ao campo.
+No Android, cada calculadora guarda um rascunho automático no aparelho e oferece recuperá-lo ao reabrir; o histórico continua recebendo apenas o que é salvo. Datas e competências podem ser digitadas ou escolhidas no calendário, **Calcular** fica no rodapé, os erros aparecem junto ao campo e o resultado se divide em premissas, demonstrativo e memória, que se abrem separadamente. O uso está na seção 15 do [manual](docs/MANUAL.md#15-aplicativo-android).
 
 Detalhes do aplicativo Android, para quem desenvolve, estão em [docs/MAUI.md](docs/MAUI.md).
 
@@ -162,7 +162,7 @@ As regras da CLT ficam em `CalculosTrabalhistasTributarios.Domain/Trabalhista` (
 
 ### Experiência de uso
 
-- Janela principal única com menu lateral fixo: calculadoras por assunto, tabelas por categoria, favoritas no alto e, no rodapé, o histórico e as Configurações (tema, densidade compacta, recálculo automático, aceleração pela placa de vídeo, consultas à internet ao abrir e lista de atalhos). O item escolhido aparece na área central; sem item aberto, uma tela de boas-vindas mostra os totais, os últimos cálculos salvos e os primeiros passos. A busca lateral (Ctrl+F) procura no nome e na descrição, sem diferenciar maiúsculas e acentos.
+- Janela principal única com menu lateral fixo: calculadoras por assunto, tabelas por categoria, favoritas no alto e, no rodapé, o histórico e as Configurações (tema, densidade compacta, recálculo automático, aceleração pela placa de vídeo, consultas à internet ao abrir e lista de atalhos). O item escolhido aparece na área central; sem item aberto, uma tela de boas-vindas mostra os totais, os últimos cálculos salvos, os primeiros passos e o link **Baixar para Android**, que abre a página da versão mais recente. A busca lateral (Ctrl+F) procura no nome e na descrição, sem diferenciar maiúsculas e acentos.
 - Nas calculadoras, o formato de cada campo é conferido ao sair dele, os campos a corrigir ficam destacados no próprio formulário, a janela rola até o resultado após o cálculo e avisa quando o formulário muda depois dele (ou recalcula sozinha, se a opção estiver marcada); exportações recalculam antes de salvar, e uma seção expansível permite conferir as entradas utilizadas. Em telas largas, o resultado fica ao lado do formulário, e os cenários A e B comparam duas versões do formulário sem salvar. Atalhos Ctrl+Enter, Ctrl+S, Ctrl+P, Ctrl+E e Esc, listados pelo botão "Atalhos".
 - A seção Recentes da tela inicial reabre os últimos cálculos salvos (com indicação de leitura em andamento, como no histórico e nas tabelas); a comparação do histórico refaz dois cálculos e mostra a diferença de cada verba e dos totais, além dos dados informados.
 - Cada calculadora tem "Preencher exemplo", com os dados fictícios do manual, e o botão "?" (ou F1), que abre o manual em PDF na página da sua seção; um clique copia um valor do demonstrativo, pronto para colar.
@@ -283,7 +283,7 @@ O projeto `CalculosTrabalhistasTributarios.Tests` (xUnit) confere os cálculos c
 
 Cada execução parte de uma cópia nova do banco do projeto, inicializada como na primeira abertura do aplicativo.
 
-O projeto `CalculosTrabalhistasTributarios.Mobile.Tests` confere a apresentação do Android sem aparelho nem SDK do Android: leitura dos formulários e das grades de cada calculadora, catálogo, exemplos, ajuda do manual, histórico, compartilhamento do PDF e edição das tabelas e atualização diária, com uma fonte simulada.
+O projeto `CalculosTrabalhistasTributarios.Mobile.Tests` confere a apresentação do Android sem aparelho nem SDK do Android: leitura dos formulários e das grades de cada calculadora, catálogo, exemplos, ajuda do manual, histórico, rascunhos automáticos, compartilhamento do PDF e edição das tabelas e atualização diária, com uma fonte simulada.
 
 ```powershell
 dotnet test .\CalculosTrabalhistasTributarios.Tests

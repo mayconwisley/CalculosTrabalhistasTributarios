@@ -59,7 +59,7 @@ Os testes de arquitetura (`ArquiteturaTests`) falham se uma dependência apontar
 
 - Toda regra nova ou corrigida precisa de teste em `CalculosTrabalhistasTributarios.Tests`, com valores conferidos à mão ou com um exemplo oficial (Receita Federal, INSS, Ministério do Trabalho).
 - As tabelas históricas ficam em `Infrastructure/Persistence/Inicializacao/SementesTributarias.cs`. Ao alterar sementes ou scripts do banco, incremente `VersaoSementes` em `InicializadorBancoTributario`, para que os bancos já instalados recebam a nova carga.
-- Uma fonte de tabela na internet é uma classe `IFonteTabela<T>` em `Infrastructure/Tributacao/Fontes`, registrada em `Infrastructure/DependencyInjection.cs`. A tabela publicada valida a própria estrutura em `Validar()`, e o teste da fonte usa `PaginasFixas`, com um trecho no formato da página, nunca a página real.
+- Uma fonte de tabela na internet é uma classe `IFonteTabela<T>` em `CalculosTrabalhistasTributarios.Infrastructure.Tabelas/Tributacao/Fontes`, registrada em `AddAtualizacaoTabelas` (`Infrastructure.Tabelas/DependencyInjection.cs`). A tabela publicada valida a própria estrutura em `Validar()`, e o teste da fonte usa `PaginasFixas`, com um trecho no formato da página, nunca a página real.
 
 ### Documentação
 

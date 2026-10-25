@@ -18,7 +18,7 @@ Este arquivo orienta alterações em todo o repositório. Leia-o antes de implem
 
 ## 2. Produto e ambiente
 
-O produto é um aplicativo desktop Windows para simulações trabalhistas, tributárias, previdenciárias, de pensão e de débitos judiciais. O processamento e a persistência são locais. Consultas externas são usadas por funcionalidades específicas de atualização.
+O produto é um aplicativo desktop Windows, com versão Android em .NET MAUI, para simulações trabalhistas, tributárias, previdenciárias, de pensão e de débitos judiciais. O processamento e a persistência são locais. Consultas externas são usadas por funcionalidades específicas de atualização.
 
 Stack atualmente configurada:
 
@@ -49,9 +49,13 @@ Pratique DDD, SOLID e Clean Architecture com simplicidade. Preserve os projetos 
 | `CalculosTrabalhistasTributarios.Domain` | Regras, invariantes e resultados de negócio | Não depende das demais camadas, WPF, SQLite, HTTP ou bibliotecas de relatórios. |
 | `CalculosTrabalhistasTributarios.Application` | Casos de uso, pedidos, DTOs, portas e demonstrativos | Depende do Domain; não referencia Infrastructure nem WPF. A abstração de DI é usada no registro da camada. |
 | `CalculosTrabalhistasTributarios.Infrastructure.Local` | SQLite, consultas, histórico e sementes compartilhados por WPF e MAUI | Não referencia bibliotecas de relatório nem interfaces gráficas; preserva namespaces da persistência anterior. |
-| `CalculosTrabalhistasTributarios.Infrastructure` | Persistência, atualização externa, diagnóstico e exportação | Implementa portas da Application; não conhece ViewModels ou controles WPF. |
+| `CalculosTrabalhistasTributarios.Infrastructure.Tabelas` | Fontes externas, atualização e manutenção das tabelas, compartilhadas por WPF e MAUI | Implementa portas da Application; não referencia bibliotecas de relatório nem interfaces gráficas. |
+| `CalculosTrabalhistasTributarios.Infrastructure` | Composição da infraestrutura do desktop, diagnóstico, atualização do aplicativo e exportação PDF/Excel | Implementa portas da Application; não conhece ViewModels ou controles WPF. |
 | `CalculosTrabalhistasTributarios` | Aplicativo WPF e composição das camadas | MVVM, leitura do formulário, navegação, temas e serviços de interação. |
 | `CalculosTrabalhistasTributarios.Tests` | Referências numéricas, integração e arquitetura | Usa dados isolados e fontes externas simuladas. |
+| `CalculosTrabalhistasTributarios.Mobile.Presentation` | ViewModels do Android | Não depende de MAUI nem de WPF; reutiliza Domain e Application. |
+| `CalculosTrabalhistasTributarios.Mobile` | Aplicativo Android (.NET MAUI), páginas, PDF nativo e composição | Não copia regras de negócio; veja `docs/MAUI.md`. |
+| `CalculosTrabalhistasTributarios.Mobile.Tests` | Testes da apresentação Android sem aparelho | Usa dados isolados e fontes simuladas. |
 | `tools/GeradorManual` | Conversão do manual Markdown para PDF | Não participa do cálculo de negócio. |
 
 Nos caminhos abreviados deste documento, `Domain/`, `Application/`, `Infrastructure/` e `Tests/` correspondem aos projetos `CalculosTrabalhistasTributarios.<Camada>/`. `Presentation/` e `Views/` ficam dentro do projeto WPF `CalculosTrabalhistasTributarios/`. Comandos de terminal usam os caminhos completos relativos à raiz.
@@ -65,7 +69,7 @@ Pontos de entrada e extensão:
 - `Domain/Previdencia`: contribuição do contribuinte individual e do facultativo, `CalculadoraMediaSalarios` (média desde 07/1994 corrigida pelo INPC), que a aposentadoria e a pensão por morte usam por meio de `MemoriaMediaSalarios`, na Application, e de `CamposMediaSalarios`, na apresentação e `RegrasBeneficioRgps` (coeficiente de 60% mais 2 pontos e limites do mínimo e do teto); os submódulos `Aposentadoria` e `PensaoMorte` tratam das regras da EC 103/2019, e `Complementar`, do IR no resgate de PGBL e VGBL.
 - `Application/UseCases`, `Application/DTOs` e `Application/Demonstrativos`: orquestração e resultados.
 - `Infrastructure.Local/Persistence/Inicializacao`: esquema, sementes e correções do banco.
-- `Infrastructure/Tributacao`: consultas, fontes e atualização das tabelas.
+- `Infrastructure.Tabelas/Tributacao`: fontes e atualização das tabelas, registradas em `AddAtualizacaoTabelas`.
 - `Infrastructure/Reporting`: relatórios PDF e planilhas.
 - `Presentation/ViewModels/Calculadoras`: adaptação das calculadoras para a janela comum.
 - `Views/CalculadoraWindow.xaml`: templates de formulário e apresentação do demonstrativo.
@@ -238,8 +242,8 @@ Não considere uma calculadora pronta se ela aparece na tela inicial, mas não r
 
 ## 11. Fontes externas e atualização de tabelas
 
-- Siga os contratos de `Infrastructure/Interfaces` e o fluxo existente de `Infrastructure/Tributacao`.
-- Uma nova fonte de tabela normalmente implementa `IFonteTabela<T>` e é registrada em `Infrastructure/DependencyInjection.cs`.
+- Siga os contratos de `Infrastructure.Tabelas/Interfaces` e o fluxo existente de `Infrastructure.Tabelas/Tributacao`.
+- Uma nova fonte de tabela normalmente implementa `IFonteTabela<T>` e é registrada em `AddAtualizacaoTabelas` (`Infrastructure.Tabelas/DependencyInjection.cs`), usado pelo desktop e pelo Android.
 - A tela de abertura (`AberturaWindow` e `AberturaViewModel`) prepara o banco e, uma vez por dia, chama `AtualizarTodasTabelasUseCase`, que percorre as tabelas por `IAtualizadorTabelas`. Uma tabela nova com atualização pela internet entra também na lista desse caso de uso. O botão Atualizar agora reutiliza o mesmo fluxo por `IAtualizacaoTabelasService`, com a janela de abertura sobre a principal. A abertura não pode bloquear o uso: falhas viram aviso na tela principal, e Pular ou o tempo máximo apenas adiam para a próxima abertura.
 - Preserve o critério de confirmação existente: fonte oficial ou concordância das alternativas previstas para aquela tabela. Não relaxe a regra de confiança para contornar uma falha de parsing.
 - Valide competência, faixas, alíquotas e consistência antes de gravar. Uma página acessível não garante uma tabela válida ou referente ao período solicitado.
@@ -276,8 +280,8 @@ Não fixe no documento ou em código a quantidade atual de testes. Rode a suíte
 Execute os comandos abaixo na raiz da solução, em Windows com .NET SDK compatível instalado.
 
 ```powershell
-dotnet restore .\CalculosTrabalhistasTributarios.sln
-dotnet build .\CalculosTrabalhistasTributarios.sln --no-restore
+dotnet restore .\CalculosTrabalhistasTributarios.Desktop.slnf
+dotnet build .\CalculosTrabalhistasTributarios.Desktop.slnf --no-restore
 dotnet test .\CalculosTrabalhistasTributarios.Tests\CalculosTrabalhistasTributarios.Tests.csproj --no-restore
 dotnet run --project .\CalculosTrabalhistasTributarios\CalculosTrabalhistasTributarios.csproj --no-restore
 ```
@@ -291,7 +295,7 @@ dotnet test .\CalculosTrabalhistasTributarios.Tests\CalculosTrabalhistasTributar
 Validação equivalente à configuração principal do CI:
 
 ```powershell
-dotnet build .\CalculosTrabalhistasTributarios.sln -c Release --no-restore
+dotnet build .\CalculosTrabalhistasTributarios.Desktop.slnf -c Release --no-restore
 dotnet test .\CalculosTrabalhistasTributarios.Tests -c Release --no-build --report-xunit-trx --report-xunit-trx-filename resultados.trx --results-directory TestResults
 ```
 
@@ -360,8 +364,7 @@ Considere a tarefa concluída quando os itens aplicáveis estiverem atendidos:
 
 ## Aplicativo móvel
 
-Consulte `docs/MAUI.md`. Compartilhe Domain, Application e Infrastructure.Local; não copie regras para o MAUI. Os resultados usam `Views/ResultadoSimulacaoView` e o PDF nativo deve incluir informativos, comparativos, quadros e o aviso de simulação. Preserve o banco privado do Android e valide navegação, temas e PDF no emulador ou aparelho ao alterar telas.
-
+Consulte `docs/MAUI.md`. Compartilhe Domain, Application, Infrastructure.Local e Infrastructure.Tabelas; não copie regras para o MAUI. Os resultados usam `Views/ResultadoSimulacaoView` e o PDF nativo deve incluir informativos, comparativos, quadros e o aviso de simulação. Preserve o banco privado do Android e valide navegação, temas e PDF no emulador ou aparelho ao alterar telas.
 
 - Rascunhos usam `IRascunhosFormularios` (Application), arquivos privados com substituição atômica (Infrastructure.Local) e `SessaoRascunhoFormulario` (Mobile.Presentation). Preserve o histórico separado, a validação de versão e o comportamento de recuperar sem associar um registro salvo.
 - Os campos comuns usam `CampoFormularioView`; mantenha a referência ao `CampoMobile` nas falhas de leitura para abrir a seção e focar a entrada correta. Erros de domínio sem campo inequívoco permanecem gerais.

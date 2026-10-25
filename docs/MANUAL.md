@@ -20,10 +20,11 @@ Guia completo para utilizar **Cálculos Trabalhistas e Tributários**: simulaç�
 12. [Mensagens e solução de problemas](#12-mensagens-e-solução-de-problemas)
 13. [Perguntas frequentes](#13-perguntas-frequentes)
 14. [Atalhos de teclado](#14-atalhos-de-teclado)
+15. [Aplicativo Android](#15-aplicativo-android)
 
 ## 1. Apresentação
 
-O aplicativo Cálculos Trabalhistas e Tributários reúne, em um único lugar para Windows, os cálculos trabalhistas e tributários mais comuns do dia a dia:
+O aplicativo Cálculos Trabalhistas e Tributários reúne, em um único lugar para Windows e Android, os cálculos trabalhistas e tributários mais comuns do dia a dia:
 
 - **Simulação tributária:** IRRF com deduções legais e com desconto simplificado, INSS por faixas, salário líquido e FGTS do tipo de vínculo (8% para o empregado, 2% para o aprendiz e 8% mais 3,2% para o doméstico), com indicação da modalidade de IRRF aplicada. Também simula o IRRF da aposentadoria ou pensão, com a parcela isenta de quem tem 65 anos ou mais.
 - **Calculadoras trabalhistas:** holerite do mês, comissões e DSR, diferenças de reajuste retroativo, média de verbas variáveis, banco de horas, INSS em múltiplos vínculos, jornada pelas marcações de ponto, salário bruto a partir do líquido, horas extras com adicional noturno e DSR, insalubridade e periculosidade, salário-família, 13º salário, férias com abono, PLR, rescisão por motivo de desligamento, seguro-desemprego, custo do funcionário para a empresa, comparação entre CLT e PJ, pró-labore ou pagamento a autônomo (RPA), empregado doméstico com o DAE, estágio e trabalho intermitente.
@@ -35,7 +36,9 @@ O aplicativo Cálculos Trabalhistas e Tributários reúne, em um único lugar pa
 - **Tabelas e parâmetros:** consulta e manutenção das faixas de INSS e IRRF, dos valores usados nos cálculos e dos índices INPC, IPCA, IPCA-E, taxa legal, Selic e TR, com atualização pela internet a partir das fontes oficiais e de fontes alternativas.
 - **Histórico e planilhas:** cada cálculo pode ser salvo com um nome, como o do empregado ou o número do processo, para reabrir, refazer ou duplicar depois, e todos os resultados podem ir para uma planilha do Excel, além do PDF.
 
-Todos os cálculos são feitos **no seu computador**. Os dados digitados não são enviados para nenhum servidor; a internet só é usada quando você pede a atualização das tabelas e, ao abrir o aplicativo, para verificar se há uma versão nova, o que pode ser desligado (seção [11](#11-tema-e-configurações)).
+Este manual descreve a versão para Windows. As calculadoras e as tabelas do celular são as mesmas, com os campos na mesma ordem; o que muda no uso está na seção [15](#15-aplicativo-android).
+
+Todos os cálculos são feitos **no seu computador** (ou no celular, no aplicativo Android). Os dados digitados não são enviados para nenhum servidor; a internet só é usada quando você pede a atualização das tabelas e, ao abrir o aplicativo, para verificar se há uma versão nova, o que pode ser desligado (seção [11](#11-tema-e-configurações)).
 
 Na primeira abertura, o aplicativo lembra que os resultados são simulações: antes de usá-los num pagamento, numa rescisão ou num processo, confira a competência, as tabelas e a convenção coletiva da categoria.
 
@@ -44,6 +47,7 @@ Na primeira abertura, o aplicativo lembra que os resultados são simulações: a
 ### Requisitos
 
 - Windows 10 ou superior, 64 bits.
+- No celular: Android 7.0 ou superior (seção [15](#15-aplicativo-android)).
 
 Não é preciso instalar o .NET nem outro componente: o instalador já inclui tudo o que o aplicativo usa.
 
@@ -63,13 +67,7 @@ Ao atualizar uma instalação anterior, o instalador usa a pasta já instalada (
 
 Abra **Cálculos Trabalhistas e Tributários** pelo Menu Iniciar ou pelo atalho da área de trabalho. A janela principal reúne, no menu lateral, as calculadoras, as tabelas e o histórico. Ao escolher um item, o formulário e o resultado aparecem na área central da mesma janela. Sem nenhum item aberto, a área central mostra a tela de boas-vindas, com a versão instalada no rodapé.
 
-Na tela de boas-vindas, **Baixar para Android** abre a [página da versão mais recente](https://github.com/mayconwisley/CalculosTrabalhistasTributarios/releases/latest). No celular, baixe o arquivo terminado em **-android.apk** em *Assets*. O aplicativo móvel requer Android 7.0 ou superior.
-
-No Android, o preenchimento possui **rascunho automático no aparelho**, separado dos cálculos salvos no histórico. Ao reabrir uma calculadora, escolha **Recuperar** ou **Descartar**. O rascunho guarda os dados após uma pausa de aproximadamente um segundo na edição e ao sair da página ou colocar o aplicativo em segundo plano; um encerramento abrupto pode perder a última edição. Use **Salvar** para manter um cálculo no histórico. Abrir um histórico ou receber uma transferência preserva os dados escolhidos, sem substituí-los automaticamente pelo rascunho. **Descartar rascunho**, no menu da calculadora, restaura o formulário inicial e apaga a cópia automática após confirmação; não exclui históricos salvos.
-
-Nas calculadoras com formulário comum, toque no título de uma seção para recolhê-la ou expandi-la. **Calcular** fica no rodapé; depois da apuração, **Resultado** leva ao resumo. Campos com erro de leitura mostram a mensagem junto da entrada. Datas e competências permitem digitar ou tocar no ícone de calendário (**Escolher**); confira os formatos `dd/MM/yyyy` e `MM/yyyy`. O resultado tem expansões independentes para **Premissas e limites**, **Demonstrativo** e **Memória de cálculo**. Listas longas são paginadas na tela, e o PDF mantém o conteúdo completo. No teclado, **Próximo** avança para a próxima entrada de texto visível e habilitada; na última, **Concluir** fecha o teclado. Seções recolhidas ficam fora dessa sequência.
-
-No **Histórico** do Android, use a busca, os filtros e os botões **Anterior** e **Próxima** para percorrer os cálculos, em páginas de até 20 registros. Para comparar, toque em **Selecionar / remover da comparação** em dois cálculos da mesma calculadora, inclusive em páginas diferentes, e depois em **Comparar selecionados**. A mensagem acima da lista identifica a seleção. **Atualizar** relê a lista e permite tentar novamente após uma falha.
+Na tela de boas-vindas, o quadro **Disponível também para Android** traz o link **Baixar para Android**, que abre a página da versão mais recente para instalar o aplicativo no celular (seção [15](#15-aplicativo-android)).
 
 Na primeira execução, o aplicativo prepara o banco de dados local com as tabelas históricas de INSS e IRRF. Esse processo é automático e acontece uma única vez.
 
@@ -1902,6 +1900,64 @@ Use **Atualizar pela internet**, quando disponível, ou corrija os valores manua
 | **Alt + F4** | Fecha a janela principal. |
 
 O botão **Atalhos**, ao lado do **?** de cada tela de cálculo, e o quadro **Atalhos de teclado** das Configurações mostram esta lista resumida.
+
+## 15. Aplicativo Android
+
+O aplicativo para celular traz as mesmas calculadoras e tabelas do Windows, com as mesmas regras de cálculo. Os dados ficam só no aparelho, e a internet é usada para atualizar as tabelas e, no trabalho no exterior, para consultar as cotações quando você pede.
+
+### 15.1 Instalando e atualizando
+
+1. No celular, abra a [página da versão mais recente](https://github.com/mayconwisley/CalculosTrabalhistasTributarios/releases/latest), ou use **Baixar para Android** na tela de boas-vindas do Windows.
+2. Em *Assets*, baixe o arquivo terminado em **-android.apk** e abra-o.
+3. Na primeira instalação, o Android pede permissão para instalar aplicativos daquela origem (o navegador ou o gerenciador de arquivos): permita e volte à instalação. O aplicativo não é distribuído pela Play Store, e o Play Protect pode pedir confirmação.
+
+Requer Android 7.0 ou superior. Para atualizar, instale o APK da versão nova por cima da anterior: os cálculos salvos, os rascunhos e as tabelas editadas no aparelho são preservados. Desinstalar o aplicativo apaga esses dados.
+
+### 15.2 Navegando
+
+A tela de abertura prepara o banco do aparelho e, na primeira abertura do dia, atualiza as tabelas pela internet; **Pular** adia a atualização para a próxima abertura. A tela inicial mostra as boas-vindas, **Continuar de onde parou** com os cinco cálculos salvos mais recentes e a busca de calculadoras e tabelas. O menu lateral, aberto pelo botão de três linhas no canto superior, agrupa as calculadoras e as tabelas como no Windows; a estrela ao lado de cada item marca as favoritas, que aparecem no alto.
+
+Em cada calculadora, a barra superior traz **Salvar** e **Ajuda** (a seção deste manual da calculadora, com **Abrir o manual completo (PDF)**); o menu de opções (três pontos, no canto direito da barra) traz **Preencher exemplo** (os dados fictícios deste manual), **Ir ao resultado** e **Descartar rascunho**.
+
+### 15.3 Preenchendo
+
+- Os campos ficam em seções; toque no título de uma seção para recolhê-la ou expandi-la. **Calcular** fica no rodapé da tela e, depois do cálculo, **Resultado** leva ao resumo.
+- Datas no formato **dd/mm/aaaa** e competências no formato **mm/aaaa** podem ser digitadas ou escolhidas pelo ícone de calendário ao lado do campo. Ao sair do campo, oito números de data ou seis de competência recebem as barras.
+- Um campo com erro mostra a mensagem logo abaixo dele: o aplicativo abre a seção e coloca o cursor no campo. Nas listas de meses e lançamentos, a página da linha com erro é exibida. Erros que não dependem de um único campo aparecem como mensagem geral.
+- No teclado do celular, **Próximo** passa para o próximo campo visível; no último, **Concluir** fecha o teclado. Seções recolhidas ficam fora dessa sequência.
+- Listas longas, como meses, lançamentos e depósitos do FGTS, mostram 12 linhas por vez, com **Anterior** e **Próxima**; o cálculo sempre considera todas as linhas.
+
+### 15.4 Rascunho automático
+
+Enquanto você preenche, o aplicativo guarda uma cópia do formulário no aparelho cerca de um segundo depois da última alteração, ao sair da calculadora e ao colocar o aplicativo em segundo plano. Se o aplicativo for fechado de forma abrupta antes disso, a última alteração pode se perder.
+
+Ao abrir de novo a calculadora, o aviso **Recuperar rascunho?** oferece **Recuperar** ou **Descartar**. Recuperar devolve os dados digitados, sem calcular e sem alterar o histórico; calcule de novo para conferir os valores. Há um rascunho por calculadora. Abrir um cálculo do histórico ou receber dados de outra calculadora (por exemplo, a jornada levada às horas extras) usa esses dados, sem o aviso do rascunho.
+
+**Descartar rascunho**, no menu de opções, pede confirmação, volta o formulário aos valores iniciais e apaga a cópia automática, sem excluir cálculos salvos. O rascunho não substitui o histórico: use **Salvar** para guardar um cálculo com nome.
+
+### 15.5 Resultado e PDF
+
+O resultado mostra o resumo e três partes que se abrem e fecham separadamente: **Premissas e limites** (aberta de início), **Demonstrativo** e **Memória de cálculo**. Listas longas do resultado são divididas em páginas na tela; o PDF traz o conteúdo completo.
+
+**Compartilhar PDF** gera o relatório, com a mesma organização do PDF do Windows e o aviso de simulação em todas as páginas, e abre o menu do Android para escolher o aplicativo (WhatsApp, e-mail e outros). O envio só acontece quando você o confirma no aplicativo escolhido. Alterar um campo depois do cálculo exige calcular de novo antes de compartilhar. Não há planilha do Excel no celular.
+
+As transferências entre calculadoras são as mesmas do Windows: a quitação do banco de horas para o holerite ou a rescisão, a jornada pelo ponto para as horas extras ou o holerite, as diferenças do reajuste retroativo para o RRA e os depósitos da conferência do FGTS para a rescisão. A calculadora de destino abre preenchida.
+
+### 15.6 Histórico
+
+**Salvar** guarda o formulário no histórico com um nome. O **Histórico** tem busca pelo nome ou pela calculadora, filtros de calculadora e período e a ordem da lista, em páginas de até 20 cálculos, percorridas por **Anterior** e **Próxima**. Cada cálculo tem **Abrir**, **Duplicar**, **Renomear** e **Excluir**; **Atualizar** lê a lista de novo, por exemplo depois de uma falha.
+
+Para comparar, toque em **Selecionar / remover da comparação** em dois cálculos da mesma calculadora, mesmo em páginas diferentes, e depois em **Comparar selecionados**. A mensagem acima da lista mostra o que está selecionado. A comparação refaz os dois cálculos e mostra as diferenças, como no Windows (seção [10.3](#103-histórico-de-cálculos)).
+
+### 15.7 Tabelas e configurações
+
+As tabelas, abertas pelo menu lateral, podem ser consultadas, editadas (**Novo registro**, **Editar este registro** e **Excluir selecionado**) e atualizadas com **Atualizar pela internet**, pelas mesmas fontes e regras do Windows (seção [9.3](#93-atualizando-pela-internet)).
+
+Em **Configurações**:
+
+- **Tema:** automático (acompanha o aparelho), claro ou escuro.
+- **Atualizar pela internet ao abrir:** liga ou desliga a atualização diária na abertura. **Atualizar agora** consulta todas as tabelas na hora, com **Cancelar**, e **Ver detalhes das pendências** mostra o motivo das que não foram atualizadas. Uma falha preserva os dados do aparelho.
+- **Enviar registro de erros:** os erros inesperados ficam guardados no aparelho, com a data, a versão e o ponto do aplicativo em que ocorreram, sem os valores dos formulários. Ao relatar um problema, envie o registro do mês pelo aplicativo que escolher.
 
 ---
 

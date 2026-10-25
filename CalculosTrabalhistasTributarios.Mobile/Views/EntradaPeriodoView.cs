@@ -42,7 +42,7 @@ public sealed class EntradaPeriodoView : ContentView
 
     private void AtualizarTipo()
     {
-        _entrada.Placeholder = Tipo == TipoCampoMobile.Competencia ? "MM/yyyy" : "dd/MM/yyyy";
+        _entrada.Placeholder = Tipo == TipoCampoMobile.Competencia ? "mm/aaaa" : "dd/mm/aaaa";
         _entrada.MaxLength = Tipo == TipoCampoMobile.Competencia ? 7 : 10;
     }
     private void AtualizarRotulo()
