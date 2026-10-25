@@ -1928,7 +1928,7 @@ Em cada calculadora, a barra superior traz **Salvar** e **Ajuda** (a seção des
 - Um campo com erro mostra a mensagem logo abaixo dele: o aplicativo abre a seção e coloca o cursor no campo. Nas listas de meses e lançamentos, a página da linha com erro é exibida. Erros que não dependem de um único campo aparecem como mensagem geral.
 - No teclado do celular, **Próximo** passa para o próximo campo visível; no último, **Concluir** fecha o teclado. Seções recolhidas ficam fora dessa sequência.
 - Listas longas, como meses, lançamentos e depósitos do FGTS, mostram 12 linhas por vez, com **Anterior** e **Próxima**; o cálculo sempre considera todas as linhas.
-- Em cada linha, **Duplicar** cria uma cópia logo abaixo e **Remover** a retira. Depois de remover, **Desfazer** devolve a linha com os valores e na mesma posição; só a última remoção pode ser desfeita, e gerar os meses de novo, abrir um histórico ou preencher o exemplo descarta essa opção.
+- Em cada linha, **Duplicar** cria uma cópia logo abaixo e **Remover** a retira. Depois de remover, **Desfazer**, na barra que aparece acima de **Calcular**, devolve a linha com os valores e na mesma posição; só a última remoção pode ser desfeita, e gerar os meses de novo, abrir um histórico ou preencher o exemplo descarta essa opção.
 - Nos vínculos do INSS em múltiplos vínculos e nos beneficiários da pensão alimentícia, em que a ordem muda o cálculo, **↑ Subir** e **↓ Descer** mudam a posição da linha.
 
 ### 15.4 Rascunho automático

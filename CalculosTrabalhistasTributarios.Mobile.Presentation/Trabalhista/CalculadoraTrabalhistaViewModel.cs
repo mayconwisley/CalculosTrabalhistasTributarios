@@ -24,6 +24,7 @@ public abstract partial class CalculadoraTrabalhistaViewModel : ObservableObject
         this.compartilhamento = compartilhamento;
         this.logger = logger;
         _formulario.Alterado += (_, _) => NotificarEdicao();
+        AcompanharRemocao(_formulario.RemocaoLinhas);
     }
     private void NotificarEdicao() => FormularioAlterado?.Invoke(this, EventArgs.Empty);
     protected static readonly CultureInfo Cultura = CultureInfo.GetCultureInfo("pt-BR");
@@ -103,6 +104,27 @@ public abstract partial class CalculadoraTrabalhistaViewModel : ObservableObject
     public ObservableCollection<GradeMobile> Grades => _formulario.Grades;
     /// <summary>Desfaz a última remoção nas listas de depósitos do FGTS, benefícios detalhados e lançamentos do banco de horas.</summary>
     public DesfazerRemocaoMobile RemocaoLinhas => _formulario.RemocaoLinhas;
+
+    /// <summary>
+    /// A última remoção do formulário, em qualquer grade ou lista, exibida no rodapé junto de Calcular: removida uma linha no
+    /// meio de uma lista longa, o topo da grade estaria fora da tela. Uma remoção nova descarta o desfazer da anterior.
+    /// </summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(TemRemocaoAtual))]
+    private DesfazerRemocaoMobile? _remocaoAtual;
+    public bool TemRemocaoAtual => RemocaoAtual is not null;
+
+    private void AcompanharRemocao(DesfazerRemocaoMobile remocao) => remocao.PropertyChanged += (_, e) =>
+    {
+        if (e.PropertyName != nameof(DesfazerRemocaoMobile.Visivel)) return;
+        if (remocao.Visivel && !ReferenceEquals(RemocaoAtual, remocao))
+        {
+            var anterior = RemocaoAtual;
+            RemocaoAtual = remocao;
+            anterior?.Descartar();
+        }
+        else if (!remocao.Visivel && ReferenceEquals(RemocaoAtual, remocao)) RemocaoAtual = null;
+    };
     public ObservableCollection<LinhaLancamentoBancoHorasMobile> LancamentosBancoHoras => _formulario.LancamentosBancoHoras;
     public PaginaLinhas<LinhaLancamentoBancoHorasMobile> PaginaLancamentosBancoHoras => field ??= new(LancamentosBancoHoras);
     public virtual bool ExibirLancamentosBancoHoras => false;
@@ -239,6 +261,7 @@ public abstract partial class CalculadoraTrabalhistaViewModel : ObservableObject
             Demonstrativo = null;
             Mensagem = null;
         };
+        AcompanharRemocao(grade.Remocao);
         Grades.Add(grade);
         return grade;
     }

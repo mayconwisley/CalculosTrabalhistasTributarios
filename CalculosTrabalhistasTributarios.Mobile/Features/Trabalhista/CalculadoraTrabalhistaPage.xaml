@@ -42,7 +42,6 @@
                                 <Button Text="{Binding RotuloGerar}" Style="{StaticResource BotaoSecundario}" Command="{Binding GerarCommand}" IsVisible="{Binding TemGerar}" SemanticProperties.Description="{Binding RotuloGerar}" />
                                 <Button Text="{Binding RotuloAdicionar}" Style="{StaticResource BotaoSecundario}" Command="{Binding AdicionarCommand}" SemanticProperties.Description="{Binding RotuloAdicionar}" />
                                 <Label Text="{Binding Aviso}" IsVisible="{Binding TemAviso}" Style="{StaticResource TextoSecundario}" />
-                                <views:BarraDesfazerView BindingContext="{Binding Remocao}" />
                                 <views:PaginadorLinhas x:Name="PaginadorTopo" BindingContext="{Binding Pagina}" />
                                 <VerticalStackLayout Spacing="16" BindableLayout.ItemsSource="{Binding Pagina.Exibidas}" IsVisible="{Binding TemLinhas}">
                                     <BindableLayout.ItemTemplate>
@@ -87,7 +86,6 @@
                     <Button Text="Gerar meses do contrato" Style="{StaticResource BotaoSecundario}" Command="{Binding GerarDepositosCommand}" AutomationId="GerarDepositosFgts" />
                     <Button Text="+ Mês" Style="{StaticResource BotaoSecundario}" Command="{Binding AdicionarDepositoCommand}" AutomationId="AdicionarDepositoFgts" />
                     <Label Text="{Binding AvisoHistorico}" Style="{StaticResource TextoSecundario}" />
-                    <views:BarraDesfazerView BindingContext="{Binding RemocaoLinhas}" />
                     <views:PaginadorLinhas x:Name="PaginadorDepositosTopo" BindingContext="{Binding PaginaDepositosFgts}" />
                     <VerticalStackLayout Spacing="16" BindableLayout.ItemsSource="{Binding PaginaDepositosFgts.Exibidas}" IsVisible="{Binding TemDepositosFgts}">
                         <BindableLayout.ItemTemplate>
@@ -113,7 +111,6 @@
                     <Label Text="Benefícios detalhados" Style="{StaticResource TituloSecao}" />
                     <Label Text="Até 30 benefícios opcionais. Informe custo e participação do empregado separadamente. Não repita valores do total agregado." Style="{StaticResource TextoSecundario}" />
                     <Button Text="+ Benefício" Style="{StaticResource BotaoSecundario}" Command="{Binding AdicionarBeneficioCommand}" AutomationId="AdicionarBeneficio" />
-                    <views:BarraDesfazerView BindingContext="{Binding RemocaoLinhas}" />
                     <VerticalStackLayout Spacing="16" BindableLayout.ItemsSource="{Binding BeneficiosDetalhados}" IsVisible="{Binding TemBeneficiosDetalhados}">
                         <BindableLayout.ItemTemplate>
                             <DataTemplate x:DataType="vm:LinhaBeneficioMobile">
@@ -139,7 +136,6 @@
                     <Label Text="Lançamentos do ciclo" Style="{StaticResource TituloSecao}" />
                     <Label Text="De 1 a 500 lançamentos com data dentro do ciclo. Horas de relógio de 0:01 a 10:00; créditos até 2:00 por dia. As folgas compensam primeiro os créditos mais antigos." Style="{StaticResource TextoSecundario}" />
                     <Button Text="+ Lançamento" Style="{StaticResource BotaoSecundario}" Command="{Binding AdicionarLancamentoCommand}" AutomationId="AdicionarLancamentoBanco" />
-                    <views:BarraDesfazerView BindingContext="{Binding RemocaoLinhas}" />
                     <views:PaginadorLinhas x:Name="PaginadorLancamentosTopo" BindingContext="{Binding PaginaLancamentosBancoHoras}" />
                     <VerticalStackLayout Spacing="16" BindableLayout.ItemsSource="{Binding PaginaLancamentosBancoHoras.Exibidas}" IsVisible="{Binding TemLancamentosBancoHoras}">
                         <BindableLayout.ItemTemplate>
@@ -195,10 +191,16 @@
         </VerticalStackLayout>
     </ScrollView>
         <Border Grid.Row="1" Padding="16,8" StrokeShape="Rectangle">
-            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
-                <Button Text="Calcular" Command="{Binding CalcularCommand}" AutomationId="CalcularTrabalhista" comportamentos:RetornoTatil.Ativo="True" />
-                <Button Grid.Column="1" Text="Resultado" IsVisible="{Binding TemResultado}" Style="{StaticResource BotaoSecundario}" Clicked="IrAoResultado" AutomationId="IrAoResultado" />
-            </Grid>
+            <VerticalStackLayout Spacing="8">
+                <!-- A última linha removida fica junto de Calcular, visível em qualquer ponto da rolagem. -->
+                <ContentView IsVisible="{Binding TemRemocaoAtual}">
+                    <views:BarraDesfazerView BindingContext="{Binding RemocaoAtual}" />
+                </ContentView>
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                    <Button Text="Calcular" Command="{Binding CalcularCommand}" AutomationId="CalcularTrabalhista" comportamentos:RetornoTatil.Ativo="True" />
+                    <Button Grid.Column="1" Text="Resultado" IsVisible="{Binding TemResultado}" Style="{StaticResource BotaoSecundario}" Clicked="IrAoResultado" AutomationId="IrAoResultado" />
+                </Grid>
+            </VerticalStackLayout>
         </Border>
     </Grid>
 </ContentPage>

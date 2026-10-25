@@ -127,6 +127,26 @@ public sealed class GradeAcoesLinhaTests
         Assert.Equal(2, vinculos.Linhas.Count);
     }
 
+    [Fact]
+    public void Rodape_mostra_so_a_ultima_remocao_do_formulario()
+    {
+        var calculadora = new InssMultiplosVinculosMobileViewModel(new SimulacaoNaoUsada(), new PdfNaoUsado(), NullLogger<InssMultiplosVinculosMobileViewModel>.Instance);
+        var vinculos = Assert.Single(calculadora.Grades);
+        Assert.False(calculadora.TemRemocaoAtual);
+
+        vinculos.RemoverCommand.Execute(vinculos.Linhas[0]);
+        Assert.Same(vinculos.Remocao, calculadora.RemocaoAtual);
+
+        var lista = new System.Collections.ObjectModel.ObservableCollection<string>(["x"]);
+        calculadora.RemocaoLinhas.Remover(lista, "x", "Item", 5);
+        Assert.Same(calculadora.RemocaoLinhas, calculadora.RemocaoAtual);
+        Assert.False(vinculos.Remocao.Visivel);
+
+        calculadora.RemocaoLinhas.DesfazerCommand.Execute(null);
+        Assert.Equal(["x"], lista);
+        Assert.Null(calculadora.RemocaoAtual);
+    }
+
     private sealed class SimulacaoNaoUsada : CalculosTrabalhistasTributarios.Application.Interfaces.ISimularDemonstrativoUseCase<CalculosTrabalhistasTributarios.Application.DTOs.SimularMultiplosVinculosInssRequest>
     {
         public Task<CalculosTrabalhistasTributarios.Domain.Comum.Result<CalculosTrabalhistasTributarios.Application.DTOs.DemonstrativoDto>> ExecutarAsync(

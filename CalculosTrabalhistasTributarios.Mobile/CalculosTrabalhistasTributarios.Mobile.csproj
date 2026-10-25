@@ -8,7 +8,9 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <MauiStrictXamlCompilation>true</MauiStrictXamlCompilation>
-    <!-- Binding sem x:DataType (inclusive com RelativeSource) é resolvido por reflexão e pode falhar com trimming; não deixe voltar. -->
+    <!-- Binding sem x:DataType (inclusive com RelativeSource) é resolvido por reflexão e pode falhar com trimming; não deixe voltar.
+         A compilação XAML (XamlC) só roda em Release: confira esses erros com -c Release. -->
+    <MauiEnableXamlCBindingWithSourceCompilation>true</MauiEnableXamlCBindingWithSourceCompilation>
     <WarningsAsErrors>$(WarningsAsErrors);XC0022;XC0025</WarningsAsErrors>
     <ApplicationTitle>Cálculos Trabalhistas e Tributários</ApplicationTitle>
     <ApplicationId>br.com.mayconwisley.calculostrabalhistastributarios</ApplicationId>
