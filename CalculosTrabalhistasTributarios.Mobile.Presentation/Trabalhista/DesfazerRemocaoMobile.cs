@@ -34,7 +34,7 @@ public sealed partial class DesfazerRemocaoMobile : ObservableObject
             lista.Insert(Math.Min(indice, lista.Count), item);
             return null;
         };
-        Texto = $"{descricao} removido(a).";
+        Texto = $"Linha removida: {descricao}.";
         PodeDesfazer = true;
     }
 

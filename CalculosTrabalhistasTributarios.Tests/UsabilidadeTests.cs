@@ -106,6 +106,29 @@ public class UsabilidadeTests
     }
 
     [Fact]
+    public void Comparacao_pareia_linhas_com_chave_pela_posicao_mesmo_com_nomes_diferentes()
+    {
+        var primeiro = Demonstrativo(
+            [new("1º vínculo: Empresa C", "", 5000m) { ChaveComparacao = "1º vínculo" }, new("2º vínculo: Empresa D", "", 2000m) { ChaveComparacao = "2º vínculo" }],
+            [new("INSS", "", 10m), new("Pensão - FilhoB", "", 100m) { ChaveComparacao = "Pensão do 1º beneficiário" }], "R$ 6.890,00");
+        var segundo = Demonstrativo(
+            [new("1º vínculo: Empresa A", "", 4500m) { ChaveComparacao = "1º vínculo" }, new("2º vínculo: Empresa B", "", 3000m) { ChaveComparacao = "2º vínculo" },
+             new("3º vínculo: Empresa E", "", 1000m) { ChaveComparacao = "3º vínculo" }],
+            [new("INSS", "", 10m), new("Pensão - Ana", "", 150m) { ChaveComparacao = "Pensão do 1º beneficiário" }], "R$ 8.340,00");
+
+        var linhas = Normalizadas(ComparacaoResultados.Linhas(primeiro, segundo)).Where(linha => linha.Grupo is "Proventos" or "Descontos");
+
+        Assert.Equal(
+        [
+            new("Proventos", "1º vínculo: Empresa C → Empresa A", "R$ 5.000,00", "R$ 4.500,00", "-R$ 500,00"),
+            new("Proventos", "2º vínculo: Empresa D → Empresa B", "R$ 2.000,00", "R$ 3.000,00", "+R$ 1.000,00"),
+            new("Proventos", "3º vínculo: Empresa E", "—", "R$ 1.000,00", "+R$ 1.000,00"),
+            new("Descontos", "INSS", "R$ 10,00", "R$ 10,00", "sem diferença"),
+            new LinhaResultadoComparadoViewModel("Descontos", "Pensão - FilhoB → Ana", "R$ 100,00", "R$ 150,00", "+R$ 50,00")
+        ], linhas);
+    }
+
+    [Fact]
     public void Comparacao_sem_diferenca_e_cenario_que_nao_recalcula()
     {
         var demonstrativo = Demonstrativo([new("Salário", "", 3000m)], [], "R$ 3.000,00");

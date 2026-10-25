@@ -34,7 +34,9 @@ public static class DemonstrativoPensaoAlimenticia
 
         // Com rendimentos, o demonstrativo é o salário de quem paga: o resultado é o mesmo líquido do cartão. Sem eles, a
         // pensão não sai de um salário informado e fica como informativo, com o comparativo das modalidades.
-        var linhasPensao = pensoes.Select(pensao => new VerbaDto(varias ? $"Pensão - {pensao.Nome}" : "Pensão alimentícia", Referencia(pensao.Regra), pensao.Pensao)).ToArray();
+        // Na comparação, os beneficiários se correspondem pela posição na lista, mesmo com nomes diferentes.
+        var linhasPensao = pensoes.Select((pensao, indice) => new VerbaDto(varias ? $"Pensão - {pensao.Nome}" : "Pensão alimentícia", Referencia(pensao.Regra), pensao.Pensao)
+            { ChaveComparacao = $"Pensão do {indice + 1}º beneficiário" }).ToArray();
         var proventos = new List<VerbaDto>();
         var descontos = new List<VerbaDto>();
         var informativos = new List<VerbaDto>();

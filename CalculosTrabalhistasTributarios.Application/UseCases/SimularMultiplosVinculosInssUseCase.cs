@@ -24,8 +24,11 @@ public sealed class SimularMultiplosVinculosInssUseCase(ITributacaoConsulta cons
             return apuracao.Erro;
         var calculo = apuracao.Valor;
 
-        var proventos = calculo.Vinculos.Select((item, indice) => new VerbaDto($"{indice + 1}º vínculo: {item.Vinculo.Identificacao}", NomeTipo(item.Vinculo.Tipo), item.Vinculo.Remuneracao)).ToArray();
-        var descontos = calculo.Vinculos.Select((item, indice) => new VerbaDto($"INSS do {indice + 1}º vínculo: {item.Vinculo.Identificacao}", NomeTipo(item.Vinculo.Tipo), item.Contribuicao)).ToArray();
+        // A ordem define o desconto: na comparação, o 1º vínculo de um cálculo corresponde ao 1º do outro, com qualquer nome.
+        var proventos = calculo.Vinculos.Select((item, indice) => new VerbaDto($"{indice + 1}º vínculo: {item.Vinculo.Identificacao}", NomeTipo(item.Vinculo.Tipo), item.Vinculo.Remuneracao)
+            { ChaveComparacao = $"{indice + 1}º vínculo" }).ToArray();
+        var descontos = calculo.Vinculos.Select((item, indice) => new VerbaDto($"INSS do {indice + 1}º vínculo: {item.Vinculo.Identificacao}", NomeTipo(item.Vinculo.Tipo), item.Contribuicao)
+            { ChaveComparacao = $"INSS do {indice + 1}º vínculo" }).ToArray();
         var memoria = calculo.Vinculos.Select((item, indice) => MemoriaVinculo(item, indice, calculo.Teto)).ToArray();
         var observacoes = new List<string>
         {

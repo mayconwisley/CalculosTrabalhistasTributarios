@@ -2,6 +2,7 @@ using CalculosTrabalhistasTributarios.Application.DTOs;
 using CalculosTrabalhistasTributarios.Application.UseCases;
 using CalculosTrabalhistasTributarios.Domain.Tributacao;
 using CalculosTrabalhistasTributarios.Presentation.ViewModels.Calculadoras;
+using CalculosTrabalhistasTributarios.Presentation.ViewModels.Historico;
 using CalculosTrabalhistasTributarios.Tests.Referencia;
 using Xunit;
 
@@ -166,5 +167,24 @@ public class MultiplosVinculosInssTests
         Assert.Equal(5000m - resultado.TotalDescontos, resultado.Resultado);
         Assert.Contains("antes do IRRF", resultado.RotuloResultado);
         Assert.Equal(2, resultado.Memoria.Count);
+    }
+
+    [Fact]
+    public async Task Comparacao_de_historicos_pareia_os_vinculos_pela_ordem_e_nao_pelo_nome()
+    {
+        var useCase = new SimularMultiplosVinculosInssUseCase(await Ambiente.ConsultaAsync());
+        var primeiro = (await useCase.ExecutarAsync(new SimularMultiplosVinculosInssRequest(new DateOnly(2026, 10, 1),
+            [new("Empresa A", TipoVinculoInss.Empregado, 3000m), new("Empresa B", TipoVinculoInss.Empregado, 2000m)]), TestContext.Current.CancellationToken)).Sucesso();
+        var segundo = (await useCase.ExecutarAsync(new SimularMultiplosVinculosInssRequest(new DateOnly(2026, 10, 1),
+            [new("Empresa C", TipoVinculoInss.Empregado, 3000m), new("Empresa D", TipoVinculoInss.Empregado, 2500m)]), TestContext.Current.CancellationToken)).Sucesso();
+
+        var linhas = ComparacaoResultados.Linhas(primeiro, segundo).Where(linha => linha.Grupo != "Resumo" && linha.Grupo != "Totais").ToArray();
+
+        Assert.Equal(["1º vínculo: Empresa A → Empresa C", "2º vínculo: Empresa B → Empresa D", "INSS do 1º vínculo: Empresa A → Empresa C", "INSS do 2º vínculo: Empresa B → Empresa D"],
+            linhas.Select(linha => linha.Item));
+        Assert.DoesNotContain(linhas, linha => linha.Primeiro == "—" || linha.Segundo == "—");
+        // A mesma remuneração na primeira posição dá o mesmo desconto: as faixas dependem da ordem, não do nome.
+        Assert.Equal("sem diferença", linhas[2].Diferenca);
+        Assert.Equal("+R$ 500,00", Texto.Normalizar(linhas[1].Diferenca));
     }
 }

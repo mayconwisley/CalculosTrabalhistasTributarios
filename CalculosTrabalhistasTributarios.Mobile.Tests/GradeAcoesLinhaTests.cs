@@ -75,13 +75,23 @@ public sealed class GradeAcoesLinhaTests
         grade.RemoverCommand.Execute(removida);
 
         Assert.Equal(["A", "C"], Nomes(grade));
-        Assert.Equal("Vínculo 2 removido(a).", grade.Remocao.Texto);
+        Assert.Equal("Linha removida: Vínculo 2 (B).", grade.Remocao.Texto);
         Assert.True(grade.Remocao.DesfazerCommand.CanExecute(null));
         grade.Remocao.DesfazerCommand.Execute(null);
         Assert.Equal(["A", "B", "C"], Nomes(grade));
         Assert.Same(removida, grade.Linhas[1]);
         Assert.False(grade.Remocao.Visivel);
         Assert.False(grade.Remocao.DesfazerCommand.CanExecute(null));
+    }
+
+    [Fact]
+    public void Remocao_sem_nome_identifica_a_linha_pela_posicao()
+    {
+        var grade = Criar(5, "A", " ");
+
+        grade.RemoverCommand.Execute(grade.Linhas[1]);
+
+        Assert.Equal("Linha removida: Vínculo 2.", grade.Remocao.Texto);
     }
 
     [Fact]

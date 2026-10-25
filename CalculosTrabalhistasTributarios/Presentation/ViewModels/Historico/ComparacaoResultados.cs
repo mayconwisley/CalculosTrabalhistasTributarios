@@ -6,7 +6,7 @@ namespace CalculosTrabalhistasTributarios.Presentation.ViewModels.Historico;
 /// <summary>
 /// Linhas da comparação de dois demonstrativos da mesma calculadora: destaques, quadro comparativo, proventos, descontos,
 /// totais e informativos, com a diferença do segundo para o primeiro quando os dois são valores em reais. Verbas com a
-/// mesma descrição no mesmo grupo são pareadas pela ordem em que aparecem.
+/// mesma descrição (ou a mesma <see cref="VerbaDto.ChaveComparacao"/>) no mesmo grupo são pareadas pela ordem em que aparecem.
 /// </summary>
 public static class ComparacaoResultados
 {
@@ -49,7 +49,7 @@ public static class ComparacaoResultados
 
     private static void Textos(List<LinhaResultadoComparadoViewModel> linhas, string grupo, IEnumerable<(string Item, string Valor)> primeiro, IEnumerable<(string Item, string Valor)> segundo)
     {
-        foreach (var par in Parear(primeiro.ToArray(), segundo.ToArray()))
+        foreach (var par in Parear(primeiro.Select(item => (item.Item, item.Item, item.Valor)).ToArray(), segundo.Select(item => (item.Item, item.Item, item.Valor)).ToArray()))
         {
             var diferenca = par.TemPrimeiro && par.TemSegundo && LerMoeda(par.Primeiro!) is { } numeroA && LerMoeda(par.Segundo!) is { } numeroB ? Diferenca(numeroA, numeroB) : string.Empty;
             linhas.Add(new(grupo, par.Item, par.TemPrimeiro ? par.Primeiro! : Ausente, par.TemSegundo ? par.Segundo! : Ausente, diferenca));
@@ -58,23 +58,26 @@ public static class ComparacaoResultados
 
     private static void Valores(List<LinhaResultadoComparadoViewModel> linhas, string grupo, IReadOnlyList<VerbaDto> primeiro, IReadOnlyList<VerbaDto> segundo)
     {
-        foreach (var par in Parear(primeiro.Select(verba => (verba.Descricao, verba.Valor)).ToArray(), segundo.Select(verba => (verba.Descricao, verba.Valor)).ToArray()))
+        foreach (var par in Parear(Itens(primeiro), Itens(segundo)))
             linhas.Add(Linha(grupo, par.Item, par.TemPrimeiro ? par.Primeiro : null, par.TemSegundo ? par.Segundo : null));
     }
 
     private static LinhaResultadoComparadoViewModel Linha(string grupo, string item, decimal? primeiro, decimal? segundo) =>
         new(grupo, item, primeiro is { } a ? Moeda(a) : Ausente, segundo is { } b ? Moeda(b) : Ausente, Diferenca(primeiro ?? 0m, segundo ?? 0m));
 
-    /// <summary>Junta pelo nome, na ordem do primeiro e depois os que só o segundo tem; nomes repetidos, pela ocorrência.</summary>
-    private static IEnumerable<(string Item, bool TemPrimeiro, T Primeiro, bool TemSegundo, T Segundo)> Parear<T>(IReadOnlyList<(string Item, T Valor)> primeiro, IReadOnlyList<(string Item, T Valor)> segundo)
+    private static (string Chave, string Item, decimal Valor)[] Itens(IReadOnlyList<VerbaDto> verbas) =>
+        [.. verbas.Select(verba => (verba.ChaveComparacao ?? verba.Descricao, verba.Descricao, verba.Valor))];
+
+    /// <summary>Junta pela chave, na ordem do primeiro e depois os que só o segundo tem; chaves repetidas, pela ocorrência.</summary>
+    private static IEnumerable<(string Item, bool TemPrimeiro, T Primeiro, bool TemSegundo, T Segundo)> Parear<T>(IReadOnlyList<(string Chave, string Item, T Valor)> primeiro, IReadOnlyList<(string Chave, string Item, T Valor)> segundo)
     {
-        static List<(string Chave, string Item, T Valor)> Chaves(IReadOnlyList<(string Item, T Valor)> itens)
+        static List<(string Chave, string Item, T Valor)> Chaves(IReadOnlyList<(string Chave, string Item, T Valor)> itens)
         {
             var vistos = new Dictionary<string, int>(StringComparer.Ordinal);
             return itens.Select(item =>
             {
-                var ocorrencia = vistos[item.Item] = vistos.GetValueOrDefault(item.Item) + 1;
-                return ($"{item.Item}\u0001{ocorrencia}", item.Item, item.Valor);
+                var ocorrencia = vistos[item.Chave] = vistos.GetValueOrDefault(item.Chave) + 1;
+                return ($"{item.Chave}\u0001{ocorrencia}", item.Item, item.Valor);
             }).ToList();
         }
         var a = Chaves(primeiro);
@@ -82,10 +85,26 @@ public static class ComparacaoResultados
         foreach (var item in a)
         {
             var temSegundo = b.Remove(item.Chave, out var outro);
-            yield return (item.Item, true, item.Valor, temSegundo, temSegundo ? outro.Valor : default!);
+            yield return (temSegundo ? Juntar(item.Item, outro.Item) : item.Item, true, item.Valor, temSegundo, temSegundo ? outro.Valor : default!);
         }
         foreach (var item in Chaves(segundo).Where(item => b.ContainsKey(item.Chave)))
             yield return (item.Item, false, default!, true, item.Valor);
+    }
+
+    /// <summary>
+    /// Linhas pareadas pela posição podem ter nomes diferentes: "1º vínculo: Empresa A → Empresa B" mostra os dois sem
+    /// repetir o início comum, cortado depois de ": " ou " - " para não partir um nome ao meio.
+    /// </summary>
+    private static string Juntar(string primeiro, string segundo)
+    {
+        if (primeiro == segundo) return primeiro;
+        var comum = 0;
+        while (comum < Math.Min(primeiro.Length, segundo.Length) && primeiro[comum] == segundo[comum]) comum++;
+        var prefixo = primeiro[..comum];
+        var doisPontos = prefixo.LastIndexOf(": ", StringComparison.Ordinal);
+        var traco = prefixo.LastIndexOf(" - ", StringComparison.Ordinal);
+        var fim = Math.Max(doisPontos < 0 ? -1 : doisPontos + 2, traco < 0 ? -1 : traco + 3);
+        return fim < 0 ? $"{primeiro} → {segundo}" : $"{primeiro} → {segundo[fim..]}";
     }
 
     private static string Diferenca(decimal primeiro, decimal segundo) => (segundo - primeiro) switch

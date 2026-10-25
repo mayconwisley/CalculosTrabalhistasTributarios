@@ -83,8 +83,15 @@ public sealed partial class GradeMobile : ObservableObject
     [RelayCommand]
     private void Remover(LinhaGradeMobile? linha)
     {
-        if (linha is not null) Remocao.Remover(Linhas, linha, linha.Titulo, Limite);
+        if (linha is not null) Remocao.Remover(Linhas, linha, Descrever(linha), Limite);
     }
+
+    // "Vínculo 2" não diz qual linha saiu; o nome, a data ou a competência digitados identificam a linha removida.
+    private static string Descrever(LinhaGradeMobile linha) =>
+        linha.Campos.FirstOrDefault(campo => campo.Tipo is TipoCampoMobile.Texto or TipoCampoMobile.Data or TipoCampoMobile.Competencia
+            && !string.IsNullOrWhiteSpace(campo.Valor)) is { } campo
+            ? $"{linha.Titulo} ({campo.Valor.Trim()})"
+            : linha.Titulo;
 
     private bool PodeDuplicar(LinhaGradeMobile? linha) => linha is not null && Linhas.Count < Limite;
 

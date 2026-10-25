@@ -196,9 +196,10 @@
                 <ContentView IsVisible="{Binding TemRemocaoAtual}">
                     <views:BarraDesfazerView BindingContext="{Binding RemocaoAtual}" />
                 </ContentView>
-                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                <!-- Margem em vez de ColumnSpacing: oculto o Resultado, Calcular chega à mesma borda direita da barra de desfazer. -->
+                <Grid ColumnDefinitions="*,Auto">
                     <Button Text="Calcular" Command="{Binding CalcularCommand}" AutomationId="CalcularTrabalhista" comportamentos:RetornoTatil.Ativo="True" />
-                    <Button Grid.Column="1" Text="Resultado" IsVisible="{Binding TemResultado}" Style="{StaticResource BotaoSecundario}" Clicked="IrAoResultado" AutomationId="IrAoResultado" />
+                    <Button Grid.Column="1" Margin="8,0,0,0" Text="Resultado" IsVisible="{Binding TemResultado}" Style="{StaticResource BotaoSecundario}" Clicked="IrAoResultado" AutomationId="IrAoResultado" />
                 </Grid>
             </VerticalStackLayout>
         </Border>
