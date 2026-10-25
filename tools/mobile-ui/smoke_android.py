@@ -61,15 +61,16 @@ class Android:
         wanted = normalizar(value)
         return any(normalizar(node.get(a, "")) == wanted for a in ["text", "content-desc"]) or normalizar(node.get("resource-id", "")) == wanted or normalizar(node.get("resource-id", "")).endswith("/" + wanted)
 
-    def find(self, value, timeout=40, scroll=False):
+    def find(self, value, timeout=40, scroll=False, scroll_down=False):
         deadline = time.monotonic() + timeout
+        nodes = []
         while time.monotonic() < deadline:
             nodes = self.nodes()
             for node in nodes:
                 if node.get("package") == self.package and self.matches(node, value) and node.get("enabled") != "false" and self.tappable(node):
                     return node
             if scroll:
-                self.swipe()
+                self.swipe(down=scroll_down)
             else:
                 time.sleep(0.3)
         raise AssertionError(f"Elemento não encontrado: {value}; textos: {[n.get('text') or n.get('content-desc') for n in nodes]}")
@@ -399,15 +400,17 @@ def smoke(app):
     app.tap("Ver o histórico", scroll=True)
     app.find("BuscaHistorico")
     app.tap_card("UI Ferias A", "Duplicar")
-    for _ in range(5):
-        app.swipe(down=True)
-    app.find("2 de 2 cálculos")
+    app.find("2 de 2 cálculos", scroll=True, scroll_down=True)
     app.screenshot("09-historico-paginado")
+    app.find("Cálculos salvos", scroll=True, scroll_down=True)
     app.tap_card("UI Ferias A (cópia)", "Selecionar / remover da comparação")
+    app.find("Cálculos salvos", scroll=True, scroll_down=True)
+    app.find("Selecionado: UI Ferias A (cópia). Selecione outro para comparar.", scroll=True)
+    app.find("Cálculos salvos", scroll=True, scroll_down=True)
     app.tap_card("UI Ferias A", "Selecionar / remover da comparação")
-    for _ in range(5):
-        app.swipe(down=True)
-    app.tap("Comparar selecionados")
+    app.find("Cálculos salvos", scroll=True, scroll_down=True)
+    app.find("Comparar: UI Ferias A (cópia) e UI Ferias A.", scroll=True)
+    app.tap("CompararHistorico", scroll=True)
     app.find("Comparação", timeout=40)
     deadline = time.monotonic() + 40
     while time.monotonic() < deadline:

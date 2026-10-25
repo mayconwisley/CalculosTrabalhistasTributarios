@@ -58,6 +58,7 @@ public sealed class CampoFormularioView : ContentView
         var entrada = new Entry { MaxLength = campo.EhMoeda ? 40 : 120, Keyboard = campo.EhNumerico || campo.EhMoeda ? Keyboard.Numeric : Keyboard.Text, ReturnType = ReturnType.Next };
         entrada.SetBinding(Entry.TextProperty, nameof(CampoMobile.Valor), BindingMode.TwoWay);
         if (campo.EhMoeda) entrada.Behaviors.Add(new EntradaMonetariaBehavior());
+        else if (campo.EhNumerico) entrada.Behaviors.Add(new EntradaNumericaBehavior());
         if (campo.Tipo == TipoCampoMobile.Horas) entrada.Placeholder = "10:30 ou 10,5";
         if (campo.Tipo == TipoCampoMobile.Texto) entrada.HorizontalTextAlignment = TextAlignment.Start;
         return entrada;

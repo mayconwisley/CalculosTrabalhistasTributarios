@@ -22,7 +22,7 @@
                     <Label Text="Valor bruto (R$)" Style="{StaticResource RotuloCampo}" />
                     <Border Style="{StaticResource CaixaCampo}"><Entry Text="{Binding ValorBruto}" AutomationId="ValorBruto" SemanticProperties.Description="Rendimento bruto em reais"><Entry.Behaviors><comportamentos:EntradaMonetariaBehavior /></Entry.Behaviors></Entry></Border>
                     <Label Text="Dependentes para IRRF" Style="{StaticResource RotuloCampo}" />
-                    <Border Style="{StaticResource CaixaCampo}"><Entry Text="{Binding Dependentes}" FontSize="18" MaxLength="3" AutomationId="Dependentes" SemanticProperties.Description="Quantidade de dependentes para IRRF" /></Border>
+                    <Border Style="{StaticResource CaixaCampo}"><Entry Text="{Binding Dependentes}" FontSize="18" MaxLength="3" AutomationId="Dependentes" SemanticProperties.Description="Quantidade de dependentes para IRRF"><Entry.Behaviors><comportamentos:EntradaNumericaBehavior /></Entry.Behaviors></Entry></Border>
                     <Label Text="Base de INSS e FGTS" Style="{StaticResource RotuloCampo}" />
                     <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
                         <Grid.Triggers><DataTrigger TargetType="Grid" Binding="{Binding EhAposentadoria}" Value="True"><Setter Property="IsVisible" Value="False" /></DataTrigger></Grid.Triggers>

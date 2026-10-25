@@ -100,7 +100,7 @@ O PDF usa `Android.Graphics.Pdf.PdfDocument`, sem serviços externos, com a mesm
 
 ## Testes da interface Android
 
-O CI compila o aplicativo Android e executa `tools/mobile-ui/smoke_android.py` em emulador AOSP API 35, x86_64, 2 GB e teclado virtual. O APK Release, com AOT desativado apenas para reduzir o tempo de compilação dos testes, usa o identificador terminado em `.uitests`, separado da instalação normal. O script recusa depender de um pacote de produção e limpa somente os dados do pacote de testes. Ele verifica busca, exemplo de férias, expansão do resultado, foco em data inválida, recuperação após encerramento do processo, descarte, tema escuro, largura de aproximadamente 320 DIPs e fonte ampliada. Evidências e logcat são publicados pelo job, inclusive em falha.
+A validação é local, sem workflow de GitHub Actions. Execute `tools/mobile-ui/smoke_android.py` em emulador dedicado; a configuração de referência é AOSP API 35, x86_64, 2 GB e teclado virtual. O APK Release, com AOT desativado apenas para reduzir o tempo de compilação dos testes, usa o identificador terminado em `.uitests`, separado da instalação normal. O script recusa depender de um pacote de produção e limpa somente os dados do pacote de testes. Ele verifica busca, exemplo de férias, expansão do resultado, foco em data inválida, recuperação após encerramento do processo, descarte, tema escuro, largura de aproximadamente 320 DIPs e fonte ampliada. Evidências e logcat são gravados localmente em `TestResults/android-ui`, inclusive em falha. O percurso completo de interface é executado separadamente; os geradores de pacotes executam os testes .NET, sem iniciar o emulador.
 
 Para executar localmente, com SDK, JDK, workload Android e emulador disponíveis:
 
@@ -110,6 +110,8 @@ python tools/mobile-ui/smoke_android.py --apk CalculosTrabalhistasTributarios.Mo
 ```
 
 Use `--adb` para informar o executável e `--serial` quando houver mais de um aparelho conectado. `--artifacts` define o diretório das evidências. O script altera temporariamente tamanho, densidade, fonte e tema do emulador; execute em um emulador dedicado a testes. Esses testes não comprovam envio de PDF a destinatários nem comportamento em todos os fabricantes.
+
+O workflow remoto foi removido em 25/10/2026. As referências a CI nos registros de validação abaixo descrevem a configuração existente na época.
 
 ## Aparência e validação
 
@@ -215,7 +217,7 @@ Abra a solução principal ou a solução móvel no Visual Studio, selecione o p
 dotnet build .\CalculosTrabalhistasTributarios.Mobile\CalculosTrabalhistasTributarios.Mobile.csproj -t:Run -f net10.0-android
 ```
 
-Os testes de apresentação podem rodar sem Android SDK. Para compilar somente o desktop sem workloads móveis, use `dotnet build .\CalculosTrabalhistasTributarios.Desktop.slnf`, como no README e no CI. A compilação da solução principal completa exige também o ambiente MAUI Android.
+Os testes de apresentação podem rodar sem Android SDK. Para compilar somente o desktop sem workloads móveis, use `dotnet build .\CalculosTrabalhistasTributarios.Desktop.slnf`, como no README. A compilação da solução principal completa exige também o ambiente MAUI Android.
 
 ## Publicação do APK
 

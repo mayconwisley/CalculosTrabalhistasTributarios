@@ -12,7 +12,6 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/mayconwisley/CalculosTrabalhistasTributarios/actions/workflows/ci.yml"><img src="https://github.com/mayconwisley/CalculosTrabalhistasTributarios/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
   <a href="https://github.com/mayconwisley/CalculosTrabalhistasTributarios/releases/latest"><img src="https://img.shields.io/github/v/release/mayconwisley/CalculosTrabalhistasTributarios?label=vers%C3%A3o" alt="Versão mais recente" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/licen%C3%A7a-MIT-green" alt="Licença MIT" /></a>
   <img src="https://img.shields.io/badge/.NET-10.0-512BD4?logo=dotnet&logoColor=white" alt=".NET 10" />
@@ -269,7 +268,7 @@ dotnet run --project .\CalculosTrabalhistasTributarios\CalculosTrabalhistasTribu
 
 O executável de desenvolvimento é gerado como `CalculosTrabalhistasTributarios.exe` em `CalculosTrabalhistasTributarios\bin\<configuração>\net10.0-windows`.
 
-A solução principal `CalculosTrabalhistasTributarios.sln` reúne os projetos do Windows e do Android e exige o ambiente MAUI Android para compilar por completo. O filtro `CalculosTrabalhistasTributarios.Desktop.slnf`, usado acima e no CI, compila só o Windows; `CalculosTrabalhistasTributarios.Mobile.sln` abre só a parte do Android.
+A solução principal `CalculosTrabalhistasTributarios.sln` reúne os projetos do Windows e do Android e exige o ambiente MAUI Android para compilar por completo. O filtro `CalculosTrabalhistasTributarios.Desktop.slnf`, usado acima, compila só o Windows; `CalculosTrabalhistasTributarios.Mobile.sln` abre só a parte do Android.
 
 ## Testes
 
@@ -290,7 +289,7 @@ dotnet test .\CalculosTrabalhistasTributarios.Tests
 dotnet test .\CalculosTrabalhistasTributarios.Mobile.Tests
 ```
 
-O `gerar-instalador.ps1` e o `gerar-apk.ps1` rodam os testes antes de publicar: se algum falhar, a versão não é gerada. No GitHub, o [CI](.github/workflows/ci.yml) compila o filtro do desktop e o APK Android, roda os testes do desktop e da apresentação mobile e verifica percursos reais em emulador Android em cada push no `master` e em cada pull request.
+O `gerar-instalador.ps1` e o `gerar-apk.ps1` rodam os testes antes de publicar: se algum falhar, a versão não é gerada. Não há workflow de GitHub Actions configurado. O percurso de interface Android pode ser executado localmente conforme [docs/MAUI.md](docs/MAUI.md#testes-da-interface-android).
 
 ## Gerar o instalador
 
@@ -310,7 +309,7 @@ O instalador é gerado localmente com o Inno Setup. O script publica o aplicativ
 
 ## Publicar uma nova versão
 
-Esta seção é para o mantenedor. A publicação acontece ao enviar uma tag no formato `vX.Y.Z`. Todo o processo roda na sua máquina; o GitHub recebe apenas a tag, o instalador e o APK do Android prontos.
+Esta seção é para o mantenedor. A publicação acontece ao enviar uma tag no formato `vX.Y.Z`. A geração, os testes automatizados e o envio dos pacotes rodam na sua máquina. A publicação não depende do GitHub Actions.
 
 Ative os hooks do repositório uma única vez por clone:
 
@@ -330,8 +329,8 @@ git push origin master v1.2.0
 Durante o push, o hook:
 
 1. Compila o aplicativo a partir de uma cópia isolada do código da tag (`git worktree`), com a versão da tag gravada no executável e no APK.
-2. Roda os testes do mobile e gera o APK assinado; depois roda os testes dos cálculos e gera o instalador com o Inno Setup. Se algo falhar, **o push é cancelado** e nenhuma versão quebrada chega ao GitHub.
-3. Deixa um processo em segundo plano aguardando a tag chegar ao GitHub. Em seguida, ele cria o release com o instalador, o APK, as instruções de instalação e o SHA-256 de cada arquivo. O resultado é avisado em uma janela e registrado em `artefatos\release-vX.Y.Z.log`.
+2. Roda os testes do mobile e gera o APK assinado; depois roda os testes dos cálculos e gera o instalador com o Inno Setup. Se essa etapa local falhar, **o push é cancelado**. Os testes locais não incluem o percurso completo de interface do emulador.
+3. Deixa um processo em segundo plano aguardando a tag chegar ao GitHub. Em seguida, cria o release com o instalador, o APK, as instruções de instalação e o SHA-256 de cada arquivo. O resultado é avisado em uma janela e registrado em `artefatos\release-vX.Y.Z.log`.
 
 Pushes sem tag de versão não são afetados. Tags com sufixo, como `v1.2.0-beta.1`, são publicadas como *pré-lançamento*.
 
