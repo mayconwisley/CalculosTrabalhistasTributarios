@@ -319,6 +319,7 @@ dotnet run --project .\tools\GeradorManual
 - Confira as páginas afetadas quando houver alterações de tabelas, imagens ou conteúdo que possam mudar quebras e legibilidade. Sucesso do gerador não garante qualidade visual.
 - Use exemplos fictícios em prints e testes. Não inclua dados pessoais ou históricos reais.
 - Documentação para o usuário deve explicar decisões de uso, não detalhes internos de DI, DTOs ou serialização.
+- Termos de uso, licença, responsabilidade e privacidade ficam em `docs/legal` e são lidos por `Presentation/Documentos/DocumentosLegais` no desktop e no Android (arquivos compilados também em `Mobile.Presentation`). Altere o texto só ali; a licença inclui `LICENSE` e `THIRD-PARTY-NOTICES.md` pela linha `<!-- incluir: arquivo -->`. Mudanças de rede, armazenamento, permissões ou registro de erros precisam ser refletidas na Política de Privacidade.
 - Mantenha este `AGENTS.md` atualizado quando convenções arquiteturais ou fluxos de desenvolvimento mudarem. Evite números transitórios de versão da aplicação, quantidade de calculadoras ou total de testes.
 
 ## 15. Git, distribuição e publicação

@@ -40,7 +40,7 @@ Este manual descreve a versão para Windows. As calculadoras e as tabelas do cel
 
 Todos os cálculos são feitos **no seu computador** (ou no celular, no aplicativo Android). Os dados digitados não são enviados para nenhum servidor; a internet só é usada quando você pede a atualização das tabelas e, ao abrir o aplicativo, para verificar se há uma versão nova, o que pode ser desligado (seção [11](#11-tema-e-configurações)).
 
-Na primeira abertura, o aplicativo lembra que os resultados são simulações: antes de usá-los num pagamento, numa rescisão ou num processo, confira a competência, as tabelas e a convenção coletiva da categoria.
+Na primeira abertura, o aplicativo lembra que os resultados são simulações: antes de usá-los num pagamento, numa rescisão ou num processo, confira a competência, as tabelas e a convenção coletiva da categoria. O aviso também indica onde ler os Termos de Uso, a Licença de uso, a Responsabilidade de uso e a Política de Privacidade, que ficam em **Configurações** (capítulo 11).
 
 ## 2. Antes de começar
 
@@ -1794,6 +1794,8 @@ O botão **Configurações**, no rodapé do menu lateral, abre na área central 
 
 **Atalhos de teclado:** a lista dos atalhos, a mesma do botão **Atalhos** das calculadoras e do capítulo 14.
 
+**Termos, licença e privacidade:** o último quadro abre, na própria área central, os **Termos de Uso**, a **Licença de uso** (licença MIT do aplicativo e licenças dos componentes de terceiros), a **Responsabilidade de uso** (os resultados são simulações e precisam ser validados por um profissional especializado) e a **Política de Privacidade** (o que fica guardado no computador e quando a internet é usada). **Voltar às configurações** ou **Esc** retornam à lista. O link **Termos, licença e privacidade**, no rodapé da tela inicial, leva direto a esse quadro. O aplicativo Android mostra o mesmo texto (seção [15.7](#157-tabelas-e-configurações)).
+
 As preferências ficam no arquivo `%LOCALAPPDATA%\CalculoIRRF\settings.json`, que não precisa ser editado à mão.
 
 **Tamanho e posição das janelas:** a janela principal e a comparação do histórico reabrem com o tamanho e a posição que tinham ao fechar, inclusive maximizadas. Se o monitor onde a janela estava não estiver mais conectado, ela abre na tela principal.
@@ -1853,7 +1855,7 @@ As preferências ficam no arquivo `%LOCALAPPDATA%\CalculoIRRF\settings.json`, qu
 Ela abre pelo item **Simulação tributária** do menu lateral, na mesma janela das demais calculadoras. As simulações salvas no histórico em versões anteriores continuam abrindo, recalculando e podendo ser comparadas. A pensão alimentícia também deixou de depender dela: tem os próprios campos de rendimentos, que já vêm preenchidos com os dados da última simulação.
 
 **Os meus dados são enviados para a internet?**
-Não. Os cálculos e as tabelas ficam no seu computador. A internet só é usada para atualizar as tabelas, na tela de abertura uma vez por dia ou pelo botão **Atualizar pela internet**, o que apenas lê as páginas das fontes; em links para páginas oficiais; e, ao abrir, para consultar no GitHub se há versão nova. As consultas ao abrir podem ser desligadas em **Configurações**, no rodapé do menu lateral.
+Não. Os cálculos e as tabelas ficam no seu computador. A internet só é usada para atualizar as tabelas, na tela de abertura uma vez por dia ou pelo botão **Atualizar pela internet**, o que apenas lê as páginas das fontes; em links para páginas oficiais; e, ao abrir, para consultar no GitHub se há versão nova. As consultas ao abrir podem ser desligadas em **Configurações**, no rodapé do menu lateral. A **Política de Privacidade**, no quadro **Termos, licença e privacidade** das Configurações, detalha o que fica guardado e cada consulta feita.
 
 **Uso as calculadoras para quem trabalha em jornada parcial?**
 Sim. Informe o salário da jornada parcial: o INSS, o IRRF, o FGTS e as verbas são calculados sobre ele. Desde 2017, as férias do tempo parcial seguem a mesma tabela de dias do tempo integral (CLT, art. 58-A, § 7º).
@@ -1968,6 +1970,7 @@ Em **Configurações**:
 - **Atualizar pela internet ao abrir:** liga ou desliga a atualização diária na abertura. **Atualizar agora** consulta todas as tabelas na hora, com **Cancelar**, e **Ver detalhes das pendências** mostra o motivo das que não foram atualizadas. Uma falha preserva os dados do aparelho.
 - **Cópia de segurança do histórico:** **Fazer cópia de segurança** gera um arquivo com todos os cálculos salvos e abre o menu do Android para guardá-lo (no Drive, por e-mail ou em outro aplicativo). **Restaurar cópia de segurança** lê esse arquivo e acrescenta ao histórico os cálculos que ainda não estão nele, com as datas originais; restaurar o mesmo arquivo de novo não duplica nada. Só são aceitas cópias feitas pelo aplicativo Android; um arquivo com algum cálculo inválido é recusado inteiro, sem alterar o histórico. A cópia não inclui rascunhos nem tabelas editadas.
 - **Enviar registro de erros:** os erros inesperados ficam guardados no aparelho, com a data, a versão e o ponto do aplicativo em que ocorreram, sem os valores dos formulários. Ao relatar um problema, envie o registro do mês pelo aplicativo que escolher.
+- **Termos, licença e privacidade:** os botões **Termos de Uso**, **Licença de uso**, **Responsabilidade de uso** e **Política de Privacidade** abrem o documento numa página própria, com o mesmo texto do Windows; o botão voltar do Android retorna às Configurações.
 
 ---
 

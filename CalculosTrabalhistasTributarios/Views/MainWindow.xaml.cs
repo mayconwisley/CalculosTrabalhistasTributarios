@@ -10,6 +10,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Navigation;
+using System.Windows.Threading;
 
 namespace CalculosTrabalhistasTributarios.Views;
 
@@ -29,6 +30,13 @@ public partial class MainWindow : Window
         ContentRendered += async (_, _) => await viewModel.CarregarAvisosAsync();
         // Também ao voltar de uma calculadora, que pode ter salvo um cálculo no histórico.
         Activated += async (_, _) => await viewModel.AtualizarRecentesAsync();
+        // Cada documento legal abre do começo e com o foco na rolagem, para as setas e o Page Down funcionarem.
+        viewModel.PropertyChanged += (_, argumentos) =>
+        {
+            if (argumentos.PropertyName != nameof(MainWindowViewModel.DocumentoAberto) || !viewModel.DocumentoLegalAberto) return;
+            RolagemDocumento.ScrollToTop();
+            Dispatcher.BeginInvoke(() => RolagemDocumento.Focus(), DispatcherPriority.Loaded);
+        };
     }
 
     public bool Exibir(Window janela, string chave)
@@ -108,6 +116,14 @@ public partial class MainWindow : Window
         if (MostrarInicio()) _viewModel.ConfiguracoesAbertas = true;
     }
 
+    // O link do rodapé leva às Configurações já no quadro dos termos, que fica no fim da página.
+    private void DocumentosLegais_Click(object sender, RoutedEventArgs e)
+    {
+        if (!MostrarInicio()) return;
+        _viewModel.ConfiguracoesAbertas = true;
+        Dispatcher.BeginInvoke(() => CartaoDocumentosLegais.BringIntoView(), DispatcherPriority.Loaded);
+    }
+
     private bool MostrarInicio()
     {
         if (!LiberarConteudo()) return false;
@@ -144,6 +160,11 @@ public partial class MainWindow : Window
         if (BuscaLateral.IsKeyboardFocusWithin && _viewModel.Busca.Length > 0)
         {
             _viewModel.Busca = string.Empty;
+            e.Handled = true;
+        }
+        else if (_viewModel.DocumentoLegalAberto)
+        {
+            _viewModel.DocumentoAberto = null;
             e.Handled = true;
         }
         else if (ConteudoInterno.Visibility == Visibility.Visible || _viewModel.HistoricoAberto || _viewModel.ConfiguracoesAbertas)

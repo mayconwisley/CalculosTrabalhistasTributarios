@@ -1,5 +1,6 @@
 using CalculosTrabalhistasTributarios.Application.DTOs;
 using CalculosTrabalhistasTributarios.Application.Interfaces;
+using CalculosTrabalhistasTributarios.Presentation.Documentos;
 using CalculosTrabalhistasTributarios.Presentation.Interfaces;
 using CalculosTrabalhistasTributarios.Presentation.Mvvm;
 using CalculosTrabalhistasTributarios.Presentation.ViewModels.Calculadoras;
@@ -25,6 +26,7 @@ public sealed class MainWindowViewModel : ViewModelBase
     private ThemeMode _temaSelecionado = ThemeManager.CurrentMode;
     private bool _historicoAberto;
     private bool _configuracoesAbertas;
+    private DocumentoLegal? _documentoAberto;
     private string _busca = string.Empty;
     private IReadOnlyList<AtualizacaoDeTabela> _atualizacaoAoAbrir = [];
     private AvisoInicioViewModel? _avisoPendencias;
@@ -35,6 +37,8 @@ public sealed class MainWindowViewModel : ViewModelBase
     {
         _atualizacaoTabelas = atualizacaoTabelas;
         AtualizarTabelasAgoraCommand = new AsyncRelayCommand(AtualizarTabelasAgoraAsync);
+        AbrirDocumentoCommand = new RelayCommand(documento => DocumentoAberto = documento as DocumentoLegal);
+        FecharDocumentoCommand = new RelayCommand(_ => DocumentoAberto = null);
         _baixador = baixador;
         _executor = executor;
         _notificador = notificador;
@@ -276,11 +280,36 @@ public sealed class MainWindowViewModel : ViewModelBase
         {
             if (!SetProperty(ref _configuracoesAbertas, value)) return;
             AtalhoConfiguracoes.Ativo = value;
+            DocumentoAberto = null;
+            OnPropertyChanged(nameof(MostrarConfiguracoes));
             if (!value) return;
             HistoricoAberto = false;
             OnPropertyChanged(nameof(SituacaoTabelas));
         }
     }
+
+    /// <summary>A lista das configurações some enquanto um dos documentos legais está aberto no lugar dela.</summary>
+    public bool MostrarConfiguracoes => ConfiguracoesAbertas && DocumentoAberto is null;
+
+    /// <summary>Termos de uso, licença, responsabilidade e privacidade, abertos pelas Configurações.</summary>
+    public IReadOnlyList<DocumentoLegal> DocumentosLegais { get; } = Documentos.DocumentosLegais.Lista;
+
+    /// <summary>Documento legal mostrado na área central; fechar ou sair das Configurações volta à lista.</summary>
+    public DocumentoLegal? DocumentoAberto
+    {
+        get => _documentoAberto;
+        set
+        {
+            if (!SetProperty(ref _documentoAberto, value)) return;
+            OnPropertyChanged(nameof(MostrarConfiguracoes));
+            OnPropertyChanged(nameof(DocumentoLegalAberto));
+        }
+    }
+
+    public bool DocumentoLegalAberto => DocumentoAberto is not null;
+
+    public RelayCommand AbrirDocumentoCommand { get; }
+    public RelayCommand FecharDocumentoCommand { get; }
 
     /// <summary>Quando as tabelas foram atualizadas pela internet, lido do arquivo de configurações.</summary>
     public string SituacaoTabelas => AberturaViewModel.DescreverUltimaAtualizacao(ConfiguracoesUsuario.Atuais, DateTime.Now);

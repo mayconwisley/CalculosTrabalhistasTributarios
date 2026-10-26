@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:CalculosTrabalhistasTributarios.Mobile.Presentation.Configuracoes;assembly=CalculosTrabalhistasTributarios.Mobile.Presentation"
+             xmlns:documentos="clr-namespace:CalculosTrabalhistasTributarios.Presentation.Documentos;assembly=CalculosTrabalhistasTributarios.Mobile.Presentation"
              x:Class="CalculosTrabalhistasTributarios.Mobile.Features.Configuracoes.ConfiguracoesPage" x:DataType="vm:ConfiguracoesMobileViewModel" Title="Configurações">
     <ScrollView><VerticalStackLayout Padding="20,18,20,28" Spacing="16" MaximumWidthRequest="640">
         <Label Text="Configurações" Style="{StaticResource TituloPagina}" SemanticProperties.HeadingLevel="Level1" />
@@ -36,6 +37,17 @@
             <Label Text="Erros inesperados ficam guardados neste aparelho, com a data, a versão e o ponto do aplicativo em que ocorreram, sem os valores dos formulários. Para relatar um problema, envie o registro do mês." Style="{StaticResource TextoSecundario}" />
             <Button Text="Enviar registro de erros" Command="{Binding EnviarRegistroDeErrosCommand}" AutomationId="EnviarRegistroErros"
                     SemanticProperties.Hint="Abre o compartilhamento do aparelho com o arquivo do mês" />
+        </VerticalStackLayout></Border>
+        <Border><VerticalStackLayout Spacing="10"><Label Text="Termos, licença e privacidade" Style="{StaticResource TituloSecao}" />
+            <Label Text="Condições de uso, licença do aplicativo e dos componentes, responsabilidade pelos resultados e tratamento dos dados." Style="{StaticResource TextoSecundario}" />
+            <Button Text="Termos de Uso" Style="{StaticResource BotaoSecundario}" Clicked="AbrirDocumento" CommandParameter="{x:Static documentos:TipoDocumentoLegal.TermosDeUso}"
+                    AutomationId="DocumentoTermosDeUso" SemanticProperties.Hint="Condições para usar o aplicativo, as tabelas e as atualizações" />
+            <Button Text="Licença de uso" Style="{StaticResource BotaoSecundario}" Clicked="AbrirDocumento" CommandParameter="{x:Static documentos:TipoDocumentoLegal.LicencaDeUso}"
+                    AutomationId="DocumentoLicencaDeUso" SemanticProperties.Hint="Licença MIT do aplicativo e licenças dos componentes de terceiros" />
+            <Button Text="Responsabilidade de uso" Style="{StaticResource BotaoSecundario}" Clicked="AbrirDocumento" CommandParameter="{x:Static documentos:TipoDocumentoLegal.ResponsabilidadeDeUso}"
+                    AutomationId="DocumentoResponsabilidadeDeUso" SemanticProperties.Hint="Cálculo simulado, valores estimados e o papel do profissional especializado" />
+            <Button Text="Política de Privacidade" Style="{StaticResource BotaoSecundario}" Clicked="AbrirDocumento" CommandParameter="{x:Static documentos:TipoDocumentoLegal.PoliticaDePrivacidade}"
+                    AutomationId="DocumentoPoliticaDePrivacidade" SemanticProperties.Hint="Dados guardados só no aparelho e quando a internet é usada" />
         </VerticalStackLayout></Border>
         <Label Text="{Binding Versao}" Style="{StaticResource TextoSecundario}" />
         <Button Text="Abrir projeto" Style="{StaticResource BotaoLink}" Command="{Binding AbrirProjetoCommand}" />

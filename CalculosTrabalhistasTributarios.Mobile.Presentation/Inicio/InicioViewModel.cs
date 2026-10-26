@@ -81,7 +81,8 @@ public sealed partial class InicioViewModel : ObservableObject
         "Os resultados deste aplicativo são simulações feitas com a legislação e as tabelas cadastradas.\n\n" +
         "Antes de usá-los num pagamento, numa rescisão ou num processo, confira a competência, as tabelas e a convenção coletiva " +
         "da categoria. Procure um profissional especializado no cálculo para apurar e validar os valores aplicáveis ao seu caso.\n\n" +
-        "O manual do usuário abre pelo menu e por Ajuda, na tela de cada calculadora.";
+        "O manual do usuário abre pelo menu e por Ajuda, na tela de cada calculadora. Os Termos de Uso, a Licença de uso, " +
+        "a Responsabilidade de uso e a Política de Privacidade ficam em Configurações.";
 
     /// <summary>
     /// Uma vez só, como no desktop: os resultados são simulações, e quem usa precisa saber disso antes de pagar ou cobrar um valor.

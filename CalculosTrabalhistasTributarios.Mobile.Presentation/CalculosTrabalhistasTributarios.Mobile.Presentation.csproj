@@ -21,5 +21,10 @@
     <EmbeddedResource Include="Exemplos\*.json" LogicalName="Exemplos.%(Filename)%(Extension)" />
     <!-- A ajuda de cada calculadora mostra a seção do manual dentro do aplicativo. -->
     <EmbeddedResource Include="..\docs\MANUAL.md" LogicalName="Manual.MANUAL.md" />
+    <!-- Termos, licença, responsabilidade e privacidade: mesmo leitor e mesmos arquivos do desktop. -->
+    <Compile Include="..\CalculosTrabalhistasTributarios\Presentation\Documentos\*.cs" Link="Documentos\%(Filename)%(Extension)" />
+    <EmbeddedResource Include="..\docs\legal\*.md" LogicalName="DocumentosLegais.%(Filename)%(Extension)" />
+    <EmbeddedResource Include="..\LICENSE" LogicalName="DocumentosLegais.LICENSE" />
+    <EmbeddedResource Include="..\THIRD-PARTY-NOTICES.md" LogicalName="DocumentosLegais.THIRD-PARTY-NOTICES.md" />
   </ItemGroup>
 </Project>

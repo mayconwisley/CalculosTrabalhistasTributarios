@@ -133,7 +133,8 @@ public partial class App : System.Windows.Application
             "Os resultados deste aplicativo são simulações feitas com a legislação e as tabelas cadastradas.\n\n" +
             "Antes de usá-los num pagamento, numa rescisão ou num processo, confira a competência, as tabelas e a convenção coletiva " +
             "da categoria. Procure um profissional especializado no cálculo para apurar e validar os valores aplicáveis ao seu caso.\n\n" +
-            "O manual do usuário abre pelo botão Manual do usuário ou pela tecla F1.",
+            "O manual do usuário abre pelo botão Manual do usuário ou pela tecla F1. Os Termos de Uso, a Licença de uso, " +
+            "a Responsabilidade de uso e a Política de Privacidade ficam em Configurações e no rodapé da tela inicial.",
             "Antes de começar", TipoCaixaMensagem.Informacao, janela);
         ConfiguracoesUsuario.Alterar(configuracoes => configuracoes.AvisoSimulacaoLido = true);
     }

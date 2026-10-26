@@ -409,6 +409,8 @@ Contribuições são bem-vindas: correções de cálculo com a base legal, teste
 - No cálculo de estabilidade, cabe ao usuário informar corretamente as datas, a média remuneratória, os dias-base e os complementos aplicáveis ao vínculo.
 - Atualizações online dependem da disponibilidade e da estrutura das páginas das fontes oficiais e alternativas.
 
+Os [Termos de Uso](docs/legal/TERMOS-DE-USO.md), a [Licença de uso](docs/legal/LICENCA-DE-USO.md), a [Responsabilidade de uso](docs/legal/RESPONSABILIDADE-DE-USO.md) e a [Política de Privacidade](docs/legal/POLITICA-DE-PRIVACIDADE.md) ficam em `docs/legal` e são embutidos nos dois aplicativos, que os mostram em **Configurações > Termos, licença e privacidade** (no Windows, também pelo link no rodapé da tela inicial). A licença inclui na tela o `LICENSE` e o `THIRD-PARTY-NOTICES.md`, sem cópia do texto.
+
 ## Licença
 
 Distribuído sob a [licença MIT](LICENSE): você pode usar, modificar e redistribuir o código, inclusive em projetos comerciais, mantendo o aviso de copyright.
