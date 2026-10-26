@@ -18,6 +18,8 @@ public sealed class SimularSimplesNacionalUseCase(ITributacaoConsulta tributacao
         if (request.ProLaboreAtual < 0m || request.ProLaboreAtual > 1_000_000_000m || decimal.Round(request.ProLaboreAtual, 2) != request.ProLaboreAtual
             || request.Dependentes is < 0 or > 99)
             return Erro.Validacao("Informe um pró-labore positivo ou zero, com dois decimais, e de 0 a 99 dependentes.");
+        if (request.Entrada.ReceitaMes == 0m)
+            return Erro.Validacao("Informe a receita bruta do mês; sem receita no período, não há DAS a pagar.");
         var resultado = CalculadoraSimplesNacional.Calcular(request.Entrada);
         if (resultado.Falhou)
             return resultado.Erro;

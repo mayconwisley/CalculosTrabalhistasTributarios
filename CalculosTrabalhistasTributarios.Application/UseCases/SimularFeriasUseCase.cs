@@ -26,6 +26,8 @@ public sealed class SimularFeriasUseCase(ITributacaoConsulta tributacaoConsulta)
     {
         if (request.Salario < 0m || request.Medias < 0m || request.Dependentes < 0 || request.Faltas < 0 || request.DiasGozo < 0 || request.PrevidenciaComplementar < 0m)
             return Erro.Validacao("Os valores, as faltas, os dias e a quantidade de dependentes não podem ser negativos.");
+        if (request.Salario + request.Medias == 0m)
+            return Erro.Validacao("Informe o salário ou as médias de variáveis que formam a base das férias.");
         var basesForaFerias = new[] { request.BaseSalarialForaFeriasNoMes, request.BaseForaFeriasMesSeguinte, request.BaseForaFeriasTerceiroMes };
         if (basesForaFerias.Any(valor => valor < 0m || valor > 1_000_000_000m || decimal.Round(valor, 2) != valor))
             return Erro.Validacao("As bases fora das férias devem ser valores não negativos, com centavos e de até R$ 1 bilhão por competência, sem incluir férias ou seu terço.");

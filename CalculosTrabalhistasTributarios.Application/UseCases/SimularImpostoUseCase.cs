@@ -36,8 +36,8 @@ public sealed class SimularImpostoUseCase(ITributacaoConsulta tributacaoConsulta
 
     private static Result Validar(SimularImpostoRequest r)
     {
-        if (r.ValorBruto < 0m || r.ValorBruto > LimiteValor)
-            return Erro.Validacao($"Valor bruto: informe um valor de zero a {Formato.Moeda(LimiteValor)}, por exemplo 3.500,00.");
+        if (r.ValorBruto <= 0m || r.ValorBruto > LimiteValor)
+            return Erro.Validacao($"Valor bruto: informe um valor maior que zero e até {Formato.Moeda(LimiteValor)}, por exemplo 3.500,00.");
         if (r.BaseInss < 0m || r.BaseInss > LimiteValor)
             return Erro.Validacao($"Base de INSS: informe um valor de zero a {Formato.Moeda(LimiteValor)}; em geral, é igual ao valor bruto.");
         if (r.QuantidadeDependentes is < 0 or > LimiteDependentes)

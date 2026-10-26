@@ -36,7 +36,7 @@ public class SimulacaoTributariaTests
         var competencia = DateOnly.ParseExact(mes + "-01", "yyyy-MM-dd");
         var simulador = new SimularImpostoUseCase(await Ambiente.ConsultaAsync());
         var diferencas = new List<string>();
-        for (var bruto = 0m; bruto <= 12_000m; bruto += 7.31m)
+        for (var bruto = 7.31m; bruto <= 12_000m; bruto += 7.31m)
             foreach (var dependentes in new[] { 0, 1, 3 })
             {
                 var app = await simulador.ExecutarAsync(new SimularImpostoRequest(competencia, bruto, bruto, dependentes), TestContext.Current.CancellationToken).Sucesso();
@@ -66,7 +66,6 @@ public class SimulacaoTributariaTests
     [InlineData("2026-10", 3000.00, "12%")]
     [InlineData("2026-10", 1000.00, "7,5%")]
     [InlineData("2019-06", 3000.00, "11%")]
-    [InlineData("2026-10", 0.00, "")]
     public async Task Referencia_do_inss_e_a_aliquota_da_ultima_faixa_alcancada(string mes, decimal bruto, string referencia)
     {
         // Em 10/2026, R$ 3.000,00 passa do limite de R$ 2.902,84 da faixa de 9% e chega à de 12%; antes de 03/2020, a alíquota

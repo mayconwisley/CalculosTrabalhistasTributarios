@@ -642,7 +642,7 @@ Informe o **salário**, o **divisor mensal (horas)** do contrato e o **regime da
 - **Divisor mensal:** informe as horas contratuais, por exemplo 180, 200 ou 220, conforme o contrato. Aceita valor maior que zero e até 744 horas, com duas casas decimais. O indicador representa custo por hora contratual, não por hora produtiva.
 - **Benefícios:** informe o total mensal líquido ou use **+ Benefício** para até 30 linhas com descrição, custo e participação. As linhas são somadas ao total agregado; não duplique valores. A participação não pode superar o custo.
 - **Provisões:** 13º = salário ÷ 12; férias + 1/3 = salário ÷ 12 × 4/3. Os encargos também incidem sobre elas. Desativar provisões exclui o 13º e o adicional de férias da projeção.
-- **Limites:** salário e cada valor de benefício aceitam de zero a R$ 100.000.000,00, com até dois decimais. RAT aceita 1%, 2% ou 3%; FAP, de 0,5 a 2 com até quatro decimais; terceiros, de 0% a 100% com até quatro decimais. Esses limites técnicos não substituem a conferência das alíquotas da empresa.
+- **Limites:** o salário aceita de R$ 0,01 a R$ 100.000.000,00, e cada valor de benefício, de zero ao mesmo limite, com até dois decimais. RAT aceita 1%, 2% ou 3%; FAP, de 0,5 a 2 com até quatro decimais; terceiros, de 0% a 100% com até quatro decimais. Esses limites técnicos não substituem a conferência das alíquotas da empresa.
 
 ![Resumo do custo do funcionário](imagens/23-custo-funcionario-resultado.png)
 
@@ -654,7 +654,7 @@ O resumo distingue os conceitos abaixo:
 | Reserva de provisões | Reserva mensal para 13º, férias com 1/3 e seus encargos. |
 | Custo anual | Projeção para o ano completo, sem duplicar o salário do mês de férias. |
 | Custo médio mensal | Custo anual dividido por 12. |
-| Acréscimo médio sobre o salário | Diferença percentual entre a média mensal e o salário. Com salário zero, aparece “Não calculado”. |
+| Acréscimo médio sobre o salário | Diferença percentual entre a média mensal e o salário. |
 | Custo por hora contratual | Média mensal anualizada dividida pelo divisor informado. |
 
 O total do demonstrativo é **Desembolso + reserva mensal**: ele soma as linhas e não deve ser confundido com a média anualizada. No exemplo, o desembolso é R$ 4.574,00, a reserva é R$ 792,16, o total com reserva é R$ 5.366,16 e a média mensal é R$ 5.026,66. O custo anual é R$ 60.319,92 e o custo por hora de 220 horas é R$ 22,85.
@@ -1809,6 +1809,7 @@ As preferências ficam no arquivo `%LOCALAPPDATA%\CalculoIRRF\settings.json`, qu
 | "O limite de renda do calendário de AAAA não está no aplicativo." | No abono salarial, informe o limite do calendário divulgado pelo Ministério do Trabalho. |
 | "Os outros descontos não podem passar de uma remuneração mensal..." | Na rescisão, a compensação de descontos é limitada a uma remuneração (CLT, art. 477, § 5º). |
 | "O campo \"Valor bruto\" está em formato inválido..." ou "Dependentes: informe de 0 a 99 dependentes..." | O aviso aparece no formulário, com o campo destacado. Corrija o campo indicado: competência no formato mm/aaaa, valores com vírgula nos centavos e dependentes como número inteiro. |
+| "Informe o salário...", "Informe o valor bruto..." ou outro "Informe..." ao calcular | Nenhuma calculadora apresenta resultado com o valor principal zerado, como o salário, o valor bruto, a receita do mês ou os valores das competências de uma grade. Informe o valor indicado na mensagem, maior que zero. |
 | "Informe média, dias-base, datas (dd/mm/aaaa) e complementos em formatos válidos." | Confira as datas da estabilidade e os valores digitados. |
 | "O fim da estabilidade deve ser posterior à data de demissão." | Corrija a data final, que precisa ser depois da demissão. |
 | "Os dias-base devem ser maiores que zero." | Informe o divisor da média, normalmente 30. |

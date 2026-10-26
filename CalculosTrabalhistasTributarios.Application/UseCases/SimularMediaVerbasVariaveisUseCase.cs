@@ -15,6 +15,8 @@ public sealed class SimularMediaVerbasVariaveisUseCase : ISimularDemonstrativoUs
         if (resultado.Falhou)
             return Task.FromResult<Result<DemonstrativoDto>>(resultado.Erro);
         var media = resultado.Valor;
+        if (media.Total == 0m)
+            return Task.FromResult<Result<DemonstrativoDto>>(Erro.Validacao("Informe os valores das verbas variáveis de pelo menos uma competência."));
         var primeiro = media.Meses[0].Competencia;
         var ultimo = media.Meses[^1].Competencia;
         var componentes = new (string Nome, decimal Total, decimal Media)[]

@@ -46,7 +46,7 @@ public static class CalculadoraCustoFuncionario
     private static Result Validar(EntradaCustoFuncionario e)
     {
         if (!Enum.IsDefined(e.Regime)) return Erro.Validacao("Regime da empresa inválido. Selecione um dos regimes disponíveis.");
-        if (!MoedaValida(e.Salario)) return Erro.Validacao("O salário deve estar entre 0 e 100.000.000,00, com até duas casas decimais.");
+        if (!MoedaValida(e.Salario) || e.Salario == 0m) return Erro.Validacao("Informe o salário do empregado, maior que zero e até 100.000.000,00, com até duas casas decimais.");
         if (!MoedaValida(e.Beneficios)) return Erro.Validacao("Os benefícios devem estar entre 0 e 100.000.000,00, com até duas casas decimais.");
         if (e.HorasMensais is <= 0m or > 744m || decimal.Round(e.HorasMensais, 2) != e.HorasMensais)
             return Erro.Validacao("O divisor mensal deve ser maior que zero e até 744 horas, com até duas casas decimais.");

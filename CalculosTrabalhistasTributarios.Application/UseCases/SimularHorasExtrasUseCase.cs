@@ -18,6 +18,10 @@ public sealed class SimularHorasExtrasUseCase(ITributacaoConsulta tributacaoCons
     {
         if (request.Salario < 0m || request.AdicionaisSalariais < 0m || request.Dependentes < 0)
             return Erro.Validacao("Os valores, as horas e a quantidade de dependentes não podem ser negativos.");
+        if (request.Salario == 0m)
+            return Erro.Validacao("Informe o salário, que define o valor da hora.");
+        if (request.HorasFaixa1 + request.HorasFaixa2 + request.HorasNoturnas + request.HorasExtrasNoturnas == 0m)
+            return Erro.Validacao("Informe as horas extras ou as horas noturnas do mês.");
         var informadas = new HorasInformadas(request.HorasFaixa1, request.PercentualFaixa1, request.HorasFaixa2, request.PercentualFaixa2,
             request.HorasNoturnas, request.PercentualNoturno, request.HorasExtrasNoturnas, request.Feriados, request.Rural);
         if (CalculadoraHoras.Validar(informadas, request.Divisor) is { Falhou: true } horasInvalidas)

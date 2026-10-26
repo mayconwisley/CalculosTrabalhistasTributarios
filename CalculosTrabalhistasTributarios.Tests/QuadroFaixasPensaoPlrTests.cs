@@ -42,16 +42,13 @@ public class QuadroFaixasPensaoPlrTests
     }
 
     [Fact]
-    public async Task Plr_isenta_tem_so_a_primeira_faixa_e_sem_base_nao_tem_quadro()
+    public async Task Plr_isenta_tem_so_a_primeira_faixa()
     {
         var consulta = await Ambiente.ConsultaAsync();
         var isenta = await new SimularPlrUseCase(consulta).ExecutarAsync(new SimularPlrRequest(new DateOnly(2026, 10, 1), 5_000m, 0m, 0m), TestContext.Current.CancellationToken).Sucesso();
         var quadro = Assert.IsType<QuadroFaixasDto>(Assert.Single(isenta.Memoria, item => item.Quadro is not null).Quadro);
         Assert.Equal([5_000m, 0m, 0m, 0m, 0m], quadro.Faixas.Select(faixa => faixa.ParteDaBase));
         Assert.Equal(0m, quadro.Valor);
-
-        var semBase = await new SimularPlrUseCase(consulta).ExecutarAsync(new SimularPlrRequest(new DateOnly(2026, 10, 1), 0m, 0m, 0m), TestContext.Current.CancellationToken).Sucesso();
-        Assert.DoesNotContain(semBase.Memoria, item => item.Quadro is not null);
     }
 
     [Fact]

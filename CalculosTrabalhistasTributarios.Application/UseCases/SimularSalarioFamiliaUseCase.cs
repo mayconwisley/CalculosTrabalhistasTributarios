@@ -17,6 +17,8 @@ public sealed class SimularSalarioFamiliaUseCase(ITributacaoConsulta tributacaoC
     {
         if (r.Remuneracao < 0m || r.Filhos < 0)
             return Erro.Validacao("A remuneração e a quantidade de filhos não podem ser negativas.");
+        if (r.Remuneracao == 0m)
+            return Erro.Validacao("Informe a remuneração do mês cheio, que define o direito à cota.");
         if (r.DiasTrabalhados is < 1 or > 30)
             return Erro.Validacao("Os dias trabalhados devem estar entre 1 e 30.");
 

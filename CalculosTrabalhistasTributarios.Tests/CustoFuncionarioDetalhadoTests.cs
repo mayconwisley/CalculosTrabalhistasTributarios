@@ -69,19 +69,12 @@ public class CustoFuncionarioDetalhadoTests
         Assert.Equal(5026.66m / horas, r.CustoHora);
     }
 
-    [Fact]
-    public void Zero_nao_produz_percentual_ficticio()
-    {
-        var r = Motor.Calcular(Padrao with { Salario = 0m }).Valor;
-        Assert.Null(r.Acrescimo);
-        Assert.Equal(6000m, r.CustoAnual);
-    }
-
     public static IEnumerable<object[]> Invalidos()
     {
         yield return [Padrao with { Regime = (RegimeTributario)999 }];
         yield return [Padrao with { Regime = RegimeTributario.EmpregadorDomestico, Aprendiz = true }];
         yield return [Padrao with { Salario = -0.01m }];
+        yield return [Padrao with { Salario = 0m }];
         yield return [Padrao with { Salario = decimal.MaxValue }];
         yield return [Padrao with { Salario = 0.001m }];
         yield return [Padrao with { Beneficios = decimal.MaxValue }];

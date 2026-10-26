@@ -16,8 +16,10 @@ public sealed class SimularSalarioPeloLiquidoUseCase(ITributacaoConsulta tributa
 
     public async Task<Result<DemonstrativoDto>> ExecutarAsync(SimularSalarioPeloLiquidoRequest request, CancellationToken cancellationToken)
     {
-        if (request.LiquidoDesejado < 0m || request.Dependentes < 0)
-            return Erro.Validacao("Informe um líquido e uma quantidade de dependentes maiores ou iguais a zero.");
+        if (request.LiquidoDesejado <= 0m)
+            return Erro.Validacao("Informe o salário líquido desejado, maior que zero.");
+        if (request.Dependentes < 0)
+            return Erro.Validacao("A quantidade de dependentes não pode ser negativa.");
 
         var consultaTabelas = await tributacaoConsulta.ObterTabelasAsync(request.Competencia, cancellationToken);
         if (consultaTabelas.Falhou)

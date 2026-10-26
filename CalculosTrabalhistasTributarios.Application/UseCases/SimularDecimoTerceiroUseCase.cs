@@ -24,6 +24,8 @@ public sealed class SimularDecimoTerceiroUseCase(ITributacaoConsulta tributacaoC
     {
         if (request.Salario < 0m || request.Medias < 0m || request.Dependentes < 0 || request.ValorAdiantamento < 0m || request.PrevidenciaComplementar < 0m)
             return Erro.Validacao("Os valores e a quantidade de dependentes não podem ser negativos.");
+        if (request.Salario + request.Medias == 0m)
+            return Erro.Validacao("Informe o salário ou as médias de variáveis que formam a base do 13º.");
         if (request.Avos is < 1 or > 12)
             return Erro.Validacao("Os avos devem estar entre 1 e 12: um para cada mês com 15 dias ou mais de trabalho no ano.");
 

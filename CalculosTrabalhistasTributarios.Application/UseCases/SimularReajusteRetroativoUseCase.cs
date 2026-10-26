@@ -17,6 +17,8 @@ public sealed class SimularReajusteRetroativoUseCase : ISimularDemonstrativoUseC
             return Task.FromResult<Result<DemonstrativoDto>>(resultado.Erro);
 
         var calculo = resultado.Valor;
+        if (calculo.Parcelas.All(item => item.Diferenca <= 0m))
+            return Task.FromResult<Result<DemonstrativoDto>>(Erro.Validacao("Nenhum lançamento tem diferença a pagar: informe uma base devida maior que a base paga em pelo menos uma competência."));
         var primeiro = calculo.Parcelas.Min(item => item.Parcela.Competencia);
         var ultimo = calculo.Parcelas.Max(item => item.Parcela.Competencia);
         var proventos = calculo.Parcelas.Where(item => item.Diferenca > 0m)

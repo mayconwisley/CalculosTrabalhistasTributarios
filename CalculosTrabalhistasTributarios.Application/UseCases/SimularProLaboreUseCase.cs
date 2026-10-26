@@ -20,6 +20,8 @@ public sealed class SimularProLaboreUseCase(ITributacaoConsulta tributacaoConsul
     {
         if (r.Valor < 0m || r.Dependentes < 0 || r.AliquotaIss < 0m)
             return Erro.Validacao("O valor, a alíquota do ISS e a quantidade de dependentes não podem ser negativos.");
+        if (r.Valor == 0m)
+            return Erro.Validacao("Informe o valor bruto do pró-labore ou do serviço prestado.");
         if (r.AliquotaIss > 5m)
             return Erro.Validacao("A alíquota máxima do ISS é de 5% (Lei Complementar 116/2003).");
 

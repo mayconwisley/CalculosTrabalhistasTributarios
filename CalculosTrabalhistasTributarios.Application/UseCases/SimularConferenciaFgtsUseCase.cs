@@ -19,6 +19,8 @@ public sealed class SimularConferenciaFgtsUseCase : ISimularDemonstrativoUseCase
     {
         cancellationToken.ThrowIfCancellationRequested();
         var resultado = ConferenciaFgts.Calcular(request.Categoria, request.Lancamentos, request.Desligamento);
+        if (resultado.Sucesso && request.Lancamentos.All(item => item.Remuneracao == 0m && item.DepositoInformado == 0m))
+            return Task.FromResult(Result<DemonstrativoDto>.Falha(Erro.Validacao("Informe a remuneração ou o depósito de pelo menos uma competência.")));
         return Task.FromResult(resultado.Falhou ? Result<DemonstrativoDto>.Falha(resultado.Erro) : Montar(resultado.Valor));
     }
 

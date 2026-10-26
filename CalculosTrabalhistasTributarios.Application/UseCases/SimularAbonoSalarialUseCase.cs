@@ -15,6 +15,8 @@ public sealed class SimularAbonoSalarialUseCase(ITributacaoConsulta tributacaoCo
         var anoPagamento = r.AnoBase + 2;
         if (r.AnoBase < 2017)
             return Erro.Validacao("Informe um ano-base a partir de 2017.");
+        if (r.RemuneracaoMedia <= 0m)
+            return Erro.Validacao("Informe a remuneração média mensal do ano-base, maior que zero.");
         var limite = r.Limite > 0m ? r.Limite : AbonoSalarial.LimitePublicado(anoPagamento);
         if (limite is null)
             return Erro.Validacao($"O limite de renda do calendário de {anoPagamento} não está no aplicativo: informe-o no campo Limite de renda, como divulgado pelo Ministério do Trabalho.");

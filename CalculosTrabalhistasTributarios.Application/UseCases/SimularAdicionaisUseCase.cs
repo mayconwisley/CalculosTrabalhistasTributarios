@@ -20,6 +20,8 @@ public sealed class SimularAdicionaisUseCase(ITributacaoConsulta tributacaoConsu
     {
         if (r.Salario < 0m || r.ValorBaseInformado < 0m || r.Dependentes < 0)
             return Erro.Validacao("O salário, a base informada e a quantidade de dependentes não podem ser negativos.");
+        if (r.Salario == 0m)
+            return Erro.Validacao("Informe o salário do empregado, ao qual o adicional é somado.");
         if (r.Grau == GrauInsalubridade.Nenhum && !r.Periculosidade)
             return Erro.Validacao("Escolha um grau de insalubridade ou marque a periculosidade.");
 

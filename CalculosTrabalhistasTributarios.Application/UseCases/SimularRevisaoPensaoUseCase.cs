@@ -16,6 +16,8 @@ public sealed class SimularRevisaoPensaoUseCase(ISimularPensaoUseCase simularPen
     {
         if (r.ValorBruto < 0m || r.Dependentes < 0)
             return Erro.Validacao("O valor bruto e a quantidade de dependentes não podem ser negativos.");
+        if (r.ValorBruto == 0m)
+            return Erro.Validacao("Informe o valor bruto dos rendimentos de quem paga a pensão.");
 
         var cenarioAtual = await Simular(r, r.Atual, "Pensão atual", cancellationToken);
         if (cenarioAtual.Falhou)

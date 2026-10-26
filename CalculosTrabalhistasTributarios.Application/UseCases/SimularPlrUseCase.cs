@@ -18,6 +18,8 @@ public sealed class SimularPlrUseCase(ITributacaoConsulta tributacaoConsulta) : 
     {
         if (r.Valor < 0m || r.PlrAnterior < 0m || r.ImpostoRetidoAnterior < 0m || r.Pensao is { EhPercentual: false, Valor: < 0m })
             return Erro.Validacao("Os valores da PLR, do imposto retido e da pensão não podem ser negativos.");
+        if (r.Valor == 0m)
+            return Erro.Validacao("Informe o valor da PLR paga nesta parcela.");
         if (r.Pensao is { EhPercentual: false } informada && informada.Valor > r.Valor)
             return Erro.Validacao("A pensão alimentícia não pode ser maior que a PLR paga.");
 

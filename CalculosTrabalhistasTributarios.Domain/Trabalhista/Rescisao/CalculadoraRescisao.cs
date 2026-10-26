@@ -38,6 +38,8 @@ public static class CalculadoraRescisao
         if (c.Salario < 0m || c.Medias < 0m || c.SaldoFgts < 0m || c.AdiantamentoDecimoTerceiro < 0m || c.FaltasPeriodoAtual < 0 || c.OutrosProventos < 0m || c.FaltasNoMes < 0
             || c.SemanasComFalta < 0 || c.OutrosDescontos < 0m || c.VerbasIndenizatorias < 0m)
             return Erro.Validacao("Os valores, as faltas e a quantidade de dependentes não podem ser negativos.");
+        if (c.Salario + c.Medias == 0m)
+            return Erro.Validacao("Informe o salário do empregado ou as médias de variáveis, que formam a base das verbas rescisórias.");
         if (c.SemanasComFalta > 5)
             return Erro.Validacao("Um mês tem no máximo 5 semanas com falta.");
         // A compensação de descontos na rescisão é limitada a uma remuneração mensal (CLT, art. 477, § 5º).
