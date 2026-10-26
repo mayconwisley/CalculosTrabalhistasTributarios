@@ -50,7 +50,15 @@ public partial class CalculadoraTrabalhistaPage : ContentPage
                 if (controle is null) return;
                 await RolagemFormulario.ScrollToAsync(controle, ScrollToPosition.Start, false);
                 controle.FocarEntrada();
-                SemanticScreenReader.Default.Announce(campo.Erro ?? "Confira o campo.");
+                SemanticScreenReader.Default.Announce(_viewModel.Mensagem ?? campo.Erro ?? "Confira o campo.");
+            });
+        else if (args.PropertyName == nameof(CalculadoraTrabalhistaViewModel.GradeComErro) && _viewModel.GradeComErro is { } grade)
+            Dispatcher.Dispatch(async () =>
+            {
+                var bloco = ApoioFormularioMobile.Descendentes(this).OfType<Border>().FirstOrDefault(b => ReferenceEquals(b.BindingContext, grade));
+                if (bloco is null) return;
+                await RolagemFormulario.ScrollToAsync(bloco, ScrollToPosition.Start, false);
+                SemanticScreenReader.Default.Announce(grade.Erro ?? "Confira a grade.");
             });
         else if (args.PropertyName == nameof(CalculadoraTrabalhistaViewModel.Demonstrativo) && _viewModel.TemResultado)
             Dispatcher.Dispatch(async () => await RolagemFormulario.ScrollToAsync(Resultado, ScrollToPosition.Start, false));

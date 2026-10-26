@@ -81,7 +81,8 @@ public sealed class SaqueAniversarioViewModelTests
         var vm = Criar();
         vm.Saldo = saldo;
         await vm.CalcularCommand.ExecuteAsync(null);
-        Assert.Contains("Saldo do extrato", vm.Mensagem);
+        Assert.Contains("Saldo do extrato", vm.Erros.Aviso);
+        Assert.NotNull(vm.Erros[nameof(vm.Saldo)]);
         Assert.Null(vm.Demonstrativo);
     }
 
@@ -97,8 +98,41 @@ public sealed class SaqueAniversarioViewModelTests
         vm.Saldo = saldo;
         vm.IndiceMes = mes;
         await vm.CalcularCommand.ExecuteAsync(null);
-        Assert.False(string.IsNullOrWhiteSpace(vm.Mensagem));
+        Assert.True(vm.Erros.TemAviso);
         Assert.Null(vm.Demonstrativo);
+    }
+
+    [Fact]
+    public async Task Aponta_todos_os_campos_errados_e_o_aviso_sai_quando_corrigidos()
+    {
+        var vm = Criar();
+        vm.Saldo = "-1";
+        vm.DataAnalise = "31/02/2026";
+
+        await vm.CalcularCommand.ExecuteAsync(null);
+
+        Assert.Null(vm.Demonstrativo);
+        Assert.Null(vm.Mensagem);
+        Assert.Equal("Informe zero ou um valor positivo.", vm.Erros[nameof(vm.Saldo)]);
+        Assert.Equal("Use uma data dd/mm/aaaa.", vm.Erros[nameof(vm.DataAnalise)]);
+        Assert.Equal("Corrija os 2 campos destacados: Saldo do extrato (R$) e Data da análise.", vm.Erros.Aviso);
+
+        vm.Saldo = "8.000,00";
+        Assert.True(vm.Erros.TemAviso);
+        vm.DataAnalise = "07/10/2026";
+        Assert.False(vm.Erros.TemAviso);
+    }
+
+    [Fact]
+    public async Task Regra_do_mes_de_aniversario_destaca_o_campo()
+    {
+        var vm = Criar();
+        vm.IndiceMes = -1;
+
+        await vm.CalcularCommand.ExecuteAsync(null);
+
+        Assert.Equal("Informe o mês de aniversário, de 1 a 12.", vm.Erros[nameof(vm.IndiceMes)]);
+        Assert.Equal("Informe o mês de aniversário, de 1 a 12.", vm.Erros.Aviso);
     }
 
     [Fact]

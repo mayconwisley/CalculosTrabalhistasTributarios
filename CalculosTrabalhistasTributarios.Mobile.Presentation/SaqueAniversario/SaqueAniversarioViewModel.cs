@@ -1,7 +1,7 @@
 using System.Globalization;
 using CalculosTrabalhistasTributarios.Application.DTOs;
 using CalculosTrabalhistasTributarios.Application.Interfaces;
-using CalculosTrabalhistasTributarios.Presentation;
+using CalculosTrabalhistasTributarios.Presentation.ViewModels;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
@@ -61,8 +61,20 @@ public sealed partial class SaqueAniversarioViewModel : ObservableObject, IFormu
         if (campos.TryGetValue(nameof(IndiceContratoNovo), out var contrato)) IndiceContratoNovo = contrato.Indice;
         if (campos.TryGetValue(nameof(IndiceProximoCedido), out var cedido)) IndiceProximoCedido = cedido.Indice;
         Demonstrativo = null;
+        Erros.Limpar();
         return Result.Ok();
     }
+
+    /// <summary>Campos a corrigir, no padrão das demais calculadoras: destaque no campo e aviso junto de Calcular.</summary>
+    public ErrosDoFormulario Erros { get; } = new(new Dictionary<string, string>
+    {
+        [nameof(Saldo)] = "Saldo do extrato (R$)",
+        [nameof(IndiceMes)] = "Mês de aniversário",
+        [nameof(GarantiaBloqueada)] = "Garantia bloqueada (R$)",
+        [nameof(MultaIncluida)] = "Multa incluída no saldo (R$)",
+        [nameof(ParcelaComprometida)] = "Parcela anual cedida ao banco (R$)",
+        [nameof(DataAnalise)] = "Data da análise"
+    });
 
     private static bool IndiceValido(IReadOnlyDictionary<string, ValorCampoMobile> campos, string chave) =>
         !campos.TryGetValue(chave, out var valor) || valor is not null && valor.Indice is >= 0 and <= 2;
@@ -106,6 +118,7 @@ public sealed partial class SaqueAniversarioViewModel : ObservableObject, IFormu
     protected override void OnPropertyChanged(System.ComponentModel.PropertyChangedEventArgs e)
     {
         base.OnPropertyChanged(e);
+        Erros.Corrigido(e.PropertyName ?? string.Empty);
         if (e.PropertyName is nameof(Saldo) or nameof(GarantiaBloqueada) or nameof(MultaIncluida)
             or nameof(ParcelaComprometida) or nameof(SaldoIncluiGarantia) or nameof(IndiceMes)
             or nameof(DataAnalise) or nameof(IndiceCarencia) or nameof(IndiceContratoNovo) or nameof(IndiceProximoCedido))
@@ -121,17 +134,15 @@ public sealed partial class SaqueAniversarioViewModel : ObservableObject, IFormu
     {
         Demonstrativo = null;
         Mensagem = null;
-        if (!LerValor(Saldo, "Saldo do extrato", out var saldo)
-            || !LerValor(GarantiaBloqueada, "Garantia bloqueada", out var garantia)
-            || !LerValor(MultaIncluida, "Multa rescisória incluída", out var multa)
-            || !LerValor(ParcelaComprometida, "Parcela comprometida", out var parcela))
+        // Lê o formulário inteiro antes de avisar, para apontar de uma vez todos os campos a corrigir.
+        Erros.Limpar();
+        var saldo = Erros.Moeda(nameof(Saldo), Saldo);
+        var garantia = Erros.Moeda(nameof(GarantiaBloqueada), GarantiaBloqueada);
+        var multa = Erros.Moeda(nameof(MultaIncluida), MultaIncluida);
+        var parcela = Erros.Moeda(nameof(ParcelaComprometida), ParcelaComprometida);
+        var dataAnalise = Erros.Data(nameof(DataAnalise), DataAnalise);
+        if (Erros.Apresentar())
             return;
-
-        if (!DateOnly.TryParseExact(DataAnalise, "dd/MM/yyyy", CultureInfo.GetCultureInfo("pt-BR"), DateTimeStyles.None, out var dataAnalise))
-        {
-            Mensagem = "Data da análise: informe uma data no formato dd/mm/aaaa.";
-            return;
-        }
         var analise = new EntradaAnaliseAntecipacaoFgts(dataAnalise, Confirmacao(IndiceCarencia), Confirmacao(IndiceContratoNovo),
             Confirmacao(IndiceProximoCedido));
         var pedido = new SimularSaqueAniversarioRequest(saldo, IndiceMes + 1, parcela, garantia, multa, SaldoIncluiGarantia, analise);
@@ -142,7 +153,11 @@ public sealed partial class SaqueAniversarioViewModel : ObservableObject, IFormu
             var resultado = await _simular.ExecutarAsync(pedido, cancellationToken);
             cancellationToken.ThrowIfCancellationRequested();
             if (resultado.Falhou)
-                Mensagem = resultado.Erro.Mensagem;
+            {
+                // Uma regra que cita um campo o destaca; as demais falhas ficam na mensagem.
+                if (!Erros.Regra(resultado.Erro))
+                    Mensagem = resultado.Erro.Mensagem;
+            }
             else
                 Demonstrativo = resultado.Valor;
         }
@@ -215,11 +230,4 @@ public sealed partial class SaqueAniversarioViewModel : ObservableObject, IFormu
         }
     }
 
-    private bool LerValor(string texto, string campo, out decimal valor)
-    {
-        if (LeituraNumerica.TentarLer(texto, out valor))
-            return true;
-        Mensagem = $"{campo}: informe um valor numérico, por exemplo 3.500,00. Informe 0,00 quando não houver valor.";
-        return false;
-    }
 }

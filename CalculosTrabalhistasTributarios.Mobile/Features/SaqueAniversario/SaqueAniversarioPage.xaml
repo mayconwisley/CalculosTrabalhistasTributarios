@@ -7,7 +7,7 @@
              x:Class="CalculosTrabalhistasTributarios.Mobile.Features.SaqueAniversario.SaqueAniversarioPage"
              x:DataType="vm:SaqueAniversarioViewModel"
              Title="Simulador FGTS">
-    <ScrollView>
+    <ScrollView x:Name="Rolagem">
         <VerticalStackLayout Padding="20,12,20,28" Spacing="20" MaximumWidthRequest="640" HorizontalOptions="Fill">
             <VerticalStackLayout Spacing="10">
                 <Border Padding="12,6" StrokeThickness="0" StrokeShape="RoundRectangle 12" HorizontalOptions="Start"
@@ -31,18 +31,20 @@
                         </VerticalStackLayout>
                         <VerticalStackLayout Spacing="6">
                             <Label Text="Saldo do extrato (R$)" Style="{StaticResource RotuloCampo}" />
-                            <Border Style="{StaticResource CaixaCampo}">
+                            <Border Style="{StaticResource CaixaCampo}" comportamentos:DestaqueDeErro.Mensagem="{Binding Erros[Saldo]}">
                                 <Entry Text="{Binding Saldo}" AutomationId="Saldo" SemanticProperties.Description="Saldo do extrato em reais">
                                     <Entry.Behaviors><comportamentos:EntradaMonetariaBehavior /></Entry.Behaviors>
                                 </Entry>
                             </Border>
+                            <Label Style="{StaticResource TextoErroCampo}" IsVisible="False" comportamentos:DestaqueDeErro.Mensagem="{Binding Erros[Saldo]}" />
                         </VerticalStackLayout>
                         <VerticalStackLayout Spacing="6">
                             <Label Text="Mês de aniversário" Style="{StaticResource RotuloCampo}" />
-                            <Border Style="{StaticResource CaixaCampo}">
+                            <Border Style="{StaticResource CaixaCampo}" comportamentos:DestaqueDeErro.Mensagem="{Binding Erros[IndiceMes]}">
                                 <Picker Title="Selecione o mês" ItemsSource="{Binding Meses}" SelectedIndex="{Binding IndiceMes}"
                                         AutomationId="MesAniversario" SemanticProperties.Description="Mês de aniversário" />
                             </Border>
+                            <Label Style="{StaticResource TextoErroCampo}" IsVisible="False" comportamentos:DestaqueDeErro.Mensagem="{Binding Erros[IndiceMes]}" />
                         </VerticalStackLayout>
                     </VerticalStackLayout>
                 </Border>
@@ -54,11 +56,12 @@
                         </VerticalStackLayout>
                         <VerticalStackLayout Spacing="6">
                             <Label Text="Garantia bloqueada (R$)" Style="{StaticResource RotuloCampo}" />
-                            <Border Style="{StaticResource CaixaCampo}">
+                            <Border Style="{StaticResource CaixaCampo}" comportamentos:DestaqueDeErro.Mensagem="{Binding Erros[GarantiaBloqueada]}">
                                 <Entry Text="{Binding GarantiaBloqueada}" AutomationId="Garantia" SemanticProperties.Description="Garantia bloqueada em reais">
                                     <Entry.Behaviors><comportamentos:EntradaMonetariaBehavior /></Entry.Behaviors>
                                 </Entry>
                             </Border>
+                            <Label Style="{StaticResource TextoErroCampo}" IsVisible="False" comportamentos:DestaqueDeErro.Mensagem="{Binding Erros[GarantiaBloqueada]}" />
                             <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
                                 <Label Text="O saldo informado já inclui essa garantia" Style="{StaticResource TextoSecundario}" VerticalOptions="Center" />
                                 <Switch Grid.Column="1" IsToggled="{Binding SaldoIncluiGarantia}" SemanticProperties.Description="Saldo do extrato já inclui a garantia bloqueada" />
@@ -66,20 +69,22 @@
                         </VerticalStackLayout>
                         <VerticalStackLayout Spacing="6">
                             <Label Text="Multa incluída no saldo (R$)" Style="{StaticResource RotuloCampo}" />
-                            <Border Style="{StaticResource CaixaCampo}">
+                            <Border Style="{StaticResource CaixaCampo}" comportamentos:DestaqueDeErro.Mensagem="{Binding Erros[MultaIncluida]}">
                                 <Entry Text="{Binding MultaIncluida}" AutomationId="Multa" SemanticProperties.Description="Multa rescisória incluída no saldo em reais">
                                     <Entry.Behaviors><comportamentos:EntradaMonetariaBehavior /></Entry.Behaviors>
                                 </Entry>
                             </Border>
+                            <Label Style="{StaticResource TextoErroCampo}" IsVisible="False" comportamentos:DestaqueDeErro.Mensagem="{Binding Erros[MultaIncluida]}" />
                             <Label Text="A multa rescisória é excluída da base. Use 0,00 se não estiver incluída." Style="{StaticResource TextoSecundario}" />
                         </VerticalStackLayout>
                         <VerticalStackLayout Spacing="6">
                             <Label Text="Parcela anual cedida ao banco (R$)" Style="{StaticResource RotuloCampo}" />
-                            <Border Style="{StaticResource CaixaCampo}">
+                            <Border Style="{StaticResource CaixaCampo}" comportamentos:DestaqueDeErro.Mensagem="{Binding Erros[ParcelaComprometida]}">
                                 <Entry Text="{Binding ParcelaComprometida}" AutomationId="Parcela" SemanticProperties.Description="Parcela deste saque comprometida com o banco em reais">
                                     <Entry.Behaviors><comportamentos:EntradaMonetariaBehavior /></Entry.Behaviors>
                                 </Entry>
                             </Border>
+                            <Label Style="{StaticResource TextoErroCampo}" IsVisible="False" comportamentos:DestaqueDeErro.Mensagem="{Binding Erros[ParcelaComprometida]}" />
                             <Label Text="Informe somente o repasse deste saque, não o total do empréstimo. Use 0,00 se não houver." Style="{StaticResource TextoSecundario}" />
                         </VerticalStackLayout>
                     </VerticalStackLayout>
@@ -89,7 +94,8 @@
                         <Label Text="03  Nova antecipação" Style="{StaticResource TituloSecao}" SemanticProperties.HeadingLevel="Level2" />
                         <Label Text="Confirme a carência e os contratos pelo extrato ou banco. Saldo livre, sozinho, não garante nova contratação." Style="{StaticResource TextoSecundario}" />
                         <Label Text="Data da análise (dd/mm/aaaa)" Style="{StaticResource RotuloCampo}" />
-                        <Border Style="{StaticResource CaixaCampo}"><views:EntradaPeriodoView Texto="{Binding DataAnalise}" Tipo="Data" Rotulo="Data da análise" Identificador="DataAnalise" /></Border>
+                        <Border Style="{StaticResource CaixaCampo}" comportamentos:DestaqueDeErro.Mensagem="{Binding Erros[DataAnalise]}"><views:EntradaPeriodoView Texto="{Binding DataAnalise}" Tipo="Data" Rotulo="Data da análise" Identificador="DataAnalise" /></Border>
+                        <Label Style="{StaticResource TextoErroCampo}" IsVisible="False" comportamentos:DestaqueDeErro.Mensagem="{Binding Erros[DataAnalise]}" />
                         <Label Text="Adesão ao saque-aniversário há pelo menos 90 dias?" Style="{StaticResource RotuloCampo}" />
                         <Border Style="{StaticResource CaixaCampo}"><Picker ItemsSource="{Binding Confirmacoes}" SelectedIndex="{Binding IndiceCarencia}" AutomationId="CarenciaAntecipacao" /></Border>
                         <Label Text="Contrato do próximo saque feito desde 01/11/2025?" Style="{StaticResource RotuloCampo}" />
@@ -100,8 +106,8 @@
                 </Border>
             </VerticalStackLayout>
 
-            <Label IsVisible="{Binding TemMensagem}" Text="{Binding Mensagem}" TextColor="{AppThemeBinding Light={StaticResource ErroClaro}, Dark={StaticResource ErroEscuro}}" SemanticProperties.Description="Aviso da simulação">
-            </Label>
+            <Label Text="{Binding Erros.Aviso}" IsVisible="{Binding Erros.TemAviso}" Style="{StaticResource AvisoDoCalculo}" AutomationId="AvisoCalculo" />
+            <Label IsVisible="{Binding TemMensagem}" Text="{Binding Mensagem}" Style="{StaticResource AvisoDoCalculo}" SemanticProperties.Description="Aviso da simulação" />
             <Button Text="Calcular meu saque" Command="{Binding CalcularCommand}" AutomationId="Calcular" comportamentos:RetornoTatil.Ativo="True" SemanticProperties.Description="Calcular saque-aniversário" />
             <ActivityIndicator IsRunning="{Binding Ocupado}" IsVisible="{Binding Ocupado}" Color="{StaticResource Primaria}" />
 

@@ -4,7 +4,7 @@
              xmlns:views="clr-namespace:CalculosTrabalhistasTributarios.Mobile.Views"
              xmlns:comportamentos="clr-namespace:CalculosTrabalhistasTributarios.Mobile.Comportamentos"
              x:Class="CalculosTrabalhistasTributarios.Mobile.Features.Tributacao.SimulacaoTributariaPage" x:DataType="vm:SimulacaoTributariaViewModel" Title="Simulação tributária">
-    <ScrollView>
+    <ScrollView x:Name="Rolagem">
         <VerticalStackLayout Padding="20,18,20,28" Spacing="16" MaximumWidthRequest="640">
             <Label Text="Do bruto ao líquido" Style="{StaticResource TituloPagina}" SemanticProperties.HeadingLevel="Level1" />
             <Label Text="INSS, IRRF e FGTS com as mesmas regras do aplicativo Windows." Style="{StaticResource TextoSecundario}" FontSize="14" />
@@ -15,14 +15,17 @@
                     </VerticalStackLayout.Triggers>
                     <Label Text="Competência e vínculo" Style="{StaticResource TituloSecao}" />
                     <Label Text="Competência (mm/aaaa)" Style="{StaticResource RotuloCampo}" />
-                    <Border Style="{StaticResource CaixaCampo}"><views:EntradaPeriodoView Texto="{Binding Competencia}" Tipo="Competencia" Rotulo="Competência" Identificador="Competencia" /></Border>
+                    <Border Style="{StaticResource CaixaCampo}" comportamentos:DestaqueDeErro.Mensagem="{Binding Erros[Competencia]}"><views:EntradaPeriodoView Texto="{Binding Competencia}" Tipo="Competencia" Rotulo="Competência" Identificador="Competencia" /></Border>
+                    <Label Style="{StaticResource TextoErroCampo}" IsVisible="False" comportamentos:DestaqueDeErro.Mensagem="{Binding Erros[Competencia]}" />
                     <Label Text="As tabelas seguem a competência informada. Consulte as pendências e a atualização em Configurações." Style="{StaticResource TextoSecundario}" />
                     <Label Text="Tipo de vínculo" Style="{StaticResource RotuloCampo}" />
                     <Border Style="{StaticResource CaixaCampo}"><Picker ItemsSource="{Binding Vinculos}" SelectedIndex="{Binding IndiceVinculo}" Title="Selecione o vínculo" AutomationId="Vinculo" SemanticProperties.Description="Tipo de vínculo" /></Border>
                     <Label Text="Valor bruto (R$)" Style="{StaticResource RotuloCampo}" />
-                    <Border Style="{StaticResource CaixaCampo}"><Entry Text="{Binding ValorBruto}" AutomationId="ValorBruto" SemanticProperties.Description="Rendimento bruto em reais"><Entry.Behaviors><comportamentos:EntradaMonetariaBehavior /></Entry.Behaviors></Entry></Border>
+                    <Border Style="{StaticResource CaixaCampo}" comportamentos:DestaqueDeErro.Mensagem="{Binding Erros[ValorBruto]}"><Entry Text="{Binding ValorBruto}" AutomationId="ValorBruto" SemanticProperties.Description="Rendimento bruto em reais"><Entry.Behaviors><comportamentos:EntradaMonetariaBehavior /></Entry.Behaviors></Entry></Border>
+                    <Label Style="{StaticResource TextoErroCampo}" IsVisible="False" comportamentos:DestaqueDeErro.Mensagem="{Binding Erros[ValorBruto]}" />
                     <Label Text="Dependentes para IRRF" Style="{StaticResource RotuloCampo}" />
-                    <Border Style="{StaticResource CaixaCampo}"><Entry Text="{Binding Dependentes}" FontSize="18" MaxLength="3" AutomationId="Dependentes" SemanticProperties.Description="Quantidade de dependentes para IRRF"><Entry.Behaviors><comportamentos:EntradaNumericaBehavior /></Entry.Behaviors></Entry></Border>
+                    <Border Style="{StaticResource CaixaCampo}" comportamentos:DestaqueDeErro.Mensagem="{Binding Erros[Dependentes]}"><Entry Text="{Binding Dependentes}" FontSize="18" MaxLength="3" AutomationId="Dependentes" SemanticProperties.Description="Quantidade de dependentes para IRRF"><Entry.Behaviors><comportamentos:EntradaNumericaBehavior /></Entry.Behaviors></Entry></Border>
+                    <Label Style="{StaticResource TextoErroCampo}" IsVisible="False" comportamentos:DestaqueDeErro.Mensagem="{Binding Erros[Dependentes]}" />
                     <Label Text="Base de INSS e FGTS" Style="{StaticResource RotuloCampo}" />
                     <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
                         <Grid.Triggers><DataTrigger TargetType="Grid" Binding="{Binding EhAposentadoria}" Value="True"><Setter Property="IsVisible" Value="False" /></DataTrigger></Grid.Triggers>
@@ -30,7 +33,8 @@
                         <Switch Grid.Column="1" IsToggled="{Binding UsarBrutoComoBase}" SemanticProperties.Description="Usar o valor bruto como base de INSS e FGTS" />
                     </Grid>
                     <VerticalStackLayout IsVisible="{Binding ExibirBaseInss}" Spacing="6">
-                        <Border Style="{StaticResource CaixaCampo}"><Entry Text="{Binding BaseInss}" AutomationId="BaseInss" SemanticProperties.Description="Base de INSS e FGTS em reais"><Entry.Behaviors><comportamentos:EntradaMonetariaBehavior /></Entry.Behaviors></Entry></Border>
+                        <Border Style="{StaticResource CaixaCampo}" comportamentos:DestaqueDeErro.Mensagem="{Binding Erros[BaseInss]}"><Entry Text="{Binding BaseInss}" AutomationId="BaseInss" SemanticProperties.Description="Base de INSS e FGTS em reais"><Entry.Behaviors><comportamentos:EntradaMonetariaBehavior /></Entry.Behaviors></Entry></Border>
+                        <Label Style="{StaticResource TextoErroCampo}" IsVisible="False" comportamentos:DestaqueDeErro.Mensagem="{Binding Erros[BaseInss]}" />
                         <Label Text="O INSS aplica o teto; o FGTS usa a base informada sem teto." Style="{StaticResource TextoSecundario}" />
                     </VerticalStackLayout>
                     <VerticalStackLayout IsVisible="{Binding EhAposentadoria}" Spacing="8">
@@ -40,7 +44,8 @@
                     </VerticalStackLayout>
                 </VerticalStackLayout>
             </Border>
-            <Label Text="{Binding Mensagem}" IsVisible="{Binding TemMensagem}" TextColor="{AppThemeBinding Light={StaticResource ErroClaro}, Dark={StaticResource ErroEscuro}}" />
+            <Label Text="{Binding Erros.Aviso}" IsVisible="{Binding Erros.TemAviso}" Style="{StaticResource AvisoDoCalculo}" AutomationId="AvisoCalculo" />
+            <Label Text="{Binding Mensagem}" IsVisible="{Binding TemMensagem}" Style="{StaticResource AvisoDoCalculo}" />
             <Button Text="Calcular salário e impostos" Command="{Binding CalcularCommand}" AutomationId="CalcularTributaria" comportamentos:RetornoTatil.Ativo="True" />
             <ActivityIndicator IsVisible="{Binding Ocupado}" IsRunning="{Binding Ocupado}" />
             <views:ResultadoSimulacaoView Demonstrativo="{Binding Demonstrativo}" CompartilharPdfCommand="{Binding CompartilharPdfCommand}" CompartilharResumoCommand="{Binding CompartilharResumoCommand}" />

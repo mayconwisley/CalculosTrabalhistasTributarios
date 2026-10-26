@@ -8,6 +8,7 @@ using CalculosTrabalhistasTributarios.Domain.Trabalhista;
 using CalculosTrabalhistasTributarios.Mobile.Presentation.Interfaces;
 using CalculosTrabalhistasTributarios.Mobile.Presentation.Historico;
 using CalculosTrabalhistasTributarios.Presentation;
+using CalculosTrabalhistasTributarios.Presentation.ViewModels.Calculadoras;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
@@ -32,6 +33,10 @@ public abstract partial class CalculadoraTrabalhistaViewModel : ObservableObject
     private Dictionary<string, CampoMobile> _campos => _formulario.Campos;
     private IReadOnlyList<SecaoCamposMobile>? _secoes;
     [ObservableProperty] private CampoMobile? _primeiroCampoComErro;
+    /// <summary>Grade apontada por uma regra sem campo citado; a página a traz à vista.</summary>
+    [ObservableProperty] private GradeMobile? _gradeComErro;
+    // O aviso resume campos destacados: sai quando todos forem corrigidos. Um aviso sem campo sai na próxima edição.
+    private bool _avisoDosCampos;
 
     public IReadOnlyList<SecaoCamposMobile> Secoes => _secoes ??= AgruparCampos();
     private IReadOnlyList<SecaoCamposMobile> AgruparCampos()
@@ -52,16 +57,108 @@ public abstract partial class CalculadoraTrabalhistaViewModel : ObservableObject
 
     private IEnumerable<CampoMobile> TodosCampos => _campos.Values.Concat(Grades.SelectMany(g => g.Linhas).SelectMany(l => l.Campos));
 
-    private void InformarErro(string mensagem, CampoMobile? campo = null)
+    /// <summary>
+    /// Mesmo padrão do aplicativo Windows: antes do cálculo, todos os campos à vista têm o formato conferido; cada campo errado
+    /// recebe abaixo dele o que corrigir e o aviso junto de Calcular cita todos eles.
+    /// </summary>
+    private bool ConferirCampos()
+    {
+        var errados = CamposDigitados()
+            .Select(digitado => (digitado.Campo, digitado.Nome, digitado.Linha, digitado.Grade, Erro: LeituraCampoMobile.Conferir(digitado.Campo)))
+            .Where(digitado => digitado.Erro is not null)
+            .ToList();
+        if (errados.Count == 0) return true;
+        foreach (var errado in errados) errado.Campo.Erro = errado.Erro!.Orientacao;
+        var primeiro = errados[0];
+        Mensagem = errados.Count > 1
+            ? $"Corrija os {errados.Count} campos destacados: {Lista(errados.Select(errado => errado.Nome))}."
+            : primeiro.Linha is null ? primeiro.Erro!.Message : $"{primeiro.Linha.Titulo}: {primeiro.Erro!.Message}";
+        _avisoDosCampos = true;
+        if (primeiro.Grade is not null && primeiro.Linha is not null) primeiro.Grade.Pagina.Exibir(primeiro.Linha);
+        Destacar(primeiro.Campo);
+        return false;
+    }
+
+    // As células citam a linha, como "Valor em Parcela 2", porque o rótulo se repete em todas as linhas.
+    private IEnumerable<(CampoMobile Campo, string Nome, LinhaGradeMobile? Linha, GradeMobile? Grade)> CamposDigitados()
+    {
+        foreach (var campo in _campos.Values.Where(campo => campo.Visivel && campo.EhEntrada))
+            yield return (campo, campo.Rotulo, null, null);
+        foreach (var grade in Grades.Where(grade => grade.Visivel))
+            foreach (var linha in grade.Linhas)
+                foreach (var campo in linha.Campos.Where(campo => campo.Visivel && campo.EhEntrada))
+                    yield return (campo, $"{campo.Rotulo} em {linha.Titulo}", linha, grade);
+    }
+
+    /// <summary>
+    /// Falha na leitura ou numa regra do cálculo. O campo que a falha traz, ou que a mensagem cita pelo rótulo, fica destacado;
+    /// sem campo, a grade de que a mensagem fala recebe a mensagem abaixo do título. Sem nenhum dos dois, o aviso é geral.
+    /// </summary>
+    private void InformarErro(string mensagem, CampoMobile? campo = null, string? orientacao = null)
     {
         Mensagem = mensagem;
-        // Falhas de domínio sem chave permanecem gerais; só associa um rótulo inequívoco.
-        var candidatos = TodosCampos.Where(c => c.Visivel && mensagem.StartsWith(c.Rotulo + ":", StringComparison.Ordinal)).Take(2).ToArray();
-        campo ??= candidatos.Length == 1 ? candidatos[0] : null;
-        if (campo is null) return;
-        campo.Erro = mensagem;
+        if (campo is not null)
+        {
+            campo.Erro = orientacao ?? OrientacaoDaMensagem(campo, mensagem);
+            _avisoDosCampos = true;
+            Destacar(campo);
+            return;
+        }
+        var grades = Grades.Where(grade => grade.Visivel).ToList();
+        var citados = CamposCitados.Encontrar<object>(mensagem,
+            _campos.Values.Where(item => item.Visivel && item.EhEntrada).Select(item => ((object)item, item.Rotulo)),
+            grades.Count == 1 ? grades[0] : null);
+        foreach (var (alvo, texto) in citados)
+        {
+            if (alvo is CampoMobile citado) citado.Erro = texto;
+            else if (alvo is GradeMobile grade) grade.Erro = texto;
+        }
+        _avisoDosCampos = citados.Count > 0;
+        if (citados.Count == 0) return;
+        if (citados[0].Campo is CampoMobile primeiro) Destacar(primeiro);
+        else GradeComErro = citados[0].Campo as GradeMobile;
+    }
+
+    // "Faltas: informe..." vira "Informe..." abaixo do campo Faltas; sem o rótulo na mensagem, ela vai inteira.
+    private static string OrientacaoDaMensagem(CampoMobile campo, string mensagem)
+    {
+        var inicio = mensagem.IndexOf(campo.Rotulo + ":", StringComparison.Ordinal);
+        if (inicio < 0) return mensagem;
+        var resto = mensagem[(inicio + campo.Rotulo.Length + 1)..].Trim();
+        return resto.Length == 0 ? mensagem : char.ToUpper(resto[0], Cultura) + resto[1..];
+    }
+
+    private void Destacar(CampoMobile campo)
+    {
         foreach (var secao in Secoes.Where(s => s.Campos.Contains(campo))) secao.Expandida = true;
         PrimeiroCampoComErro = campo;
+    }
+
+    private void LimparErros()
+    {
+        Mensagem = null;
+        PrimeiroCampoComErro = null;
+        GradeComErro = null;
+        _avisoDosCampos = false;
+        foreach (var campo in TodosCampos) campo.Erro = null;
+        foreach (var grade in Grades) grade.Erro = null;
+    }
+
+    // Uma edição tira o destaque do próprio campo; o aviso continua enquanto houver outro campo destacado.
+    private void AtualizarAviso()
+    {
+        if (_avisoDosCampos && (TodosCampos.Any(campo => campo.TemErro) || Grades.Any(grade => grade.TemErro))) return;
+        _avisoDosCampos = false;
+        Mensagem = null;
+    }
+
+    private static string Lista(IEnumerable<string> itens)
+    {
+        // Muitas células erradas numa grade tornariam o aviso ilegível; os demais campos seguem destacados na tela.
+        const int Maximo = 5;
+        var lista = itens.ToArray();
+        if (lista.Length > Maximo) return $"{string.Join(", ", lista[..Maximo])} e outros {lista.Length - Maximo}";
+        return lista.Length == 1 ? lista[0] : $"{string.Join(", ", lista[..^1])} e {lista[^1]}";
     }
     [ObservableProperty] private string? _mensagem;
     [ObservableProperty]
@@ -156,8 +253,7 @@ public abstract partial class CalculadoraTrabalhistaViewModel : ObservableObject
             _ => null
         });
         if (resultado.Falhou) return resultado;
-        PrimeiroCampoComErro = null;
-        foreach (var campo in TodosCampos) campo.Erro = null;
+        LimparErros();
         QuitacaoBancoHoras = dados.QuitacaoBancoHoras;
         QuitacaoConfirmada = dados.QuitacaoConfirmada && QuitacaoBancoHoras is not null;
         Demonstrativo = null;
@@ -228,7 +324,7 @@ public abstract partial class CalculadoraTrabalhistaViewModel : ObservableObject
             if (args.PropertyName is nameof(CampoMobile.Valor) or nameof(CampoMobile.Indice) or nameof(CampoMobile.Marcado))
             {
                 Demonstrativo = null;
-                Mensagem = null;
+                AtualizarAviso();
                 AoAlterar(campo);
                 NotificarEdicao();
             }
@@ -259,7 +355,7 @@ public abstract partial class CalculadoraTrabalhistaViewModel : ObservableObject
         {
             NotificarEdicao();
             Demonstrativo = null;
-            Mensagem = null;
+            AtualizarAviso();
         };
         AcompanharRemocao(grade.Remocao);
         Grades.Add(grade);
@@ -300,18 +396,22 @@ public abstract partial class CalculadoraTrabalhistaViewModel : ObservableObject
     private async Task CalcularAsync(CancellationToken cancellationToken)
     {
         Demonstrativo = null;
-        Mensagem = null;
-        PrimeiroCampoComErro = null;
-        foreach (var campo in TodosCampos) campo.Erro = null;
+        LimparErros();
+        if (!ConferirCampos()) return;
         try
         {
             Ocupado = true;
             var resultado = await ApurarAsync(cancellationToken);
             cancellationToken.ThrowIfCancellationRequested();
-            if (resultado.Falhou) InformarErro(resultado.Erro.Mensagem);
+            if (resultado.Falhou)
+            {
+                // Uma tabela ausente ou outra falha que não é de preenchimento não aponta campo.
+                if (resultado.Erro.Tipo == TipoErro.Validacao) InformarErro(resultado.Erro.Mensagem);
+                else Mensagem = resultado.Erro.Mensagem;
+            }
             else Demonstrativo = resultado.Valor;
         }
-        catch (EntradaInvalidaException erro) { InformarErro(erro.Message, erro.Campo); }
+        catch (EntradaInvalidaException erro) { InformarErro(erro.Message, erro.Campo, erro.Orientacao); }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested) { }
         catch (Exception erro)
         {

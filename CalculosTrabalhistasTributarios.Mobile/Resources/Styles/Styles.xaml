@@ -22,6 +22,10 @@
     <Style x:Key="TextoErroCampo" TargetType="Label" BasedOn="{StaticResource TextoSecundario}">
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource ErroClaro}, Dark={StaticResource ErroEscuro}}" />
     </Style>
+    <!-- Aviso do cálculo junto do botão: resume os campos destacados ou traz a regra que não cita campo. -->
+    <Style x:Key="AvisoDoCalculo" TargetType="Label" BasedOn="{StaticResource TextoErroCampo}">
+        <Setter Property="FontSize" Value="14" />
+    </Style>
     <Style x:Key="TituloSecao" TargetType="Label" BasedOn="{StaticResource RotuloBase}">
         <Setter Property="FontFamily" Value="OpenSansSemibold" />
         <Setter Property="FontSize" Value="18" />

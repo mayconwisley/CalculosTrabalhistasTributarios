@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace CalculosTrabalhistasTributarios.Mobile.Presentation.Trabalhista;
@@ -29,8 +30,16 @@ public sealed class CampoMobile(string chave, string rotulo, string dica, TipoCa
         set { if (SetProperty(ref _erro, value)) OnPropertyChanged(nameof(TemErro)); }
     }
     public bool TemErro => !string.IsNullOrEmpty(Erro);
-    public string Valor { get => _valor; set { if (SetProperty(ref _valor, value ?? string.Empty)) Erro = null; } }
-    public int Indice { get => _indice; set { if (SetProperty(ref _indice, value)) Erro = null; } }
-    public bool Marcado { get => _marcado; set { if (SetProperty(ref _marcado, value)) Erro = null; } }
+    public string Valor { get => _valor; set => Alterar(ref _valor, value ?? string.Empty); }
+    public int Indice { get => _indice; set => Alterar(ref _indice, value); }
+    public bool Marcado { get => _marcado; set => Alterar(ref _marcado, value); }
     public bool Visivel { get => _visivel; set => SetProperty(ref _visivel, value); }
+
+    // O erro sai antes de avisar a alteração: quem acompanha o campo já encontra o formulário sem ele.
+    private void Alterar<T>(ref T atual, T novo, [CallerMemberName] string? propriedade = null)
+    {
+        if (EqualityComparer<T>.Default.Equals(atual, novo)) return;
+        Erro = null;
+        SetProperty(ref atual, novo, propriedade);
+    }
 }

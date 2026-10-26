@@ -50,7 +50,7 @@ public sealed class CalculadorasLoteCMobileTests
         captura.Limpar();
         await vm.CalcularCommand.ExecuteAsync(null);
         Assert.Null(captura.Pedido);
-        Assert.StartsWith("Competência 2: Remuneração (R$):", vm.Mensagem);
+        Assert.StartsWith("Competência 2: O campo \"Remuneração (R$)\"", vm.Mensagem);
     }
 
     [Fact]
@@ -85,7 +85,7 @@ public sealed class CalculadorasLoteCMobileTests
 
         grade.Linhas[1].Campo("valor").Valor = "x";
         await vm.CalcularCommand.ExecuteAsync(null);
-        Assert.StartsWith("Mês 2: Gorjetas (R$):", vm.Mensagem);
+        Assert.StartsWith("Mês 2: O campo \"Gorjetas (R$)\"", vm.Mensagem);
     }
 
     [Fact]
@@ -141,7 +141,7 @@ public sealed class CalculadorasLoteCMobileTests
         captura.Limpar();
         await vm.CalcularCommand.ExecuteAsync(null);
         Assert.Null(captura.Pedido);
-        Assert.StartsWith("Mês 1: Feriados em dias úteis:", vm.Mensagem);
+        Assert.StartsWith("Mês 1: O campo \"Feriados em dias úteis\" não aceita valor negativo", vm.Mensagem);
     }
 
     [Fact]
@@ -184,7 +184,7 @@ public sealed class CalculadorasLoteCMobileTests
         captura.Limpar();
         await vm.CalcularCommand.ExecuteAsync(null);
         Assert.Null(captura.Pedido);
-        Assert.StartsWith("Mês 2: Dias transferido:", vm.Mensagem);
+        Assert.StartsWith("Mês 2: O campo \"Dias transferido\"", vm.Mensagem);
     }
 
     [Fact]
@@ -221,7 +221,7 @@ public sealed class CalculadorasLoteCMobileTests
         captura.Limpar();
         await vm.CalcularCommand.ExecuteAsync(null);
         Assert.Null(captura.Pedido);
-        Assert.StartsWith("Mês 3: DSR (R$):", vm.Mensagem);
+        Assert.StartsWith("Mês 3: O campo \"DSR (R$)\"", vm.Mensagem);
     }
 
     private sealed record MesSobreavisoEsperado(decimal Salario, decimal Sobreaviso, decimal Prontidao, int Feriados);

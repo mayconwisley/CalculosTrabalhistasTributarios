@@ -17,6 +17,10 @@ public sealed partial class GradeMobile : ObservableObject
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(TemAviso))]
     private string? _aviso;
+    /// <summary>Regra do cálculo sobre as linhas, como meses repetidos: fica abaixo do título até a grade ser alterada.</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(TemErro))]
+    private string? _erro;
 
     public GradeMobile(string chave, string titulo, string descricao, string nomeLinha, int limite,
         IReadOnlyList<ColunaGradeMobile> colunas, Action<LinhaGradeMobile>? aoAlterarLinha = null)
@@ -42,6 +46,7 @@ public sealed partial class GradeMobile : ObservableObject
             SubirCommand.NotifyCanExecuteChanged();
             DescerCommand.NotifyCanExecuteChanged();
             OnPropertyChanged(nameof(TemLinhas));
+            Erro = null;
             Alterada?.Invoke(this, EventArgs.Empty);
         };
         Pagina = new PaginaLinhas<LinhaGradeMobile>(Linhas);
@@ -65,6 +70,7 @@ public sealed partial class GradeMobile : ObservableObject
     public PaginaLinhas<LinhaGradeMobile> Pagina { get; }
     public bool TemLinhas => Linhas.Count > 0;
     public bool TemAviso => !string.IsNullOrWhiteSpace(Aviso);
+    public bool TemErro => !string.IsNullOrWhiteSpace(Erro);
     /// <summary>Ação opcional que preenche a grade a partir do formulário, como gerar os meses de um período.</summary>
     public IRelayCommand? GerarCommand { get; set; }
     public string RotuloGerar { get; set; } = "Gerar meses";
@@ -200,7 +206,7 @@ public sealed partial class GradeMobile : ObservableObject
             catch (EntradaInvalidaException erro)
             {
                 Pagina.Exibir(linha);
-                throw new EntradaInvalidaException($"{linha.Titulo}: {erro.Message}", erro.Campo);
+                throw new EntradaInvalidaException($"{linha.Titulo}: {erro.Message}", erro.Campo, erro.Orientacao);
             }
         }
         return valores;
@@ -212,6 +218,7 @@ public sealed partial class GradeMobile : ObservableObject
         if (sender is CampoMobile campo && _aoAlterarLinha is not null)
             if (Linhas.FirstOrDefault(linha => linha.Campos.Contains(campo)) is { } linha) _aoAlterarLinha(linha);
         Aviso = null;
+        Erro = null;
         Alterada?.Invoke(this, EventArgs.Empty);
     }
 }

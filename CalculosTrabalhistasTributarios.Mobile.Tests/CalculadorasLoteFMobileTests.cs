@@ -46,7 +46,7 @@ public sealed class CalculadorasLoteFMobileTests
         Alterar(vm, "demissao", "32/01/2025");
         await vm.CalcularCommand.ExecuteAsync(null);
         Assert.Null(caso.Pedido);
-        Assert.Equal("Demissão (dd/mm/aaaa): informe uma data em dd/mm/aaaa.", vm.Mensagem);
+        Assert.Equal("O campo \"Demissão (dd/mm/aaaa)\" está em formato inválido: use o formato dd/mm/aaaa.", vm.Mensagem);
     }
 
     [Fact]
@@ -130,7 +130,8 @@ public sealed class CalculadorasLoteFMobileTests
 
         grade.Linhas[0].Campo("percentual").Valor = "abc";
         await vm.CalcularCommand.ExecuteAsync(null);
-        Assert.Equal("Beneficiário 1: Percentual (%): informe um número, por exemplo 3.500,00.", vm.Mensagem);
+        Assert.Equal("Beneficiário 1: O campo \"Percentual (%)\" está em formato inválido: use somente números, com vírgula nas casas decimais.", vm.Mensagem);
+        Assert.Equal("Use números, com vírgula nas decimais.", grade.Linhas[0].Campo("percentual").Erro);
     }
 
     [Fact]
@@ -214,7 +215,7 @@ public sealed class CalculadorasLoteFMobileTests
         await vm.CalcularCommand.ExecuteAsync(null);
         Assert.Equal(2, caso.Geracoes.Count);
         Assert.Null(caso.Pedido);
-        Assert.Equal("Parcela 1: Devido (R$): informe um número, por exemplo 3.500,00.", vm.Mensagem);
+        Assert.Equal("Parcela 1: O campo \"Devido (R$)\" está em formato inválido: use somente números e vírgula nos centavos, por exemplo 3.500,00.", vm.Mensagem);
     }
 
     [Fact]
@@ -257,6 +258,92 @@ public sealed class CalculadorasLoteFMobileTests
 
     private static string Moeda(decimal valor) => valor.ToString("C2", Cultura);
 
+    // Mesmo padrão de erros do aplicativo Windows: todos os campos errados destacados de uma vez, a orientação curta abaixo
+    // de cada um e o aviso junto de Calcular, que sai quando o último campo é corrigido.
+    [Fact]
+    public async Task Erros_de_preenchimento_apontam_todos_os_campos_e_o_aviso_sai_quando_corrigidos()
+    {
+        var caso = new EstabilidadeFake();
+        var vm = new EstabilidadeMobileViewModel(caso, new PdfTeste(), NullLogger<EstabilidadeMobileViewModel>.Instance);
+        Alterar(vm, "media", "-1");
+        Alterar(vm, "diasBase", "trinta");
+        Alterar(vm, "demissao", "31/02/2026");
+
+        await vm.CalcularCommand.ExecuteAsync(null);
+
+        Assert.Null(caso.Pedido);
+        Assert.Equal("Corrija os 3 campos destacados: Média remuneratória (R$), Dias-base e Demissão (dd/mm/aaaa).", vm.Mensagem);
+        Assert.Equal("Informe zero ou um valor positivo.", CampoDe(vm, "media").Erro);
+        Assert.Equal("Use um número inteiro.", CampoDe(vm, "diasBase").Erro);
+        Assert.Equal("Use uma data dd/mm/aaaa.", CampoDe(vm, "demissao").Erro);
+        Assert.Null(CampoDe(vm, "fimEstabilidade").Erro);
+        Assert.Same(CampoDe(vm, "media"), vm.PrimeiroCampoComErro);
+
+        Alterar(vm, "media", "3.000,00");
+        Alterar(vm, "diasBase", "30");
+        Assert.Null(CampoDe(vm, "media").Erro);
+        Assert.NotNull(vm.Mensagem);
+        Alterar(vm, "demissao", "10/01/2025");
+        Assert.Null(vm.Mensagem);
+    }
+
+    [Fact]
+    public async Task Um_so_campo_errado_mostra_a_mensagem_completa_e_a_regra_destaca_o_campo_citado()
+    {
+        var caso = new EstabilidadeFake();
+        var vm = new EstabilidadeMobileViewModel(caso, new PdfTeste(), NullLogger<EstabilidadeMobileViewModel>.Instance);
+        Alterar(vm, "media", "3.000,00");
+        Alterar(vm, "complementos", "abc");
+
+        await vm.CalcularCommand.ExecuteAsync(null);
+
+        Assert.Equal("O campo \"Complementos (R$, opcional)\" está em formato inválido: use somente números e vírgula nos centavos, por exemplo 3.500,00.", vm.Mensagem);
+        Assert.Equal("Use números e vírgula, como 3.500,00.", CampoDe(vm, "complementos").Erro);
+
+        Alterar(vm, "complementos", "0,00");
+        caso.Falha = Erro.Validacao("O fim da estabilidade deve ser posterior à data de demissão.");
+        await vm.CalcularCommand.ExecuteAsync(null);
+
+        Assert.Equal("O fim da estabilidade deve ser posterior à data de demissão.", vm.Mensagem);
+        Assert.Equal(vm.Mensagem, CampoDe(vm, "fimEstabilidade").Erro);
+        // "Demissão" aparece depois de preposição, como complemento: o campo está certo.
+        Assert.Null(CampoDe(vm, "demissao").Erro);
+
+        caso.Falha = Erro.NaoEncontrado("Tabela do salário mínimo ausente para a competência.");
+        await vm.CalcularCommand.ExecuteAsync(null);
+        Assert.Equal("Tabela do salário mínimo ausente para a competência.", vm.Mensagem);
+        Assert.DoesNotContain(vm.Campos, campo => campo.TemErro);
+    }
+
+    [Fact]
+    public async Task Celulas_da_grade_entram_no_aviso_e_a_regra_sobre_as_linhas_fica_abaixo_do_titulo()
+    {
+        var caso = new PensaoFake();
+        var vm = new PensaoMobileViewModel(caso, new PdfTeste(), NullLogger<PensaoMobileViewModel>.Instance);
+        var grade = Assert.Single(vm.Grades, item => item.Chave == "beneficiarios");
+        Alterar(vm, "valorBruto", "abc");
+        grade.Linhas[0].Campo("percentual").Valor = "-5";
+
+        await vm.CalcularCommand.ExecuteAsync(null);
+
+        Assert.Null(caso.Pedido);
+        Assert.Equal("Corrija os 2 campos destacados: Valor bruto (R$) e Percentual (%) em Beneficiário 1.", vm.Mensagem);
+        Assert.Equal("Informe zero ou um valor positivo.", grade.Linhas[0].Campo("percentual").Erro);
+        Assert.Same(CampoDe(vm, "valorBruto"), vm.PrimeiroCampoComErro);
+
+        Alterar(vm, "valorBruto", "5.000,00");
+        grade.Linhas[0].Campo("percentual").Valor = "20";
+        Assert.Null(vm.Mensagem);
+        caso.Falha = Erro.Validacao("Revise as linhas: a soma das pensões supera os rendimentos.");
+        await vm.CalcularCommand.ExecuteAsync(null);
+
+        Assert.Equal(caso.Falha.Mensagem, grade.Erro);
+        Assert.Same(grade, vm.GradeComErro);
+        grade.Linhas[0].Campo("percentual").Valor = "10";
+        Assert.Null(grade.Erro);
+        Assert.Null(vm.Mensagem);
+    }
+
     private static CampoMobile CampoDe(CalculadoraTrabalhistaViewModel vm, string chave) =>
         Assert.Single(vm.Campos, campo => campo.Chave == chave);
 
@@ -281,11 +368,12 @@ public sealed class CalculadorasLoteFMobileTests
     private sealed class PensaoFake : ISimularPensaoUseCase
     {
         public SimularPensaoRequest? Pedido { get; set; }
+        public Erro Falha { get; set; } = Erro.Validacao("Capturado para teste.");
 
         public Task<Result<SimulacaoPensaoDto>> ExecutarAsync(SimularPensaoRequest request, CancellationToken cancellationToken)
         {
             Pedido = request;
-            return Task.FromResult<Result<SimulacaoPensaoDto>>(Erro.Validacao("Capturado para teste."));
+            return Task.FromResult<Result<SimulacaoPensaoDto>>(Falha);
         }
     }
 

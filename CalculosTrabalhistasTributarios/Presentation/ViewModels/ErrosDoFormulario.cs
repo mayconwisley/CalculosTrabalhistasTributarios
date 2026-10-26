@@ -43,7 +43,7 @@ public sealed class ErrosDoFormulario : ViewModelBase
         _mensagens.Clear();
         _primeiraMensagem = null;
         _avisoDosCampos = false;
-        OnPropertyChanged("Item[]");
+        AvisarCampos();
         Aviso = string.Empty;
     }
 
@@ -53,7 +53,7 @@ public sealed class ErrosDoFormulario : ViewModelBase
         if (!_mensagens.TryAdd(campo, orientacao))
             return;
         _primeiraMensagem ??= mensagem;
-        OnPropertyChanged("Item[]");
+        AvisarCampos();
     }
 
     /// <summary>Mostra o aviso dos campos marcados na leitura; falso quando a leitura não encontrou erros.</summary>
@@ -83,7 +83,7 @@ public sealed class ErrosDoFormulario : ViewModelBase
             citados = [(padrao, erro.Mensagem)];
         foreach (var (campo, mensagem) in citados)
             _mensagens.TryAdd(campo, mensagem);
-        OnPropertyChanged("Item[]");
+        AvisarCampos();
         Aviso = erro.Mensagem;
         _avisoDosCampos = citados.Count > 0;
         if (citados.Count > 0)
@@ -96,7 +96,7 @@ public sealed class ErrosDoFormulario : ViewModelBase
     {
         if (!_mensagens.Remove(campo))
             return;
-        OnPropertyChanged("Item[]");
+        AvisarCampos();
         if (_mensagens.Count == 0 && _avisoDosCampos)
             Aviso = string.Empty;
     }
@@ -143,6 +143,13 @@ public sealed class ErrosDoFormulario : ViewModelBase
     }
 
     private string Rotulo(string campo) => _rotulos.GetValueOrDefault(campo, campo);
+
+    // O WPF acompanha o indexador pelo nome "Item[]"; o MAUI, que também usa esta classe, pelo nome "Item".
+    private void AvisarCampos()
+    {
+        OnPropertyChanged("Item[]");
+        OnPropertyChanged("Item");
+    }
 
     private static string Lista(IEnumerable<string> itens)
     {

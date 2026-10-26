@@ -14,6 +14,10 @@
     <Compile Include="..\CalculosTrabalhistasTributarios\Presentation\ViewModels\Historico\ComparacaoResultados.cs" Link="Historico\ComparacaoResultados.cs" />
     <Compile Include="..\CalculosTrabalhistasTributarios\Presentation\ViewModels\Historico\LinhaResultadoComparadoViewModel.cs" Link="Historico\LinhaResultadoComparadoViewModel.cs" />
     <Compile Include="..\CalculosTrabalhistasTributarios\Presentation\SecoesDoManual.cs" Link="Ajuda\SecoesDoManual.cs" />
+    <!-- Erros de preenchimento no mesmo padrão do desktop: leitura, orientação curta e campos citados pelas regras. -->
+    <Compile Include="..\CalculosTrabalhistasTributarios\Presentation\Mvvm\ViewModelBase.cs" Link="Comum\ViewModelBase.cs" />
+    <Compile Include="..\CalculosTrabalhistasTributarios\Presentation\ViewModels\ErrosDoFormulario.cs" Link="Comum\ErrosDoFormulario.cs" />
+    <Compile Include="..\CalculosTrabalhistasTributarios\Presentation\ViewModels\Calculadoras\CamposCitadosPorRotulo.cs" Link="Comum\CamposCitadosPorRotulo.cs" />
     <EmbeddedResource Include="Exemplos\*.json" LogicalName="Exemplos.%(Filename)%(Extension)" />
     <!-- A ajuda de cada calculadora mostra a seção do manual dentro do aplicativo. -->
     <EmbeddedResource Include="..\docs\MANUAL.md" LogicalName="Manual.MANUAL.md" />

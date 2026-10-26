@@ -92,7 +92,7 @@ public sealed class CalculadorasLoteDMobileTests
 
         await vm.CalcularCommand.ExecuteAsync(null);
         Assert.Null(captura.Pedido);
-        Assert.StartsWith("Reflexo 1: Base paga (R$)", vm.Mensagem);
+        Assert.StartsWith("Reflexo 1: O campo \"Base paga (R$)\"", vm.Mensagem);
 
         reflexo.Campo("pago").Valor = "3.000,00";
         await vm.CalcularCommand.ExecuteAsync(null);
@@ -135,7 +135,7 @@ public sealed class CalculadorasLoteDMobileTests
         Assert.Equal("500,00", quarto.Campo("aportado").Valor);
         await vm.CalcularCommand.ExecuteAsync(null);
         Assert.Null(captura.Pedido);
-        Assert.StartsWith("Aporte 4: Data (dd/mm/aaaa)", vm.Mensagem);
+        Assert.StartsWith("Aporte 4: O campo \"Data (dd/mm/aaaa)\"", vm.Mensagem);
 
         quarto.Campo("data").Valor = "15/04/2026";
         quarto.Campo("saldo").Valor = "520,00";
@@ -189,7 +189,7 @@ public sealed class CalculadorasLoteDMobileTests
         parcelas.Linhas[0].Campo("valor").Valor = "abc";
         await vm.CalcularCommand.ExecuteAsync(null);
         Assert.Null(captura.Pedido);
-        Assert.StartsWith("Parcela 1: Valor tributável (R$)", vm.Mensagem);
+        Assert.StartsWith("Parcela 1: O campo \"Valor tributável (R$)\"", vm.Mensagem);
         parcelas.Linhas[0].Campo("valor").Valor = "1.200,00";
 
         Opcao(vm, "origem", 1);
@@ -251,7 +251,7 @@ public sealed class CalculadorasLoteDMobileTests
         meses.Linhas[2].Campo("folha").Valor = "x";
         await vm.CalcularCommand.ExecuteAsync(null);
         Assert.Null(captura.Pedido);
-        Assert.StartsWith("Mês 3: Folha com encargos (R$)", vm.Mensagem);
+        Assert.StartsWith("Mês 3: O campo \"Folha com encargos (R$)\"", vm.Mensagem);
         meses.Linhas[2].Campo("folha").Valor = "5.000,00";
 
         Alterar(vm, "proLabore", "3.000,00");

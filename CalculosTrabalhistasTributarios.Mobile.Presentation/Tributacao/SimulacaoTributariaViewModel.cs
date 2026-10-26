@@ -5,6 +5,7 @@ using CalculosTrabalhistasTributarios.Mobile.Presentation.Interfaces;
 using CalculosTrabalhistasTributarios.Mobile.Presentation.Historico;
 using CalculosTrabalhistasTributarios.Domain.Comum;
 using CalculosTrabalhistasTributarios.Presentation;
+using CalculosTrabalhistasTributarios.Presentation.ViewModels;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
@@ -43,8 +44,18 @@ public sealed partial class SimulacaoTributariaViewModel(
         UsarBrutoComoBase = usarBruto.Marcado; IndiceVinculo = vinculo.Indice;
         SessentaECincoAnos = idade.Marcado; DecimoTerceiro = decimo.Marcado;
         Demonstrativo = null;
+        Erros.Limpar();
         return Result.Ok();
     }
+
+    /// <summary>Campos a corrigir, no padrão das demais calculadoras: destaque no campo e aviso junto de Calcular.</summary>
+    public ErrosDoFormulario Erros { get; } = new(new Dictionary<string, string>
+    {
+        [nameof(Competencia)] = "Competência",
+        [nameof(ValorBruto)] = "Valor bruto (R$)",
+        [nameof(BaseInss)] = "Base de INSS e FGTS",
+        [nameof(Dependentes)] = "Dependentes para IRRF"
+    });
     public IReadOnlyList<string> Vinculos { get; } = ["Empregado", "Aprendiz", "Empregado doméstico", "Aposentadoria ou pensão"];
     [ObservableProperty] private string _competencia = DateTime.Today.ToString("MM/yyyy", Cultura);
     [ObservableProperty] private string _valorBruto = "0,00";
@@ -81,6 +92,7 @@ public sealed partial class SimulacaoTributariaViewModel(
     protected override void OnPropertyChanged(System.ComponentModel.PropertyChangedEventArgs e)
     {
         base.OnPropertyChanged(e);
+        Erros.Corrigido(e.PropertyName ?? string.Empty);
         if (e.PropertyName is nameof(Competencia) or nameof(ValorBruto) or nameof(BaseInss) or nameof(Dependentes)
             or nameof(UsarBrutoComoBase) or nameof(IndiceVinculo) or nameof(SessentaECincoAnos) or nameof(DecimoTerceiro))
         {
@@ -98,29 +110,14 @@ public sealed partial class SimulacaoTributariaViewModel(
     {
         Demonstrativo = null;
         Mensagem = null;
-        if (!DateOnly.TryParseExact("01/" + Competencia.Trim(), "dd/MM/yyyy", Cultura, DateTimeStyles.None, out var competencia))
-        {
-            Mensagem = "Competência: informe mês e ano no formato mm/aaaa, por exemplo 01/2026.";
+        // Lê o formulário inteiro antes de avisar, para apontar de uma vez todos os campos a corrigir.
+        Erros.Limpar();
+        var competencia = Erros.Competencia(nameof(Competencia), Competencia);
+        var bruto = Erros.Moeda(nameof(ValorBruto), ValorBruto);
+        var baseInss = EhAposentadoria ? 0m : UsarBrutoComoBase ? bruto : Erros.Moeda(nameof(BaseInss), BaseInss);
+        var dependentes = Erros.Inteiro(nameof(Dependentes), Dependentes);
+        if (Erros.Apresentar())
             return;
-        }
-        if (!LeituraNumerica.TentarLer(ValorBruto, out var bruto))
-        {
-            Mensagem = "Valor bruto: informe um número, por exemplo 3.500,00.";
-            return;
-        }
-        var baseInss = bruto;
-        if (EhAposentadoria)
-            baseInss = 0m;
-        else if (!UsarBrutoComoBase && !LeituraNumerica.TentarLer(BaseInss, out baseInss))
-        {
-            Mensagem = "Base de INSS: informe um número, por exemplo 3.500,00.";
-            return;
-        }
-        if (!int.TryParse(Dependentes, NumberStyles.Integer, Cultura, out var dependentes))
-        {
-            Mensagem = "Dependentes: informe uma quantidade inteira, por exemplo 0 ou 2.";
-            return;
-        }
         if (IndiceVinculo is < 0 or > 3)
         {
             Mensagem = "Tipo de vínculo: selecione uma opção da lista.";
@@ -141,7 +138,11 @@ public sealed partial class SimulacaoTributariaViewModel(
             var resultado = await simular.ExecutarAsync(pedido, cancellationToken);
             cancellationToken.ThrowIfCancellationRequested();
             if (resultado.Falhou)
-                Mensagem = resultado.Erro.Mensagem;
+            {
+                // Uma regra que cita um campo o destaca; as demais falhas, como uma tabela ausente, ficam na mensagem.
+                if (!Erros.Regra(resultado.Erro))
+                    Mensagem = resultado.Erro.Mensagem;
+            }
             else
                 Demonstrativo = resultado.Valor;
         }

@@ -1,3 +1,4 @@
+using CalculosTrabalhistasTributarios.Mobile.Comportamentos;
 using CalculosTrabalhistasTributarios.Mobile.Features.Ajuda;
 using CalculosTrabalhistasTributarios.Mobile.Presentation.SaqueAniversario;
 using CalculosTrabalhistasTributarios.Mobile.Presentation.Inicio;
@@ -20,8 +21,17 @@ public partial class SaqueAniversarioPage : ContentPage
             Command = new Command(async () => await historico.PreencherExemploAsync(TipoCalculadoraMobile.SaqueAniversario, _viewModel)) });
     }
 
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+        _viewModel.Erros.CampoComErro += FocarCampoComErro;
+    }
+
+    private void FocarCampoComErro() => Dispatcher.Dispatch(async () => await DestaqueDeErro.FocarPrimeiroAsync(this, Rolagem));
+
     protected override void OnDisappearing()
     {
+        _viewModel.Erros.CampoComErro -= FocarCampoComErro;
         _viewModel.CalcularCommand.Cancel();
         base.OnDisappearing();
     }

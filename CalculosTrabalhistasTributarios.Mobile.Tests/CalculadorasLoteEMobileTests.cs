@@ -136,7 +136,7 @@ public sealed class CalculadorasLoteEMobileTests
         captura.Limpar();
         await vm.CalcularCommand.ExecuteAsync(null);
         Assert.Null(captura.Pedido);
-        Assert.Equal("Período 1: Salário (R$): informe um número, por exemplo 3.500,00.", vm.Mensagem);
+        Assert.Equal("Período 1: O campo \"Salário (R$)\" está em formato inválido: use somente números e vírgula nos centavos, por exemplo 3.500,00.", vm.Mensagem);
 
         grade.Linhas[0].Campo("salario").Valor = "2.800,00";
         await vm.CalcularCommand.ExecuteAsync(null);
@@ -224,7 +224,7 @@ public sealed class CalculadorasLoteEMobileTests
         captura.Limpar();
         await vm.CalcularCommand.ExecuteAsync(null);
         Assert.Null(captura.Pedido);
-        Assert.Equal("Dólar compra fiscal (R$/USD): informe um número, por exemplo 3.500,00.", vm.Mensagem);
+        Assert.Equal("O campo \"Dólar compra fiscal (R$/USD)\" está em formato inválido: use somente números, com vírgula nas casas decimais.", vm.Mensagem);
     }
 
     private static CampoMobile Campo(CalculadoraTrabalhistaViewModel vm, string chave) =>

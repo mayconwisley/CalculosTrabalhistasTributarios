@@ -38,6 +38,7 @@
                         <Border IsVisible="{Binding Visivel}">
                             <VerticalStackLayout Spacing="12">
                                 <Label Text="{Binding Titulo}" Style="{StaticResource TituloSecao}" SemanticProperties.HeadingLevel="Level2" />
+                                <Label Text="{Binding Erro}" IsVisible="{Binding TemErro}" Style="{StaticResource TextoErroCampo}" />
                                 <Label Text="{Binding Descricao}" Style="{StaticResource TextoSecundario}" />
                                 <Button Text="{Binding RotuloGerar}" Style="{StaticResource BotaoSecundario}" Command="{Binding GerarCommand}" IsVisible="{Binding TemGerar}" SemanticProperties.Description="{Binding RotuloGerar}" />
                                 <Button Text="{Binding RotuloAdicionar}" Style="{StaticResource BotaoSecundario}" Command="{Binding AdicionarCommand}" SemanticProperties.Description="{Binding RotuloAdicionar}" />
@@ -71,6 +72,10 @@
                             </VerticalStackLayout>
                             <Border.Triggers>
                                 <DataTrigger TargetType="Border" Binding="{Binding Ocupado, Source={RelativeSource AncestorType={x:Type vm:CalculadoraTrabalhistaViewModel}}, x:DataType=vm:CalculadoraTrabalhistaViewModel}" Value="True"><Setter Property="IsEnabled" Value="False" /></DataTrigger>
+                                <DataTrigger TargetType="Border" Binding="{Binding TemErro}" Value="True">
+                                    <Setter Property="Stroke" Value="{StaticResource ErroCampoBrush}" />
+                                    <Setter Property="StrokeThickness" Value="2" />
+                                </DataTrigger>
                             </Border.Triggers>
                         </Border>
                     </DataTemplate>
@@ -174,7 +179,6 @@
                     <Button Text="Descartar quitação" Style="{StaticResource BotaoSecundario}" Command="{Binding DescartarQuitacaoCommand}" SemanticProperties.Description="Descartar a quitação transferida do banco de horas" />
                 </VerticalStackLayout>
             </Border>
-            <Label Text="{Binding Mensagem}" IsVisible="{Binding TemMensagem}" TextColor="{AppThemeBinding Light={StaticResource ErroClaro}, Dark={StaticResource ErroEscuro}}" />
             <ActivityIndicator IsVisible="{Binding Ocupado}" IsRunning="{Binding Ocupado}" />
             <views:ResultadoSimulacaoView x:Name="Resultado" Demonstrativo="{Binding Demonstrativo}" CompartilharPdfCommand="{Binding CompartilharPdfCommand}" CompartilharResumoCommand="{Binding CompartilharResumoCommand}" />
             <Button Text="Usar no holerite" Command="{Binding UsarNoHoleriteCommand}" IsVisible="{Binding PodeUsarNoHolerite}" AutomationId="UsarNoHolerite" SemanticProperties.Description="Abrir o holerite com a quitação do banco de horas" />
@@ -196,6 +200,8 @@
                 <ContentView IsVisible="{Binding TemRemocaoAtual}">
                     <views:BarraDesfazerView BindingContext="{Binding RemocaoAtual}" />
                 </ContentView>
+                <!-- O aviso do cálculo fica junto de Calcular, como no aplicativo Windows; os campos citados ficam destacados. -->
+                <Label Text="{Binding Mensagem}" IsVisible="{Binding TemMensagem}" Style="{StaticResource AvisoDoCalculo}" AutomationId="AvisoCalculo" />
                 <!-- Margem em vez de ColumnSpacing: oculto o Resultado, Calcular chega à mesma borda direita da barra de desfazer. -->
                 <Grid ColumnDefinitions="*,Auto">
                     <Button Text="Calcular" Command="{Binding CalcularCommand}" AutomationId="CalcularTrabalhista" comportamentos:RetornoTatil.Ativo="True" />

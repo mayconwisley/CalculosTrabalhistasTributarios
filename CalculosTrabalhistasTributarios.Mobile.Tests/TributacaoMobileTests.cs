@@ -78,8 +78,10 @@ public sealed class TributacaoMobileTests
             new CompartilhamentoDeTeste(), NullLogger<SimulacaoTributariaViewModel>.Instance)
         { Competencia = competencia, ValorBruto = bruto, Dependentes = dependentes };
         await vm.CalcularCommand.ExecuteAsync(null);
-        Assert.NotNull(vm.Mensagem);
-        Assert.Contains(campo, vm.Mensagem, StringComparison.OrdinalIgnoreCase);
+        // Campos errados vão para o aviso dos campos destacados; a tabela ausente, para a mensagem geral.
+        var aviso = vm.Erros.TemAviso ? vm.Erros.Aviso : vm.Mensagem;
+        Assert.NotNull(aviso);
+        Assert.Contains(campo, aviso, StringComparison.OrdinalIgnoreCase);
         Assert.Null(vm.Demonstrativo);
         Assert.False(vm.CompartilharPdfCommand.CanExecute(null));
     }
