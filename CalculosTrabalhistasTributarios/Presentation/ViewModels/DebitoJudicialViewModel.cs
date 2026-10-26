@@ -51,8 +51,15 @@ public sealed class DebitoJudicialViewModel : ViewModelBase, ICalculoSalvavel, I
         _acrescimosSelecionados = OpcoesAcrescimos[0];
         _dataCalculo = DateTime.Today.ToString("dd/MM/yyyy", Cultura);
         Historico = historico.Criar(this);
+        Erros = new ErrosDoFormulario(new Dictionary<string, string>
+        {
+            [nameof(DataCalculo)] = "Data do cálculo",
+            [nameof(DataAjuizamento)] = "Data do ajuizamento",
+            [nameof(DataCitacao)] = "Data da citação"
+        }, nameof(Parcelas));
+        PropertyChanged += (_, argumentos) => Erros.Corrigido(argumentos.PropertyName ?? string.Empty);
         Parcelas.Add(NovaParcela());
-        Parcelas.CollectionChanged += (_, _) => Desatualizar();
+        Parcelas.CollectionChanged += (_, _) => AlterarParcela();
         AdicionarParcelaCommand = new RelayCommand(_ => Parcelas.Add(NovaParcela()));
         RemoverParcelaCommand = new RelayCommand(parametro =>
         {
@@ -125,6 +132,7 @@ public sealed class DebitoJudicialViewModel : ViewModelBase, ICalculoSalvavel, I
     public ICommand ExportarPdfCommand { get; }
     public ICommand ExportarExcelCommand { get; }
     public HistoricoDaJanela Historico { get; }
+    public ErrosDoFormulario Erros { get; }
 
     public string TipoHistorico => "DebitoJudicial";
     public string NomeCalculadora => "Débitos judiciais";
@@ -162,37 +170,49 @@ public sealed class DebitoJudicialViewModel : ViewModelBase, ICalculoSalvavel, I
         Parcelas.Clear();
         foreach (var linha in linhas)
             Parcelas.Add(new ParcelaDebitoViewModel(linha.GetValueOrDefault(nameof(ParcelaDebitoViewModel.Descricao), ""),
-                linha.GetValueOrDefault(nameof(ParcelaDebitoViewModel.Vencimento), ""), linha.GetValueOrDefault(nameof(ParcelaDebitoViewModel.Valor), "0,00"), Desatualizar));
+                linha.GetValueOrDefault(nameof(ParcelaDebitoViewModel.Vencimento), ""), linha.GetValueOrDefault(nameof(ParcelaDebitoViewModel.Valor), "0,00"), AlterarParcela));
     }
 
     public Task RecalcularAsync() => CalcularAsync();
 
-    private ParcelaDebitoViewModel NovaParcela() => new($"Parcela {Parcelas.Count + 1}", "", "0,00", Desatualizar);
+    private ParcelaDebitoViewModel NovaParcela() => new($"Parcela {Parcelas.Count + 1}", "", "0,00", AlterarParcela);
+
+    private void AlterarParcela()
+    {
+        Erros.Corrigido(nameof(Parcelas));
+        Desatualizar();
+    }
 
     private async Task CalcularAsync()
     {
-        if (!TentarLerData(DataCalculo, "a data do cálculo", obrigatoria: true, out var calculo)
-            || !TentarLerData(DataAjuizamento, "a data do ajuizamento", obrigatoria: false, out var ajuizamento)
-            || !TentarLerData(DataCitacao, "a data da citação", obrigatoria: UsaCitacao, out var citacao))
-            return;
+        // Lê o formulário inteiro antes de avisar, para apontar de uma vez todos os campos a corrigir.
+        Erros.Limpar();
+        var calculo = Erros.Data(nameof(DataCalculo), DataCalculo);
+        var ajuizamento = EhTrabalhista ? Erros.DataOpcional(nameof(DataAjuizamento), DataAjuizamento) : null;
+        DateOnly? citacao = UsaCitacao ? Erros.Data(nameof(DataCitacao), DataCitacao) : null;
         var parcelas = new List<ParcelaDebito>(Parcelas.Count);
         for (var i = 0; i < Parcelas.Count; i++)
         {
             if (!Parcelas[i].TentarLer(i + 1, out var parcela, out var erro))
             {
-                _notificador.MostrarAviso(erro);
-                return;
+                Erros.MarcarGrade(erro);
+                break;
             }
             parcelas.Add(parcela);
         }
+        if (Erros.Apresentar())
+            return;
 
         try
         {
-            var simulacao = await _simulador.CalcularAsync(new SimularDebitoJudicialRequest((NaturezaDebito)NaturezaSelecionada.Valor, parcelas, calculo!.Value,
-                EhTrabalhista ? ajuizamento : null, (InicioJurosCivel)InicioJurosSelecionado.Valor, UsaCitacao ? citacao : null, (IndiceCivelAnterior)IndiceSelecionado.Valor,
+            var simulacao = await _simulador.CalcularAsync(new SimularDebitoJudicialRequest((NaturezaDebito)NaturezaSelecionada.Valor, parcelas, calculo,
+                ajuizamento, (InicioJurosCivel)InicioJurosSelecionado.Valor, citacao, (IndiceCivelAnterior)IndiceSelecionado.Valor,
                 EhCivel ? (AcrescimosPenhora)AcrescimosSelecionados.Valor : AcrescimosPenhora.Nenhum), CancellationToken.None);
             if (simulacao.Falhou)
-                _notificador.MostrarFalha(simulacao.Erro, "Não foi possível atualizar o débito.");
+            {
+                if (!Erros.Regra(simulacao.Erro))
+                    _notificador.MostrarFalha(simulacao.Erro, "Não foi possível atualizar o débito.");
+            }
             else
                 Apresentar(simulacao.Valor);
         }
@@ -262,20 +282,6 @@ public sealed class DebitoJudicialViewModel : ViewModelBase, ICalculoSalvavel, I
         {
             _notificador.MostrarErro("Não foi possível gerar o relatório em PDF.", exception);
         }
-    }
-
-    private bool TentarLerData(string texto, string campo, bool obrigatoria, out DateOnly? data)
-    {
-        data = null;
-        if (string.IsNullOrWhiteSpace(texto) && !obrigatoria)
-            return true;
-        if (DateOnly.TryParseExact(texto.Trim(), "dd/MM/yyyy", Cultura, DateTimeStyles.None, out var lida))
-        {
-            data = lida;
-            return true;
-        }
-        _notificador.MostrarAviso($"Informe {campo} no formato dd/mm/aaaa.");
-        return false;
     }
 
     private static OpcaoCampo? Opcao(IReadOnlyList<OpcaoCampo> opcoes, string texto) => opcoes.FirstOrDefault(opcao => opcao.Texto == texto);

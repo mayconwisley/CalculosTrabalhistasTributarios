@@ -44,6 +44,19 @@ public sealed class JornadaViewModel : ViewModelBase, ICalculoSalvavel, IAtalhos
     private IReadOnlyList<IndicadorResumoViewModel> _indicadores = [];
     private IReadOnlyList<string> _criterios = [];
     private IReadOnlyList<string> _observacoes = [];
+    private readonly Dictionary<string, string> _rotulos = new()
+    {
+        [nameof(Competencia)] = "Competência",
+        [nameof(InicioPeriodo)] = "Início do ponto",
+        [nameof(FimPeriodo)] = "Fim do ponto",
+        [nameof(JornadaSemana)] = "Jornada de seg. a sex.",
+        [nameof(JornadaSabado)] = "Jornada de sábado",
+        [nameof(Entrada1)] = "Entrada",
+        [nameof(Saida1)] = "Saída para o intervalo",
+        [nameof(Entrada2)] = "Volta do intervalo",
+        [nameof(Saida2)] = "Saída",
+        [nameof(InicioEscala)] = "1º dia de trabalho"
+    };
 
     public JornadaViewModel(IApurarJornadaUseCase apuracao, IUserNotifier notificador, IPlanilhaService planilha, IArquivoDialogService arquivoDialog,
         IWindowNavigator navegador, ContextoCompartilhado contexto, IHistoricoDaJanelaFactory historico)
@@ -60,7 +73,13 @@ public sealed class JornadaViewModel : ViewModelBase, ICalculoSalvavel, IAtalhos
         _ultimaCompetencia = new DateOnly(mes.Year, mes.Month, 1);
         (_inicioPeriodo, _fimPeriodo) = MesInteiro(_ultimaCompetencia);
         Historico = historico.Criar(this);
-        Dias.CollectionChanged += (_, _) => OnPropertyChanged(nameof(TemDias));
+        Erros = new ErrosDoFormulario(_rotulos, nameof(Dias));
+        PropertyChanged += (_, argumentos) => Erros.Corrigido(argumentos.PropertyName ?? string.Empty);
+        Dias.CollectionChanged += (_, _) =>
+        {
+            OnPropertyChanged(nameof(TemDias));
+            Erros.Corrigido(nameof(Dias));
+        };
         GerarDiasCommand = new RelayCommand(_ => GerarDias());
         ApurarCommand = new RelayCommand(_ => Apurar());
         UsarNasHorasExtrasCommand = new RelayCommand(_ => Usar(TipoCalculadora.HorasExtras), _ => _ultimaApuracao is not null);
@@ -126,6 +145,7 @@ public sealed class JornadaViewModel : ViewModelBase, ICalculoSalvavel, IAtalhos
             if (value is null || !SetProperty(ref _escalaSelecionada, value)) return;
             OnPropertyChanged(nameof(EscalaPorCiclo));
             OnPropertyChanged(nameof(RotuloJornada));
+            _rotulos[nameof(JornadaSemana)] = RotuloJornada;
             Desatualizar();
         }
     }
@@ -153,6 +173,7 @@ public sealed class JornadaViewModel : ViewModelBase, ICalculoSalvavel, IAtalhos
     public ICommand UsarNoHoleriteCommand { get; }
     public ICommand ExportarExcelCommand { get; }
     public HistoricoDaJanela Historico { get; }
+    public ErrosDoFormulario Erros { get; }
 
     public string TipoHistorico => "Jornada";
     public string NomeCalculadora => "Jornada pelo ponto";
@@ -210,7 +231,7 @@ public sealed class JornadaViewModel : ViewModelBase, ICalculoSalvavel, IAtalhos
             var tipo = DiaJornadaViewModel.Tipos.FirstOrDefault(opcao => opcao.Texto == linha.GetValueOrDefault("Tipo"))?.Valor as TipoDia? ?? TipoDia.Util;
             Dias.Add(new DiaJornadaViewModel(data, tipo, linha.GetValueOrDefault(nameof(DiaJornadaViewModel.Previsto), ""),
                 linha.GetValueOrDefault(nameof(DiaJornadaViewModel.Entrada1), ""), linha.GetValueOrDefault(nameof(DiaJornadaViewModel.Saida1), ""),
-                linha.GetValueOrDefault(nameof(DiaJornadaViewModel.Entrada2), ""), linha.GetValueOrDefault(nameof(DiaJornadaViewModel.Saida2), ""), Desatualizar));
+                linha.GetValueOrDefault(nameof(DiaJornadaViewModel.Entrada2), ""), linha.GetValueOrDefault(nameof(DiaJornadaViewModel.Saida2), ""), AlterarDia));
         }
     }
 
@@ -223,20 +244,20 @@ public sealed class JornadaViewModel : ViewModelBase, ICalculoSalvavel, IAtalhos
 
     private void GerarDias()
     {
-        if (!TentarLerCompetencia(out _) || !TentarLerPeriodo(out var inicio, out var fim))
+        // Lê o formulário inteiro antes de avisar, para apontar de uma vez todos os campos a corrigir.
+        Erros.Limpar();
+        Erros.Competencia(nameof(Competencia), Competencia);
+        var inicio = Erros.Data(nameof(InicioPeriodo), InicioPeriodo);
+        var fim = Erros.Data(nameof(FimPeriodo), FimPeriodo);
+        // Em branco, o ciclo da escala começa no início do período.
+        var inicioCiclo = EscalaPorCiclo ? Erros.DataOpcional(nameof(InicioEscala), InicioEscala) ?? inicio : inicio;
+        var semana = Erros.Duracao(nameof(JornadaSemana), JornadaSemana);
+        // Nas escalas por ciclo, o sábado fica desabilitado e não é usado.
+        var sabado = EscalaPorCiclo ? 0 : Erros.Duracao(nameof(JornadaSabado), JornadaSabado);
+        foreach (var (campo, horario) in new[] { (nameof(Entrada1), Entrada1), (nameof(Saida1), Saida1), (nameof(Entrada2), Entrada2), (nameof(Saida2), Saida2) })
+            Erros.HorarioOpcional(campo, horario);
+        if (Erros.Apresentar() || !PeriodoValido(inicio, fim))
             return;
-        var inicioCiclo = inicio;
-        if (EscalaPorCiclo && InicioEscala.Trim().Length > 0
-            && !DateOnly.TryParseExact(InicioEscala.Trim(), "dd/MM/yyyy", Cultura, DateTimeStyles.None, out inicioCiclo))
-        {
-            _notificador.MostrarAviso("Informe o primeiro dia de trabalho da escala no formato dd/mm/aaaa, ou deixe em branco para começar no início do período.");
-            return;
-        }
-        if (!LeituraDeHoras.TentarLerDuracao(JornadaSemana, out var semana) || !LeituraDeHoras.TentarLerDuracao(JornadaSabado, out var sabado))
-        {
-            _notificador.MostrarAviso("Informe as jornadas de segunda a sexta e de sábado em horas, como 8:00 e 4:00.");
-            return;
-        }
         if (Dias.Any(dia => dia.Entrada1.Length + dia.Entrada2.Length > 0)
             && !_notificador.Confirmar("Gerar os dias de novo substitui as marcações informadas. Continuar?", "Gerar dias"))
             return;
@@ -261,7 +282,7 @@ public sealed class JornadaViewModel : ViewModelBase, ICalculoSalvavel, IAtalhos
             var (e1, s1, e2, s2) = minutos == 0 ? ("", "", "", "")
                 : !EscalaPorCiclo && data.DayOfWeek == DayOfWeek.Saturday ? (Entrada1, Saida1, "", "")
                 : (Entrada1, Saida1, Entrada2, Saida2);
-            Dias.Add(new DiaJornadaViewModel(data, tipo, DiaJornadaViewModel.Horas(minutos), e1, s1, e2, s2, Desatualizar));
+            Dias.Add(new DiaJornadaViewModel(data, tipo, DiaJornadaViewModel.Horas(minutos), e1, s1, e2, s2, AlterarDia));
         }
         Desatualizar();
     }
@@ -270,24 +291,32 @@ public sealed class JornadaViewModel : ViewModelBase, ICalculoSalvavel, IAtalhos
     {
         if (!TemDias)
             GerarDias();
-        if (!TemDias || !TentarLerCompetencia(out var mes))
+        if (!TemDias)
             return;
+        Erros.Limpar();
+        var mes = Erros.Competencia(nameof(Competencia), Competencia);
         var marcacoes = new List<MarcacaoDia>(Dias.Count);
         foreach (var dia in Dias)
         {
             if (!dia.TentarLer(out var marcacao, out var erro))
             {
-                _notificador.MostrarAviso(erro);
-                return;
+                Erros.MarcarGrade(erro);
+                break;
             }
             marcacoes.Add(marcacao);
         }
+        if (Erros.Apresentar())
+            return;
 
         try
         {
             var apuracao = _apuracao.Apurar(new ApurarJornadaRequest(mes, (TrabalhoNoturno)NoturnoSelecionado.Valor, marcacoes, Escala == EscalaJornada.DozePorTrintaESeis));
             if (apuracao.Falhou)
-                _notificador.MostrarFalha(apuracao.Erro, "Não foi possível apurar a jornada.");
+            {
+                // As regras da apuração tratam das marcações dos dias.
+                if (!Erros.Regra(apuracao.Erro, nameof(Dias)))
+                    _notificador.MostrarFalha(apuracao.Erro, "Não foi possível apurar a jornada.");
+            }
             else
                 Apresentar(apuracao.Valor);
         }
@@ -343,6 +372,12 @@ public sealed class JornadaViewModel : ViewModelBase, ICalculoSalvavel, IAtalhos
         _navegador.AbrirCalculadora(tipo, valores);
     }
 
+    private void AlterarDia()
+    {
+        Erros.Corrigido(nameof(Dias));
+        Desatualizar();
+    }
+
     private void Desatualizar()
     {
         if (_ultimaApuracao is null && !TemResultado)
@@ -361,34 +396,15 @@ public sealed class JornadaViewModel : ViewModelBase, ICalculoSalvavel, IAtalhos
         ((AsyncRelayCommand)ExportarExcelCommand).RaiseCanExecuteChanged();
     }
 
-    private bool TentarLerCompetencia(out DateOnly mes)
+    private bool PeriodoValido(DateOnly inicio, DateOnly fim)
     {
-        if (LerCompetencia(Competencia) is { } lida)
-        {
-            mes = lida;
-            return true;
-        }
-        mes = default;
-        _notificador.MostrarAviso("Informe a competência no formato mm/aaaa.");
-        return false;
-    }
-
-    private bool TentarLerPeriodo(out DateOnly inicio, out DateOnly fim)
-    {
-        fim = default;
-        if (!DateOnly.TryParseExact(InicioPeriodo.Trim(), "dd/MM/yyyy", Cultura, DateTimeStyles.None, out inicio)
-            || !DateOnly.TryParseExact(FimPeriodo.Trim(), "dd/MM/yyyy", Cultura, DateTimeStyles.None, out fim))
-        {
-            _notificador.MostrarAviso("Informe o início e o fim do período do ponto no formato dd/mm/aaaa, como 16/09/2026 e 15/10/2026.");
-            return false;
-        }
         var dias = fim.DayNumber - inicio.DayNumber + 1;
-        if (dias is < 1 or > ApurarJornadaRequest.MaximoDias)
-        {
-            _notificador.MostrarAviso($"O fim do período do ponto deve ser igual ou posterior ao início, com até {ApurarJornadaRequest.MaximoDias} dias.");
-            return false;
-        }
-        return true;
+        if (dias is >= 1 and <= ApurarJornadaRequest.MaximoDias)
+            return true;
+        var mensagem = $"O fim do ponto deve ser igual ou posterior ao início, com até {ApurarJornadaRequest.MaximoDias} dias.";
+        Erros.Marcar(nameof(FimPeriodo), mensagem, mensagem);
+        Erros.Apresentar();
+        return false;
     }
 
     /// <summary>Posição do dia no ciclo da escala, inclusive antes do primeiro dia de trabalho informado.</summary>

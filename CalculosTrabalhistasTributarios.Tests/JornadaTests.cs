@@ -217,7 +217,10 @@ public class JornadaTests
         tela.FimPeriodo = fim;
         tela.GerarDiasCommand.Execute(null);
         Assert.Empty(tela.Dias);
-        Assert.Single(notificador.Mensagens);
+        // O período errado fica destacado no formulário, sem caixa de mensagem.
+        Assert.Empty(notificador.Mensagens);
+        Assert.True(tela.Erros.TemAviso);
+        Assert.True(tela.Erros[nameof(tela.InicioPeriodo)] is not null || tela.Erros[nameof(tela.FimPeriodo)] is not null);
     }
 
     [Fact]

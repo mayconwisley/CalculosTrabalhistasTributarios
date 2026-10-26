@@ -53,12 +53,27 @@ public sealed class PensaoAtrasoViewModel : ViewModelBase, ICalculoSalvavel, IAt
         _jurosSelecionado = OpcoesJuros[0];
         _acrescimosSelecionados = OpcoesAcrescimos[0];
         Historico = historico.Criar(this);
+        Erros = new ErrosDoFormulario(new Dictionary<string, string>
+        {
+            [nameof(ValorPensao)] = "Valor mensal",
+            [nameof(Percentual)] = "Percentual do salário mínimo",
+            [nameof(DiaVencimento)] = "Dia do vencimento",
+            [nameof(PrimeiraParcela)] = "Primeira parcela",
+            [nameof(UltimaParcela)] = "Última parcela",
+            [nameof(DataCalculo)] = "Data do cálculo",
+            [nameof(DataAjuizamento)] = "Data do ajuizamento"
+        }, nameof(Parcelas));
+        PropertyChanged += (_, argumentos) => Erros.Corrigido(argumentos.PropertyName ?? string.Empty);
         // Por padrão, os 12 meses até o anterior ao atual, que já venceram.
         var ultima = DateTime.Today.AddMonths(-1);
         _ultimaParcela = ultima.ToString("MM/yyyy", Cultura);
         _primeiraParcela = ultima.AddMonths(-11).ToString("MM/yyyy", Cultura);
         _dataCalculo = DateTime.Today.ToString("dd/MM/yyyy", Cultura);
-        Parcelas.CollectionChanged += (_, _) => OnPropertyChanged(nameof(TemParcelas));
+        Parcelas.CollectionChanged += (_, _) =>
+        {
+            OnPropertyChanged(nameof(TemParcelas));
+            Erros.Corrigido(nameof(Parcelas));
+        };
         GerarParcelasCommand = new AsyncRelayCommand(GerarParcelasAsync);
         CalcularCommand = new AsyncRelayCommand(CalcularAsync);
         ExportarPdfCommand = new AsyncRelayCommand(ExportarPdfAsync, () => _ultimaSimulacao is not null);
@@ -134,6 +149,7 @@ public sealed class PensaoAtrasoViewModel : ViewModelBase, ICalculoSalvavel, IAt
     public ICommand ExportarPdfCommand { get; }
     public ICommand ExportarExcelCommand { get; }
     public HistoricoDaJanela Historico { get; }
+    public ErrosDoFormulario Erros { get; }
 
     public string TipoHistorico => "PensaoAtraso";
     public string NomeCalculadora => "Pensão em atraso";
@@ -185,7 +201,7 @@ public sealed class PensaoAtrasoViewModel : ViewModelBase, ICalculoSalvavel, IAt
             if (!DateTime.TryParseExact(linha.GetValueOrDefault(nameof(ParcelaAtrasoViewModel.Mes)), "MM/yyyy", Cultura, DateTimeStyles.None, out var mes)
                 || !DateOnly.TryParseExact(linha.GetValueOrDefault(nameof(ParcelaAtrasoViewModel.DataVencimento)), "dd/MM/yyyy", Cultura, DateTimeStyles.None, out var vencimento))
                 continue;
-            Parcelas.Add(new ParcelaAtrasoViewModel(new ParcelaPensaoInformada(DateOnly.FromDateTime(mes), vencimento, 0m, 0m), Desatualizar)
+            Parcelas.Add(new ParcelaAtrasoViewModel(new ParcelaPensaoInformada(DateOnly.FromDateTime(mes), vencimento, 0m, 0m), AlterarParcela)
             {
                 Devido = linha.GetValueOrDefault(nameof(ParcelaAtrasoViewModel.Devido), "0,00"),
                 Pago = linha.GetValueOrDefault(nameof(ParcelaAtrasoViewModel.Pago), "0,00")
@@ -200,20 +216,24 @@ public sealed class PensaoAtrasoViewModel : ViewModelBase, ICalculoSalvavel, IAt
 
     private async Task GerarParcelasAsync()
     {
-        if (!TentarLerMes(PrimeiraParcela, "primeira parcela", out var primeira) || !TentarLerMes(UltimaParcela, "última parcela", out var ultima))
+        // Lê o formulário inteiro antes de avisar, para apontar de uma vez todos os campos a corrigir; o valor e o percentual
+        // só valem para a base escolhida, a única com o campo à vista.
+        Erros.Limpar();
+        var valor = EhValorFixo ? Erros.Moeda(nameof(ValorPensao), ValorPensao) : 0m;
+        var percentual = EhSalarioMinimo ? Erros.Numero(nameof(Percentual), Percentual) : 0m;
+        var dia = Erros.Inteiro(nameof(DiaVencimento), DiaVencimento);
+        var primeira = Erros.Competencia(nameof(PrimeiraParcela), PrimeiraParcela);
+        var ultima = Erros.Competencia(nameof(UltimaParcela), UltimaParcela);
+        if (Erros.Apresentar())
             return;
-        if (!int.TryParse(DiaVencimento.Trim(), out var dia) || !LeituraNumerica.TentarLer(ValorPensao, out var valor) || !LeituraNumerica.TentarLer(Percentual, out var percentual))
-        {
-            _notificador.MostrarAviso("Informe o dia do vencimento como número inteiro e o valor ou o percentual da pensão em formato válido.");
-            return;
-        }
 
         try
         {
             var geradas = await _simulador.GerarParcelasAsync(new GerarParcelasAtrasoRequest((BasePensao)BaseSelecionada.Valor, valor, percentual, primeira, ultima, dia), CancellationToken.None);
             if (geradas.Falhou)
             {
-                _notificador.MostrarFalha(geradas.Erro, "Não foi possível gerar as parcelas.");
+                if (!Erros.Regra(geradas.Erro))
+                    _notificador.MostrarFalha(geradas.Erro, "Não foi possível gerar as parcelas.");
                 return;
             }
             var parcelas = geradas.Valor;
@@ -222,7 +242,7 @@ public sealed class PensaoAtrasoViewModel : ViewModelBase, ICalculoSalvavel, IAt
             Parcelas.Clear();
             foreach (var parcela in parcelas)
             {
-                var linha = new ParcelaAtrasoViewModel(parcela, Desatualizar);
+                var linha = new ParcelaAtrasoViewModel(parcela, AlterarParcela);
                 if (pagos.TryGetValue(parcela.Competencia, out var pago))
                     linha.Pago = pago;
                 Parcelas.Add(linha);
@@ -242,39 +262,33 @@ public sealed class PensaoAtrasoViewModel : ViewModelBase, ICalculoSalvavel, IAt
             if (!TemParcelas || _parcelasDesatualizadas)
                 return;
         }
-        if (!DateOnly.TryParseExact(DataCalculo.Trim(), "dd/MM/yyyy", Cultura, DateTimeStyles.None, out var dataCalculo))
-        {
-            _notificador.MostrarAviso("Informe a data do cálculo no formato dd/mm/aaaa.");
-            return;
-        }
-        DateOnly? ajuizamento = null;
-        if (!string.IsNullOrWhiteSpace(DataAjuizamento))
-        {
-            if (!DateOnly.TryParseExact(DataAjuizamento.Trim(), "dd/MM/yyyy", Cultura, DateTimeStyles.None, out var data))
-            {
-                _notificador.MostrarAviso("Informe a data do ajuizamento no formato dd/mm/aaaa, ou deixe o campo vazio se a execução ainda não foi proposta.");
-                return;
-            }
-            ajuizamento = data;
-        }
-
+        Erros.Limpar();
+        var dataCalculo = Erros.Data(nameof(DataCalculo), DataCalculo);
+        // Vazia enquanto a execução não foi proposta.
+        var ajuizamento = Erros.DataOpcional(nameof(DataAjuizamento), DataAjuizamento);
         var informadas = new List<ParcelaPensaoInformada>(Parcelas.Count);
         foreach (var linha in Parcelas)
         {
             if (!linha.TentarLer(out var parcela, out var erro))
             {
-                _notificador.MostrarAviso(erro);
-                return;
+                Erros.MarcarGrade(erro);
+                break;
             }
             informadas.Add(parcela);
         }
+        if (Erros.Apresentar())
+            return;
 
         try
         {
             var simulacao = await _simulador.CalcularAsync(new SimularPensaoAtrasoRequest(informadas, dataCalculo, ajuizamento, (CorrecaoMonetaria)CorrecaoSelecionada.Valor, (JurosDeMora)JurosSelecionado.Valor,
                 (AcrescimosPenhora)AcrescimosSelecionados.Valor), CancellationToken.None);
             if (simulacao.Falhou)
-                _notificador.MostrarFalha(simulacao.Erro, "Não foi possível calcular a pensão em atraso.");
+            {
+                // As regras do cálculo que não citam um campo tratam dos valores das parcelas.
+                if (!Erros.Regra(simulacao.Erro, nameof(Parcelas)))
+                    _notificador.MostrarFalha(simulacao.Erro, "Não foi possível calcular a pensão em atraso.");
+            }
             else
                 Apresentar(simulacao.Valor);
         }
@@ -305,6 +319,12 @@ public sealed class PensaoAtrasoViewModel : ViewModelBase, ICalculoSalvavel, IAt
         ((AsyncRelayCommand)ExportarExcelCommand).RaiseCanExecuteChanged();
     }
 
+    private void AlterarParcela()
+    {
+        Erros.Corrigido(nameof(Parcelas));
+        Desatualizar();
+    }
+
     /// <summary>Ao mudar o valor, o percentual, o dia ou o período, as parcelas da lista são geradas de novo no próximo cálculo.</summary>
     private void DesatualizarParcelas()
     {
@@ -324,18 +344,6 @@ public sealed class PensaoAtrasoViewModel : ViewModelBase, ICalculoSalvavel, IAt
         TemResultado = false;
         ((AsyncRelayCommand)ExportarPdfCommand).RaiseCanExecuteChanged();
         ((AsyncRelayCommand)ExportarExcelCommand).RaiseCanExecuteChanged();
-    }
-
-    private bool TentarLerMes(string texto, string campo, out DateOnly mes)
-    {
-        mes = default;
-        if (DateTime.TryParseExact(texto.Trim(), "MM/yyyy", Cultura, DateTimeStyles.None, out var data))
-        {
-            mes = DateOnly.FromDateTime(data);
-            return true;
-        }
-        _notificador.MostrarAviso($"Informe a {campo} no formato mm/aaaa.");
-        return false;
     }
 
     private async Task ExportarPdfAsync()

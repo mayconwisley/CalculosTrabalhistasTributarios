@@ -34,7 +34,7 @@ public sealed class SimularPensaoAtrasoUseCase(ITributacaoConsulta tributacaoCon
             return Erro.Validacao("O dia do vencimento deve estar entre 1 e 31.");
         var meses = (r.UltimaParcela.Year - r.PrimeiraParcela.Year) * 12 + r.UltimaParcela.Month - r.PrimeiraParcela.Month + 1;
         if (meses > MaximoParcelas)
-            return Erro.Validacao($"Informe no máximo {MaximoParcelas} parcelas ({MaximoParcelas / 12} anos).");
+            return Erro.Validacao($"Última parcela: informe um mês até {MaximoParcelas / 12} anos depois da primeira parcela, no máximo {MaximoParcelas} parcelas.");
         if (r.Base == BasePensao.ValorFixo && r.Valor <= 0m)
             return Erro.Validacao("Informe o valor mensal da pensão.");
         if (r.Base == BasePensao.SalarioMinimo && r.Percentual is <= 0m or > 1000m)

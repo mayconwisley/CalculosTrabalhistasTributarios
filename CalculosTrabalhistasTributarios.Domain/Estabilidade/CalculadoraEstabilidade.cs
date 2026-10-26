@@ -10,8 +10,8 @@ public static class CalculadoraEstabilidade
 {
     public static Result<ResultadoEstabilidade> Calcular(decimal mediaRemuneratoria, int diasBase, DateOnly demissao, DateOnly fimEstabilidade, decimal complementos = 0m)
     {
-        if (mediaRemuneratoria < 0m)
-            return Erro.Validacao("A média remuneratória não pode ser negativa.");
+        if (mediaRemuneratoria <= 0m)
+            return Erro.Validacao("Informe a média remuneratória, maior que zero.");
         if (diasBase <= 0)
             return Erro.Validacao("Os dias-base devem ser maiores que zero.");
 

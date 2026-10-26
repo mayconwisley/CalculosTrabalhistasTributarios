@@ -546,6 +546,25 @@
             <Setter Property="CornerRadius" Value="14" />
             <Setter Property="Padding" Value="24" />
         </Style>
+        <!-- Erros de preenchimento das janelas próprias, como a do débito judicial: o mesmo padrão da janela comum das calculadoras. -->
+        <Style x:Key="OrientacaoDeErro" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource ErrorTextBrush}" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="Margin" Value="2,5,0,0" />
+            <Style.Triggers>
+                <Trigger Property="Text" Value=""><Setter Property="Visibility" Value="Collapsed" /></Trigger>
+                <Trigger Property="Text" Value="{x:Null}"><Setter Property="Visibility" Value="Collapsed" /></Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="FaixaDeAviso" TargetType="Border">
+            <Setter Property="Padding" Value="14,10" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Background" Value="{DynamicResource ErrorBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource ErrorBorderBrush}" />
+            <Setter Property="AutomationProperties.LiveSetting" Value="Assertive" />
+        </Style>
         <!-- O Expander padrão usa as cores do sistema e fica ilegível no tema escuro; este segue as cores do tema. -->
         <Style TargetType="Expander">
             <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />

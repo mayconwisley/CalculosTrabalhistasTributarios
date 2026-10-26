@@ -11,5 +11,6 @@ public partial class PensaoAtrasoWindow : Window
         InitializeComponent();
         DataContext = viewModel;
         JanelaLembrada.SetChave(this, viewModel.TipoHistorico);
+        DestaqueDeErro.Acompanhar((FrameworkElement)Content, viewModel.Erros);
     }
 }

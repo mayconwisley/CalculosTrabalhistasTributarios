@@ -387,7 +387,7 @@ Abra **Estabilidade** pelo menu lateral.
 
 | Nº | Campo | O que informar |
 | --- | --- | --- |
-| 1 | Média remuneratória | Média da remuneração usada como referência para a indenização. |
+| 1 | Média remuneratória | Média da remuneração usada como referência para a indenização, maior que zero. |
 | 2 | Dias-base | Divisor para obter o valor diário da média. O padrão é 30. |
 | 3 | Data de demissão | Data do desligamento (dd/mm/aaaa). |
 | 4 | Fim da estabilidade | Último dia do período de estabilidade (dd/mm/aaaa). Deve ser posterior à demissão. |
@@ -429,6 +429,8 @@ Além da simulação tributária, da pensão, dos débitos judiciais, da estabil
 - **Salvar no histórico:** guarda o formulário com um nome, para reabrir depois (seção [10.3](#103-histórico-de-cálculos)).
 
 **Campos a corrigir:** quando um dado impede o cálculo, todas as calculadoras mostram o erro do mesmo jeito: a borda do campo fica vermelha, mesmo com o cursor nele, a orientação aparece logo abaixo, e o cursor vai para o primeiro campo a corrigir. Nas grades de competências, períodos ou lançamentos, a orientação aparece em vermelho logo abaixo do título da grade. Todos os campos em formato inválido são destacados de uma vez; uma faixa junto do botão **Calcular** lista os campos ou, para uma regra do cálculo, como um valor que precisa ser maior que zero, traz a explicação completa. Uma regra que envolve mais de um campo, como "informe o salário ou as médias de variáveis", destaca todos eles; a que não se refere a um campo específico fica só na faixa. Ao digitar de novo no campo, o destaque sai. O formato também é conferido ao sair de cada campo: uma data inexistente, como `31/02/2026`, uma competência como `13/2026`, um valor com letras ou um valor negativo ficam destacados na hora, antes do cálculo. Nenhum campo de valor, quantidade ou horas aceita número negativo. Campo vazio não é marcado ao sair; se ele for obrigatório, o aviso vem ao calcular. Falhas que não dependem do formulário, como uma tabela que não existe para a competência, continuam em uma mensagem.
+
+As telas de **Pensão em atraso**, **Débitos judiciais**, **Cálculo de estabilidade** e **Jornada pelo ponto** seguem o mesmo padrão. Nelas, a faixa fica logo abaixo dos campos e dos botões, e o erro de uma linha da grade, como o vencimento de uma parcela ou a marcação de um dia, aparece abaixo do título da grade e sai ao editar a grade. Nessas telas, o formato é conferido ao calcular, e não ao sair de cada campo; na jornada, as jornadas e o horário padrão são conferidos ao gerar os dias, e as marcações, ao apurar.
 
 ![Valor solicitado vazio no empréstimo pessoal: o campo com a borda vermelha, a orientação abaixo dele e a explicação junto do botão Calcular](imagens/95-erro-no-formulario.png)
 
@@ -1827,7 +1829,7 @@ As preferências ficam no arquivo `%LOCALAPPDATA%\CalculoIRRF\settings.json`, qu
 | "Informe valores válidos para competência e campos numéricos." | Na manutenção de tabelas, confira a competência (mm/aaaa), a faixa (inteiro maior que zero) e os valores. |
 | "Não foi possível atualizar a tabela pela internet." | A mensagem lista o que aconteceu com cada fonte. Verifique a conexão com a internet e tente novamente mais tarde; os dados locais não foram alterados. Se uma fonte alternativa já mostra a tabela nova sem a confirmação da outra, aguarde ou cadastre os valores manualmente. Se o problema persistir, as páginas podem ter mudado de formato: cadastre os valores manualmente. |
 | "As tabelas não foram atualizadas ao abrir..." ou "Ao abrir, N de 13 tabelas não foram atualizadas..." | A atualização da tela de abertura não confirmou essas tabelas, e os dados locais delas foram preservados. **Ver detalhes** mostra o motivo de cada uma. Confira a conexão e use **Atualizar pela internet** na tela da tabela, ou aguarde a próxima abertura do dia seguinte. |
-| "O campo "..." está em formato inválido: ..." ou "Corrija os ... campos destacados: ..." | Nas calculadoras trabalhistas, corrija os campos com borda vermelha conforme a orientação abaixo de cada um: valores com vírgula nos centavos, datas no formato dd/mm/aaaa, competência no formato mm/aaaa e horas como `10:30` ou `10,5`. |
+| "O campo "..." está em formato inválido: ..." ou "Corrija os ... campos destacados: ..." | Em qualquer calculadora, corrija os campos com borda vermelha conforme a orientação abaixo de cada um: valores com vírgula nos centavos, datas no formato dd/mm/aaaa, competência no formato mm/aaaa e horas como `10:30` ou `10,5`. |
 | "Os dias de descanso (...) passam dos ... dias disponíveis" | Nas férias, reduza os dias de descanso: a soma com os dias vendidos não pode passar dos dias de direito. |
 | "No pedido de demissão não há aviso prévio indenizado..." | Na rescisão, escolha **Trabalhado ou dispensado** ou **Não cumprido (descontar)**. |
 | "Na rescisão antecipada, informe o fim previsto do contrato a prazo, posterior ao desligamento." | Preencha **Fim previsto do contrato** com uma data depois do desligamento. |

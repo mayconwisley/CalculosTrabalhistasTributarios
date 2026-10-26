@@ -38,7 +38,7 @@
                 <Border Grid.Row="2" Style="{StaticResource Card}" Padding="24,24,24,10">
                     <Grid>
                         <Grid.ColumnDefinitions><ColumnDefinition /><ColumnDefinition /><ColumnDefinition /><ColumnDefinition /><ColumnDefinition /></Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
+                        <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
                         <StackPanel Margin="0,0,12,14" ToolTip="Trabalhista: IPCA-E e TR antes do ajuizamento, Selic até 29/08/2024 e IPCA com taxa legal depois. Cível: o índice da decisão, a Selic com os juros até 29/08/2024 e IPCA com taxa legal depois.">
                             <TextBlock Text="Natureza do débito" Style="{StaticResource Rotulo}" />
                             <ComboBox ItemsSource="{Binding OpcoesNatureza}" SelectedItem="{Binding NaturezaSelecionada, Mode=TwoWay}" MinHeight="54" AutomationProperties.Name="Natureza do débito">
@@ -47,12 +47,14 @@
                         </StackPanel>
                         <StackPanel Grid.Column="1" Margin="0,0,12,14">
                             <TextBlock Text="Data do cálculo" Style="{StaticResource Rotulo}" />
-                            <TextBox Text="{Binding DataCalculo, UpdateSourceTrigger=PropertyChanged}" behaviors:MascaraData.Tipo="Data" TextAlignment="Center" AutomationProperties.Name="Data do cálculo" ToolTip="Data até a qual o débito é atualizado (dd/mm/aaaa)." />
+                            <TextBox Text="{Binding DataCalculo, UpdateSourceTrigger=PropertyChanged}" behaviors:MascaraData.Tipo="Data" TextAlignment="Center" AutomationProperties.Name="Data do cálculo" ToolTip="Data até a qual o débito é atualizado (dd/mm/aaaa)." behaviors:DestaqueDeErro.Mensagem="{Binding Erros[DataCalculo]}" />
+                            <TextBlock Text="{Binding Erros[DataCalculo]}" Style="{StaticResource OrientacaoDeErro}" />
                         </StackPanel>
                         <!-- Trabalhista: o ajuizamento separa a fase pré-judicial da judicial. -->
                         <StackPanel Grid.Column="2" Margin="0,0,12,14" Visibility="{Binding EhTrabalhista, Converter={StaticResource BooleanToVisibilityConverter}}">
                             <TextBlock Text="Data do ajuizamento" Style="{StaticResource Rotulo}" />
-                            <TextBox Text="{Binding DataAjuizamento, UpdateSourceTrigger=PropertyChanged}" behaviors:MascaraData.Tipo="Data" TextAlignment="Center" AutomationProperties.Name="Data do ajuizamento" ToolTip="Data em que a ação foi proposta (dd/mm/aaaa). Vazia: todo o período é pré-judicial, com IPCA-E e TR." />
+                            <TextBox Text="{Binding DataAjuizamento, UpdateSourceTrigger=PropertyChanged}" behaviors:MascaraData.Tipo="Data" TextAlignment="Center" AutomationProperties.Name="Data do ajuizamento" ToolTip="Data em que a ação foi proposta (dd/mm/aaaa). Vazia: todo o período é pré-judicial, com IPCA-E e TR." behaviors:DestaqueDeErro.Mensagem="{Binding Erros[DataAjuizamento]}" />
+                            <TextBlock Text="{Binding Erros[DataAjuizamento]}" Style="{StaticResource OrientacaoDeErro}" />
                         </StackPanel>
                         <!-- Cível: o início dos juros, o índice anterior à Lei 14.905/2024 e os acréscimos do cumprimento de sentença. -->
                         <StackPanel Grid.Column="2" Margin="0,0,12,14" Visibility="{Binding EhCivel, Converter={StaticResource BooleanToVisibilityConverter}}" ToolTip="Mora desde o vencimento (Código Civil, art. 397) ou desde a citação (art. 405), conforme a decisão.">
@@ -63,7 +65,8 @@
                         </StackPanel>
                         <StackPanel Grid.Column="3" Margin="0,0,12,14" Visibility="{Binding UsaCitacao, Converter={StaticResource BooleanToVisibilityConverter}}">
                             <TextBlock Text="Data da citação" Style="{StaticResource Rotulo}" />
-                            <TextBox Text="{Binding DataCitacao, UpdateSourceTrigger=PropertyChanged}" behaviors:MascaraData.Tipo="Data" TextAlignment="Center" AutomationProperties.Name="Data da citação" ToolTip="Início dos juros (dd/mm/aaaa)." />
+                            <TextBox Text="{Binding DataCitacao, UpdateSourceTrigger=PropertyChanged}" behaviors:MascaraData.Tipo="Data" TextAlignment="Center" AutomationProperties.Name="Data da citação" ToolTip="Início dos juros (dd/mm/aaaa)." behaviors:DestaqueDeErro.Mensagem="{Binding Erros[DataCitacao]}" />
+                            <TextBlock Text="{Binding Erros[DataCitacao]}" Style="{StaticResource OrientacaoDeErro}" />
                         </StackPanel>
                         <StackPanel Grid.Column="4" Margin="0,0,0,14" Visibility="{Binding EhCivel, Converter={StaticResource BooleanToVisibilityConverter}}" ToolTip="Índice da decisão ou da tabela do tribunal para a correção antes dos juros e antes de 30/08/2024; depois, vale o IPCA (Código Civil, art. 389).">
                             <TextBlock Text="Índice até 29/08/2024" Style="{StaticResource Rotulo}" />
@@ -82,6 +85,11 @@
                             <Button Content="+ Adicionar parcela" Style="{StaticResource LinkButton}" Command="{Binding AdicionarParcelaCommand}" VerticalAlignment="Center" Margin="0,0,16,0" ToolTip="Inclui outra parcela, com o seu vencimento e valor." />
                             <Button Style="{StaticResource PrimaryButton}" Content="Calcular" MinWidth="118" Command="{Binding CalcularCommand}" IsDefault="True" />
                         </StackPanel>
+                        <!-- Por que o cálculo não foi feito, logo abaixo dos campos e do Calcular. -->
+                        <Border Grid.Row="2" Grid.ColumnSpan="5" Style="{StaticResource FaixaDeAviso}" Margin="0,0,0,14" AutomationProperties.Name="{Binding Erros.Aviso}"
+                                Visibility="{Binding Erros.TemAviso, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <TextBlock Text="{Binding Erros.Aviso}" Foreground="{DynamicResource ErrorTextBrush}" TextWrapping="Wrap" />
+                        </Border>
                     </Grid>
                 </Border>
 
@@ -93,6 +101,7 @@
                             <StackPanel VerticalAlignment="Center">
                                 <TextBlock Text="Parcelas e resultado" FontSize="16" FontWeight="SemiBold" />
                                 <TextBlock Text="Informe a descrição, o vencimento e o valor de cada parcela; depois, selecione Calcular." Foreground="{DynamicResource MutedTextBrush}" Margin="0,5,0,0" />
+                                <TextBlock Text="{Binding Erros[Parcelas]}" Style="{StaticResource OrientacaoDeErro}" behaviors:DestaqueDeErro.Mensagem="{Binding Erros[Parcelas]}" />
                                 <TextBlock Text="{Binding Historico.Situacao}" Foreground="{DynamicResource MutedTextBrush}" FontSize="12" TextWrapping="Wrap" Margin="0,5,0,0" Visibility="{Binding Historico.TemSituacao, Converter={StaticResource BooleanToVisibilityConverter}}" />
                             </StackPanel>
                             <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">

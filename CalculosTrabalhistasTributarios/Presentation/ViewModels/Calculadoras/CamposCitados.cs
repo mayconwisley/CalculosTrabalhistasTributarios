@@ -18,8 +18,19 @@ public static partial class CamposCitados
     /// </summary>
     public static IReadOnlyList<(CampoViewModel Campo, string Mensagem)> Encontrar(string mensagem, IEnumerable<CampoViewModel> campos)
     {
-        var candidatos = campos.Where(campo => campo.Visivel && campo is CampoTextoViewModel or CampoOpcaoViewModel)
-            .Select(campo => (Campo: campo, Rotulo: campo.Rotulo.Split(" (")[0].Trim()))
+        var visiveis = campos.Where(campo => campo.Visivel).ToList();
+        var candidatos = visiveis.Where(campo => campo is CampoTextoViewModel or CampoOpcaoViewModel).Select(campo => (campo, campo.Rotulo)).ToList();
+        var grades = visiveis.Where(campo => campo is not (CampoTextoViewModel or CampoOpcaoViewModel or CampoAtualizacaoCotacoesViewModel)).ToList();
+        return Encontrar(mensagem, candidatos, grades.Count == 1 ? grades[0] : null);
+    }
+
+    /// <summary>
+    /// A mesma busca para as janelas próprias, como a do débito judicial, que identificam os campos pelo nome da propriedade.
+    /// A grade, quando há uma, recebe a mensagem que fala das suas linhas sem citar outro campo.
+    /// </summary>
+    public static IReadOnlyList<(T Campo, string Mensagem)> Encontrar<T>(string mensagem, IEnumerable<(T Campo, string Rotulo)> campos, T? grade) where T : class
+    {
+        var candidatos = campos.Select(campo => (campo.Campo, Rotulo: campo.Rotulo.Split(" (")[0].Trim()))
             .Where(candidato => candidato.Rotulo.Length > 0)
             .ToList();
 
@@ -51,9 +62,8 @@ public static partial class CamposCitados
             return citados;
 
         // Uma grade, como a das competências ou dos períodos, não tem um rótulo a citar: sem outro campo citado, a mensagem
-        // que fala das suas linhas é dela quando o formulário tem uma só.
-        var grades = campos.Where(campo => campo.Visivel && campo is not (CampoTextoViewModel or CampoOpcaoViewModel or CampoAtualizacaoCotacoesViewModel)).ToList();
-        return grades.Count == 1 && LinhasDeGrade().IsMatch(texto) ? [(grades[0], mensagem)] : [];
+        // que fala das suas linhas é dela.
+        return grade is not null && LinhasDeGrade().IsMatch(texto) ? [(grade, mensagem)] : [];
     }
 
     private static string Maiuscula(string texto) => texto.Length == 0 ? texto : char.ToUpper(texto[0], Cultura) + texto[1..];

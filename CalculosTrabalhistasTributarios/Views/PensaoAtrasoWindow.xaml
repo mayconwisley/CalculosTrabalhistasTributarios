@@ -45,7 +45,7 @@
                 <Border Grid.Row="2" Style="{StaticResource Card}" Padding="24,24,24,10">
                     <Grid>
                         <Grid.ColumnDefinitions><ColumnDefinition /><ColumnDefinition /><ColumnDefinition /><ColumnDefinition /><ColumnDefinition /></Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
+                        <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
                         <!-- 1ª linha: como as parcelas são geradas; 2ª linha: como o débito é atualizado; 3ª linha: os acréscimos da penhora e as ações. -->
                         <StackPanel Margin="0,0,12,14" ToolTip="Valor fixo por mês ou percentual do salário mínimo de cada mês, que acompanha os reajustes.">
                             <TextBlock Text="Valor da pensão" Style="{StaticResource Rotulo}" />
@@ -55,32 +55,39 @@
                         </StackPanel>
                         <StackPanel Grid.Column="1" Margin="0,0,12,14" Visibility="{Binding EhValorFixo, Converter={StaticResource BooleanToVisibilityConverter}}">
                             <TextBlock Text="Valor mensal" Style="{StaticResource Rotulo}" />
-                            <TextBox Text="{Binding ValorPensao, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" behaviors:FormatacaoNumerica.Formato="N2" AutomationProperties.Name="Valor mensal" ToolTip="Valor da pensão em cada mês." />
+                            <TextBox Text="{Binding ValorPensao, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" behaviors:FormatacaoNumerica.Formato="N2" AutomationProperties.Name="Valor mensal" ToolTip="Valor da pensão em cada mês." behaviors:DestaqueDeErro.Mensagem="{Binding Erros[ValorPensao]}" />
+                            <TextBlock Text="{Binding Erros[ValorPensao]}" Style="{StaticResource OrientacaoDeErro}" />
                         </StackPanel>
                         <StackPanel Grid.Column="1" Margin="0,0,12,14" Visibility="{Binding EhSalarioMinimo, Converter={StaticResource BooleanToVisibilityConverter}}">
                             <TextBlock Text="Percentual do salário mínimo" Style="{StaticResource Rotulo}" />
-                            <TextBox Text="{Binding Percentual, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" behaviors:FormatacaoNumerica.Formato="N2" AutomationProperties.Name="Percentual do salário mínimo" ToolTip="Cada parcela usa o salário mínimo do seu mês, da tabela Salário mínimo." />
+                            <TextBox Text="{Binding Percentual, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" behaviors:FormatacaoNumerica.Formato="N2" AutomationProperties.Name="Percentual do salário mínimo" ToolTip="Cada parcela usa o salário mínimo do seu mês, da tabela Salário mínimo." behaviors:DestaqueDeErro.Mensagem="{Binding Erros[Percentual]}" />
+                            <TextBlock Text="{Binding Erros[Percentual]}" Style="{StaticResource OrientacaoDeErro}" />
                         </StackPanel>
                         <StackPanel Grid.Column="2" Margin="0,0,12,14">
                             <TextBlock Text="Dia do vencimento" Style="{StaticResource Rotulo}" />
-                            <TextBox Text="{Binding DiaVencimento, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" behaviors:FormatacaoNumerica.ValorVazio="0" AutomationProperties.Name="Dia do vencimento" ToolTip="Dia do mês em que a pensão deve ser paga; nos meses mais curtos, vale o último dia." />
+                            <TextBox Text="{Binding DiaVencimento, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" behaviors:FormatacaoNumerica.ValorVazio="0" AutomationProperties.Name="Dia do vencimento" ToolTip="Dia do mês em que a pensão deve ser paga; nos meses mais curtos, vale o último dia." behaviors:DestaqueDeErro.Mensagem="{Binding Erros[DiaVencimento]}" />
+                            <TextBlock Text="{Binding Erros[DiaVencimento]}" Style="{StaticResource OrientacaoDeErro}" />
                         </StackPanel>
                         <StackPanel Grid.Column="3" Margin="0,0,12,14">
                             <TextBlock Text="Primeira parcela" Style="{StaticResource Rotulo}" />
-                            <TextBox Text="{Binding PrimeiraParcela, UpdateSourceTrigger=PropertyChanged}" behaviors:MascaraData.Tipo="Competencia" TextAlignment="Center" AutomationProperties.Name="Primeira parcela" ToolTip="Mês da primeira parcela em atraso (mm/aaaa)." />
+                            <TextBox Text="{Binding PrimeiraParcela, UpdateSourceTrigger=PropertyChanged}" behaviors:MascaraData.Tipo="Competencia" TextAlignment="Center" AutomationProperties.Name="Primeira parcela" ToolTip="Mês da primeira parcela em atraso (mm/aaaa)." behaviors:DestaqueDeErro.Mensagem="{Binding Erros[PrimeiraParcela]}" />
+                            <TextBlock Text="{Binding Erros[PrimeiraParcela]}" Style="{StaticResource OrientacaoDeErro}" />
                         </StackPanel>
                         <StackPanel Grid.Column="4" Margin="0,0,0,14">
                             <TextBlock Text="Última parcela" Style="{StaticResource Rotulo}" />
-                            <TextBox Text="{Binding UltimaParcela, UpdateSourceTrigger=PropertyChanged}" behaviors:MascaraData.Tipo="Competencia" TextAlignment="Center" AutomationProperties.Name="Última parcela" ToolTip="Mês da última parcela em atraso (mm/aaaa); ela precisa vencer até a data do cálculo." />
+                            <TextBox Text="{Binding UltimaParcela, UpdateSourceTrigger=PropertyChanged}" behaviors:MascaraData.Tipo="Competencia" TextAlignment="Center" AutomationProperties.Name="Última parcela" ToolTip="Mês da última parcela em atraso (mm/aaaa); ela precisa vencer até a data do cálculo." behaviors:DestaqueDeErro.Mensagem="{Binding Erros[UltimaParcela]}" />
+                            <TextBlock Text="{Binding Erros[UltimaParcela]}" Style="{StaticResource OrientacaoDeErro}" />
                         </StackPanel>
 
                         <StackPanel Grid.Row="1" Margin="0,0,12,14">
                             <TextBlock Text="Data do cálculo" Style="{StaticResource Rotulo}" />
-                            <TextBox Text="{Binding DataCalculo, UpdateSourceTrigger=PropertyChanged}" behaviors:MascaraData.Tipo="Data" TextAlignment="Center" AutomationProperties.Name="Data do cálculo" ToolTip="Data até a qual o débito é atualizado (dd/mm/aaaa)." />
+                            <TextBox Text="{Binding DataCalculo, UpdateSourceTrigger=PropertyChanged}" behaviors:MascaraData.Tipo="Data" TextAlignment="Center" AutomationProperties.Name="Data do cálculo" ToolTip="Data até a qual o débito é atualizado (dd/mm/aaaa)." behaviors:DestaqueDeErro.Mensagem="{Binding Erros[DataCalculo]}" />
+                            <TextBlock Text="{Binding Erros[DataCalculo]}" Style="{StaticResource OrientacaoDeErro}" />
                         </StackPanel>
                         <StackPanel Grid.Row="1" Grid.Column="1" Margin="0,0,12,14">
                             <TextBlock Text="Data do ajuizamento (opcional)" Style="{StaticResource Rotulo}" />
-                            <TextBox Text="{Binding DataAjuizamento, UpdateSourceTrigger=PropertyChanged}" behaviors:MascaraData.Tipo="Data" TextAlignment="Center" AutomationProperties.Name="Data do ajuizamento" ToolTip="Data em que a execução foi proposta (dd/mm/aaaa). Vazia: o cálculo considera a data do cálculo." />
+                            <TextBox Text="{Binding DataAjuizamento, UpdateSourceTrigger=PropertyChanged}" behaviors:MascaraData.Tipo="Data" TextAlignment="Center" AutomationProperties.Name="Data do ajuizamento" ToolTip="Data em que a execução foi proposta (dd/mm/aaaa). Vazia: o cálculo considera a data do cálculo." behaviors:DestaqueDeErro.Mensagem="{Binding Erros[DataAjuizamento]}" />
+                            <TextBlock Text="{Binding Erros[DataAjuizamento]}" Style="{StaticResource OrientacaoDeErro}" />
                         </StackPanel>
                         <StackPanel Grid.Row="1" Grid.Column="2" Margin="0,0,12,14" ToolTip="Índice definido na decisão. O Código Civil adota o IPCA quando nenhum índice foi fixado (art. 389).">
                             <TextBlock Text="Correção monetária" Style="{StaticResource Rotulo}" />
@@ -104,6 +111,11 @@
                             <Button Content="Gerar parcelas" Margin="0,0,8,0" MinWidth="130" Command="{Binding GerarParcelasCommand}" ToolTip="Monta a lista de parcelas do período, onde você informa os pagamentos parciais." />
                             <Button Style="{StaticResource PrimaryButton}" Content="Calcular" MinWidth="118" Command="{Binding CalcularCommand}" IsDefault="True" />
                         </StackPanel>
+                        <!-- Por que as parcelas não foram geradas ou calculadas, logo abaixo dos campos e das ações. -->
+                        <Border Grid.Row="3" Grid.ColumnSpan="5" Style="{StaticResource FaixaDeAviso}" Margin="0,0,0,14" AutomationProperties.Name="{Binding Erros.Aviso}"
+                                Visibility="{Binding Erros.TemAviso, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <TextBlock Text="{Binding Erros.Aviso}" Foreground="{DynamicResource ErrorTextBrush}" TextWrapping="Wrap" />
+                        </Border>
                     </Grid>
                 </Border>
 
@@ -116,6 +128,7 @@
                                 <TextBlock Text="Parcelas e resultado" FontSize="16" FontWeight="SemiBold" />
                                 <TextBlock Text="Informe nas colunas Devido e Pago os valores de cada parcela; depois, selecione Calcular." Foreground="{DynamicResource MutedTextBrush}" Margin="0,5,0,0"
                                            Visibility="{Binding TemParcelas, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                <TextBlock Text="{Binding Erros[Parcelas]}" Style="{StaticResource OrientacaoDeErro}" behaviors:DestaqueDeErro.Mensagem="{Binding Erros[Parcelas]}" />
                                 <TextBlock Text="{Binding Historico.Situacao}" Foreground="{DynamicResource MutedTextBrush}" FontSize="12" TextWrapping="Wrap" Margin="0,5,0,0" Visibility="{Binding Historico.TemSituacao, Converter={StaticResource BooleanToVisibilityConverter}}" />
                             </StackPanel>
                             <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">

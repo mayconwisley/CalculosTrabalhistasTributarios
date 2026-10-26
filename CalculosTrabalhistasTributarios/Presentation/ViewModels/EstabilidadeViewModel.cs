@@ -37,6 +37,15 @@ public sealed class EstabilidadeViewModel : ViewModelBase, ICalculoSalvavel, IAt
         _relatorioPdf = relatorioPdf;
         _planilha = planilha;
         _arquivoDialog = arquivoDialog;
+        Erros = new ErrosDoFormulario(new Dictionary<string, string>
+        {
+            [nameof(MediaRemuneratoria)] = "Média remuneratória",
+            [nameof(DiasBase)] = "Dias-base",
+            [nameof(Demissao)] = "Data de demissão",
+            [nameof(FimEstabilidade)] = "Fim da estabilidade",
+            [nameof(Complementos)] = "Complementos"
+        });
+        PropertyChanged += (_, argumentos) => Erros.Corrigido(argumentos.PropertyName ?? string.Empty);
         CalcularCommand = new RelayCommand(_ => Calcular());
         Historico = historico.Criar(this);
         ExportarPdfCommand = new AsyncRelayCommand(ExportarPdfAsync, () => _ultimaSimulacao is not null && _ultimaEntrada is not null);
@@ -75,6 +84,7 @@ public sealed class EstabilidadeViewModel : ViewModelBase, ICalculoSalvavel, IAt
     public ICommand ExportarPdfCommand { get; }
     public ICommand ExportarExcelCommand { get; }
     public HistoricoDaJanela Historico { get; }
+    public ErrosDoFormulario Erros { get; }
 
     public string TipoHistorico => "Estabilidade";
     public string NomeCalculadora => "Estabilidade";
@@ -114,7 +124,8 @@ public sealed class EstabilidadeViewModel : ViewModelBase, ICalculoSalvavel, IAt
             var simulacao = _simulador.Executar(entrada);
             if (simulacao.Falhou)
             {
-                _notificador.MostrarFalha(simulacao.Erro, "Não foi possível concluir o cálculo de estabilidade.");
+                if (!Erros.Regra(simulacao.Erro))
+                    _notificador.MostrarFalha(simulacao.Erro, "Não foi possível concluir o cálculo de estabilidade.");
                 return;
             }
             var resultado = simulacao.Valor;
@@ -153,19 +164,10 @@ public sealed class EstabilidadeViewModel : ViewModelBase, ICalculoSalvavel, IAt
 
     private bool TentarLerEntrada(out SimularEstabilidadeRequest entrada)
     {
-        entrada = default!;
-        if (!LeituraNumerica.TentarLer(MediaRemuneratoria, out var media) ||
-            !int.TryParse(DiasBase, out var diasBase) ||
-            !DateOnly.TryParseExact(Demissao.Trim(), "dd/MM/yyyy", Cultura, DateTimeStyles.None, out var demissao) ||
-            !DateOnly.TryParseExact(FimEstabilidade.Trim(), "dd/MM/yyyy", Cultura, DateTimeStyles.None, out var fimEstabilidade) ||
-            !LeituraNumerica.TentarLer(Complementos, out var complementos))
-        {
-            _notificador.MostrarAviso("Informe média, dias-base, datas (dd/mm/aaaa) e complementos em formatos válidos.");
-            return false;
-        }
-
-        entrada = new SimularEstabilidadeRequest(media, diasBase, demissao, fimEstabilidade, complementos);
-        return true;
+        Erros.Limpar();
+        entrada = new SimularEstabilidadeRequest(Erros.Moeda(nameof(MediaRemuneratoria), MediaRemuneratoria), Erros.Inteiro(nameof(DiasBase), DiasBase),
+            Erros.Data(nameof(Demissao), Demissao), Erros.Data(nameof(FimEstabilidade), FimEstabilidade), Erros.Moeda(nameof(Complementos), Complementos));
+        return !Erros.Apresentar();
     }
 
     private async Task ExportarPdfAsync()
