@@ -18,7 +18,7 @@ internal static class GeradorDemonstrativoPdf
             $"Cálculos Trabalhistas e Tributários - versão {AppInfo.Current.VersionString} - dados processados localmente", cancellationToken);
         if (dto.Destaques.Count > 0)
             Resumo(pdf, dto.Destaques);
-        if (dto.Comparativo is { } comparativo)
+        foreach (var comparativo in dto.Comparativos)
             Comparativo(pdf, comparativo);
         if (dto.TemVerbas)
             Verbas(pdf, dto);

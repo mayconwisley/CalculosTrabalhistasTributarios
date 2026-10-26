@@ -17,7 +17,7 @@ public static class ComparacaoResultados
     {
         var linhas = new List<LinhaResultadoComparadoViewModel>();
         Textos(linhas, "Resumo", primeiro.Destaques.Select(destaque => (destaque.Rotulo, destaque.Valor)), segundo.Destaques.Select(destaque => (destaque.Rotulo, destaque.Valor)));
-        if (primeiro.Comparativo is { } tabelaPrimeiro && segundo.Comparativo is { } tabelaSegundo)
+        foreach (var (tabelaPrimeiro, tabelaSegundo) in primeiro.Comparativos.Zip(segundo.Comparativos))
             Textos(linhas, tabelaPrimeiro.Titulo, Celulas(tabelaPrimeiro), Celulas(tabelaSegundo));
         Valores(linhas, primeiro.RotuloProventos, primeiro.Proventos, segundo.Proventos);
         Valores(linhas, "Descontos", primeiro.Descontos, segundo.Descontos);

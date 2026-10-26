@@ -12,6 +12,7 @@ namespace CalculosTrabalhistasTributarios.Application.DTOs;
 /// <param name="ParcelasRra">Diferenças por competência que podem seguir para o cálculo do IR sobre rendimentos acumulados.</param>
 /// <param name="DepositosFgts">Depósitos devidos conferidos, que podem seguir para o histórico do FGTS da rescisão.</param>
 /// <param name="Comparativo">Comparação lado a lado, exibida antes do demonstrativo; sem proventos e descontos, ela o substitui.</param>
+/// <param name="ComparativosAdicionais">Outras comparações exibidas depois da principal, como a do mês ao lado da do ano.</param>
 public sealed record DemonstrativoDto(
     string Titulo,
     string Referencia,
@@ -26,8 +27,12 @@ public sealed record DemonstrativoDto(
     TabelaComparativaDto? Comparativo = null,
     QuitacaoBancoHoras? QuitacaoBancoHoras = null,
     IReadOnlyList<ParcelaRra>? ParcelasRra = null,
-    DepositosFgtsRescisaoDto? DepositosFgts = null)
+    DepositosFgtsRescisaoDto? DepositosFgts = null,
+    IReadOnlyList<TabelaComparativaDto>? ComparativosAdicionais = null)
 {
+    /// <summary>A comparação principal seguida das adicionais, na ordem de exibição.</summary>
+    public IReadOnlyList<TabelaComparativaDto> Comparativos => Comparativo is null ? [] : [Comparativo, .. ComparativosAdicionais ?? []];
+
     /// <summary>Falso quando o cálculo não tem proventos nem descontos, como uma comparação de cenários.</summary>
     public bool TemVerbas => Proventos.Count > 0 || Descontos.Count > 0;
 

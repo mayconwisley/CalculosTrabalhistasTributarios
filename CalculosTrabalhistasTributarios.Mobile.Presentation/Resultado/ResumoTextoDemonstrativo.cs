@@ -28,7 +28,7 @@ public static class ResumoTextoDemonstrativo
                     : $"{destaque.Rotulo}: {destaque.Valor} ({destaque.Complemento})");
         }
 
-        if (demonstrativo.Comparativo is { } comparativo)
+        foreach (var comparativo in demonstrativo.Comparativos)
         {
             texto.AppendLine().AppendLine(comparativo.Titulo);
             foreach (var linha in comparativo.Linhas)

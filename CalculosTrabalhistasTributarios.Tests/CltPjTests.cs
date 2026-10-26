@@ -12,8 +12,13 @@ public class CltPjTests
         await new SimularCltPjUseCase(await Ambiente.ConsultaAsync())
             .ExecutarAsync(new SimularCltPjRequest(new DateOnly(2026, 10, 1), 6000m, 0, 800m, RegimeTributario.LucroRealOuPresumido, valorPj, tributacao, custos), default).Sucesso();
 
-    private static decimal Valor(DemonstrativoDto resultado, string linha, int coluna) =>
-        decimal.Parse(Texto.Normalizar(resultado.Comparativo!.Linhas.Single(item => item.Descricao == linha).Valores[coluna]).Replace("R$ ", ""), NumberStyles.Number | NumberStyles.AllowLeadingSign, CultureInfo.GetCultureInfo("pt-BR"));
+    private static decimal Valor(DemonstrativoDto resultado, string linha, int coluna) => Valor(resultado.Comparativo!, linha, coluna);
+
+    private static decimal ValorNoMes(DemonstrativoDto resultado, string linha, int coluna) =>
+        Valor(resultado.Comparativos.Single(tabela => tabela.Titulo == "Comparação em um mês comum"), linha, coluna);
+
+    private static decimal Valor(TabelaComparativaDto tabela, string linha, int coluna) =>
+        decimal.Parse(Texto.Normalizar(tabela.Linhas.Single(item => item.Descricao == linha).Valores[coluna]).Replace("R$ ", ""), NumberStyles.Number | NumberStyles.AllowLeadingSign, CultureInfo.GetCultureInfo("pt-BR"));
 
     [Fact]
     public async Task Ano_de_clt_com_ferias_e_13o()
@@ -41,6 +46,24 @@ public class CltPjTests
         Assert.Equal(0m, Valor(resultado, "IRRF", 1));
         Assert.Equal(105_504m, Valor(resultado, "Total para o profissional", 1));
         Assert.Equal(23_782.68m, Valor(resultado, "Total para o profissional", 2));
+    }
+
+    [Fact]
+    public async Task Mes_comum_sem_13o_e_sem_terco_de_ferias()
+    {
+        var resultado = await CalcularAsync(10_000m);
+        Assert.Equal("Comparação no ano", resultado.Comparativos[0].Titulo);
+        // CLT: 6.000,00 - 641,50 (INSS) - 385,11 (IRRF) = 4.973,39; + 480,00 de FGTS e 800,00 de benefícios.
+        Assert.Equal(4973.39m, ValorNoMes(resultado, "Líquido no mês", 0));
+        Assert.Equal(480m, ValorNoMes(resultado, "FGTS depositado", 0));
+        Assert.Equal(6253.39m, ValorNoMes(resultado, "Total para o profissional", 0));
+        // Lucro Real: 6.000,00 x 135,8% + 800,00 de benefícios.
+        Assert.Equal(8948m, ValorNoMes(resultado, "Custo para a empresa no mês", 0));
+        // PJ: 10.000,00 - 600,00 (DAS de 6%) - 308,00 (INSS) - 300,00 (custos), um doze avos do total no ano.
+        Assert.Equal(600m, ValorNoMes(resultado, "Simples Nacional (DAS)", 1));
+        Assert.Equal(8792m, ValorNoMes(resultado, "Total para o profissional", 1));
+        Assert.Equal(2538.61m, ValorNoMes(resultado, "Total para o profissional", 2));
+        Assert.Equal(10_000m, ValorNoMes(resultado, "Custo para a empresa no mês", 1));
     }
 
     [Fact]

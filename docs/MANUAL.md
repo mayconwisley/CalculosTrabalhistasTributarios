@@ -784,7 +784,7 @@ Não têm direito o pedido de demissão, a justa causa, o acordo (CLT, art. 484-
 
 ### 8.13 CLT x PJ
 
-Abra **CLT x PJ** pelo menu lateral. Ele compara, em um ano, o mesmo profissional como empregado e como PJ no Simples Nacional: o que sobra para ele e quanto custa para a empresa.
+Abra **CLT x PJ** pelo menu lateral. Ele compara, no ano e em um mês comum, o mesmo profissional como empregado e como PJ no Simples Nacional: o que sobra para ele e quanto custa para a empresa.
 
 ![CLT x PJ](imagens/44-clt-pj.png)
 
@@ -800,6 +800,8 @@ Abra **CLT x PJ** pelo menu lateral. Ele compara, em um ano, o mesmo profissiona
 A tabela **Comparação no ano** coloca lado a lado o recebido, o INSS, o IRRF, o DAS, os custos, o líquido, o FGTS, os benefícios, o **total para o profissional** e o **custo para a empresa**, com a diferença:
 
 ![Comparação entre CLT e PJ no ano](imagens/46-clt-pj-comparacao.png)
+
+Logo abaixo, a tabela **Comparação em um mês comum** traz as mesmas linhas para um mês de salário do CLT e uma nota do PJ, com o custo para a empresa no mês. Esse mês não tem o 13º nem o terço de férias do CLT, que só aparecem na comparação no ano; por isso a **média por mês** da tabela anual é maior que o mês comum do CLT.
 
 - **CLT:** 11 meses de salário, o mês de férias com 1/3 e o 13º, com INSS e IRRF de cada um. O total soma o líquido, o FGTS depositado (8% de tudo) e os benefícios.
 - **PJ:** o DAS pela alíquota efetiva do anexo, com a receita de 12 meses igual a 12 vezes o valor mensal (Lei Complementar 123/2006); o pró-labore, com INSS de 11% e IRRF; e os custos. O restante é distribuído como lucro, isento de IR. O ISS e a contribuição patronal sobre o pró-labore estão no DAS.

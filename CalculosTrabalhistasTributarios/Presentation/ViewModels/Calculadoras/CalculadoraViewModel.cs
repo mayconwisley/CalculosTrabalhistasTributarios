@@ -40,9 +40,7 @@ public sealed class CalculadoraViewModel : ViewModelBase, ICalculoSalvavel, IAta
     private string _rotuloProventos = "Proventos";
     private string _rotuloResultado = "Líquido a receber";
     private bool _temDemonstrativo = true;
-    private string _tituloComparativo = string.Empty;
-    private IReadOnlyList<string> _colunasComparativo = [];
-    private IReadOnlyList<LinhaComparativaViewModel> _linhasComparativo = [];
+    private IReadOnlyList<TabelaComparativaViewModel> _comparativos = [];
     private string _aviso = string.Empty;
     private bool _avisoDosCampos;
     private bool _resultadoDesatualizado;
@@ -160,10 +158,7 @@ public sealed class CalculadoraViewModel : ViewModelBase, ICalculoSalvavel, IAta
 
     /// <summary>Falso quando o cálculo não tem proventos nem descontos, como uma comparação de cenários.</summary>
     public bool TemDemonstrativo { get => _temDemonstrativo; private set => SetProperty(ref _temDemonstrativo, value); }
-    public string TituloComparativo { get => _tituloComparativo; private set => SetProperty(ref _tituloComparativo, value); }
-    public IReadOnlyList<string> ColunasComparativo { get => _colunasComparativo; private set => SetProperty(ref _colunasComparativo, value); }
-    public IReadOnlyList<LinhaComparativaViewModel> LinhasComparativo { get => _linhasComparativo; private set { SetProperty(ref _linhasComparativo, value); OnPropertyChanged(nameof(TemComparativo)); } }
-    public bool TemComparativo => LinhasComparativo.Count > 0;
+    public IReadOnlyList<TabelaComparativaViewModel> Comparativos { get => _comparativos; private set => SetProperty(ref _comparativos, value); }
 
     /// <summary>Por que o último cálculo não foi feito, exibido junto do botão Calcular; vazio quando não há aviso.</summary>
     public string Aviso { get => _aviso; private set { SetProperty(ref _aviso, value); OnPropertyChanged(nameof(TemAviso)); } }
@@ -353,9 +348,8 @@ public sealed class CalculadoraViewModel : ViewModelBase, ICalculoSalvavel, IAta
         TotalDescontos = demonstrativo.Descontos.Count > 0 ? Moeda(demonstrativo.TotalDescontos) : string.Empty;
         Resultado = Moeda(demonstrativo.Resultado);
         TemDemonstrativo = demonstrativo.TemVerbas;
-        TituloComparativo = demonstrativo.Comparativo?.Titulo ?? string.Empty;
-        ColunasComparativo = demonstrativo.Comparativo?.Colunas ?? [];
-        LinhasComparativo = demonstrativo.Comparativo?.Linhas.Select(linha => new LinhaComparativaViewModel(linha.Descricao, linha.Valores, linha.Destaque)).ToArray() ?? [];
+        Comparativos = demonstrativo.Comparativos.Where(tabela => tabela.Linhas.Count > 0).Select(tabela => new TabelaComparativaViewModel(tabela.Titulo, tabela.Colunas,
+            tabela.Linhas.Select(linha => new LinhaComparativaViewModel(linha.Descricao, linha.Valores, linha.Destaque)).ToArray())).ToArray();
         TemResultado = true;
         OnPropertyChanged(nameof(PodeUsarNoHolerite));
         OnPropertyChanged(nameof(PodeUsarNaRescisao));

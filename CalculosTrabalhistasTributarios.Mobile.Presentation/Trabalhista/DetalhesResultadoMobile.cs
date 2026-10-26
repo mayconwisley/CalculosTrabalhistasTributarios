@@ -16,9 +16,11 @@ public sealed class DetalhesResultadoMobile(DemonstrativoDto demonstrativo)
 
     private IEnumerable<LinhaMemoriaMobile> LerComparativo()
     {
-        if (demonstrativo.Comparativo is not { } quadro) yield break;
-        foreach (var linha in quadro.Linhas)
-            yield return new(linha.Descricao, string.Join("\n", quadro.Colunas.Zip(linha.Valores, (coluna, valor) => $"{coluna}: {valor}")));
+        // A primeira comparação fica sob o título da seção; nas adicionais, cada linha identifica a tabela, como na memória.
+        foreach (var (quadro, indice) in demonstrativo.Comparativos.Select((quadro, indice) => (quadro, indice)))
+            foreach (var linha in quadro.Linhas)
+                yield return new(indice == 0 ? linha.Descricao : $"{quadro.Titulo} — {linha.Descricao}",
+                    string.Join("\n", quadro.Colunas.Zip(linha.Valores, (coluna, valor) => $"{coluna}: {valor}")));
     }
     private IEnumerable<LinhaMemoriaMobile> LerMemoria()
     {

@@ -8,7 +8,7 @@ using CalculosTrabalhistasTributarios.Domain.Tributacao;
 namespace CalculosTrabalhistasTributarios.Application.UseCases;
 
 /// <summary>
-/// Compara, em um ano, o mesmo profissional como empregado (CLT) e como PJ no Simples Nacional: o que sobra para ele e quanto
+/// Compara, no ano e em um mês comum, o mesmo profissional como empregado (CLT) e como PJ no Simples Nacional: o que sobra para ele e quanto
 /// custa para a empresa. Quando o valor do PJ não é informado, calcula o valor mensal que iguala o total do CLT.
 /// </summary>
 public sealed class SimularCltPjUseCase(ITributacaoConsulta tributacaoConsulta) : ISimularDemonstrativoUseCase<SimularCltPjRequest>
@@ -58,16 +58,30 @@ public sealed class SimularCltPjUseCase(ITributacaoConsulta tributacaoConsulta) 
             Linha("Média por mês", Arredondar(clt.Total / 12m), Arredondar(pj.Total / 12m)),
             Linha("Custo para a empresa no ano", clt.CustoEmpresa, pj.Faturamento, destaque: true)
         };
+        var linhasMes = new List<LinhaComparativaDto>
+        {
+            Linha("Recebido no mês (bruto)", clt.Salario, pj.ValorMensal),
+            Linha("INSS", clt.InssMensal, pj.InssMensal),
+            Linha("IRRF", clt.IrrfMensal, pj.IrrfMensal),
+            Linha("Simples Nacional (DAS)", 0m, pj.DasMensal),
+            Linha("Custos do PJ", 0m, pj.CustosMensais),
+            Linha("Líquido no mês", clt.LiquidoMensal, pj.LiquidoMensal),
+            Linha("FGTS depositado", clt.FgtsMensal, 0m),
+            Linha("Benefícios", clt.BeneficiosMensais, 0m),
+            Linha("Total para o profissional", clt.TotalMensal, pj.LiquidoMensal, destaque: true),
+            Linha("Custo para a empresa no mês", clt.CustoEmpresaMensal, pj.ValorMensal, destaque: true)
+        };
 
         var observacoes = new List<string>
         {
             "O CLT considera 12 salários, o 13º e as férias com 1/3, sem horas extras nem PLR; o total soma o líquido, o FGTS depositado e os benefícios.",
+            "A comparação no mês mostra um mês comum, sem o 13º e o terço de férias do CLT, que entram só na comparação no ano; por isso a média por mês do ano é maior.",
             "O PJ considera faturamento igual todo mês, no Simples Nacional, com o pró-labore descontado de INSS (11%) e IRRF e o restante distribuído como lucro, isento de IR. O ISS e a contribuição patronal sobre o pró-labore estão no DAS.",
             "Como PJ não há FGTS, 13º, férias remuneradas, seguro-desemprego nem multa do FGTS na saída; o profissional também perde a proteção da CLT.",
             CustoEmpresa(r.RegimeEmpresa)
         };
         if (pj.LucroMensal > LimiteLucroIsento)
-            observacoes.Insert(2, $"O lucro distribuído passa de {Formato.Moeda(LimiteLucroIsento)} por mês: a partir de 2026, ele tem retenção de IRRF de 10% (Lei 15.270/2025), que não está neste cálculo.");
+            observacoes.Insert(3, $"O lucro distribuído passa de {Formato.Moeda(LimiteLucroIsento)} por mês: a partir de 2026, ele tem retenção de IRRF de 10% (Lei 15.270/2025), que não está neste cálculo.");
 
         return new DemonstrativoDto(
             "Comparação CLT x PJ",
@@ -83,16 +97,20 @@ public sealed class SimularCltPjUseCase(ITributacaoConsulta tributacaoConsulta) 
             [],
             [MemoriaClt(r, clt), MemoriaPj(r, pj, valorPj), MemoriaEquivalencia(clt.Total, equivalente)],
             observacoes,
-            Comparativo: new TabelaComparativaDto("Comparação no ano", ["CLT", "PJ", "Diferença"], linhas));
+            Comparativo: new TabelaComparativaDto("Comparação no ano", ["CLT", "PJ", "Diferença"], linhas),
+            ComparativosAdicionais: [new TabelaComparativaDto("Comparação em um mês comum", ["CLT", "PJ", "Diferença"], linhasMes)]);
     }
 
     private sealed record ResultadoClt(decimal Salario, decimal Ferias, decimal Bruto, decimal InssMensal, decimal IrrfMensal, decimal InssFerias, decimal IrrfFerias, decimal Inss13, decimal Irrf13,
-        decimal Fgts, decimal Beneficios, decimal AliquotaEncargos, decimal CustoEmpresa)
+        decimal Fgts, decimal FgtsMensal, decimal BeneficiosMensais, decimal AliquotaEncargos, decimal CustoEmpresa, decimal CustoEmpresaMensal)
     {
         public decimal Inss => InssMensal * 11m + InssFerias + Inss13;
         public decimal Irrf => IrrfMensal * 11m + IrrfFerias + Irrf13;
         public decimal Liquido => Bruto - Inss - Irrf;
+        public decimal Beneficios => BeneficiosMensais * 12m;
         public decimal Total => Liquido + Fgts + Beneficios;
+        public decimal LiquidoMensal => Salario - InssMensal - IrrfMensal;
+        public decimal TotalMensal => LiquidoMensal + FgtsMensal + BeneficiosMensais;
     }
 
     private sealed record ResultadoPj(decimal ValorMensal, AliquotaSimples Simples, decimal DasMensal, decimal ProLabore, decimal InssMensal, decimal IrrfMensal, decimal CustosMensais)
@@ -104,6 +122,7 @@ public sealed class SimularCltPjUseCase(ITributacaoConsulta tributacaoConsulta) 
         public decimal Custos => CustosMensais * 12m;
         public decimal LucroMensal => ValorMensal - DasMensal - ProLabore - CustosMensais;
         public decimal Liquido => Faturamento - Das - Inss - Irrf - Custos;
+        public decimal LiquidoMensal => ValorMensal - DasMensal - InssMensal - IrrfMensal - CustosMensais;
         public decimal Total => Liquido;
     }
 
@@ -129,8 +148,9 @@ public sealed class SimularCltPjUseCase(ITributacaoConsulta tributacaoConsulta) 
             inssMensal, tabelas.CalcularIrrf(salario, inssMensal, r.Dependentes).Imposto,
             inssFerias, tabelas.CalcularIrrf(ferias, inssFerias, r.Dependentes).Imposto,
             inss13, tabelas.CalcularIrrf(salario, inss13, r.Dependentes, tributacaoExclusiva: true).Imposto,
-            Arredondar(bruto * AliquotaFgts / 100m), r.BeneficiosClt * 12m, aliquotaEncargos,
-            Arredondar(bruto * (100m + aliquotaEncargos) / 100m) + r.BeneficiosClt * 12m);
+            Arredondar(bruto * AliquotaFgts / 100m), Arredondar(salario * AliquotaFgts / 100m), r.BeneficiosClt, aliquotaEncargos,
+            Arredondar(bruto * (100m + aliquotaEncargos) / 100m) + r.BeneficiosClt * 12m,
+            Arredondar(salario * (100m + aliquotaEncargos) / 100m) + r.BeneficiosClt);
     }
 
     /// <summary>
@@ -175,7 +195,9 @@ public sealed class SimularCltPjUseCase(ITributacaoConsulta tributacaoConsulta) 
         new("Líquido", $"{Formato.Moeda(clt.Bruto)} - {Formato.Moeda(clt.Inss)} - {Formato.Moeda(clt.Irrf)} = {Formato.Moeda(clt.Liquido)}"),
         new("FGTS", $"{Formato.Moeda(clt.Bruto)} x 8% = {Formato.Moeda(clt.Fgts)}, depositado na conta do FGTS"),
         new("Benefícios", $"{Formato.Moeda(r.BeneficiosClt)} x 12 = {Formato.Moeda(clt.Beneficios)}"),
-        new("Custo para a empresa", $"{Formato.Moeda(clt.Bruto)} x (100% + {Formato.Percentual(clt.AliquotaEncargos)} de encargos e FGTS) + {Formato.Moeda(clt.Beneficios)} (benefícios) = {Formato.Moeda(clt.CustoEmpresa)}")
+        new("Custo para a empresa", $"{Formato.Moeda(clt.Bruto)} x (100% + {Formato.Percentual(clt.AliquotaEncargos)} de encargos e FGTS) + {Formato.Moeda(clt.Beneficios)} (benefícios) = {Formato.Moeda(clt.CustoEmpresa)}"),
+        new("Mês comum", $"{Formato.Moeda(clt.Salario)} - {Formato.Moeda(clt.InssMensal)} (INSS) - {Formato.Moeda(clt.IrrfMensal)} (IRRF) = {Formato.Moeda(clt.LiquidoMensal)} líquido; + {Formato.Moeda(clt.FgtsMensal)} (FGTS de 8%) + {Formato.Moeda(clt.BeneficiosMensais)} (benefícios) = {Formato.Moeda(clt.TotalMensal)}"),
+        new("Custo para a empresa no mês", $"{Formato.Moeda(clt.Salario)} x (100% + {Formato.Percentual(clt.AliquotaEncargos)}) + {Formato.Moeda(clt.BeneficiosMensais)} (benefícios) = {Formato.Moeda(clt.CustoEmpresaMensal)}")
     ]);
 
     private static GrupoMemoriaDto MemoriaPj(SimularCltPjRequest r, ResultadoPj pj, decimal valorPj)
@@ -196,6 +218,7 @@ public sealed class SimularCltPjUseCase(ITributacaoConsulta tributacaoConsulta) 
             new("DAS", $"{Formato.Moeda(valorPj)} x {Formato.Percentual(Math.Round(simples.AliquotaEfetiva, 4))} = {Formato.Moeda(pj.DasMensal)} por mês; {Formato.Moeda(pj.Das)} no ano"),
             new("Pró-labore", $"{Formato.Moeda(pj.ProLabore)} por mês: INSS de {Formato.Moeda(pj.InssMensal)} (11%) e IRRF de {Formato.Moeda(pj.IrrfMensal)}"),
             new("Lucro distribuído", $"{Formato.Moeda(valorPj)} - {Formato.Moeda(pj.DasMensal)} (DAS) - {Formato.Moeda(pj.ProLabore)} (pró-labore){(pj.CustosMensais > 0m ? $" - {Formato.Moeda(pj.CustosMensais)} (custos)" : "")} = {Formato.Moeda(pj.LucroMensal)} por mês, isento de IR"),
+            new("Mês comum", $"{Formato.Moeda(valorPj)} - {Formato.Moeda(pj.DasMensal)} (DAS) - {Formato.Moeda(pj.InssMensal)} (INSS) - {Formato.Moeda(pj.IrrfMensal)} (IRRF){(pj.CustosMensais > 0m ? $" - {Formato.Moeda(pj.CustosMensais)} (custos)" : "")} = {Formato.Moeda(pj.LiquidoMensal)}"),
             new("Líquido", $"{Formato.Moeda(pj.Faturamento)} - {Formato.Moeda(pj.Das)} (DAS) - {Formato.Moeda(pj.Inss)} (INSS) - {Formato.Moeda(pj.Irrf)} (IRRF){(pj.Custos > 0m ? $" - {Formato.Moeda(pj.Custos)} (custos)" : "")} = {Formato.Moeda(pj.Liquido)}")
         };
         return new GrupoMemoriaDto("PJ", $"Total: {Formato.Moeda(pj.Total)}", formulas);

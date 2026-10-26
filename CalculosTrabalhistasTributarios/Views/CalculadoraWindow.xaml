@@ -880,42 +880,47 @@
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
 
-                            <!-- Comparação lado a lado: a descrição e um valor por coluna, como "Atual" e "Proposta". -->
-                            <Border Padding="16" Background="{DynamicResource ResultBackgroundBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="10" Margin="0,0,0,20"
-                                    Visibility="{Binding TemComparativo, Converter={StaticResource BooleanToVisibilityConverter}}">
-                                <StackPanel>
-                                    <TextBlock Text="{Binding TituloComparativo}" FontSize="15" FontWeight="SemiBold" />
-                                    <Grid Margin="0,12,0,4">
-                                        <Grid.ColumnDefinitions><ColumnDefinition Width="2*" /><ColumnDefinition Width="3*" /></Grid.ColumnDefinitions>
-                                        <ItemsControl Grid.Column="1" ItemsSource="{Binding ColunasComparativo}" Focusable="False">
-                                            <ItemsControl.ItemsPanel><ItemsPanelTemplate><UniformGrid Rows="1" /></ItemsPanelTemplate></ItemsControl.ItemsPanel>
-                                            <ItemsControl.ItemTemplate><DataTemplate><TextBlock Text="{Binding}" FontWeight="SemiBold" Foreground="{DynamicResource MutedTextBrush}" Style="{StaticResource Valor}" /></DataTemplate></ItemsControl.ItemTemplate>
-                                        </ItemsControl>
-                                    </Grid>
-                                    <ItemsControl ItemsSource="{Binding LinhasComparativo}" Focusable="False">
-                                        <ItemsControl.ItemTemplate>
-                                            <DataTemplate>
-                                                <Border BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1" Padding="0,8">
-                                                    <Grid>
-                                                        <Grid.ColumnDefinitions><ColumnDefinition Width="2*" /><ColumnDefinition Width="3*" /></Grid.ColumnDefinitions>
-                                                        <TextBlock x:Name="Descricao" Text="{Binding Descricao}" TextWrapping="Wrap" Margin="0,0,12,0" />
-                                                        <ItemsControl x:Name="Valores" Grid.Column="1" ItemsSource="{Binding Valores}" Focusable="False">
-                                                            <ItemsControl.ItemsPanel><ItemsPanelTemplate><UniformGrid Rows="1" /></ItemsPanelTemplate></ItemsControl.ItemsPanel>
-                                                            <ItemsControl.ItemTemplate><DataTemplate><Button Content="{Binding}" Style="{StaticResource ValorCopiavel}" Margin="12,0,0,0" /></DataTemplate></ItemsControl.ItemTemplate>
-                                                        </ItemsControl>
-                                                    </Grid>
-                                                </Border>
-                                                <DataTemplate.Triggers>
-                                                    <DataTrigger Binding="{Binding Destaque}" Value="True">
-                                                        <Setter TargetName="Descricao" Property="FontWeight" Value="SemiBold" />
-                                                        <Setter TargetName="Valores" Property="TextElement.FontWeight" Value="SemiBold" />
-                                                    </DataTrigger>
-                                                </DataTemplate.Triggers>
-                                            </DataTemplate>
-                                        </ItemsControl.ItemTemplate>
-                                    </ItemsControl>
-                                </StackPanel>
-                            </Border>
+                            <!-- Comparações lado a lado: a descrição e um valor por coluna, como "Atual" e "Proposta"; uma tabela por comparação, como a do ano e a do mês. -->
+                            <ItemsControl ItemsSource="{Binding Comparativos}" Focusable="False">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Padding="16" Background="{DynamicResource ResultBackgroundBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="10" Margin="0,0,0,20">
+                                            <StackPanel>
+                                                <TextBlock Text="{Binding Titulo}" FontSize="15" FontWeight="SemiBold" />
+                                                <Grid Margin="0,12,0,4">
+                                                    <Grid.ColumnDefinitions><ColumnDefinition Width="2*" /><ColumnDefinition Width="3*" /></Grid.ColumnDefinitions>
+                                                    <ItemsControl Grid.Column="1" ItemsSource="{Binding Colunas}" Focusable="False">
+                                                        <ItemsControl.ItemsPanel><ItemsPanelTemplate><UniformGrid Rows="1" /></ItemsPanelTemplate></ItemsControl.ItemsPanel>
+                                                        <ItemsControl.ItemTemplate><DataTemplate><TextBlock Text="{Binding}" FontWeight="SemiBold" Foreground="{DynamicResource MutedTextBrush}" Style="{StaticResource Valor}" /></DataTemplate></ItemsControl.ItemTemplate>
+                                                    </ItemsControl>
+                                                </Grid>
+                                                <ItemsControl ItemsSource="{Binding Linhas}" Focusable="False">
+                                                    <ItemsControl.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <Border BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1" Padding="0,8">
+                                                                <Grid>
+                                                                    <Grid.ColumnDefinitions><ColumnDefinition Width="2*" /><ColumnDefinition Width="3*" /></Grid.ColumnDefinitions>
+                                                                    <TextBlock x:Name="Descricao" Text="{Binding Descricao}" TextWrapping="Wrap" Margin="0,0,12,0" />
+                                                                    <ItemsControl x:Name="Valores" Grid.Column="1" ItemsSource="{Binding Valores}" Focusable="False">
+                                                                        <ItemsControl.ItemsPanel><ItemsPanelTemplate><UniformGrid Rows="1" /></ItemsPanelTemplate></ItemsControl.ItemsPanel>
+                                                                        <ItemsControl.ItemTemplate><DataTemplate><Button Content="{Binding}" Style="{StaticResource ValorCopiavel}" Margin="12,0,0,0" /></DataTemplate></ItemsControl.ItemTemplate>
+                                                                    </ItemsControl>
+                                                                </Grid>
+                                                            </Border>
+                                                            <DataTemplate.Triggers>
+                                                                <DataTrigger Binding="{Binding Destaque}" Value="True">
+                                                                    <Setter TargetName="Descricao" Property="FontWeight" Value="SemiBold" />
+                                                                    <Setter TargetName="Valores" Property="TextElement.FontWeight" Value="SemiBold" />
+                                                                </DataTrigger>
+                                                            </DataTemplate.Triggers>
+                                                        </DataTemplate>
+                                                    </ItemsControl.ItemTemplate>
+                                                </ItemsControl>
+                                            </StackPanel>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
 
                             <Border Padding="16" Background="{DynamicResource ResultBackgroundBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="10" Margin="0,0,0,20"
                                     Visibility="{Binding TemDemonstrativo, Converter={StaticResource BooleanToVisibilityConverter}}">

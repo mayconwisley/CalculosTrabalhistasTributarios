@@ -17,7 +17,7 @@ internal static class RelatorioPdfDemonstrativo
             {
                 coluna.Spacing(16);
                 coluna.Item().Element(container => CriarResumoDemonstrativo(container, demonstrativo));
-                if (demonstrativo.Comparativo is { } comparativo)
+                foreach (var comparativo in demonstrativo.Comparativos)
                     coluna.Item().Element(container => CriarComparativoDemonstrativo(container, comparativo));
                 if (demonstrativo.TemVerbas)
                     coluna.Item().Element(container => CriarVerbasDemonstrativo(container, demonstrativo));

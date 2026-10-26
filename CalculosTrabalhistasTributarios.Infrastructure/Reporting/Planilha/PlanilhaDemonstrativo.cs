@@ -16,7 +16,7 @@ internal static class PlanilhaDemonstrativo
             foreach (var destaque in d.Destaques)
                 aba.Linha(destaque.Rotulo, destaque.Valor, destaque.Complemento);
 
-            if (d.Comparativo is { } comparativo)
+            foreach (var comparativo in d.Comparativos)
             {
                 aba.Secao(comparativo.Titulo);
                 aba.Cabecalho(["Descrição", .. comparativo.Colunas]);
