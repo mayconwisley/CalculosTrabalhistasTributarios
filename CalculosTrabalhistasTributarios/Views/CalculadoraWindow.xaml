@@ -23,6 +23,10 @@
             <Setter Property="Margin" Value="2,5,0,0" />
             <Setter Property="Visibility" Value="{Binding TemErro, Converter={StaticResource BooleanToVisibilityConverter}}" />
         </Style>
+        <!-- Nas grades, o que corrigir fica no alto, junto do título, porque as linhas podem passar da área visível. -->
+        <Style x:Key="ErroDaGrade" TargetType="TextBlock" BasedOn="{StaticResource ErroDoCampo}">
+            <Setter Property="Margin" Value="0,0,0,9" />
+        </Style>
         <!-- Cada tipo de campo tem o seu controle; a calculadora só declara os campos. -->
         <DataTemplate DataType="{x:Type calculadoras:CampoFormularioCustoFuncionarioViewModel}">
             <DataTemplate.Resources>
@@ -33,7 +37,7 @@
                     <TextBox.Style>
                         <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding TemErro}" Value="True"><Setter Property="BorderBrush" Value="{DynamicResource ErrorBorderBrush}" /><Setter Property="BorderThickness" Value="2" /></DataTrigger>
+                                <DataTrigger Binding="{Binding TemErro}" Value="True"><Setter Property="behaviors:DestaqueDeErro.Ativo" Value="True" /></DataTrigger>
                             </Style.Triggers>
                         </Style>
                     </TextBox.Style>
@@ -129,7 +133,7 @@
                     <TextBox.Style>
                         <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding TemErro}" Value="True"><Setter Property="BorderBrush" Value="{DynamicResource ErrorBorderBrush}" /><Setter Property="BorderThickness" Value="2" /></DataTrigger>
+                                <DataTrigger Binding="{Binding TemErro}" Value="True"><Setter Property="behaviors:DestaqueDeErro.Ativo" Value="True" /></DataTrigger>
                             </Style.Triggers>
                         </Style>
                     </TextBox.Style>
@@ -168,6 +172,7 @@
         </DataTemplate>
         <DataTemplate DataType="{x:Type calculadoras:CampoVinculosInssViewModel}">
             <StackPanel Width="650" Margin="0,0,14,14" Visibility="{Binding Visivel, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <TextBlock Text="{Binding MensagemErro}" Style="{StaticResource ErroDaGrade}" />
                 <StackPanel Width="170" HorizontalAlignment="Left" Margin="0,0,0,18" ToolTip="{Binding Competencia.Dica}">
                     <TextBlock Text="{Binding Competencia.Rotulo}" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,6" />
                     <TextBox Text="{Binding Competencia.Valor, UpdateSourceTrigger=PropertyChanged}" behaviors:MascaraData.Tipo="Competencia" TextAlignment="Center" AutomationProperties.Name="Competência" />
@@ -218,6 +223,7 @@
         <DataTemplate DataType="{x:Type calculadoras:CampoReajusteRetroativoViewModel}">
             <StackPanel Width="650" Margin="0,0,14,14" Visibility="{Binding Visivel, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <TextBlock Text="1. Gere as competências" FontWeight="SemiBold" Margin="0,0,0,8" />
+                <TextBlock Text="{Binding MensagemErro}" Style="{StaticResource ErroDaGrade}" />
                 <WrapPanel Margin="0,0,0,10">
                     <StackPanel Width="145" Margin="0,0,8,8"><TextBlock Text="Início (mm/aaaa)" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" /><TextBox Text="{Binding Inicio, UpdateSourceTrigger=PropertyChanged}" behaviors:MascaraData.Tipo="Competencia" AutomationProperties.Name="Início do reajuste" /></StackPanel>
                     <StackPanel Width="145" Margin="0,0,8,8"><TextBlock Text="Fim (mm/aaaa)" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" /><TextBox Text="{Binding Fim, UpdateSourceTrigger=PropertyChanged}" behaviors:MascaraData.Tipo="Competencia" AutomationProperties.Name="Fim do reajuste" /></StackPanel>
@@ -280,6 +286,7 @@
         <DataTemplate DataType="{x:Type calculadoras:CampoMediaVerbasVariaveisViewModel}">
             <StackPanel Width="830" Margin="0,0,14,14" Visibility="{Binding Visivel, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <TextBlock Text="Período da média" FontWeight="SemiBold" Margin="0,0,0,7" />
+                <TextBlock Text="{Binding MensagemErro}" Style="{StaticResource ErroDaGrade}" />
                 <WrapPanel Margin="0,0,0,8">
                     <StackPanel Width="150" Margin="0,0,9,8"><TextBlock Text="Início (mm/aaaa)" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" /><TextBox Text="{Binding Inicio, UpdateSourceTrigger=PropertyChanged}" behaviors:MascaraData.Tipo="Competencia" AutomationProperties.Name="Início da média" /></StackPanel>
                     <StackPanel Width="150" Margin="0,0,9,8"><TextBlock Text="Fim (mm/aaaa)" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" /><TextBox Text="{Binding Fim, UpdateSourceTrigger=PropertyChanged}" behaviors:MascaraData.Tipo="Competencia" AutomationProperties.Name="Fim da média" /></StackPanel>
@@ -321,6 +328,7 @@
         <DataTemplate DataType="{x:Type calculadoras:CampoSobreavisoViewModel}">
             <StackPanel Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ItemsControl}}" Margin="0,0,0,14" Visibility="{Binding Visivel, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <TextBlock Text="Competências de sobreaviso e prontidão" FontWeight="SemiBold" Margin="0,0,0,5" />
+                <TextBlock Text="{Binding MensagemErro}" Style="{StaticResource ErroDaGrade}" />
                 <TextBlock Text="Informe, em cada competência, o salário normal do mês e as horas totais de cada regime. Sobreaviso: fora da empresa, aguardando o chamado (1/3 do salário-hora). Prontidão: na empresa, aguardando ordens (2/3). Deixe de fora as horas em que o empregado foi chamado e trabalhou: elas são horas de trabalho. Os feriados em dias úteis entram no DSR." FontSize="12" Foreground="{DynamicResource MutedTextBrush}" TextWrapping="Wrap" Margin="0,0,0,9" />
                 <WrapPanel Margin="0,0,0,2">
                     <StackPanel Width="120" Margin="0,0,8,8"><TextBlock Text="Início (mm/aaaa)" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" /><TextBox Text="{Binding Inicio, UpdateSourceTrigger=PropertyChanged}" behaviors:MascaraData.Tipo="Competencia" TextAlignment="Center" AutomationProperties.Name="Início das competências de sobreaviso" /></StackPanel>
@@ -360,6 +368,7 @@
         <DataTemplate DataType="{x:Type calculadoras:CampoTransferenciaViewModel}">
             <StackPanel Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ItemsControl}}" Margin="0,0,0,14" Visibility="{Binding Visivel, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <TextBlock Text="Competências da transferência" FontWeight="SemiBold" Margin="0,0,0,5" />
+                <TextBlock Text="{Binding MensagemErro}" Style="{StaticResource ErroDaGrade}" />
                 <TextBlock Text="Informe, em cada competência da transferência provisória, o salário que o empregado recebia na localidade de origem e os dias em que esteve transferido: 30 é o mês inteiro, inclusive nos meses de 31 dias. No mês de ida ou de volta, informe só os dias fora da origem." FontSize="12" Foreground="{DynamicResource MutedTextBrush}" TextWrapping="Wrap" Margin="0,0,0,9" />
                 <WrapPanel Margin="0,0,0,2">
                     <StackPanel Width="120" Margin="0,0,8,8"><TextBlock Text="Início (mm/aaaa)" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" /><TextBox Text="{Binding Inicio, UpdateSourceTrigger=PropertyChanged}" behaviors:MascaraData.Tipo="Competencia" TextAlignment="Center" AutomationProperties.Name="Início da transferência" /></StackPanel>
@@ -393,6 +402,7 @@
         <DataTemplate DataType="{x:Type calculadoras:CampoGorjetasViewModel}">
             <StackPanel Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ItemsControl}}" Margin="0,0,0,14" Visibility="{Binding Visivel, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <TextBlock Text="Gorjetas por competência" FontWeight="SemiBold" Margin="0,0,0,5" />
+                <TextBlock Text="{Binding MensagemErro}" Style="{StaticResource ErroDaGrade}" />
                 <TextBlock Text="Informe, em cada competência, a parte do empregado no rateio das gorjetas, cobradas na nota ou dadas pelo cliente, antes da retenção da empresa. O rateio segue a convenção ou o acordo coletivo ou, na falta deles, a assembleia dos trabalhadores." FontSize="12" Foreground="{DynamicResource MutedTextBrush}" TextWrapping="Wrap" Margin="0,0,0,9" />
                 <WrapPanel Margin="0,0,0,2">
                     <StackPanel Width="120" Margin="0,0,8,8"><TextBlock Text="Início (mm/aaaa)" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" /><TextBox Text="{Binding Inicio, UpdateSourceTrigger=PropertyChanged}" behaviors:MascaraData.Tipo="Competencia" TextAlignment="Center" AutomationProperties.Name="Início das competências de gorjetas" /></StackPanel>
@@ -424,6 +434,7 @@
         <DataTemplate DataType="{x:Type calculadoras:CampoSalariosContribuicaoViewModel}">
             <StackPanel Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ItemsControl}}" Margin="0,0,0,14" Visibility="{Binding Visivel, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <TextBlock Text="Salários de contribuição" FontWeight="SemiBold" Margin="0,0,0,5" />
+                <TextBlock Text="{Binding MensagemErro}" Style="{StaticResource ErroDaGrade}" />
                 <TextBlock Text="{Binding Explicacao}" FontSize="12" Foreground="{DynamicResource MutedTextBrush}" TextWrapping="Wrap" Margin="0,0,0,9" />
                 <WrapPanel Margin="0,0,0,2">
                     <Button Content="+ Período" Command="{Binding AdicionarCommand}" Padding="10,6" Margin="0,0,8,8" ToolTip="Adiciona um período que começa no mês seguinte ao fim do anterior" AutomationProperties.Name="Adicionar período de salário de contribuição" />
@@ -452,6 +463,7 @@
         <DataTemplate DataType="{x:Type calculadoras:CampoAportesPrevidenciaViewModel}">
             <StackPanel Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ItemsControl}}" Margin="0,0,0,14" Visibility="{Binding Visivel, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <TextBlock Text="Aportes do plano" FontWeight="SemiBold" Margin="0,0,0,5" />
+                <TextBlock Text="{Binding MensagemErro}" Style="{StaticResource ErroDaGrade}" />
                 <TextBlock Text="Informe cada aporte com a data, o valor aportado e o saldo atual dele, com os rendimentos, conforme o extrato. Sem o saldo por aporte, gere aportes mensais com uma rentabilidade ao mês para estimá-lo. O prazo de cada aporte até a data do resgate define a alíquota regressiva." FontSize="12" Foreground="{DynamicResource MutedTextBrush}" TextWrapping="Wrap" Margin="0,0,0,9" />
                 <WrapPanel Margin="0,0,0,2">
                     <StackPanel Width="140" Margin="0,0,8,8"><TextBlock Text="Primeiro aporte" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" /><TextBox Text="{Binding PrimeiroAporte, UpdateSourceTrigger=PropertyChanged}" behaviors:MascaraData.Tipo="Data" TextAlignment="Center" AutomationProperties.Name="Data do primeiro aporte gerado" /></StackPanel>
@@ -486,6 +498,7 @@
         <DataTemplate DataType="{x:Type calculadoras:CampoConferenciaFgtsViewModel}">
             <StackPanel Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ItemsControl}}" Margin="0,0,0,14" Visibility="{Binding Visivel, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <TextBlock Text="Competências conferidas" FontWeight="SemiBold" Margin="0,0,0,5" />
+                <TextBlock Text="{Binding MensagemErro}" Style="{StaticResource ErroDaGrade}" />
                 <TextBlock Text="Informe, em cada competência, a remuneração que integra o FGTS (salário, horas extras, adicionais, 13º no mês do pagamento, férias gozadas com o terço) e o depósito que consta no extrato ou na guia. A rescisória é a do mês do desligamento, com as verbas rescisórias e o aviso prévio indenizado." FontSize="12" Foreground="{DynamicResource MutedTextBrush}" TextWrapping="Wrap" Margin="0,0,0,9" />
                 <WrapPanel Margin="0,0,0,2">
                     <StackPanel Width="140" Margin="0,0,8,8"><TextBlock Text="Início (mm/aaaa)" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" /><TextBox Text="{Binding Inicio, UpdateSourceTrigger=PropertyChanged}" behaviors:MascaraData.Tipo="Competencia" TextAlignment="Center" AutomationProperties.Name="Início das competências do FGTS" /></StackPanel>
@@ -523,6 +536,7 @@
         <DataTemplate DataType="{x:Type calculadoras:CampoMesesSimplesViewModel}">
             <StackPanel Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ItemsControl}}" Margin="0,0,0,14" Visibility="{Binding Visivel, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <TextBlock Text="Receita e folha dos meses anteriores" FontWeight="SemiBold" Margin="0,0,0,5" />
+                <TextBlock Text="{Binding MensagemErro}" Style="{StaticResource ErroDaGrade}" />
                 <TextBlock Text="Informe a receita bruta e a folha com encargos de cada competência: salários e pró-labore pagos, mais a CPP e o FGTS recolhidos, sem aluguéis nem lucros distribuídos. Gerar meses cria as competências que o período exige; desde 2027, o mês anterior ao período não entra." FontSize="12" Foreground="{DynamicResource MutedTextBrush}" TextWrapping="Wrap" Margin="0,0,0,9" />
                 <WrapPanel Margin="0,0,0,2">
                     <StackPanel Width="170" Margin="0,0,8,8"><TextBlock Text="Receita por mês (R$)" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" /><TextBox Text="{Binding ReceitaMensal, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" behaviors:FormatacaoNumerica.Formato="N2" AutomationProperties.Name="Receita sugerida para os meses gerados" /></StackPanel>
@@ -553,6 +567,7 @@
         <DataTemplate DataType="{x:Type calculadoras:CampoParcelasRraViewModel}">
             <StackPanel Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ItemsControl}}" Margin="0,0,0,14" Visibility="{Binding Visivel, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <TextBlock Text="Parcelas e meses de referência" FontWeight="SemiBold" Margin="0,0,0,5" />
+                <TextBlock Text="{Binding MensagemErro}" Style="{StaticResource ErroDaGrade}" />
                 <TextBlock Text="Informe uma linha por competência a que o pagamento se refere, com o valor tributável recebido, sem juros de mora. O ano da linha separa os anos anteriores, tributados pela tabela acumulada, do ano do pagamento. Cada mês conta um mês, e o 13º de cada ano conta mais um. Se souber só o total de um ano, lance-o em um dos meses e deixe os demais desse ano com 0,00." FontSize="12" Foreground="{DynamicResource MutedTextBrush}" TextWrapping="Wrap" Margin="0,0,0,9" />
                 <WrapPanel Margin="0,0,0,2">
                     <StackPanel Width="140" Margin="0,0,8,8"><TextBlock Text="Início (mm/aaaa)" Foreground="{DynamicResource MutedTextBrush}" Margin="0,0,0,5" /><TextBox Text="{Binding Inicio, UpdateSourceTrigger=PropertyChanged}" behaviors:MascaraData.Tipo="Competencia" TextAlignment="Center" AutomationProperties.Name="Início dos meses do RRA" /></StackPanel>
@@ -588,6 +603,7 @@
         <DataTemplate DataType="{x:Type calculadoras:CampoDepositosFgtsViewModel}">
             <StackPanel Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ItemsControl}}" Margin="0,0,0,14" Visibility="{Binding Visivel, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <TextBlock Text="Depósitos históricos do FGTS (opcional)" FontWeight="SemiBold" Margin="0,0,0,5" />
+                <TextBlock Text="{Binding MensagemErro}" Style="{StaticResource ErroDaGrade}" />
                 <TextBlock Text="Informe o valor devido em cada competência anterior ao desligamento, incluindo FGTS do 13º pago naquele mês. Com saldo do extrato, a soma serve para conferência; sem extrato, preencha todos os meses para estimar a multa. Valores nominais não incluem atualização monetária ou juros." FontSize="12" Foreground="{DynamicResource MutedTextBrush}" TextWrapping="Wrap" Margin="0,0,0,9" />
                 <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
                     <Button Content="Gerar competências" Command="{Binding GerarCommand}" Padding="10,6" Margin="0,0,8,0" ToolTip="Gera meses da admissão até o mês anterior ao desligamento e preserva valores desses meses" AutomationProperties.Name="Gerar competências do FGTS" />
@@ -615,6 +631,7 @@
         </DataTemplate>
         <DataTemplate DataType="{x:Type calculadoras:CampoQuitacaoBancoHorasViewModel}">
             <StackPanel Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ItemsControl}}" Margin="0,0,0,14" Visibility="{Binding Visivel, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <TextBlock Text="{Binding MensagemErro}" Style="{StaticResource ErroDaGrade}" />
                 <Grid Margin="0,0,0,7"><Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
                     <TextBlock Text="Quitação transferida do banco de horas" FontWeight="SemiBold" VerticalAlignment="Center" />
                     <Button Grid.Column="1" Content="Descartar transferência" Command="{Binding DescartarCommand}" Padding="9,5" ToolTip="Retira as parcelas transferidas deste formulário" AutomationProperties.Name="Descartar quitação do banco de horas" />
@@ -642,6 +659,7 @@
         <DataTemplate DataType="{x:Type calculadoras:CampoBancoHorasViewModel}">
             <StackPanel Margin="0,0,0,4" Visibility="{Binding Visivel, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <TextBlock Text="Ciclo de compensação" FontWeight="SemiBold" Margin="0,0,0,7" />
+                <TextBlock Text="{Binding MensagemErro}" Style="{StaticResource ErroDaGrade}" />
                 <Grid Margin="0,0,0,18">
                     <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="12" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
                     <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>

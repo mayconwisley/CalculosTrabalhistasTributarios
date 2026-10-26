@@ -284,14 +284,17 @@ public sealed class CalculadoraViewModel : ViewModelBase, ICalculoSalvavel, IAta
             return;
         }
 
+        // Os campos que a leitura apontou já têm o que corrigir; sem eles, a regra que falhou destaca os campos que cita.
         var marcados = Campos.Where(campo => campo.Visivel && campo.TemErro).ToList();
-        if (marcados.Count == 0 && CampoCitado(erro.Mensagem) is { } citado)
-        {
-            citado.MensagemErro = "Confira este campo.";
-            marcados.Add(citado);
-        }
-        Aviso = marcados.Count > 1
-            ? $"Corrija os {marcados.Count} campos destacados: {Lista(marcados.Select(campo => campo.Rotulo))}."
+        var lidos = marcados.Count;
+        if (lidos == 0)
+            foreach (var (campo, mensagem) in CamposCitados.Encontrar(erro.Mensagem, Campos))
+            {
+                campo.MensagemErro = mensagem;
+                marcados.Add(campo);
+            }
+        Aviso = lidos > 1
+            ? $"Corrija os {lidos} campos destacados: {Lista(marcados.Select(campo => campo.Rotulo))}."
             : erro.Mensagem;
         _avisoDosCampos = marcados.Count > 0;
         if (solicitadoPeloUsuario && marcados.Count > 0)
@@ -302,25 +305,6 @@ public sealed class CalculadoraViewModel : ViewModelBase, ICalculoSalvavel, IAta
     {
         Aviso = string.Empty;
         _avisoDosCampos = false;
-    }
-
-    /// <summary>
-    /// O campo que a mensagem de validação cita pelo rótulo, como em "Valor solicitado: informe..." ou em "O campo
-    /// "Salário" ..."; o complemento do rótulo entre parênteses, como a unidade, é desconsiderado.
-    /// </summary>
-    private CampoViewModel? CampoCitado(string mensagem)
-    {
-        foreach (var campo in Campos.Where(campo => campo.Visivel && campo is CampoTextoViewModel or CampoOpcaoViewModel))
-        {
-            var rotulo = campo.Rotulo.Split(" (")[0].Trim();
-            if (rotulo.Length == 0)
-                continue;
-            if (mensagem.StartsWith(rotulo + ":", StringComparison.CurrentCultureIgnoreCase)
-                || mensagem.Contains($"\"{rotulo}", StringComparison.CurrentCultureIgnoreCase)
-                || mensagem.Contains($"“{rotulo}", StringComparison.CurrentCultureIgnoreCase))
-                return campo;
-        }
-        return null;
     }
 
     private static string Lista(IEnumerable<string> itens)

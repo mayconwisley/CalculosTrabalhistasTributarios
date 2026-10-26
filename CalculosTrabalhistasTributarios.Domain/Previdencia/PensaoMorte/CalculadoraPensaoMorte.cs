@@ -40,7 +40,7 @@ public static class CalculadoraPensaoMorte
         if (e.Situacao == SituacaoInstituidor.Aposentado)
         {
             if (e.ValorAposentadoria <= 0m)
-                return Erro.Validacao("Informe o valor da aposentadoria que o segurado recebia.");
+                return Erro.Validacao("Informe a aposentadoria recebida pelo segurado, o valor mensal bruto.");
             baseCalculo = e.ValorAposentadoria;
         }
         else

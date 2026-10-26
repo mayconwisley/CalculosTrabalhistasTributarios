@@ -75,8 +75,8 @@ public class FormularioCalculadoraTests
 
         janela.CalcularCommand.Execute(null);
 
-        // O rótulo "Salário (R$)" é citado sem a unidade entre parênteses.
-        Assert.Equal("Confira este campo.", calculadora.Salario.MensagemErro);
+        // O rótulo "Salário (R$)" é citado sem a unidade entre parênteses; o campo mostra o que corrigir.
+        Assert.Equal("Informe um valor maior que zero.", calculadora.Salario.MensagemErro);
         Assert.Equal("Salário: informe um valor maior que zero.", janela.Aviso);
     }
 

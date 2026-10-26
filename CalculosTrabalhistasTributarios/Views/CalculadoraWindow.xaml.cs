@@ -98,13 +98,28 @@ public partial class CalculadoraWindow : Window
 
     private void FocarCampo(CampoViewModel campo) => Dispatcher.BeginInvoke(DispatcherPriority.Loaded, () =>
     {
-        if (Formulario.ItemContainerGenerator.ContainerFromItem(campo) is not DependencyObject container || Controle(container) is not { } controle)
+        // Um campo de um formulário composto, como o do custo do funcionário, não é item da lista: o controle é achado pelo dado.
+        var controle = Formulario.ItemContainerGenerator.ContainerFromItem(campo) is DependencyObject container ? Controle(container) : ControleDoCampo(Formulario, campo);
+        if (controle is null)
             return;
         controle.BringIntoView();
         controle.Focus();
         if (controle is TextBox texto)
             texto.SelectAll();
     });
+
+    private static Control? ControleDoCampo(DependencyObject elemento, CampoViewModel campo)
+    {
+        for (var indice = 0; indice < VisualTreeHelper.GetChildrenCount(elemento); indice++)
+        {
+            var filho = VisualTreeHelper.GetChild(elemento, indice);
+            if (filho is TextBox or ComboBox && ((Control)filho).DataContext == campo)
+                return (Control)filho;
+            if (ControleDoCampo(filho, campo) is { } encontrado)
+                return encontrado;
+        }
+        return null;
+    }
 
     private static Control? Controle(DependencyObject elemento)
     {

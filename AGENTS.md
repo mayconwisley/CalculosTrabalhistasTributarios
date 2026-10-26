@@ -171,6 +171,7 @@ A experiência visual faz parte do critério de aceite. Uma tela que compila, ma
 ### Campos e interação
 
 - Reutilize `CampoTextoViewModel`, `CampoOpcaoViewModel`, `LeitorFormulario` e `LeituraNumerica` em campos comuns.
+- Erros de preenchimento seguem um só padrão na janela comum: borda vermelha (`DestaqueDeErro`, que vale também com o foco), orientação abaixo do campo ou do título da grade e a faixa junto de Calcular. `LeitorFormulario` recusa números negativos; `CamposCitados` liga a mensagem da regra ao campo pelo rótulo. Escreva mensagens de validação que citem o rótulo do campo, como "Valor bruto: informe..." ou "Informe o salário líquido desejado...".
 - Para listas de vínculos, meses, reflexos e movimentos, use campos estruturados com linhas editáveis. Não exija que o usuário digite uma linguagem com ponto e vírgula em uma caixa de texto.
 - Grades de competências geradas por um período (início, fim, Gerar meses, + Mês e remoção) derivam de `CampoCompetenciasViewModel<TLinha>`, com linhas derivadas de `LinhaCompetenciaViewModel`; a base preserva os meses digitados e confirma antes de remover competências.
 - Mantenha o padrão de `FormatacaoNumerica`: `0`, `0,00` e `0:00` são limpos ao receber foco quando configurados; vazio retorna ao zero apropriado ao sair. Moeda usa formatação `N2`.

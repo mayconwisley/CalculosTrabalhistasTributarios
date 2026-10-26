@@ -17,7 +17,7 @@ public sealed class SimularEstagioUseCase(ITributacaoConsulta tributacaoConsulta
     public async Task<Result<DemonstrativoDto>> ExecutarAsync(SimularEstagioRequest r, CancellationToken cancellationToken)
     {
         if (r.Bolsa <= 0m)
-            return Erro.Validacao("Informe o valor da bolsa.");
+            return Erro.Validacao("Bolsa: informe o valor da bolsa.");
         if (r.AuxilioTransporte < 0m || r.DiasRecessoGozados < 0m || r.Dependentes < 0)
             return Erro.Validacao("Os valores, os dias de recesso e os dependentes não podem ser negativos.");
         if (r.Fim < r.Inicio)

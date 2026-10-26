@@ -29,7 +29,7 @@ public sealed class SimularIrpfAnualUseCase : ISimularDemonstrativoUseCase<Simul
         if (new[] { r.RendimentosTributaveis, r.PrevidenciaOficial, r.DespesasMedicas, r.Instrucao, r.PrevidenciaComplementar, r.PensaoAlimenticia, r.ImpostoPago, r.Dividendos, r.IrrfDividendos, r.OutrosRendimentos, r.ImpostoExclusivo, r.AliquotaEfetivaEmpresa, r.AposentadoriaSessentaECinco }.Any(valor => valor < 0m) || r.Dependentes < 0)
             return Erro.Validacao("Os valores e a quantidade de dependentes não podem ser negativos.");
         if (r.RendimentosTributaveis + r.AposentadoriaSessentaECinco + r.Dividendos + r.OutrosRendimentos == 0m)
-            return Erro.Validacao("Informe os rendimentos do ano: tributáveis, aposentadoria após 65 anos, dividendos ou outros rendimentos.");
+            return Erro.Validacao("Informe os rendimentos do ano: rendimentos tributáveis, aposentadoria após 65 anos, dividendos recebidos ou outros rendimentos.");
         if (r.MesesSessentaECinco is < 0 or > 12)
             return Erro.Validacao("Meses com 65 anos ou mais: informe de 0 a 12, contando do mês do aniversário de 65 anos até dezembro; 12 se o titular já tinha 65 anos no início do ano.");
         if (r.AposentadoriaSessentaECinco > 0m && r.MesesSessentaECinco == 0)

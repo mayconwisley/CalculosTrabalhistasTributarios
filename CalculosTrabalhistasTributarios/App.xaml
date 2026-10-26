@@ -2,6 +2,7 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:media="clr-namespace:System.Windows.Media.Imaging;assembly=PresentationCore"
+             xmlns:behaviors="clr-namespace:CalculosTrabalhistasTributarios.Presentation.Behaviors"
              xmlns:presentation="clr-namespace:CalculosTrabalhistasTributarios.Presentation"
              xmlns:viewModels="clr-namespace:CalculosTrabalhistasTributarios.Presentation.ViewModels"
              xmlns:sys="clr-namespace:System;assembly=mscorlib">
@@ -166,6 +167,7 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsKeyboardFocusWithin" Value="True"><Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource AccentBrush}" /><Setter TargetName="Border" Property="BorderThickness" Value="2" /></Trigger>
+                            <Trigger Property="behaviors:DestaqueDeErro.Ativo" Value="True"><Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource ErrorBorderBrush}" /><Setter TargetName="Border" Property="BorderThickness" Value="2" /></Trigger>
                             <Trigger Property="IsEnabled" Value="False"><Setter Property="Opacity" Value="0.55" /></Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>

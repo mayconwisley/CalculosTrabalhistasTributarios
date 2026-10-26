@@ -22,7 +22,7 @@ public sealed class SimularCltPjUseCase(ITributacaoConsulta tributacaoConsulta) 
     public async Task<Result<DemonstrativoDto>> ExecutarAsync(SimularCltPjRequest r, CancellationToken cancellationToken)
     {
         if (r.SalarioClt <= 0m)
-            return Erro.Validacao("Informe o salário mensal como CLT.");
+            return Erro.Validacao("Salário CLT: informe o salário mensal como empregado.");
         if (r.Dependentes < 0 || r.BeneficiosClt < 0m || r.ValorPj < 0m || r.CustosPj < 0m)
             return Erro.Validacao("Os valores e a quantidade de dependentes não podem ser negativos.");
         if (r.ValorPj * 12m > SimplesNacional.LimiteReceitaAnual)

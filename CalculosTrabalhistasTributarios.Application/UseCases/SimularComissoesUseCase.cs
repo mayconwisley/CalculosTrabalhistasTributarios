@@ -14,7 +14,7 @@ public sealed class SimularComissoesUseCase(ITributacaoConsulta tributacaoConsul
     public async Task<Result<DemonstrativoDto>> ExecutarAsync(SimularComissoesRequest request, CancellationToken cancellationToken)
     {
         if (request.SalarioFixo < 0m || request.Comissoes <= 0m || request.Dependentes < 0 || request.PisoGarantido < 0m)
-            return Erro.Validacao("Informe comissões maiores que zero; salário, garantia mínima e dependentes não podem ser negativos.");
+            return Erro.Validacao("Informe o valor das comissões, maior que zero; salário, garantia mínima e dependentes não podem ser negativos.");
 
         var calculo = CalculadoraComissoes.Calcular(new ComissoesInformadas(request.Competencia, request.Comissoes,
             request.IncluiDsr, request.Feriados, request.DescansosPerdidos, request.DiasUteis, request.DiasDescanso));

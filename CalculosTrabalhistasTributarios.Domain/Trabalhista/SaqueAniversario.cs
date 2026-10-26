@@ -52,6 +52,6 @@ public static class SaqueAniversario
         var saldo = saldoExtrato + (saldoIncluiGarantia ? 0m : garantiaBloqueada) - multaIncluida;
         return saldo is > 0m and <= 1_000_000_000_000m
             ? saldo
-            : Erro.Validacao("A base após a composição do saldo e exclusão da multa, deve ser maior que zero e até R$ 1 trilhão.");
+            : Erro.Validacao("Saldo do extrato: a base, com a garantia e sem a multa incluída, deve ser maior que zero e até R$ 1 trilhão.");
     }
 }

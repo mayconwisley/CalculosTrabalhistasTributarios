@@ -13,7 +13,9 @@ public sealed class SimularCreditoTrabalhadorUseCase(ITributacaoConsulta consult
     {
         if (r.Competencia.Day != 1 || r.Competencia < new DateOnly(2025, 3, 1) || r.Competencia.Year > 2100)
             return Erro.Validacao("Competência: informe mm/aaaa entre 03/2025 e 12/2100.");
-        if (r.RemuneracaoHabitual <= 0m || r.Dependentes is < 0 or > 100 ||
+        if (r.RemuneracaoHabitual == 0m)
+            return Erro.Validacao("Remuneração habitual: informe a remuneração mensal, maior que zero.");
+        if (r.RemuneracaoHabitual < 0m || r.Dependentes is < 0 or > 100 ||
             new[] { r.RemuneracaoHabitual, r.DescontosPrevidenciarios, r.Pensao, r.OutrosDescontosCompulsorios }
                 .Any(v => v < 0m || v > 10_000_000m || decimal.Round(v, 2) != v) || r.DescontosPrevidenciarios >= r.RemuneracaoHabitual)
             return Erro.Validacao("Informe remuneração habitual positiva, descontos não negativos inferiores à remuneração e até 100 dependentes. Dinheiro: até R$ 10 milhões e duas casas decimais.");

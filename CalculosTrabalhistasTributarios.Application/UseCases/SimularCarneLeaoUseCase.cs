@@ -21,7 +21,7 @@ public sealed class SimularCarneLeaoUseCase(ITributacaoConsulta tributacaoConsul
         if (r.Rendimentos < 0m || r.Alugueis < 0m || r.DespesasAluguel < 0m || r.LivroCaixa < 0m || r.InssPago < 0m || r.Dependentes < 0 || r.PensaoPaga < 0m)
             return Erro.Validacao("Os valores e os dependentes não podem ser negativos.");
         if (r.Rendimentos + r.Alugueis <= 0m)
-            return Erro.Validacao("Informe os rendimentos ou os aluguéis recebidos no mês.");
+            return Erro.Validacao("Informe os rendimentos de pessoas físicas ou os aluguéis recebidos no mês.");
         if (r.DespesasAluguel > r.Alugueis)
             return Erro.Validacao("As despesas do aluguel não podem passar dos aluguéis recebidos.");
 

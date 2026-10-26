@@ -25,7 +25,7 @@ public sealed class SimularDividendosUseCase : ISimularDemonstrativoUseCase<Simu
         if (r.Competencia < Inicio)
             return Erro.Validacao("A retenção sobre lucros e dividendos vale para os pagamentos desde 01/2026.");
         if (r.Valor <= 0m)
-            return Erro.Validacao("Informe o total de dividendos pagos no mês.");
+            return Erro.Validacao("Dividendos no mês: informe o total de dividendos pagos no mês.");
         if (r.ParteTransicao < 0m || r.JaRetido < 0m)
             return Erro.Validacao("Os valores não podem ser negativos.");
         if (r.ParteTransicao > r.Valor)

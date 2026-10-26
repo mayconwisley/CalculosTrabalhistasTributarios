@@ -17,13 +17,13 @@ public sealed class LeitorFormulario
     public Erro? Erro { get; private set; }
 
     public decimal Moeda(CampoTextoViewModel campo) =>
-        LeituraNumerica.TentarLer(campo.Valor, out var valor) ? valor : Invalido(campo, "use somente números e vírgula nos centavos, por exemplo 3.500,00", "Use números e vírgula, como 3.500,00.", 0m);
+        LeituraNumerica.TentarLer(campo.Valor, out var valor) ? NaoNegativo(campo, valor) : Invalido(campo, "use somente números e vírgula nos centavos, por exemplo 3.500,00", "Use números e vírgula, como 3.500,00.", 0m);
 
     public decimal Numero(CampoTextoViewModel campo) =>
-        LeituraNumerica.TentarLer(campo.Valor, out var valor) ? valor : Invalido(campo, "use somente números, com vírgula nas casas decimais", "Use números, com vírgula nas decimais.", 0m);
+        LeituraNumerica.TentarLer(campo.Valor, out var valor) ? NaoNegativo(campo, valor) : Invalido(campo, "use somente números, com vírgula nas casas decimais", "Use números, com vírgula nas decimais.", 0m);
 
     public int Inteiro(CampoTextoViewModel campo) =>
-        int.TryParse(campo.Valor.Trim(), NumberStyles.Integer, Cultura, out var valor) ? valor : Invalido(campo, "use um número inteiro", "Use um número inteiro.", 0);
+        int.TryParse(campo.Valor.Trim(), NumberStyles.Integer, Cultura, out var valor) ? (int)NaoNegativo(campo, valor) : Invalido(campo, "use um número inteiro", "Use um número inteiro.", 0);
 
     public DateOnly Data(CampoTextoViewModel campo) =>
         DateOnly.TryParseExact(campo.Valor.Trim(), "dd/MM/yyyy", Cultura, DateTimeStyles.None, out var data) ? data : Invalido(campo, "use o formato dd/mm/aaaa", "Use uma data dd/mm/aaaa.", default(DateOnly));
@@ -41,7 +41,7 @@ public sealed class LeitorFormulario
         var partes = texto.Split(':');
         if (partes.Length == 2 && int.TryParse(partes[0], out var horas) && int.TryParse(partes[1], out var minutos) && horas >= 0 && minutos is >= 0 and < 60)
             return horas + minutos / 60m;
-        return LeituraNumerica.TentarLer(texto, out var decimais) ? decimais : Invalido(campo, "use horas e minutos, como 10:30, ou horas decimais, como 10,5", "Use 10:30 ou 10,5 horas.", 0m);
+        return LeituraNumerica.TentarLer(texto, out var decimais) ? NaoNegativo(campo, decimais) : Invalido(campo, "use horas e minutos, como 10:30, ou horas decimais, como 10,5", "Use 10:30 ou 10,5 horas.", 0m);
     }
 
     /// <summary>Nula quando não há pensão.</summary>
@@ -72,9 +72,14 @@ public sealed class LeitorFormulario
         }
     }
 
-    private T Invalido<T>(CampoViewModel campo, string orientacao, string orientacaoCurta, T padrao)
+    // Nenhum campo do formulário aceita valor negativo. As regras de cálculo também recusam, mas com uma mensagem que
+    // reúne vários campos; conferido aqui, o aviso aparece no campo digitado, como um formato inválido.
+    private decimal NaoNegativo(CampoViewModel campo, decimal valor) =>
+        valor >= 0m ? valor : Invalido(campo, "informe zero ou um valor positivo", "Informe zero ou um valor positivo.", 0m, "não aceita valor negativo");
+
+    private T Invalido<T>(CampoViewModel campo, string orientacao, string orientacaoCurta, T padrao, string problema = "está em formato inválido")
     {
-        Erro ??= Erro.Validacao($"O campo \"{campo.Rotulo}\" está em formato inválido: {orientacao}.");
+        Erro ??= Erro.Validacao($"O campo \"{campo.Rotulo}\" {problema}: {orientacao}.");
         campo.MensagemErro = orientacaoCurta;
         return padrao;
     }
